@@ -32,15 +32,25 @@ public abstract class AdventOfCodeChallenge {
                         expected,
                         actual);
             }
-            System.out.printf("Attempted %s.%s.%s expected %s and got %s in %sms%n",
+            System.out.printf("Attempted %s.%s.%s and got correct answer in %s ms : %s%n",
                     year,
                     day,
                     part,
-                    expected,
-                    actual,
-                    System.currentTimeMillis() - start);
+                    this.leftPad("" + (System.currentTimeMillis() - start), 8),
+                    actual
+            );
         }
         return true;
+    }
+
+    private String leftPad(final String s, final int length) {
+        if (s.length() == length) {
+            return s;
+        }
+        if (s.length() > length) {
+            return "*".repeat(length);
+        }
+        return " ".repeat(length - s.length()) + s;
     }
 
     private String[] loadStrings(final int year, final int day, final int part) {
