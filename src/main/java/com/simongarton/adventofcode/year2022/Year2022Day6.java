@@ -39,7 +39,7 @@ public class Year2022Day6 extends AdventOfCodeChallenge {
         return frequency;
     }
 
-    protected int findMarker(final int length, final String line) {
+    private int findMarker(final int length, final String line) {
         int marker = 0;
         for (int i = 0; i < line.length() - length; i++) {
             final String substring = line.substring(i, i + length);
