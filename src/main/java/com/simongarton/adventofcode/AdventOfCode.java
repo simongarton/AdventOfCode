@@ -1,5 +1,7 @@
 package com.simongarton.adventofcode;
 
+import com.simongarton.adventofcode.year2022.Year2022Day3;
+import com.simongarton.adventofcode.year2022.Year2022Day4;
 import com.simongarton.adventofcode.year2022.Year2022Day5;
 import com.simongarton.adventofcode.year2022.Year2022Day6;
 
@@ -23,6 +25,8 @@ public class AdventOfCode {
     }
 
     private void load2022() {
+        this.challenges.add(new Year2022Day3());
+        this.challenges.add(new Year2022Day4());
         this.challenges.add(new Year2022Day5());
         this.challenges.add(new Year2022Day6());
     }
