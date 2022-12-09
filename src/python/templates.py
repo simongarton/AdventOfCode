@@ -33,8 +33,8 @@ def classes(year):
                              .replace(', {});'.format(0), ', {});'.format(day)))
         with open(to_name, 'w') as output:
             output.writelines(new_lines)
-        
+
 
 if __name__ == '__main__':
-    # data(2021)
-    classes(2021)
+    data(2019)
+    classes(2020)
