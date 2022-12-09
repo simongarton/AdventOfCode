@@ -1,9 +1,6 @@
 package com.simongarton.adventofcode;
 
-import com.simongarton.adventofcode.year2021.Year2021Day1;
-import com.simongarton.adventofcode.year2021.Year2021Day2;
-import com.simongarton.adventofcode.year2021.Year2021Day3;
-import com.simongarton.adventofcode.year2021.Year2021Day4;
+import com.simongarton.adventofcode.year2021.*;
 import com.simongarton.adventofcode.year2022.*;
 
 import java.util.ArrayList;
@@ -31,6 +28,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2021Day2());
         this.challenges.add(new Year2021Day3());
         this.challenges.add(new Year2021Day4());
+        this.challenges.add(new Year2021Day5());
     }
 
     private void load2022() {

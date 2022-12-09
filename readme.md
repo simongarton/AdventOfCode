@@ -70,6 +70,12 @@ https://adventofcode.com/2022/day/1
 
 ## 2021
 
+### Day 5: Hydrothermal Venture
+
+Analyse a range of vectors to build lines, and then work out where the lines intersect.
+
+https://adventofcode.com/2021/day/5
+
 ### Day 4: Giant Squid
 
 Simulate bingo games, given a stream of numbers work out when certain boards will win
