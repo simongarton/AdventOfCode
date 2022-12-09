@@ -29,6 +29,26 @@ public class AdventOfCode {
         this.challenges.add(new Year2021Day3());
         this.challenges.add(new Year2021Day4());
         this.challenges.add(new Year2021Day5());
+//        this.challenges.add(new Year2021Day6());
+//        this.challenges.add(new Year2021Day7());
+//        this.challenges.add(new Year2021Day8());
+//        this.challenges.add(new Year2021Day9());
+//        this.challenges.add(new Year2021Day10());
+//        this.challenges.add(new Year2021Day11());
+//        this.challenges.add(new Year2021Day12());
+//        this.challenges.add(new Year2021Day13());
+//        this.challenges.add(new Year2021Day14());
+//        this.challenges.add(new Year2021Day15());
+//        this.challenges.add(new Year2021Day16());
+//        this.challenges.add(new Year2021Day17());
+//        this.challenges.add(new Year2021Day18());
+//        this.challenges.add(new Year2021Day19());
+//        this.challenges.add(new Year2021Day20());
+//        this.challenges.add(new Year2021Day21());
+//        this.challenges.add(new Year2021Day22());
+//        this.challenges.add(new Year2021Day23());
+//        this.challenges.add(new Year2021Day24());
+//        this.challenges.add(new Year2021Day25());
     }
 
     private void load2022() {
