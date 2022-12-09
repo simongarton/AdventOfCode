@@ -9,12 +9,6 @@ import java.util.List;
 
 public class Year2020Day4 extends AdventOfCodeChallenge {
 
-    /*
-        Interesting. I could only find one part in my last code; I have then retried it - getting
-        new input to deal with - and it's not giving the right answer for part 1. Need to revisit so
-        I can then see what part 2 is all about.
-     */
-
     @Override
     public boolean run() {
         return this.runChallenge(2020, 4);
@@ -22,6 +16,19 @@ public class Year2020Day4 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
+
+        final List<Passport> passports = this.readPassports(input);
+        return String.valueOf(passports.stream().filter(Passport::isComplete).count());
+    }
+
+    @Override
+    public String part2(final String[] input) {
+
+        final List<Passport> passports = this.readPassports(input);
+        return String.valueOf(passports.stream().filter(Passport::valid).count());
+    }
+
+    private List<Passport> readPassports(final String[] input) {
 
         final List<String> lines = Arrays.asList(input);
         final List<String> section = new ArrayList<>();
@@ -40,18 +47,13 @@ public class Year2020Day4 extends AdventOfCodeChallenge {
             passports.add(passport);
             section.clear();
         }
-        return String.valueOf(passports.stream().filter(Passport::valid).count());
-    }
-
-    @Override
-    public String part2(final String[] input) {
-        return null;
+        return passports;
     }
 
     @Data
     public static final class Passport {
 
-        // could be done more efficently as a map but then supporting code gets more complex
+        // could be done more efficiently as a map but then supporting code gets more complex
         private String byr; // (Birth Year)
         private String iyr; // (Issue Year)
         private String eyr; // (Expiration Year)
@@ -72,6 +74,18 @@ public class Year2020Day4 extends AdventOfCodeChallenge {
             for (final String part : parts) {
                 this.processPart(part);
             }
+        }
+
+        public boolean isComplete() {
+            return (
+                    this.byr != null &&
+                            this.iyr != null &&
+                            this.eyr != null &&
+                            this.hgt != null &&
+                            this.hcl != null &&
+                            this.ecl != null &&
+                            this.pid != null
+            );
         }
 
         public boolean valid() {
