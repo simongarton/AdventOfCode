@@ -66,3 +66,23 @@ Look through a list of numbers broken up into groups, build up totals per group,
 part 2) the top 3 groups.
 
 https://adventofcode.com/2022/day/1
+
+## 2021
+
+### Day 3: Binary Diagnostic
+
+Read some binary numbers and manipulate them
+
+https://adventofcode.com/2021/day/3
+
+### Day 2: Dive!
+
+Follow a list of instructions to move forward / down / at an angle.
+
+https://adventofcode.com/2021/day/2
+
+### Day 1: Sonar Sweep
+
+Find number of increases in a list; and then staggered over 3.
+
+https://adventofcode.com/2021/day/1
