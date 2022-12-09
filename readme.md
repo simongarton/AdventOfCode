@@ -8,7 +8,8 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 ### Day 9: Rope Bridge
 
 Awesome. And sneaky. Given two points (head and tail of a rope), set up a system where if the head moves, the tail
-has to follow it within certain constraints. Ok, not bad. Then have ten knots on the rope, not just the 2 of head and tail. 
+has to follow it within certain constraints. Ok, not bad. Then have ten knots on the rope, not just the 2 of head and
+tail.
 Refactor. Still works. Phew.
 
 https://adventofcode.com/2022/day/9
@@ -68,6 +69,12 @@ part 2) the top 3 groups.
 https://adventofcode.com/2022/day/1
 
 ## 2021
+
+### Day 4: Giant Squid
+
+Simulate bingo games, given a stream of numbers work out when certain boards will win
+
+https://adventofcode.com/2021/day/4
 
 ### Day 3: Binary Diagnostic
 
