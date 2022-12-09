@@ -5,6 +5,14 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2022
 
+### Day 9: Rope Bridge
+
+Awesome. And sneaky. Given two points (head and tail of a rope), set up a system where if the head moves, the tail
+has to follow it within certain constraints. Ok, not bad. Then have ten knots on the rope, not just the 2 of head and tail. 
+Refactor. Still works. Phew.
+
+https://adventofcode.com/2022/day/9
+
 ### Day 8: Treetop Tree House
 
 Nice. Given a grid of tree heights, work out first how many trees are visible from any edge (a tree must be taller than
