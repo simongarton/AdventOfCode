@@ -17,10 +17,24 @@ def data(year):
         create_file(root.format(year, '{}-Day{}-2-answer.txt'.format(year, day)))
 
 
-def classes():
-    pass
-
+def classes(year):
+    root = '/Users/simongarton/projects/java/AdventOfCode/src/main/java/com/simongarton/adventofcode/year{}/Year{}Day{}.java'
+    for day in range(1, 26):
+        from_name = root.format(year, year, 0)
+        to_name = root.format(year, year, day)
+        if os.path.exists(to_name):
+            continue
+        with open(from_name, 'r') as input:
+            lines = input.readlines()
+        new_lines = []
+        for line in lines:
+            new_lines.append(line
+                             .replace('Day{}'.format(0), 'Day{}'.format(day))
+                             .replace(', {});'.format(0), ', {});'.format(day)))
+        with open(to_name, 'w') as output:
+            output.writelines(new_lines)
+        
 
 if __name__ == '__main__':
     # data(2021)
-    classes()
+    classes(2021)
