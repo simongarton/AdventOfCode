@@ -36,5 +36,5 @@ def classes(year):
 
 
 if __name__ == '__main__':
-    data(2019)
-    classes(2020)
+    data(2022)
+    classes(2022)
