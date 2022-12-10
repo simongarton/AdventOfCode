@@ -10,11 +10,14 @@ import com.simongarton.adventofcode.year2021.*;
 import com.simongarton.adventofcode.year2022.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AdventOfCode {
 
     private final List<AdventOfCodeChallenge> challenges;
+    private final Map<Integer, Map<Integer, Boolean>> complete = new HashMap<>();
 
     public static void main(final String[] args) {
         final AdventOfCode adventOfCode = new AdventOfCode();
@@ -26,9 +29,46 @@ public class AdventOfCode {
     }
 
     private void run() {
+        this.complete.clear();
         for (final AdventOfCodeChallenge codeChallenge : this.challenges) {
-            codeChallenge.run();
+            final boolean outcome = codeChallenge.run();
+            final int year = codeChallenge.getYear();
+            final int day = codeChallenge.getDay();
+            if (!this.complete.containsKey(year)) {
+                this.complete.put(year, new HashMap<>());
+            }
+            this.complete.get(year).put(day, outcome);
         }
+
+        this.displayResults();
+    }
+
+    private void displayResults() {
+
+        System.out.println("");
+        System.out.println("                1111111111222222");
+        System.out.println("       1234567890123456789012345");
+        for (int year = 2019; year <= 2022; year++) {
+            String line = year + " : ";
+            for (int day = 1; day <= 25; day++) {
+                if (this.complete.containsKey(year)) {
+                    if (this.complete.get(year).containsKey(day)) {
+                        if (this.complete.get(year).get(day)) {
+                            line += "✓";
+                        } else {
+                            line += ".";
+                        }
+                    } else {
+                        line += " ";
+                    }
+                } else {
+                    line += " ";
+                }
+            }
+            System.out.println(line);
+        }
+        System.out.println("       1234567890123456789012345");
+        System.out.println("                1111111111222222");
     }
 
     private void load2019() {

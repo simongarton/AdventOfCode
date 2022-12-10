@@ -15,11 +15,26 @@ public abstract class AdventOfCodeChallenge {
 
     public abstract boolean run();
 
+    public int getYear() {
+        return this.year;
+    }
+
+    public int getDay() {
+        return this.day;
+    }
+
+    protected int year;
+    protected int day;
+
+
     public abstract String part1(final String[] input);
 
     public abstract String part2(final String[] input);
 
+
     public boolean runChallenge(final int year, final int day) {
+        this.year = year;
+        this.day = day;
         for (int part = 1; part <= 2; part++) {
             final long start = System.currentTimeMillis();
             final String[] input = this.loadStrings(year, day, part);
