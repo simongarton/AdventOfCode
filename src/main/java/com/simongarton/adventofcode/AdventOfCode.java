@@ -3,6 +3,11 @@ package com.simongarton.adventofcode;
 import com.simongarton.adventofcode.year2019.Year2019Day1;
 import com.simongarton.adventofcode.year2019.Year2019Day2;
 import com.simongarton.adventofcode.year2019.Year2019Day3;
+import com.simongarton.adventofcode.year2019.Year2019Day4;
+import com.simongarton.adventofcode.year2020.Year2020Day1;
+import com.simongarton.adventofcode.year2020.Year2020Day2;
+import com.simongarton.adventofcode.year2020.Year2020Day3;
+import com.simongarton.adventofcode.year2020.Year2020Day4;
 import com.simongarton.adventofcode.year2020.*;
 import com.simongarton.adventofcode.year2021.*;
 import com.simongarton.adventofcode.year2022.*;
@@ -73,6 +78,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2019Day1());
         this.challenges.add(new Year2019Day2());
         this.challenges.add(new Year2019Day3());
+        this.challenges.add(new Year2019Day4());
     }
 
     private void load2020() {
