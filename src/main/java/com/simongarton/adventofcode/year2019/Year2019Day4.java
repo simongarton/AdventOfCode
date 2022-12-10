@@ -15,8 +15,8 @@ public class Year2019Day4 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        final int low = 347312;
-        final int high = 805915;
+        final int low = 284639;
+        final int high = 748759;
 
         int valid = 0;
         for (int i = low; i <= high; i++) {
@@ -31,8 +31,8 @@ public class Year2019Day4 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
-        final int low = 347312;
-        final int high = 805915;
+        final int low = 284639;
+        final int high = 748759;
 
         int valid = 0;
         for (int i = low; i <= high; i++) {
