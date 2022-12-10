@@ -29,8 +29,6 @@ public class Year2019Day3 extends AdventOfCodeChallenge {
         final List<String> wires = Arrays.asList(input);
         this.wire1 = Arrays.asList(wires.get(0).split(","));
         this.wire2 = Arrays.asList(wires.get(1).split(","));
-        System.out.println(this.wire1.size() + " points in wire1.");
-        System.out.println(this.wire2.size() + " points in wire2.");
     }
 
     @Override
@@ -64,14 +62,12 @@ public class Year2019Day3 extends AdventOfCodeChallenge {
             final Coord point2 = points2.get(entry.getKey());
             final int distance = point1.distance + point2.distance;
             if (distance > 0) {
-                System.out.println(point1.asCoord() + " = " + distance);
                 if ((best == 0) || (distance < best)) {
                     best = distance;
                     bestCoord = point1;
                 }
             }
         }
-        System.out.println("best = " + best + " at " + bestCoord.asCoord());
         return best;
     }
 
@@ -90,14 +86,12 @@ public class Year2019Day3 extends AdventOfCodeChallenge {
             final Coord point = points1.get(entry.getKey());
             final int distance = this.manhattanDistance(point, origin);
             if (distance > 0) {
-                System.out.println(point.asCoord() + " = " + distance);
                 if ((best == 0) || (distance < best)) {
                     best = distance;
                     bestCoord = point;
                 }
             }
         }
-        System.out.println("best = " + best + " at " + bestCoord.asCoord());
         return best;
     }
 

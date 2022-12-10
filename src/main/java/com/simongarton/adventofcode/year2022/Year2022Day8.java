@@ -203,14 +203,6 @@ public class Year2022Day8 extends AdventOfCodeChallenge {
                 } else {
                     line.append(" ");
                 }
-//                System.out.printf("%s,%s = N %s E %s S %s W %s\n",
-//                        row,
-//                        col,
-//                        this.getTree(row, col).visibleFromNorth,
-//                        this.getTree(row, col).visibleFromEast,
-//                        this.getTree(row, col).visibleFromSouth,
-//                        this.getTree(row, col).visibleFromWest
-//                );
             }
             System.out.println(line);
         }

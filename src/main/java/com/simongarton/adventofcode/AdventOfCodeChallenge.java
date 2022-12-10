@@ -49,7 +49,7 @@ public abstract class AdventOfCodeChallenge {
                         expected,
                         actual);
             }
-            System.out.printf("Attempted %s.%s.%s and got correct answer in %s ms : %s%n",
+            System.out.printf("Attempted %s.%02d.%s and got correct answer in %s ms : %s%n",
                     year,
                     day,
                     part,
