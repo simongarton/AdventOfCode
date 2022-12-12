@@ -28,19 +28,46 @@ public class Year2022Day11 extends AdventOfCodeChallenge {
         for (int round = 1; round <= 20; round++) {
             for (final Monkey monkey : this.troop) {
                 this.debugPrint(String.format("Monkey %s:", monkey.id));
-                monkey.inspectAndThrowItems();
+                monkey.inspectAndThrowItems(true);
             }
             this.semiDebugPrint(String.format("After round %s, the monkeys are holding items with these worry levels.", round));
             for (final Monkey monkey : this.troop) {
                 this.semiDebugPrint(monkey.itemList());
             }
         }
-        final List<Integer> inspectionCounts = new ArrayList<>();
+        final List<Long> inspectionCounts = new ArrayList<>();
         for (final Monkey monkey : this.troop) {
             this.semiDebugPrint(String.format("Monkey %s inspected items %s times.", monkey.id, monkey.inspectionsMade));
             inspectionCounts.add(monkey.inspectionsMade);
         }
-        inspectionCounts.sort(Comparator.comparing(Integer::intValue).reversed());
+        inspectionCounts.sort(Comparator.comparing(Long::longValue).reversed());
+        return String.valueOf(inspectionCounts.get(0) * inspectionCounts.get(1));
+    }
+
+    @Override
+    public String part2(final String[] input) {
+        this.loadTroop(input);
+        final int[] roundIds = new int[]{1, 20, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000};
+        for (int round = 1; round <= 10000; round++) {
+            for (final Monkey monkey : this.troop) {
+                this.debugPrint(String.format("Monkey %s:", monkey.id));
+                monkey.inspectAndThrowItems(false);
+            }
+            final int finalRound = round;
+            if (Arrays.stream(roundIds).anyMatch(i -> i == finalRound)) {
+                this.semiDebugPrint(String.format("After round %s, the monkeys inspected these items.", round));
+                for (final Monkey monkey : this.troop) {
+                    System.out.println(String.format("Monkey %s inspected items %s times.", monkey.id, monkey.inspectionsMade));
+                }
+                System.out.println("");
+            }
+        }
+        final List<Long> inspectionCounts = new ArrayList<>();
+        for (final Monkey monkey : this.troop) {
+            this.semiDebugPrint(String.format("Monkey %s inspected items %s times.", monkey.id, monkey.inspectionsMade));
+            inspectionCounts.add(monkey.inspectionsMade);
+        }
+        inspectionCounts.sort(Comparator.comparing(Long::longValue).reversed());
         return String.valueOf(inspectionCounts.get(0) * inspectionCounts.get(1));
     }
 
@@ -59,6 +86,7 @@ public class Year2022Day11 extends AdventOfCodeChallenge {
     private void loadTroop(final String[] input) {
         this.troop = new ArrayList<>();
         final Iterator<String> iterator = Arrays.asList(input).listIterator();
+        long troopDivisor = 1;
         while (iterator.hasNext()) {
             final String monkeyIdString = iterator.next();
             final String startingItemString = iterator.next();
@@ -70,7 +98,7 @@ public class Year2022Day11 extends AdventOfCodeChallenge {
                 final String blankLine = iterator.next();
             }
             final int monkeyId = this.getMonkeyId(monkeyIdString);
-            final List<Integer> startingItems = this.getStartingItems(startingItemString);
+            final List<Long> startingItems = this.getStartingItems(startingItemString);
             final String operation = this.getOperation(operationString);
             final int divisible = this.getDivisible(testString);
             final int monkeyTrue = this.getMonkeyThrow(monkeyTrueString);
@@ -84,6 +112,10 @@ public class Year2022Day11 extends AdventOfCodeChallenge {
                     monkeyFalse
             );
             this.troop.add(monkey);
+            troopDivisor = troopDivisor * divisible;
+        }
+        for (final Monkey monkey : this.troop) {
+            monkey.troopDivisor = troopDivisor;
         }
     }
 
@@ -104,12 +136,12 @@ public class Year2022Day11 extends AdventOfCodeChallenge {
         return parts[1].trim();
     }
 
-    private List<Integer> getStartingItems(final String startingItemString) {
+    private List<Long> getStartingItems(final String startingItemString) {
         final String[] parts = startingItemString.split(":");
         final String[] items = parts[1].split(",");
-        final List<Integer> itemList = new ArrayList<>();
+        final List<Long> itemList = new ArrayList<>();
         for (final String item : items) {
-            itemList.add(Integer.parseInt(item.trim()));
+            itemList.add(Long.parseLong(item.trim()));
         }
         return itemList;
     }
@@ -119,25 +151,21 @@ public class Year2022Day11 extends AdventOfCodeChallenge {
         return Integer.parseInt(parts[1].replace(":", ""));
     }
 
-    @Override
-    public String part2(final String[] input) {
-        return null;
-    }
-
     public static final class Monkey {
 
         private final List<Monkey> troop;
         private final Integer id;
-        private final List<Integer> items;
+        private final List<Long> items;
         private final String operation;
         private final Integer divisible;
         private final Integer monkeyTrue;
         private final Integer monkeyFalse;
-        private int inspectionsMade;
+        private long inspectionsMade;
+        private long troopDivisor;
 
         public Monkey(final int monkeyId,
                       final List<Monkey> troop,
-                      final List<Integer> startingItems,
+                      final List<Long> startingItems,
                       final String operation,
                       final int divisible,
                       final int monkeyTrue,
@@ -152,37 +180,45 @@ public class Year2022Day11 extends AdventOfCodeChallenge {
             this.inspectionsMade = 0;
         }
 
-        public void inspectAndThrowItems() {
+        public void inspectAndThrowItems(final boolean relieved) {
             final int size = this.items.size();
             for (int itemCount = 0; itemCount < size; itemCount++) {
                 this.debugPrint(String.format("  Monkey inspects an item with a worry level of %s.", this.items.get(0)));
-                this.inspectAndThrowItem();
+                this.inspectAndThrowItem(relieved);
                 this.inspectionsMade++;
             }
         }
 
-        private void inspectAndThrowItem() {
+        private void inspectAndThrowItem(final boolean relieved) {
             // we're always looking at the first item
-            final int newValue = this.inspectItem();
-            final int reallyNewValue = this.reliefItsNotDamaged(newValue);
+            final long newValue = this.inspectItem();
+            final long reallyNewValue = relieved ? this.reliefItsNotDamaged(newValue) : this.scaleForTroop(newValue);
             this.throwItem(reallyNewValue);
         }
 
-        private int reliefItsNotDamaged(final int oldValue) {
-            final int newValue = (int) Math.floor(oldValue / 3.0);
+        private long scaleForTroop(final long newValue) {
+            return newValue % this.troopDivisor;
+        }
+
+        private long reliefItsNotDamaged(final long oldValue) {
+            final long newValue = (long) Math.floor(oldValue / 3.0);
             this.debugPrint(String.format("    Monkey gets bored with item. Worry level is divided by 3 to %s.", newValue));
             return newValue;
         }
 
-        private void throwItem(final int reallyNewValue) {
+        private void throwItem(final long reallyNewValue) {
             // decide
             if (reallyNewValue % this.divisible == 0) {
                 this.troop.get(this.monkeyTrue).items.add(reallyNewValue);
                 this.debugPrint(String.format("    Current worry level is divisible by %s.", this.divisible));
-                this.debugPrint(String.format("    Item with worry level %s is thrown to monkey %s.", reallyNewValue, this.troop.get(this.monkeyTrue).id));
+                this.debugPrint(String.format("    Item with worry level %s is thrown to monkey %s.",
+                        reallyNewValue,
+                        this.troop.get(this.monkeyTrue).id));
             } else {
                 this.debugPrint(String.format("    Current worry level is not divisible by %s.", this.divisible));
-                this.debugPrint(String.format("    Item with worry level %s is thrown to monkey %s.", reallyNewValue, this.troop.get(this.monkeyFalse).id));
+                this.debugPrint(String.format("    Item with worry level %s is thrown to monkey %s.",
+                        reallyNewValue,
+                        this.troop.get(this.monkeyFalse).id));
                 this.troop.get(this.monkeyFalse).items.add(reallyNewValue);
             }
 
@@ -190,14 +226,14 @@ public class Year2022Day11 extends AdventOfCodeChallenge {
             this.items.remove(0);
         }
 
-        private int inspectItem() {
+        private long inspectItem() {
             final String thisOperation = this.operation.replace("old", String.valueOf(this.items.get(0)));
             final String[] sides = thisOperation.split("=");
             final String[] right = sides[1].trim().split(" ");
-            final int operand1 = Integer.parseInt(right[0]);
-            final int operand2 = Integer.parseInt(right[2]);
+            final long operand1 = Long.parseLong(right[0]);
+            final long operand2 = Long.parseLong(right[2]);
             final String operator = right[1];
-            int outcome = 0;
+            long outcome = 0;
             switch (operator) {
                 case "+":
                     outcome = operand1 + operand2;
