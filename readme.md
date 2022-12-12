@@ -5,6 +5,14 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2022
 
+### Day 11: Monkey in the Middle
+
+Awesome. First part is reasonably straight forward, just detailed - you need to script some monkeys handling items and
+changing them before passing them around. Second part gets challenging, with very large numbers - bigger than longs.
+However, the question gives you an insight into how you can manage this.
+
+https://adventofcode.com/2022/day/11
+
 ### Day 10: Cathode Ray Tube
 
 Awesome. And sneaky. Again. Build a tiny little two instruction computer that parses input ready for setting a register.

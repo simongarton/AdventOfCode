@@ -10,7 +10,7 @@ public class Year2022Day11 extends AdventOfCodeChallenge {
     private List<Monkey> troop;
 
     private static final boolean DEBUG = false;
-    private static final boolean SEMI_DEBUG = true;
+    private static final boolean SEMI_DEBUG = false;
 
     @Override
     public String title() {
@@ -57,9 +57,9 @@ public class Year2022Day11 extends AdventOfCodeChallenge {
             if (Arrays.stream(roundIds).anyMatch(i -> i == finalRound)) {
                 this.semiDebugPrint(String.format("After round %s, the monkeys inspected these items.", round));
                 for (final Monkey monkey : this.troop) {
-                    System.out.println(String.format("Monkey %s inspected items %s times.", monkey.id, monkey.inspectionsMade));
+                    this.semiDebugPrint(String.format("Monkey %s inspected items %s times.", monkey.id, monkey.inspectionsMade));
                 }
-                System.out.println("");
+                this.semiDebugPrint("");
             }
         }
         final List<Long> inspectionCounts = new ArrayList<>();
