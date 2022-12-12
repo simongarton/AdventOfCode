@@ -13,6 +13,10 @@ import java.util.stream.Collectors;
 
 public abstract class AdventOfCodeChallenge {
 
+    public String title() {
+        return null;
+    }
+
     public abstract boolean run();
 
     public int getYear() {
@@ -26,11 +30,9 @@ public abstract class AdventOfCodeChallenge {
     protected int year;
     protected int day;
 
-
     public abstract String part1(final String[] input);
 
     public abstract String part2(final String[] input);
-
 
     public boolean runChallenge(final int year, final int day) {
         this.year = year;
