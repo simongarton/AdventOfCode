@@ -105,6 +105,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2022Day9());
         this.challenges.add(new Year2022Day10());
         this.challenges.add(new Year2022Day11());
+        this.challenges.add(new Year2022Day12());
     }
 
     public AdventOfCode() {
