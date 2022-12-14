@@ -9,7 +9,8 @@ import java.util.List;
 
 public class Year2022Day13 extends AdventOfCodeChallenge {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
+    private static final boolean COMPARE_DEBUG = true;
 
     @Override
     public boolean run() {
@@ -18,8 +19,14 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
-        this.loadPackets(input);
-        return null;
+        final List<ItemPair> pairs = this.loadPackets(input);
+        int pairsInOrder = 0;
+        for (int i = 0; i < pairs.size(); i++) {
+            if (this.inOrder(pairs.get(i))) {
+                pairsInOrder += (i + 1);
+            }
+        }
+        return String.valueOf(pairsInOrder);
     }
 
     @Override
@@ -27,21 +34,56 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
         return null;
     }
 
-    private void loadPackets(final String[] input) {
+    private boolean inOrder(final ItemPair itemPair) {
+        final Item left = itemPair.item1;
+        final Item right = itemPair.item2;
+        this.compareDebugPrint(0, "Comparing " + left + " and " + right);
+        try {
+            return this.itemsInOrder(left, right, 2);
+        } catch (final OutOfOrderException e) {
+            System.out.println(e);
+            return false;
+        }
+    }
+
+    private boolean itemsInOrder(final Item left, final Item right, final int indentLevel) {
+        final int maxItems = Math.max(left.items.size(), right.items.size());
+        for (int index = 0; index < maxItems; index++) {
+            final Item leftChild = left.items.get(index);
+            final Item rightChild = left.items.get(index);
+            this.compareDebugPrint(indentLevel, "Comparing " + leftChild + " and " + rightChild);
+            if (leftChild.value != null && rightChild.value != null) {
+                if (leftChild.value > rightChild.value) {
+                    throw new OutOfOrderException("Out of order at item " + index + " with values out of order.");
+                }
+                continue;
+            }
+        }
+        return true;
+    }
+
+    private List<ItemPair> loadPackets(final String[] input) {
         final Iterator<String> iterator = Arrays.stream(input).iterator();
+        final List<ItemPair> itemPairs = new ArrayList<>();
         while (iterator.hasNext()) {
             final String packet1 = iterator.next();
             final String packet2 = iterator.next();
             if (iterator.hasNext()) {
                 final String blankLine = iterator.next();
             }
-            final Item item1 = this.parseItem(packet1);
-            System.out.println(packet1);
-            item1.displayOnTerminal(0);
-            final Item item2 = this.parseItem(packet2);
-            System.out.println(packet2);
-            item2.displayOnTerminal(0);
+            final Item item1 = this.parseItemNew(packet1, null);
+            if (DEBUG) {
+                System.out.println(packet1);
+                item1.displayOnTerminal(0);
+            }
+            final Item item2 = this.parseItemNew(packet2, null);
+            if (DEBUG) {
+                System.out.println(packet2);
+                item2.displayOnTerminal(0);
+            }
+            itemPairs.add(new ItemPair(item1, item2));
         }
+        return itemPairs;
     }
 
     private void debugPrint(final String s) {
@@ -50,84 +92,73 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
         }
     }
 
-    private Item parseItem(final String string) {
-        final Item recursedOneTooManyTimesItem = this.parseItem(string, null);
-        if (recursedOneTooManyTimesItem.items.size() == 0) {
-            final Item item = new Item();
-            item.items = new ArrayList<>();
-            return item;
+    private void compareDebugPrint(final int indentLevel, final String s) {
+        if (COMPARE_DEBUG) {
+            System.out.println(" ".repeat(indentLevel) + s);
         }
-        return recursedOneTooManyTimesItem.items.get(0);
     }
 
-    private Item parseItem(final String string, final Item parent) {
+    private Item parseItemNew(final String string, final Item parent) {
         this.debugPrint("parsing '" + string + "'");
         final Item item = new Item();
         item.items = new ArrayList<>();
         item.parent = parent;
 
-        if (!(string.contains(",") || string.contains("["))) {
-            this.debugPrint("just got '" + string + "' so must be an integer or empty");
-            if (string.length() > 0) {
-                item.value = Integer.parseInt(string);
-            }
-            this.debugPrint("returning " + item);
-            return item;
-        }
-        this.debugPrint("got '" + string + "' so must be an item");
+        // take a look at the string. The first will always have [] around it, and then will have either values 1,2,3 or other lists.
+        // regardless of how deep it goes can I iterate over this top level and return each thing as an item to belong to this parent
+        // of course, I then need to take any lists and turn these into items
 
-        int insideLists = 0;
-        String workingString = "";
-        for (int index = 0; index < string.length(); index++) {
-            final char current = string.charAt(index);
+        int index = 1;
+        StringBuilder outerWorking = new StringBuilder();
+        while (index < string.length() - 1) {
+            char current = string.charAt(index);
             if (current == '[') {
-                if (insideLists > 0) {
-                    workingString = workingString + current;
-                }
-                insideLists++;
-                this.debugPrint(index + ":" + current + " inside list " + insideLists);
-                continue;
-            }
-            if (current == ']') {
-                insideLists--;
-                if (insideLists > 0) {
-                    workingString = workingString + current;
-                }
-                this.debugPrint(index + ":" + current + " outside list " + insideLists);
-                if (insideLists == 0) {
-                    final Item childItem = this.parseItem(workingString, item);
-                    if (childItem.isValid()) {
-                        item.items.add(childItem);
+                int nesting = 1;
+                String working = "" + current;
+                while (true) {
+                    index++;
+                    current = string.charAt(index);
+                    working = working + current;
+                    if (current == '[') {
+                        nesting++;
                     }
-                    this.debugPrint(index + ":" + current + " adding item " + childItem);
-                    workingString = "";
-                    this.debugPrint(index + ":" + current + " resetting workingString ]");
+                    if (current == ']') {
+                        nesting--;
+                    }
+                    if (nesting == 0) {
+                        break;
+                    }
                 }
+                final Item child = this.parseItemNew(working, item);
+                item.items.add(child);
+                outerWorking = new StringBuilder();
                 continue;
             }
-            if (current == ',') {
-                if (insideLists > 0) {
-                    workingString = workingString + current;
-                    this.debugPrint(index + ":" + current + " updating workingString " + workingString);
+            if (current == ',' || current == ']') {
+                if (outerWorking.length() > 0) {
+                    final Item child = this.itemFromInteger(outerWorking.toString(), item);
+                    item.items.add(child);
+                    outerWorking = new StringBuilder();
                     continue;
                 }
-                final Item childItem = this.parseItem(workingString, item);
-                if (childItem.isValid()) {
-                    item.items.add(childItem);
-                }
-                this.debugPrint(index + ":" + current + " adding item " + childItem);
-                workingString = "";
-                this.debugPrint(index + ":" + current + " resetting workingString ,");
+                index++;
                 continue;
             }
-            workingString = workingString + current;
-            this.debugPrint(index + ":" + current + " updating workingString " + workingString);
+            outerWorking.append(current);
+            index++;
         }
-        if (workingString.length() > 0) {
-            final Item childItem = this.parseItem(workingString, item);
-            item.items.add(childItem);
-            this.debugPrint(" adding end item " + childItem);
+        if (outerWorking.length() > 0) {
+            final Item child = this.itemFromInteger(outerWorking.toString(), item);
+            item.items.add(child);
         }
+        return item;
+    }
+
+    private Item itemFromInteger(final String integerValue, final Item parent) {
+        final Item item = new Item();
+        item.parent = parent;
+        item.items = new ArrayList<>();
+        item.value = Integer.parseInt(integerValue);
         return item;
     }
 
@@ -151,6 +182,25 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
             for (final Item item : this.items) {
                 item.displayOnTerminal(indent + 2);
             }
+        }
+    }
+
+    public static final class ItemPair {
+
+        private final Item item1;
+        private final Item item2;
+
+        public ItemPair(final Item item1, final Item item2) {
+            this.item1 = item1;
+            this.item2 = item2;
+        }
+    }
+
+    public static final class OutOfOrderException extends RuntimeException {
+        private static final long serialVersionUID = -2028560193758538554L;
+
+        public OutOfOrderException(final String message) {
+            super(message);
         }
     }
 }
