@@ -22,7 +22,9 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
         final List<ItemPair> pairs = this.loadPackets(input);
         int pairsInOrder = 0;
         for (int i = 0; i < pairs.size(); i++) {
-            if (this.inOrder(pairs.get(i))) {
+            final boolean inOrder = this.inOrder(pairs.get(i));
+            System.out.println("pair " + (i + 1) + " is " + inOrder);
+            if (inOrder) {
                 pairsInOrder += (i + 1);
             }
         }
@@ -47,19 +49,55 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
     }
 
     private boolean itemsInOrder(final Item left, final Item right, final int indentLevel) {
+        this.compareDebugPrint(indentLevel, "Comparing " + left + " and " + right);
         final int maxItems = Math.max(left.items.size(), right.items.size());
         for (int index = 0; index < maxItems; index++) {
+            if (left.items.size() <= index) {
+                return true;
+            }
+            if (right.items.size() <= index) {
+                throw new OutOfOrderException("Out of order at item " + index + " with right having no more items.");
+            }
             final Item leftChild = left.items.get(index);
-            final Item rightChild = left.items.get(index);
-            this.compareDebugPrint(indentLevel, "Comparing " + leftChild + " and " + rightChild);
+            final Item rightChild = right.items.get(index);
+            this.compareDebugPrint(indentLevel, "Comparing children " + leftChild + " and " + rightChild);
+            // compare two values
             if (leftChild.value != null && rightChild.value != null) {
                 if (leftChild.value > rightChild.value) {
                     throw new OutOfOrderException("Out of order at item " + index + " with values out of order.");
                 }
+                if (leftChild.value < rightChild.value) {
+                    return true;
+                }
                 continue;
             }
+            // compare two lists
+            if (leftChild.items.size() > 0 && rightChild.items.size() > 0) {
+                try {
+                    this.itemsInOrder(leftChild, rightChild, indentLevel + 2);
+                } catch (final OutOfOrderException e) {
+                    throw e;
+                }
+                continue;
+            }
+            // Ok, convert the non list
+            final Item a = leftChild.items.size() > 0 ? leftChild : this.convertValueToList(leftChild);
+            final Item b = rightChild.items.size() > 0 ? rightChild : this.convertValueToList(rightChild);
+            return this.itemsInOrder(a, b, indentLevel + 2);
         }
         return true;
+    }
+
+    private Item convertValueToList(final Item valueItem) {
+        // I may not have a value - in which case I'm just an empty list
+        if (valueItem.value == null) {
+            return valueItem;
+        }
+        final Item item = new Item(valueItem.source);
+        item.parent = valueItem.parent;
+        item.items = new ArrayList<>();
+        item.items.add(this.itemFromInteger(String.valueOf(valueItem.value), item));
+        return item;
     }
 
     private List<ItemPair> loadPackets(final String[] input) {
@@ -100,7 +138,7 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
 
     private Item parseItemNew(final String string, final Item parent) {
         this.debugPrint("parsing '" + string + "'");
-        final Item item = new Item();
+        final Item item = new Item(string);
         item.items = new ArrayList<>();
         item.parent = parent;
 
@@ -155,7 +193,7 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
     }
 
     private Item itemFromInteger(final String integerValue, final Item parent) {
-        final Item item = new Item();
+        final Item item = new Item(String.valueOf(integerValue));
         item.parent = parent;
         item.items = new ArrayList<>();
         item.value = Integer.parseInt(integerValue);
@@ -164,13 +202,22 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
 
     public static final class Item {
 
-        Item parent;
-        List<Item> items;
-        Integer value;
+        private final String source;
+        private Item parent;
+        private List<Item> items;
+        private Integer value;
+
+        public Item(final String source) {
+            this.source = source;
+        }
 
         @Override
         public String toString() {
-            return "Item of value " + this.value + " with " + this.items.size() + " child items"; // and parent " + this.parent;
+            if (this.value != null) {
+                return String.valueOf(this.value);
+            }
+            return this.source;
+//            return this.source.substring(1, this.source.length() - 1);
         }
 
         public boolean isValid() {
