@@ -7,10 +7,32 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+/*
+
+There are 150 pairs in the main sample. I get 43 in order, 107 not in order, giving 3249 as the result -
+which is too low.
+
+The sample file works correctly, I get 13 (1,2 4 and 6 in order).
+
+We've only got 3 basic rules; they seem to be working correctly.
+
+Either I'm assembling the lists incorrectly (unlikely, no errors) or my logic is wrong.
+
+I did notice
+
+[[1,2,3,[4]],4]
+[[1,2]
+
+This should fail - it's not a valid second list - but doesn't.
+
+Abandoning now, it's been 3 days. 16th Dec, 3am.
+
+ */
+
 public class Year2022Day13 extends AdventOfCodeChallenge {
 
-    private static final boolean DEBUG = false;
-    private static final boolean COMPARE_DEBUG = true;
+    private static final boolean DEBUG = true;
+    private boolean COMPARE_DEBUG = true;
 
     @Override
     public boolean run() {
@@ -21,14 +43,32 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
         final List<ItemPair> pairs = this.loadPackets(input);
         int pairsInOrder = 0;
+        int notInOrder = 0;
+        int countPairsInOrder = 0;
         for (int i = 0; i < pairs.size(); i++) {
-            final boolean inOrder = this.inOrder(pairs.get(i));
-            System.out.println("pair " + (i + 1) + " is " + inOrder);
+            this.COMPARE_DEBUG = false;
+            final boolean inOrder = this.inOrder(i, pairs.get(i));
+            if (!inOrder) {
+                this.COMPARE_DEBUG = true;
+                this.inOrder(i, pairs.get(i));
+                notInOrder++;
+            } else {
+                countPairsInOrder++;
+            }
+
+            if (this.COMPARE_DEBUG) {
+                System.out.println("\npair " + (i + 1) + " is" + this.isFalse(inOrder) + "in order.\n");
+            }
             if (inOrder) {
                 pairsInOrder += (i + 1);
             }
         }
+        System.out.println("total in order " + countPairsInOrder + " not in order : " + notInOrder);
         return String.valueOf(pairsInOrder);
+    }
+
+    private String isFalse(final boolean inOrder) {
+        return inOrder ? " " : " not ";
     }
 
     @Override
@@ -36,14 +76,16 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
         return null;
     }
 
-    private boolean inOrder(final ItemPair itemPair) {
+    private boolean inOrder(final int index, final ItemPair itemPair) {
         final Item left = itemPair.item1;
         final Item right = itemPair.item2;
-        this.compareDebugPrint(0, "Comparing " + left + " and " + right);
+        this.compareDebugPrint(0, "Comparing pair " + (index + 1) + "...\n" + left.source + "\n" + right.source);
         try {
             return this.itemsInOrder(left, right, 2);
         } catch (final OutOfOrderException e) {
-            System.out.println(e);
+            if (this.COMPARE_DEBUG) {
+                System.out.println(e.getMessage());
+            }
             return false;
         }
     }
@@ -73,11 +115,7 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
             }
             // compare two lists
             if (leftChild.items.size() > 0 && rightChild.items.size() > 0) {
-                try {
-                    this.itemsInOrder(leftChild, rightChild, indentLevel + 2);
-                } catch (final OutOfOrderException e) {
-                    throw e;
-                }
+                this.itemsInOrder(leftChild, rightChild, indentLevel + 2);
                 continue;
             }
             // Ok, convert the non list
@@ -93,7 +131,7 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
         if (valueItem.value == null) {
             return valueItem;
         }
-        final Item item = new Item(valueItem.source);
+        final Item item = new Item("*" + valueItem.source);
         item.parent = valueItem.parent;
         item.items = new ArrayList<>();
         item.items.add(this.itemFromInteger(String.valueOf(valueItem.value), item));
@@ -131,7 +169,7 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
     }
 
     private void compareDebugPrint(final int indentLevel, final String s) {
-        if (COMPARE_DEBUG) {
+        if (this.COMPARE_DEBUG) {
             System.out.println(" ".repeat(indentLevel) + s);
         }
     }
@@ -216,8 +254,29 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
             if (this.value != null) {
                 return String.valueOf(this.value);
             }
-            return this.source;
+            return this.displayItems();
+//            return this.source;
 //            return this.source.substring(1, this.source.length() - 1);
+        }
+
+        private String displayItems() {
+            String line = "[";
+            for (final Item item : this.items) {
+                if (item.value != null) {
+                    line += item.value + ",";
+                    continue;
+                }
+                if (item.items.isEmpty()) {
+                    line += "[],";
+                } else {
+                    line += "[*],";
+                }
+            }
+            if (line.contains(",")) {
+                line = line.substring(0, line.length() - 1);
+            }
+            line = line + "]";
+            return line;
         }
 
         public boolean isValid() {
