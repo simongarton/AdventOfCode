@@ -2,6 +2,10 @@ package com.simongarton.adventofcode.year2022;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,18 +35,23 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
-        this.loadMap(input);
+        this.loadMap(input, false);
         final int result = this.sinkSand();
         this.saveMap();
+        this.saveImage("2022-14.1.png");
         return String.valueOf(result);
     }
 
     @Override
     public String part2(final String[] input) {
-        return null;
+        this.loadMap(input, true);
+        final int result = this.sinkSand();
+        this.saveMap();
+        this.saveImage("2022-14.2.png");
+        return String.valueOf(result);
     }
 
-    private void loadMap(final String[] input) {
+    private void loadMap(final String[] input, final boolean extendMap) {
         this.bounds = new Bounds();
         final List<List<Coord>> coordLines = new ArrayList<>();
         for (final String line : input) {
@@ -53,17 +62,26 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
         }
         // silly hack for map
         this.bounds.minY = 0;
+        if (extendMap) {
+            this.bounds.maxY = this.bounds.maxY + 2;
+            this.bounds.minX = this.bounds.minX - this.bounds.maxY;
+            this.bounds.maxX = this.bounds.maxX + this.bounds.maxY;
+        }
         this.map = new char[this.bounds.getWidth() * this.bounds.getHeight()];
         for (int x = this.bounds.minX; x <= this.bounds.maxX; x++) {
             for (int y = this.bounds.minY; y <= this.bounds.maxY; y++) {
                 this.setMap(WATER, x, y);
             }
         }
+        if (extendMap) {
+            for (int x = this.bounds.minX; x <= this.bounds.maxX; x++) {
+                this.setMap(ROCK, x, this.bounds.maxY);
+            }
+        }
         // now draw the rocks
         for (final List<Coord> coordLine : coordLines) {
             this.addRocks(coordLine);
         }
-        this.displayMap();
     }
 
     private int sinkSand() {
@@ -209,6 +227,34 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
         }
         try {
             Files.writeString(Path.of("map.txt"), String.join("\n", lines));
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveImage(final String filename) {
+        final BufferedImage img = new BufferedImage(this.bounds.getWidth(), this.bounds.getHeight(), BufferedImage.TYPE_INT_RGB);
+        for (int y = this.bounds.minY; y <= this.bounds.maxY; y++) {
+            for (int x = this.bounds.minX; x <= this.bounds.maxX; x++) {
+                final char contents = this.getMap(x, y);
+                switch (contents) {
+                    case WATER:
+                        img.setRGB(x - this.bounds.minX, y - this.bounds.minY, Color.CYAN.getRGB());
+                        break;
+                    case ROCK:
+                        img.setRGB(x - this.bounds.minX, y - this.bounds.minY, Color.GRAY.getRGB());
+                        break;
+                    case SAND:
+                        img.setRGB(x - this.bounds.minX, y - this.bounds.minY, Color.YELLOW.getRGB());
+                        break;
+                    default:
+                        throw new RuntimeException("Something else");
+                }
+            }
+        }
+        try {
+            final File outputfile = new File(filename);
+            ImageIO.write(img, "png", outputfile);
         } catch (final IOException e) {
             e.printStackTrace();
         }
