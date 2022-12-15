@@ -99,4 +99,36 @@ public abstract class AdventOfCodeChallenge {
             throw new InvalidSetupException(e.getMessage());
         }
     }
+
+    public static final class Coord {
+        private Integer x;
+        private Integer y;
+
+        public Coord(final String coordinate) {
+            final String[] parts = coordinate.split(",");
+            this.x = Integer.parseInt(parts[0]);
+            this.y = Integer.parseInt(parts[1]);
+        }
+
+        @Override
+        public String toString() {
+            return this.x + "," + this.y;
+        }
+
+        public Integer getX() {
+            return this.x;
+        }
+
+        public void setX(final Integer x) {
+            this.x = x;
+        }
+
+        public Integer getY() {
+            return this.y;
+        }
+
+        public void setY(final Integer y) {
+            this.y = y;
+        }
+    }
 }

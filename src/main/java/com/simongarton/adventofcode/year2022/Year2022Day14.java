@@ -88,44 +88,44 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
         final Coord sand = new Coord("500,0");
         int sunkSand = 0;
         while (true) {
-            if (sand.y >= this.bounds.maxY) {
+            if (sand.getY() >= this.bounds.maxY) {
                 // this feels hacky, but worked.
                 break;
             }
-            if (this.getMap(sand.x, sand.y + 1) == WATER) {
-                sand.y = sand.y + 1;
+            if (this.getMap(sand.getX(), sand.getY() + 1) == WATER) {
+                sand.setY(sand.getY() + 1);
                 continue;
             }
             // try down left
-            int newX = sand.x - 1;
-            final int newY = sand.y + 1;
+            int newX = sand.getX() - 1;
+            final int newY = sand.getY() + 1;
             if (newX >= this.bounds.minX) {
                 if (this.getMap(newX, newY) == WATER) {
-                    sand.x = newX;
-                    sand.y = newY;
+                    sand.setX(newX);
+                    sand.setY(newY);
                     continue;
                 }
             } else {
                 break;
             }
             // try down right
-            newX = sand.x + 1;
+            newX = sand.getX() + 1;
             if (newX <= this.bounds.maxX) {
                 if (this.getMap(newX, newY) == WATER) {
-                    sand.x = newX;
-                    sand.y = newY;
+                    sand.setX(newX);
+                    sand.setY(newY);
                     continue;
                 }
             } else {
                 break;
             }
-            this.setMap(SAND, sand.x, sand.y);
+            this.setMap(SAND, sand.getX(), sand.getY());
             sunkSand++;
-            if (sand.y == 0) {
+            if (sand.getY() == 0) {
                 break;
             }
-            sand.x = 500;
-            sand.y = 0;
+            sand.setX(500);
+            sand.setY(0);
 //            this.displayMap();
         }
         return sunkSand;
@@ -158,24 +158,24 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
     private void drawRocks(final Coord from, final Coord to) {
         int deltaX = 0;
         int deltaY = 0;
-        if (to.x > from.x) {
+        if (to.getX() > from.getX()) {
             deltaX = 1;
         }
-        if (to.x < from.x) {
+        if (to.getX() < from.getX()) {
             deltaX = -1;
         }
-        if (to.y > from.y) {
+        if (to.getY() > from.getY()) {
             deltaY = 1;
         }
-        if (to.y < from.y) {
+        if (to.getY() < from.getY()) {
             deltaY = -1;
         }
-        final Coord working = new Coord(from.x + "," + from.y);
-        this.setMap(ROCK, working.x, working.y);
-        while (!(working.x.equals(to.x) && working.y.equals(to.y))) {
-            working.x = working.x + deltaX;
-            working.y = working.y + deltaY;
-            this.setMap(ROCK, working.x, working.y);
+        final Coord working = new Coord(from.getX() + "," + from.getY());
+        this.setMap(ROCK, working.getX(), working.getY());
+        while (!(working.getX().equals(to.getX()) && working.getY().equals(to.getY()))) {
+            working.setX(working.getX() + deltaX);
+            working.setY(working.getY() + deltaY);
+            this.setMap(ROCK, working.getX(), working.getY());
         }
     }
 
@@ -262,29 +262,18 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
 
     private void updateBounds(final List<Coord> coordLine) {
         for (final Coord coord : coordLine) {
-            if (this.bounds.minX == null || coord.x < this.bounds.minX) {
-                this.bounds.minX = coord.x;
+            if (this.bounds.minX == null || coord.getX() < this.bounds.minX) {
+                this.bounds.minX = coord.getX();
             }
-            if (this.bounds.minY == null || coord.y < this.bounds.minY) {
-                this.bounds.minY = coord.y;
+            if (this.bounds.minY == null || coord.getY() < this.bounds.minY) {
+                this.bounds.minY = coord.getY();
             }
-            if (this.bounds.maxX == null || coord.x > this.bounds.maxX) {
-                this.bounds.maxX = coord.x;
+            if (this.bounds.maxX == null || coord.getX() > this.bounds.maxX) {
+                this.bounds.maxX = coord.getX();
             }
-            if (this.bounds.maxY == null || coord.y > this.bounds.maxY) {
-                this.bounds.maxY = coord.y;
+            if (this.bounds.maxY == null || coord.getY() > this.bounds.maxY) {
+                this.bounds.maxY = coord.getY();
             }
-        }
-    }
-
-    public static final class Coord {
-        private Integer x;
-        private Integer y;
-
-        public Coord(final String coordinate) {
-            final String[] parts = coordinate.split(",");
-            this.x = Integer.parseInt(parts[0]);
-            this.y = Integer.parseInt(parts[1]);
         }
     }
 
