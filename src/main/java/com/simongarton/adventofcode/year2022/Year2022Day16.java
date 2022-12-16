@@ -7,6 +7,15 @@ import java.util.List;
 
 public class Year2022Day16 extends AdventOfCodeChallenge {
 
+    /*
+    I want to do some kind of network search for this. But instead of simply jumping between nodes,
+    I have the option of staying at a node and turning the valve on. I think I have to be slightly
+    clever for this and add pseudo-nodes, eg AA* which means effectively stay at AA with the same neighbours
+    but turn it on. And now I think I can do this with extra nodes.
+
+    Thought briefly about brute force search, but really ?
+     */
+
     private List<Valve> valves;
     private int pressureReleased;
 
@@ -32,7 +41,7 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
         System.out.println("digraph Volcano {");
         for (final Valve valve : this.valves) {
             for (final Valve tunnel : valve.tunnels) {
-                System.out.println(valve.name + " -> " + tunnel.name);
+                System.out.println("\"" + valve.name + "\" -> \"" + tunnel.name + "\"");
             }
         }
         System.out.println("}");
@@ -56,6 +65,24 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
         this.valves = new ArrayList<>();
         this.loadValves(input);
         this.digTunnels(input);
+        this.loadSpecialValves();
+    }
+
+    private void loadSpecialValves() {
+        final List<Valve> originals = new ArrayList<>();
+        originals.addAll(this.valves);
+        for (final Valve original : originals) {
+            if (original.releaseRate == 0) {
+                // no point
+                continue;
+            }
+            final Valve alternate = new Valve(original.name + "+", 0);
+            for (final Valve tunnel : original.tunnels) {
+                alternate.tunnelOneWay(tunnel);
+            }
+            original.tunnelOneWay(alternate);
+            this.valves.add(alternate);
+        }
     }
 
     private void loadValves(final String[] input) {
@@ -125,6 +152,15 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
             }
             this.tunnels.add(other);
             other.tunnels.add(this);
+            return this;
+        }
+
+        public Valve tunnelOneWay(final Valve other) {
+            final boolean exists = this.tunnels.contains(other);
+            if (exists) {
+                return this;
+            }
+            this.tunnels.add(other);
             return this;
         }
 
