@@ -130,5 +130,16 @@ public abstract class AdventOfCodeChallenge {
         public void setY(final Integer y) {
             this.y = y;
         }
+
+        public double euclideanDistance(final Coord other) {
+            return Math.sqrt(
+                    Math.pow(this.x - other.x, 2) +
+                            Math.pow(this.y - other.y, 2)
+            );
+        }
+
+        public int manhattanDistance(final Coord other) {
+            return Math.abs(this.x - other.x) + Math.abs(this.y - other.y);
+        }
     }
 }

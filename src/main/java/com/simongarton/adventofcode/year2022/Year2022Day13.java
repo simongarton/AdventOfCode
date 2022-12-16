@@ -27,6 +27,20 @@ This should fail - it's not a valid second list - but doesn't.
 
 Abandoning now, it's been 3 days. 16th Dec, 3am.
 
+OK I pass this - it should fail
+
+[[8,[[7]]]]
+[[[[8]]]]
+
+Also
+
+[[8,[[7,10,10,5],[8,4,9]],3,5],[[[3,9,4],5,[7,5,5]],[[3,2,5],[10],[5,5],0,[8]]],[4,2,[],[[7,5,6,3,0],[4,4,10,7],6,[8,10,9]]],[[4,[],4],10,1]]
+[[[[8],[3,10],[7,6,3,7,4],1,8]]]
+
+shuld pass, and fails.
+
+https://www.reddit.com/r/adventofcode/comments/zm20vb/2022_day_13_part_1_i_think_i_got_it_right_but_i/
+
  */
 
 public class Year2022Day13 extends AdventOfCodeChallenge {
@@ -46,11 +60,11 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
         int notInOrder = 0;
         int countPairsInOrder = 0;
         for (int i = 0; i < pairs.size(); i++) {
-            this.COMPARE_DEBUG = false;
+            this.COMPARE_DEBUG = true;
             final boolean inOrder = this.inOrder(i, pairs.get(i));
             if (!inOrder) {
                 this.COMPARE_DEBUG = true;
-                this.inOrder(i, pairs.get(i));
+//                this.inOrder(i, pairs.get(i));
                 notInOrder++;
             } else {
                 countPairsInOrder++;
@@ -91,7 +105,7 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
     }
 
     private boolean itemsInOrder(final Item left, final Item right, final int indentLevel) {
-        this.compareDebugPrint(indentLevel, "Comparing " + left + " and " + right);
+        this.compareDebugPrint(indentLevel, "Comparing " + left + " (" + left.items.size() + ") and " + right + " (" + right.items.size() + ")");
         final int maxItems = Math.max(left.items.size(), right.items.size());
         for (int index = 0; index < maxItems; index++) {
             if (left.items.size() <= index) {
