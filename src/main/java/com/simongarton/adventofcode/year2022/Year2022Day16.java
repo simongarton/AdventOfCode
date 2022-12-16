@@ -38,8 +38,9 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
 
     private List<Valve> valves;
     private List<List<Valve>> permutations;
+    private List<String> permutationNames;
     private int pressureReleased;
-    private Map<Journey, Integer> travelCosts;
+    private Map<String, Integer> travelCosts;
     private List<Integer> permutationValues;
 
     @Override
@@ -52,15 +53,29 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
         this.loadNetwork(input);
 //        this.graphViz();
         this.buildTravelCosts();
-        this.permutations = new ArrayList<>();
-        final List<Valve> useful = new ArrayList<>();
-        useful.addAll(this.valves.stream().filter(v -> v.releaseRate > 0).collect(Collectors.toList()));
-        this.assemblePermutations(useful.size(), useful.toArray(new Valve[0]));
+        this.permutationNames = new ArrayList<>();
+        final List<String> usefulNames = this.valves.stream()
+                .filter(v -> v.releaseRate > 0)
+                .map(v -> v.name)
+                .collect(Collectors.toList());
+        System.out.println(usefulNames.size());
+        this.assemblePermutations(usefulNames.size(), usefulNames.toArray(new String[0]));
+        this.buildPermutations();
         System.out.println(this.permutations.size());
         this.permutationValues = new ArrayList<>();
         this.calculatePermutationValues();
-        this.pressureReleased = 0;
+        this.permutationValues.sort(Comparator.comparing(Integer::intValue).reversed());
+        this.pressureReleased = this.permutationValues.get(0);
         return String.valueOf(this.pressureReleased);
+    }
+
+    private void buildPermutations() {
+        this.permutations = new ArrayList<>();
+        for (final String nameList : this.permutationNames) {
+            final List<String> names = Arrays.asList(nameList.split(","));
+            final List<Valve> valves = names.stream().map(this::getValve).collect(Collectors.toList());
+            this.permutations.add(valves);
+        }
     }
 
     private void calculatePermutationValues() {
@@ -77,9 +92,10 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
         for (final Valve waypoint : permutation) {
             final Journey journey = new Journey(startValve, waypoint);
             try {
-                ticks -= this.travelCosts.get(journey); // get there
+                ticks -= this.travelCosts.get(journey.toString()); // get there
             } catch (final NullPointerException e) {
                 System.out.println(journey);
+                throw e;
             }
             ticks -= 1; // turn it on;
             if (ticks < 0) {
@@ -103,14 +119,14 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
             orderedCombination.sort(Comparator.comparing(Valve::nodeName));
             final Journey journey = new Journey(orderedCombination.get(0), orderedCombination.get(1));
             final int distance = this.aStar(journey.one, journey.two).size() - 1;
-            this.travelCosts.put(journey, distance);
+            this.travelCosts.put(journey.toString(), distance);
             final Journey reverseJourney = new Journey(orderedCombination.get(1), orderedCombination.get(0));
-            this.travelCosts.put(reverseJourney, distance);
+            this.travelCosts.put(reverseJourney.toString(), distance);
         }
     }
 
     public void assemblePermutations(
-            final int n, final Valve[] elements) {
+            final int n, final String[] elements) {
 
         if (n == 1) {
             this.addPermutation(elements);
@@ -127,25 +143,35 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
         }
     }
 
-    private void swap(final Valve[] elements, final int a, final int b) {
-        final Valve tmp = elements[a];
-        elements[a] = elements[b];
+    private void swap(final String[] elements, final int a, final int b) {
+        final String tmp = elements[a] + "";
+        elements[a] = elements[b] + "";
         elements[b] = tmp;
     }
 
-    private void addPermutation(final Valve[] elements) {
-        final List<Valve> permutation = Arrays.asList(elements);
-        this.permutations.add(permutation);
+    private void addPermutation(final String[] elements) {
+        this.permutationNames.add(Arrays.asList(elements)
+                .stream().collect(Collectors.joining(",")));
     }
 
     private void graphViz() {
         System.out.println("digraph Volcano {");
+        for (final Valve valve : this.valves) {
+            System.out.println("\"" + valve.nodeName() + "\" [fillcolor = \"" + this.color(valve.releaseRate) + "\" style = \"filled\"]");
+        }
         for (final Valve valve : this.valves) {
             for (final Valve tunnel : valve.tunnels) {
                 System.out.println("\"" + valve.nodeName() + "\" -> \"" + tunnel.nodeName() + "\"");
             }
         }
         System.out.println("}");
+    }
+
+    private String color(final int releaseRate) {
+        if (releaseRate == 0) {
+            return "#FFFFFF";
+        }
+        return "#FFFF" + Integer.toHexString(255 - (releaseRate * 10));
     }
 
     @Override
