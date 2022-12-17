@@ -7,46 +7,18 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-/*
-
-There are 150 pairs in the main sample. I get 43 in order, 107 not in order, giving 3249 as the result -
-which is too low.
-
-The sample file works correctly, I get 13 (1,2 4 and 6 in order).
-
-We've only got 3 basic rules; they seem to be working correctly.
-
-Either I'm assembling the lists incorrectly (unlikely, no errors) or my logic is wrong.
-
-I did notice
-
-[[1,2,3,[4]],4]
-[[1,2]
-
-This should fail - it's not a valid second list - but doesn't.
-
-Abandoning now, it's been 3 days. 16th Dec, 3am.
-
-OK I pass this - it should fail
-
-[[8,[[7]]]]
-[[[[8]]]]
-
-Also
-
-[[8,[[7,10,10,5],[8,4,9]],3,5],[[[3,9,4],5,[7,5,5]],[[3,2,5],[10],[5,5],0,[8]]],[4,2,[],[[7,5,6,3,0],[4,4,10,7],6,[8,10,9]]],[[4,[],4],10,1]]
-[[[[8],[3,10],[7,6,3,7,4],1,8]]]
-
-shuld pass, and fails.
-
-https://www.reddit.com/r/adventofcode/comments/zm20vb/2022_day_13_part_1_i_think_i_got_it_right_but_i/
-
- */
+import static com.simongarton.adventofcode.year2022.Year2022Day13.Outcome.KEEP_CHECKING;
 
 public class Year2022Day13 extends AdventOfCodeChallenge {
 
-    private static final boolean DEBUG = true;
-    private boolean COMPARE_DEBUG = true;
+    private static final boolean DEBUG = false;
+    private final boolean COMPARE_DEBUG = true;
+
+    public enum Outcome {
+        IN_ORDER,
+        OUT_OF_ORDER,
+        KEEP_CHECKING
+    }
 
     @Override
     public boolean run() {
@@ -60,21 +32,16 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
         int notInOrder = 0;
         int countPairsInOrder = 0;
         for (int i = 0; i < pairs.size(); i++) {
-            this.COMPARE_DEBUG = true;
             final boolean inOrder = this.inOrder(i, pairs.get(i));
             if (!inOrder) {
-                this.COMPARE_DEBUG = true;
-//                this.inOrder(i, pairs.get(i));
                 notInOrder++;
             } else {
                 countPairsInOrder++;
+                pairsInOrder += (i + 1);
             }
 
             if (this.COMPARE_DEBUG) {
                 System.out.println("\npair " + (i + 1) + " is" + this.isFalse(inOrder) + "in order.\n");
-            }
-            if (inOrder) {
-                pairsInOrder += (i + 1);
             }
         }
         System.out.println("total in order " + countPairsInOrder + " not in order : " + notInOrder);
@@ -95,55 +62,91 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
         final Item right = itemPair.item2;
         this.compareDebugPrint(0, "Comparing pair " + (index + 1) + "...\n" + left.source + "\n" + right.source);
         try {
-            return this.itemsInOrder(left, right, 2);
+            this.itemsInOrder(left, right, 2);
         } catch (final OutOfOrderException e) {
             if (this.COMPARE_DEBUG) {
                 System.out.println(e.getMessage());
             }
             return false;
+        } catch (final InOrderException e) {
+            if (this.COMPARE_DEBUG) {
+                System.out.println(e.getMessage());
+            }
+            return true;
+        }
+        throw new RuntimeException("No answer ?");
+    }
+
+    private void itemsInOrder(final Item left, final Item right, final int indentLevel) {
+        // we have three cases :
+        // 1. They can both be values, in which case it's trivial.
+        // 2. They can both be lists, in which case we work pairwise through the lists. if left runs out first, in order; if
+        //  right runs out first, out of order; if same, check next input
+        // 3. One is a value, one is a list. Convert the value to a list and repeat
+        this.compareDebugPrint(indentLevel, " ".repeat(indentLevel) + String.format("%s %s", left, right));
+        // this now validated on round #17
+        if ((left.value != null) && (right.value != null)) {
+            this.valueItemsInOrder(left, right, indentLevel);
+            return;
+        }
+        if ((left.items.size() > 0) && (right.items.size() > 0)) {
+            this.listItemsInOrder(left, right, indentLevel);
+            return;
+        }
+        if (left.value != null) {
+            final Item newValue = this.convertValueToList(left);
+            this.listItemsInOrder(newValue, right, indentLevel);
+            return;
+        }
+        if (right.value != null) {
+            final Item newValue = this.convertValueToList(right);
+            this.listItemsInOrder(left, newValue, indentLevel);
+            return;
+        }
+        if (left.items.size() == 0 && right.items.size() > 0) {
+            throw new InOrderException("left no items, right has");
+        }
+        if (left.items.size() > 0 && right.items.size() == 0) {
+            throw new OutOfOrderException("left has items, right no");
+        }
+        // I think I am now two empty lists
+    }
+
+    private void listItemsInOrder(final Item left, final Item right, final int indentLevel) {
+        final int itemCount = Math.max(left.items.size(), right.items.size());
+        for (int i = 0; i < itemCount; i++) {
+            if (i >= left.items.size()) {
+                this.compareDebugPrint(indentLevel, "Left side ran out of items, so inputs are in the right order");
+                throw new InOrderException("Left side ran out of items, so inputs are in the right order");
+            }
+            if (i >= right.items.size()) {
+                this.compareDebugPrint(indentLevel, "Right side ran out of items, so inputs are not in the right order");
+                throw new OutOfOrderException("Right side ran out of items, so inputs are not in the right order");
+            }
+            this.itemsInOrder(left.items.get(i), right.items.get(i), indentLevel + 1);
         }
     }
 
-    private boolean itemsInOrder(final Item left, final Item right, final int indentLevel) {
-        this.compareDebugPrint(indentLevel, "Comparing " + left + " (" + left.items.size() + ") and " + right + " (" + right.items.size() + ")");
-        final int maxItems = Math.max(left.items.size(), right.items.size());
-        for (int index = 0; index < maxItems; index++) {
-            if (left.items.size() <= index) {
-                return true;
-            }
-            if (right.items.size() <= index) {
-                throw new OutOfOrderException("Out of order at item " + index + " with right having no more items.");
-            }
-            final Item leftChild = left.items.get(index);
-            final Item rightChild = right.items.get(index);
-            this.compareDebugPrint(indentLevel, "Comparing children " + leftChild + " and " + rightChild);
-            // compare two values
-            if (leftChild.value != null && rightChild.value != null) {
-                if (leftChild.value > rightChild.value) {
-                    throw new OutOfOrderException("Out of order at item " + index + " with values out of order.");
-                }
-                if (leftChild.value < rightChild.value) {
-                    return true;
-                }
-                continue;
-            }
-            // compare two lists
-            if (leftChild.items.size() > 0 && rightChild.items.size() > 0) {
-                this.itemsInOrder(leftChild, rightChild, indentLevel + 2);
-                continue;
-            }
-            // Ok, convert the non list
-            final Item a = leftChild.items.size() > 0 ? leftChild : this.convertValueToList(leftChild);
-            final Item b = rightChild.items.size() > 0 ? rightChild : this.convertValueToList(rightChild);
-            return this.itemsInOrder(a, b, indentLevel + 2);
+    private Outcome valueItemsInOrder(final Item left, final Item right, final int indentLevel) {
+        final int leftValue = left.value;
+        final int rightValue = right.value;
+        if (leftValue < rightValue) {
+            this.compareDebugPrint(indentLevel, "left < right, in order");
+            throw new InOrderException("left < right, in order");
+//            return IN_ORDER;
         }
-        return true;
+        if (leftValue == rightValue) {
+            this.compareDebugPrint(indentLevel, "left = right, keep checking");
+            return KEEP_CHECKING;
+        }
+        this.compareDebugPrint(indentLevel, "left > right, out of order");
+        throw new OutOfOrderException("left > right, out of order");
     }
 
     private Item convertValueToList(final Item valueItem) {
         // I may not have a value - in which case I'm just an empty list
         if (valueItem.value == null) {
-            return valueItem;
+            throw new RuntimeException("whoops");
         }
         final Item item = new Item("*" + valueItem.source);
         item.parent = valueItem.parent;
@@ -269,8 +272,6 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
                 return String.valueOf(this.value);
             }
             return this.displayItems();
-//            return this.source;
-//            return this.source.substring(1, this.source.length() - 1);
         }
 
         private String displayItems() {
@@ -320,6 +321,13 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
         private static final long serialVersionUID = -2028560193758538554L;
 
         public OutOfOrderException(final String message) {
+            super(message);
+        }
+    }
+
+    public static final class InOrderException extends RuntimeException {
+
+        public InOrderException(final String message) {
             super(message);
         }
     }
