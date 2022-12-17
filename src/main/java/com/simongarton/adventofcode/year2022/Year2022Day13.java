@@ -2,17 +2,15 @@ package com.simongarton.adventofcode.year2022;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.simongarton.adventofcode.year2022.Year2022Day13.Outcome.KEEP_CHECKING;
 
 public class Year2022Day13 extends AdventOfCodeChallenge {
 
     private static final boolean DEBUG = false;
-    private final boolean COMPARE_DEBUG = true;
+    private final boolean COMPARE_DEBUG = false;
 
     public enum Outcome {
         IN_ORDER,
@@ -48,13 +46,30 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
         return String.valueOf(pairsInOrder);
     }
 
-    private String isFalse(final boolean inOrder) {
-        return inOrder ? " " : " not ";
-    }
-
     @Override
     public String part2(final String[] input) {
-        return null;
+        final List<String> packets = new ArrayList<>();
+        packets.addAll(List.of(input).stream().filter(l -> l.length() > 0).collect(Collectors.toList()));
+        packets.addAll(List.of("[[2]]", "[[6]]"));
+        packets.sort(new PacketComparator());
+        int total = 1;
+        for (int index = 0; index < packets.size(); index++) {
+            final String packet = packets.get(index);
+            System.out.printf("%s:%s\n", index + 1, packet);
+            if (packet.equalsIgnoreCase("[[2]]") ||
+                    packet.equalsIgnoreCase("[[6]]")) {
+                total *= (index + 1);
+            }
+        }
+        // 86724 is too high : 292 * 297
+        // my list looks completely wrong, compared to another example I downloaded.
+        // yet I got the right answer to part 1
+        // reading comments, the damn input files are of course JSON. So my parser was unnecessary.
+        return String.valueOf(total);
+    }
+
+    private String isFalse(final boolean inOrder) {
+        return inOrder ? " " : " not ";
     }
 
     private boolean inOrder(final int index, final ItemPair itemPair) {
@@ -84,7 +99,6 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
         //  right runs out first, out of order; if same, check next input
         // 3. One is a value, one is a list. Convert the value to a list and repeat
         this.compareDebugPrint(indentLevel, " ".repeat(indentLevel) + String.format("%s %s", left, right));
-        // this now validated on round #17
         if ((left.value != null) && (right.value != null)) {
             this.valueItemsInOrder(left, right, indentLevel);
             return;
@@ -329,6 +343,17 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
 
         public InOrderException(final String message) {
             super(message);
+        }
+    }
+
+    public class PacketComparator implements Comparator<String> {
+        @Override
+        public int compare(final String o1, final String o2) {
+            final Item item1 = Year2022Day13.this.parseItemNew(o1, null);
+            final Item item2 = Year2022Day13.this.parseItemNew(o2, null);
+            final ItemPair itemPair = new ItemPair(item1, item2);
+            final boolean inOrder = Year2022Day13.this.inOrder(0, itemPair);
+            return inOrder ? -1 : 0;
         }
     }
 }
