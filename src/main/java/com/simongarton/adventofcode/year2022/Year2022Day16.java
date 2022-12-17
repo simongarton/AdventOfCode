@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 public class Year2022Day16 extends AdventOfCodeChallenge {
 
     private List<Valve> valves;
-    private int pressureReleased;
     private Map<String, Integer> travelCosts;
     private State bestState;
+    private Map<String, State> visitedStateKeys;
 
     private static final int ONE_TO_TURN_ON = 1;
     private static final boolean DEBUG = false;
@@ -32,6 +32,7 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
 //        this.graphViz();
         this.buildTravelCosts();
         this.exploreStates();
+        this.debugPrint(DEBUG, this.bestState.toString());
         return String.valueOf(this.bestState.pressureReleased);
     }
 
@@ -42,33 +43,35 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
 
     private void exploreStates() {
         final List<State> availableStates = new ArrayList<>();
-        final List<State> visitedStates = new ArrayList<>();
+        this.visitedStateKeys = new HashMap<>();
         final Set<Valve> useful = this.valves.stream().filter(v -> v.releaseRate > 0).collect(Collectors.toSet());
-        State state = new State(this.valves.get(0), 0);
+        final Valve startValve = this.valves.stream()
+                .filter(v -> v.name.equalsIgnoreCase("AA"))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No AA ?"));
+        State state = new State(startValve, 0);
         state.pressureReleased = 0;
-        this.pressureReleased = 0;
-        state.addOpenedValve(this.valves.get(0));
+        state.addOpenedValve(startValve);
         availableStates.add(state);
         int iterations = 0;
         while (!availableStates.isEmpty()) {
             state = availableStates.get(0);
             availableStates.remove(0);
-            visitedStates.add(state);
+            this.visitedStateKeys.put(state.key, state);
             this.debugPrint(DEBUG, state.toString());
-            availableStates.addAll(this.getNeighbours(state, useful, visitedStates));
+            availableStates.addAll(this.getNeighbours(state, useful));
             iterations++;
             if (iterations % 1000 == 0) {
-                System.out.println(String.format("iter %s available %s visited %s best %s state %s",
+                this.debugPrint(DEBUG, String.format("iter %s available %s best %s state %s",
                         iterations,
                         availableStates.size(),
-                        visitedStates.size(),
                         this.bestState.pressureReleased,
                         state));
             }
         }
     }
 
-    private List<State> getNeighbours(final State state, final Set<Valve> useful, final List<State> visitedStates) {
+    private List<State> getNeighbours(final State state, final Set<Valve> useful) {
         final List<State> neighbours = new ArrayList<>();
         final List<Valve> possibles = useful.stream()
                 .filter(v -> !state.valvesOpened.contains(v)).collect(Collectors.toList());
@@ -86,7 +89,8 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
             if (this.bestState == null || this.bestState.pressureReleased < neighbour.pressureReleased) {
                 this.bestState = neighbour;
             }
-            final State existing = visitedStates.stream().filter(s -> s.key.equalsIgnoreCase(neighbour.key)).findFirst().orElse(null);
+//            final State existing = visitedStates.stream().filter(s -> s.key.equalsIgnoreCase(neighbour.key)).findFirst().orElse(null);
+            final State existing = this.visitedStateKeys.getOrDefault(neighbour.key, null);
             if (existing != null) {
                 if (neighbour.pressureReleased > existing.pressureReleased) {
                     existing.pressureReleased = neighbour.pressureReleased;
@@ -105,7 +109,11 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
     private void buildTravelCosts() {
         this.travelCosts = new HashMap<>();
         final Set<Valve> useful = this.valves.stream().filter(v -> v.releaseRate > 0).collect(Collectors.toSet());
-        useful.add(this.valves.get(0));
+        final Valve startValve = this.valves.stream()
+                .filter(v -> v.name.equalsIgnoreCase("AA"))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No AA ?"));
+        useful.add(startValve);
         final Set<Set<Valve>> combinations = Sets.combinations(useful, 2);
         for (final Set<Valve> combination : combinations) {
             final List<Valve> orderedCombination = new ArrayList<>(combination);
@@ -317,7 +325,6 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
         return 1;
     }
 
-
     private Integer cost(final Valve current, final Valve neighbor) {
         return 1;
     }
@@ -378,5 +385,4 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
             this.buildKey();
         }
     }
-
 }
