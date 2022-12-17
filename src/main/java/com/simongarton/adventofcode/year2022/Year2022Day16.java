@@ -8,40 +8,18 @@ import java.util.stream.Collectors;
 
 public class Year2022Day16 extends AdventOfCodeChallenge {
 
-    /*
-    I want to do some kind of network search for this. But instead of simply jumping between nodes,
-    I have the option of staying at a node and turning the valve on. I think I have to be slightly
-    clever for this and add pseudo-nodes, eg AA* which means effectively stay at AA with the same neighbours
-    but turn it on. And now I think I can do this with extra nodes.
-
-    Thought briefly about brute force search, but really ?
-
-    OK, A* isn't going to work, because that's the fastest way to get to a destination.
-    DepthFirst kind of assumes you don't revisit nodes, and we're going to have to.
-
-    Every valve has a value, which is time dependent, depending on how fast you can get to it. Looking at the diagram,
-    I clearly want to get to HH as soon as possible; it will go on during the 6th minute and therefore give me 23 minutes
-    of 22 release = 506, before tracking back; but do I want to stop at DD on the way and turn it on, getting 28 of 20
-    release = 560 at a cost of getting to HH one move later, so 484 not 506 (sounds like a bargain !) Only as it turns out
-    I should go via (and open) BB and go through to JJ.
-
-    So instead of wandering around, I should probably just target the valves that have value (6 out of 10); work out all
-    the combinations of getting to them at different times; and that gives me a way of calculating the total value.
-
-    6 nodes = 720 permutations.
-
-    For each permutation I need to calculate how long it takes to get to each step, and then be able to work
-    out the total cost. I probably need to look up a map of travel times - which will be a depth first, but from each
-    bloody valve.
-
-     */
-
     private List<Valve> valves;
-    private List<List<Valve>> permutations;
-    private List<String> permutationNames;
     private int pressureReleased;
     private Map<String, Integer> travelCosts;
-    private List<Integer> permutationValues;
+    private State bestState;
+
+    private static final int ONE_TO_TURN_ON = 1;
+    private static final boolean DEBUG = false;
+
+    @Override
+    public String title() {
+        return "Day 16: Proboscidea Volcanium";
+    }
 
     @Override
     public boolean run() {
@@ -53,60 +31,75 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
         this.loadNetwork(input);
 //        this.graphViz();
         this.buildTravelCosts();
-        this.permutationNames = new ArrayList<>();
-        final List<String> usefulNames = this.valves.stream()
-                .filter(v -> v.releaseRate > 0)
-                .map(v -> v.name)
-                .collect(Collectors.toList());
-        System.out.println(usefulNames.size());
-        this.assemblePermutations(usefulNames.size(), usefulNames.toArray(new String[0]));
-        this.buildPermutations();
-        System.out.println(this.permutations.size());
-        this.permutationValues = new ArrayList<>();
-        this.calculatePermutationValues();
-        this.permutationValues.sort(Comparator.comparing(Integer::intValue).reversed());
-        this.pressureReleased = this.permutationValues.get(0);
-        return String.valueOf(this.pressureReleased);
+        this.exploreStates();
+        return String.valueOf(this.bestState.pressureReleased);
     }
 
-    private void buildPermutations() {
-        this.permutations = new ArrayList<>();
-        for (final String nameList : this.permutationNames) {
-            final List<String> names = Arrays.asList(nameList.split(","));
-            final List<Valve> valves = names.stream().map(this::getValve).collect(Collectors.toList());
-            this.permutations.add(valves);
-        }
+    @Override
+    public String part2(final String[] input) {
+        return null;
     }
 
-    private void calculatePermutationValues() {
-        for (final List<Valve> permutation : this.permutations) {
-            this.calculatePermutationValue(permutation);
-        }
-    }
-
-    private void calculatePermutationValue(final List<Valve> permutation) {
-        // and here we go
-        final Map<Valve, Integer> values = new HashMap<>();
-        Valve startValve = this.valves.get(0);
-        int ticks = 30;
-        for (final Valve waypoint : permutation) {
-            final Journey journey = new Journey(startValve, waypoint);
-            try {
-                ticks -= this.travelCosts.get(journey.toString()); // get there
-            } catch (final NullPointerException e) {
-                System.out.println(journey);
-                throw e;
+    private void exploreStates() {
+        final List<State> availableStates = new ArrayList<>();
+        final List<State> visitedStates = new ArrayList<>();
+        final Set<Valve> useful = this.valves.stream().filter(v -> v.releaseRate > 0).collect(Collectors.toSet());
+        State state = new State(this.valves.get(0), 0);
+        state.pressureReleased = 0;
+        this.pressureReleased = 0;
+        state.addOpenedValve(this.valves.get(0));
+        availableStates.add(state);
+        int iterations = 0;
+        while (!availableStates.isEmpty()) {
+            state = availableStates.get(0);
+            availableStates.remove(0);
+            visitedStates.add(state);
+            this.debugPrint(DEBUG, state.toString());
+            availableStates.addAll(this.getNeighbours(state, useful, visitedStates));
+            iterations++;
+            if (iterations % 1000 == 0) {
+                System.out.println(String.format("iter %s available %s visited %s best %s state %s",
+                        iterations,
+                        availableStates.size(),
+                        visitedStates.size(),
+                        this.bestState.pressureReleased,
+                        state));
             }
-            ticks -= 1; // turn it on;
-            if (ticks < 0) {
-                break; // out of time
-            }
-            values.put(waypoint, waypoint.releaseRate * ticks);
-            startValve = waypoint;
         }
-        final int totalValue = values.values().stream().reduce(0, Integer::sum);
-        this.permutationValues.add(totalValue);
-        System.out.println(permutation.stream().map(Valve::nodeName).collect(Collectors.joining(" ")) + " = " + totalValue);
+    }
+
+    private List<State> getNeighbours(final State state, final Set<Valve> useful, final List<State> visitedStates) {
+        final List<State> neighbours = new ArrayList<>();
+        final List<Valve> possibles = useful.stream()
+                .filter(v -> !state.valvesOpened.contains(v)).collect(Collectors.toList());
+        for (final Valve possible : possibles) {
+            final Journey journey = new Journey(state.valve, possible);
+            final int timeToGetThere = this.travelCosts.get(journey.toString());
+            final State neighbour = new State(possible, state.minutesElapsed + timeToGetThere + ONE_TO_TURN_ON);
+            if (neighbour.minutesElapsed > 30) {
+                continue; // no point, out of time.
+            }
+            neighbour.addOpenedValves(state.valvesOpened);
+            neighbour.addOpenedValve(possible);
+            final int newPressureReleased = (30 - neighbour.minutesElapsed) * possible.releaseRate;
+            neighbour.pressureReleased = state.pressureReleased + newPressureReleased;
+            if (this.bestState == null || this.bestState.pressureReleased < neighbour.pressureReleased) {
+                this.bestState = neighbour;
+            }
+            final State existing = visitedStates.stream().filter(s -> s.key.equalsIgnoreCase(neighbour.key)).findFirst().orElse(null);
+            if (existing != null) {
+                if (neighbour.pressureReleased > existing.pressureReleased) {
+                    existing.pressureReleased = neighbour.pressureReleased;
+                    this.debugPrint(DEBUG, "  found existing, updating : " + existing);
+                } else {
+                    this.debugPrint(DEBUG, "  found existing, but not better : " + existing);
+                }
+            } else {
+                neighbours.add(neighbour);
+                this.debugPrint(DEBUG, "  adding " + neighbour);
+            }
+        }
+        return neighbours;
     }
 
     private void buildTravelCosts() {
@@ -123,35 +116,6 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
             final Journey reverseJourney = new Journey(orderedCombination.get(1), orderedCombination.get(0));
             this.travelCosts.put(reverseJourney.toString(), distance);
         }
-    }
-
-    public void assemblePermutations(
-            final int n, final String[] elements) {
-
-        if (n == 1) {
-            this.addPermutation(elements);
-        } else {
-            for (int i = 0; i < n - 1; i++) {
-                this.assemblePermutations(n - 1, elements);
-                if (n % 2 == 0) {
-                    this.swap(elements, i, n - 1);
-                } else {
-                    this.swap(elements, 0, n - 1);
-                }
-            }
-            this.assemblePermutations(n - 1, elements);
-        }
-    }
-
-    private void swap(final String[] elements, final int a, final int b) {
-        final String tmp = elements[a] + "";
-        elements[a] = elements[b] + "";
-        elements[b] = tmp;
-    }
-
-    private void addPermutation(final String[] elements) {
-        this.permutationNames.add(Arrays.asList(elements)
-                .stream().collect(Collectors.joining(",")));
     }
 
     private void graphViz() {
@@ -174,33 +138,10 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
         return "#FFFF" + Integer.toHexString(255 - (releaseRate * 10));
     }
 
-    @Override
-    public String part2(final String[] input) {
-        return null;
-    }
-
     private void loadNetwork(final String[] input) {
         this.valves = new ArrayList<>();
         this.loadValves(input);
         this.digTunnels(input);
-//        this.loadSpecialValves();
-    }
-
-    private void loadSpecialValves() {
-        final List<Valve> originals = new ArrayList<>();
-        originals.addAll(this.valves);
-        for (final Valve original : originals) {
-            if (original.releaseRate == 0) {
-                // no point
-                continue;
-            }
-            final Valve alternate = new Valve(original.name + "+", 0);
-            for (final Valve tunnel : original.tunnels) {
-                alternate.tunnelOneWay(tunnel);
-            }
-            original.tunnelOneWay(alternate);
-            this.valves.add(alternate);
-        }
     }
 
     private void loadValves(final String[] input) {
@@ -390,6 +331,52 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
             path.add(0, current);
         }
         return path;
+    }
+
+    public static final class State {
+
+        private final Valve valve;
+
+        private final int minutesElapsed;
+        private int pressureReleased;
+        private String key;
+
+        private final List<Valve> valvesOpened;
+
+
+        public State(final Valve valve, final int minutesElapsed) {
+            this.valve = valve;
+            this.minutesElapsed = minutesElapsed;
+            this.valvesOpened = new ArrayList<>();
+        }
+
+        @Override
+        public String toString() {
+            return String.format("State at %s minutes is %s released with %s visited : %s",
+                    this.minutesElapsed,
+                    this.pressureReleased,
+                    this.valvesOpened.size(),
+                    this.valvesOpened.stream().map(v -> v.name).collect(Collectors.joining("->"))
+            );
+        }
+
+        private void buildKey() {
+            final List<String> values = this.valvesOpened.stream()
+                    .map(v -> v.name)
+                    .sorted(Comparator.comparing(String::valueOf))
+                    .collect(Collectors.toList());
+            this.key = String.join("->", values);
+        }
+
+        public void addOpenedValve(final Valve valve) {
+            this.valvesOpened.add(valve);
+            this.buildKey();
+        }
+
+        public void addOpenedValves(final List<Valve> valvesOpened) {
+            this.valvesOpened.addAll(valvesOpened);
+            this.buildKey();
+        }
     }
 
 }
