@@ -10,10 +10,15 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
     private List<String> cave;
 
     private static final String ROCK = "#";
+    private static final String BOTTOM = "-";
+    private static final String CORNER = "+";
     private static final String FALLING_ROCK = "@";
     private static final String SPACE = ".";
+    private static final String LEFT = "<";
+    private static final String RIGHT = ">";
+    private static final String WALL = "|";
     private static final int EMPTY = 3;
-    private static final int WALL = 1;
+    private static final int WALL_WIDTH = 1;
     private static final int TWO = 2;
 
     @Override
@@ -28,40 +33,158 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
+        final String windForecast = input[0];
+        System.out.println(windForecast);
         int iteration = 0;
         int windIndex = 0;
         this.buildCave();
-        this.drawCave(null);
-        int rockIndex = 0;
-        Rock rock = new Rock(1);
+        int rockIndex = 1;
+        int rocksDropped = 0;
+        Rock rock = new Rock(rockIndex);
         this.putRockInCave(rock);
-        this.drawCave(rock);
-        final boolean running = true;
+        rocksDropped++;
+//        this.drawCave(rock);
+        boolean running = true;
+        String wind = windForecast.substring(windIndex, windIndex + 1);
 
         while (running) {
-            final String wind = input[windIndex];
-            if ("<".equalsIgnoreCase(input[windIndex])) {
-                rock.moveLeft();
+            System.out.printf("%s : %s = %s %s\n\n", iteration, windIndex, wind, this.move(wind));
+            boolean needToChangeRock = false;
+            if (wind.equalsIgnoreCase(LEFT)) {
+                // not sure if I need to check banging against walls
+                if (this.moveWouldCauseCollision(rock, -1, 0)) {
+                    needToChangeRock = true;
+                } else {
+                    rock.moveLeft();
+                }
             } else {
-                rock.moveRight();
+                if (this.moveWouldCauseCollision(rock, 1, 0)) {
+                    needToChangeRock = true;
+                } else {
+                    rock.moveRight();
+                }
             }
-            if (rock.moveDown()) {
+//            this.drawCave(rock);
+            if (!needToChangeRock) {
+                if (this.moveWouldCauseCollision(rock, 0, 1)) {
+                    needToChangeRock = true;
+                } else {
+                    rock.moveDown();
+                }
+            }
+            if (needToChangeRock) {
+                this.addRockToCave(rock);
                 rockIndex++;
-                rock = new Rock((rockIndex % 5) + 1);
+                if (rockIndex > 5) {
+                    rockIndex = 1;
+                }
+                rock = new Rock(rockIndex);
                 this.putRockInCave(rock);
+                this.drawCave(rock);
+                rocksDropped++;
             }
-            if (++windIndex == input.length) {
+            windIndex = windIndex + 1;
+            if (windIndex == windForecast.length()) {
                 windIndex = 0;
             }
-            this.drawCave(rock);
+            wind = windForecast.substring(windIndex, windIndex + 1);
             iteration++;
-            if (iteration > 100) {
-                break;
+            if (rocksDropped > 10) {
+                running = false;
+            }
+            if (rockIndex == 5) {
+                this.drawCave(rock);
             }
         }
-
-        return null;
+        this.drawCave(null);
+        return String.valueOf(this.cave.size());
     }
+
+    private String move(final String wind) {
+        switch (wind) {
+            case RIGHT:
+                return "right";
+            case LEFT:
+                return "left";
+            default:
+                throw new RuntimeException(wind);
+        }
+    }
+
+    private void debugRock(final Rock rock) {
+        System.out.printf("Rock %s width %s height %s\n", rock.id, rock.getWidth(), rock.getHeight());
+        for (int rockX = 0; rockX < 4; rockX++) {
+            for (int rockY = 0; rockY < 4; rockY++) {
+                System.out.printf("%s,%s = %s%n",
+                        rockX,
+                        rockY,
+                        this.atCaveCoordinateForRock(rock, rockX, rockY));
+            }
+        }
+    }
+
+    private void debugCave() {
+        for (int level = 0; level < this.cave.size(); level++) {
+            for (int col = 0; col < 9; col++) {
+                System.out.printf("%s,%s = %s%n",
+                        col,
+                        level,
+                        this.atCaveCoordinate(col, level));
+            }
+        }
+    }
+
+    private void addRockToCave(final Rock rock) {
+        final List<String> newCave = new ArrayList<>();
+        for (int level = this.cave.size() - 1; level >= 1; level--) {
+            String line = this.drawRockInCave(level, rock);
+            line = line.replace(FALLING_ROCK, ROCK);
+            newCave.add(0, line);
+        }
+        newCave.add(0, this.cave.get(0));
+        this.cave.clear();
+        this.cave.addAll(newCave);
+    }
+
+    private String atCaveCoordinate(final int x, final int y) {
+        // doesn't include falling rocks
+        return this.cave.get(y).substring(x, x + 1);
+    }
+
+    private String atCaveCoordinateForRock(final Rock rock, final int rockX, final int rockY) {
+        final int caveX = rock.position.getX() + rockX;
+        final int caveY = rock.position.getY() - rockY; // the rock coordinates increasing, go down to the floor
+//        System.out.printf("%s, %s  for %s, %s converted to %s, %s\n",
+//                rockX,
+//                rockY,
+//                rock.position.getX(),
+//                rock.position.getY(),
+//                caveX,
+//                caveY);
+        return this.atCaveCoordinate(caveX, caveY);
+    }
+
+    private boolean moveWouldCauseCollision(final Rock rock, final int deltaX, final int deltaY) {
+        return this.rockAtNewPositionWillCauseCollision(rock, deltaX, deltaY);
+    }
+
+    private boolean rockAtNewPositionWillCauseCollision(final Rock rock, final int deltaX, final int deltaY) {
+        for (int rockX = 0; rockX < 4; rockX++) {
+            for (int rockY = 0; rockY < 4; rockY++) {
+                if (!rock.hasLump(rockX, rockY)) {
+                    continue;
+                }
+                if (this.atCaveCoordinateForRock(rock, rockX + deltaX, rockY + deltaY).equalsIgnoreCase(ROCK)) {
+                    return true;
+                }
+                if (this.atCaveCoordinateForRock(rock, rockX + deltaX, rockY + deltaY).equalsIgnoreCase(BOTTOM)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public String part2(final String[] input) {
@@ -72,16 +195,18 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
         final int top = this.findLevel();
         // top comes back as 0, rock is
         while (this.cave.size() <= (top + EMPTY + rock.getHeight())) {
-            this.cave.add("|.......|");
+            this.cave.add(WALL + SPACE.repeat(7) + WALL);
         }
-        rock.position = new Coord(WALL + TWO, this.cave.size() - 1);
+        rock.position = new Coord(WALL_WIDTH + TWO, this.cave.size() - 1);
     }
 
     public void drawCave(final Rock rock) {
-        for (int level = this.cave.size() - 1; level >= 0; level--) {
+        for (int level = this.cave.size() - 1; level >= 1; level--) {
             final String line = this.drawRockInCave(level, rock);
-            System.out.println(line);
+            System.out.printf("%3d %s\n", level, line);
         }
+        System.out.printf("%3d %s\n", 0, this.cave.get(0));
+        System.out.printf("%3s %s\n", " ", "012345678");
         System.out.println("");
     }
 
@@ -93,18 +218,31 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
         if (level < (rock.position.getY() - rock.getHeight())) {
             return emptyRow;
         }
-        String filledRow = "|" + SPACE.repeat(rock.position.getX() - 1);
-        // not sure about this
-        final int rockRow = (level - rock.position.getY());
-        for (int i = 0; i < 4; i++) {
+        String filledRow = SPACE.repeat(rock.position.getX() - 1);
+        final int rockRow = (rock.position.getY() - level);
+        // now draw the 4 spaces which will contain the rock - for this level
+        for (int i = 0; i < rock.getWidth(); i++) {
             if (rock.hasLump(i, rockRow)) {
                 filledRow = filledRow + FALLING_ROCK;
             } else {
                 filledRow = filledRow + SPACE;
             }
         }
-        filledRow = filledRow + SPACE.repeat(9 - WALL - (rock.position.getX() + 4));
-        return filledRow + "|";
+        try {
+            filledRow = filledRow + SPACE.repeat(7 - filledRow.length());
+        } catch (final IllegalArgumentException e) {
+            throw new RuntimeException(filledRow);
+        }
+        final String intermediate = WALL + filledRow + WALL;
+        String finalLine = "";
+        for (int i = 0; i < intermediate.length(); i++) {
+            if (emptyRow.substring(i, i + 1).equalsIgnoreCase(ROCK)) {
+                finalLine += ROCK;
+            } else {
+                finalLine += intermediate.substring(i, i + 1);
+            }
+        }
+        return finalLine;
     }
 
     private int findLevel() {
@@ -113,7 +251,7 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
         if (this.cave.size() == 1) {
             return floor;
         }
-        for (int level = 1; level < this.cave.size(); level++) {
+        for (int level = this.cave.size() - 1; level > 0; level--) {
             if (this.cave.get(level).contains(ROCK)) {
                 return level;
             }
@@ -162,6 +300,7 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
                     this.lumps.add(new Coord(0, 1));
                     this.lumps.add(new Coord(0, 2));
                     this.lumps.add(new Coord(0, 3));
+                    break;
                 case 5:
                     this.lumps.add(new Coord(0, 0));
                     this.lumps.add(new Coord(1, 0));
@@ -192,17 +331,17 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
         }
 
         public void moveRight() {
-            if (this.position.getX() < (9 - WALL - this.getWidth())) {
+            if (this.position.getX() < (9 - WALL_WIDTH - this.getWidth())) {
                 this.position.setX(this.position.getX() + 1);
             }
         }
 
-        public boolean moveDown() {
-            if (this.position.getY() > 0) {
-                this.position.setY(this.position.getY() - 1);
-                return false;
-            }
-            return true;
+        public void moveUp() {
+            this.position.setY(this.position.getY() - 1);
+        }
+
+        public void moveDown() {
+            this.position.setY(this.position.getY() - 1);
         }
     }
 }
