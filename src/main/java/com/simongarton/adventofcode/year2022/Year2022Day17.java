@@ -7,32 +7,10 @@ import java.util.List;
 
 public class Year2022Day17 extends AdventOfCodeChallenge {
 
-    /*
-    41 : adding 5 as the 10 rock
-
- 23 |..@@...|
- 22 |..@@...|
- 21 |.......|
- 20 |.......|
- 19 |.......|
- 18 |....#..|
- 17 |....#..|
- 16 |....#..|
- 15 |....##.|
- 14 |.....#.|
- 13 |..####.|
- 12 |.###...|
- 11 |..#....|
-
- How did that not fall ?
-
-     */
-
     private List<String> cave;
 
     private static final String ROCK = "#";
     private static final String BOTTOM = "-";
-    private static final String CORNER = "+";
     private static final String FALLING_ROCK = "@";
     private static final String SPACE = ".";
     private static final String LEFT = "<";
@@ -54,9 +32,7 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
-//        this.debugRocks();
         final String windForecast = input[0];
-        System.out.println(windForecast);
         int iteration = 0;
         int windIndex = 0;
         this.buildCave();
@@ -66,39 +42,34 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
         this.putRockInCave(rock);
         rocksDropped++;
         // this is the first rock dropped
-        this.drawCave(rock);
+        if (false) {
+            this.drawCave(rock);
+        }
         boolean running = true;
         String wind = windForecast.substring(windIndex, windIndex + 1);
 
         while (running) {
-            final boolean debug = (rocksDropped == 9);
+            final boolean debug = (rocksDropped == -1);
             if (debug) {
                 System.out.printf("%s : %s = %s %s\n\n", iteration, windIndex, wind, this.move(wind));
             }
             boolean needToChangeRock = false;
             if (wind.equalsIgnoreCase(LEFT)) {
-                // not sure if I need to check banging against walls
-                if (this.moveWouldCauseCollision(rock, -1, 0)) {
-//                    needToChangeRock = true;
-                } else {
+                if (!this.moveWouldCauseCollision(rock, -1, 0)) {
                     rock.moveLeft();
                 }
             } else {
-                if (this.moveWouldCauseCollision(rock, 1, 0)) {
-//                    needToChangeRock = true;
-                } else {
+                if (!this.moveWouldCauseCollision(rock, 1, 0)) {
                     rock.moveRight();
                 }
             }
             if (debug) {
                 this.drawCave(rock);
             }
-            if (!needToChangeRock) {
-                if (this.moveWouldCauseCollision(rock, 0, 1)) {
-                    needToChangeRock = true;
-                } else {
-                    rock.moveDown();
-                }
+            if (this.moveWouldCauseCollision(rock, 0, 1)) {
+                needToChangeRock = true;
+            } else {
+                rock.moveDown();
             }
             if (needToChangeRock) {
                 this.addRockToCave(rock);
@@ -109,7 +80,9 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
                 rock = new Rock(rockIndex);
                 this.putRockInCave(rock);
                 rocksDropped++;
-                System.out.printf("%s : adding %s as the %s rock\n\n", iteration, rock.id, rocksDropped);
+                if (debug) {
+                    System.out.printf("%s : adding %s as the %s rock\n\n", iteration, rock.id, rocksDropped);
+                }
             }
             windIndex = windIndex + 1;
             if (windIndex == windForecast.length()) {
@@ -124,7 +97,6 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
                 this.drawCave(rock);
             }
         }
-        this.drawCave(null);
         return String.valueOf(this.findLevel());
     }
 
