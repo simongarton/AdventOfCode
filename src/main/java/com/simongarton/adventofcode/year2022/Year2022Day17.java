@@ -20,6 +20,16 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
     private static final int WALL_WIDTH = 1;
     private static final int TWO = 2;
 
+
+    /*
+
+    Part 1 - 2022 rocks - working. Part 2 is 1000000000000.
+
+    Is it possible to predict, in advance, where the rock will end up / how much the tower will grow ? I have a
+    deterministic wind - which is very long though - and a deterministic sequence.
+
+     */
+
     @Override
     public String title() {
         return "Day 17: Pyroclastic Flow";
@@ -32,12 +42,13 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
+        final long start = System.currentTimeMillis();
         final String windForecast = input[0];
         int iteration = 0;
         int windIndex = 0;
         this.buildCave();
         int rockIndex = 1;
-        int rocksDropped = 0;
+        long rocksDropped = 0;
         Rock rock = new Rock(rockIndex);
         this.putRockInCave(rock);
         rocksDropped++;
@@ -97,6 +108,9 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
                 this.drawCave(rock);
             }
         }
+        this.drawCave(rock);
+        System.out.println("got answer in " + (System.currentTimeMillis() - start) + " ms.");
+        System.out.println((1000000000000L / 2022) * (System.currentTimeMillis() - start) / 1000);
         return String.valueOf(this.findLevel());
     }
 
