@@ -22,7 +22,7 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
         this.loadMap(input);
-        return String.valueOf(this.countImpossibles(1999999));
+        return String.valueOf(this.countImpossibles(2000000));
 //        return String.valueOf(this.countImpossibles(10));
     }
 

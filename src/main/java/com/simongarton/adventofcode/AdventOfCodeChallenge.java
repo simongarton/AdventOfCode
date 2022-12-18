@@ -104,6 +104,11 @@ public abstract class AdventOfCodeChallenge {
         private Integer x;
         private Integer y;
 
+        public Coord(final int x, final int y) {
+            this.x = x;
+            this.y = y;
+        }
+
         public Coord(final String coordinate) {
             final String[] parts = coordinate.split(",");
             this.x = Integer.parseInt(parts[0]);
