@@ -12,60 +12,65 @@ public class Year2022Day9 extends AdventOfCodeChallenge {
     private Map<String, Cell> cells;
 
     @Override
+    public String title() {
+        return "Day 9: Rope Bridge";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 9);
     }
 
     @Override
     public String part1(final String[] input) {
-        return calculateMovesForRope(input, new Rope(2));
+        return this.calculateMovesForRope(input, new Rope(2));
     }
 
     @Override
     public String part2(final String[] input) {
-        return calculateMovesForRope(input, new Rope(10));
+        return this.calculateMovesForRope(input, new Rope(10));
     }
 
-    private String calculateMovesForRope(String[] input, Rope rope) {
+    private String calculateMovesForRope(final String[] input, final Rope rope) {
         this.cells = new HashMap<>();
-        getOrCreateCell(rope.getHead());
+        this.getOrCreateCell(rope.getHead());
 
-        for (String move : input) {
-            moveRope(rope, move);
+        for (final String move : input) {
+            this.moveRope(rope, move);
         }
 
         int visits = 0;
-        for (Map.Entry<String, Cell> entry :cells.entrySet()) {
+        for (final Map.Entry<String, Cell> entry : this.cells.entrySet()) {
             if (entry.getValue().tailHasVisited) {
-                visits ++;
+                visits++;
             }
         }
 
         return String.valueOf(visits);
     }
 
-    private void moveRope(Rope rope, String move) {
-        String[] parts = move.split(" ");
-        String direction = parts[0];
-        int steps = Integer.parseInt(parts[1]);
-        for (int step = 0; step < steps; step ++) {
+    private void moveRope(final Rope rope, final String move) {
+        final String[] parts = move.split(" ");
+        final String direction = parts[0];
+        final int steps = Integer.parseInt(parts[1]);
+        for (int step = 0; step < steps; step++) {
             rope.moveHead(rope.getHead(), direction, steps);
             rope.tailFollows();
-            updateCells(rope.tail());
+            this.updateCells(rope.tail());
         }
     }
 
-    private void updateCells(Coord coord) {
-        Cell cell = getOrCreateCell(coord);
+    private void updateCells(final Coord coord) {
+        final Cell cell = this.getOrCreateCell(coord);
         cell.tailHasVisited = true;
     }
 
-    private Cell getOrCreateCell(Coord coord) {
-        String key = coord.getKey();
+    private Cell getOrCreateCell(final Coord coord) {
+        final String key = coord.getKey();
         if (this.cells.containsKey(key)) {
             return this.cells.get(key);
         }
-        Cell cell = new Cell(coord);
+        final Cell cell = new Cell(coord);
         this.cells.put(key, cell);
         return cell;
     }
@@ -74,124 +79,124 @@ public class Year2022Day9 extends AdventOfCodeChallenge {
         private int x;
         private int y;
 
-        public Coord(int x, int y) {
+        public Coord(final int x, final int y) {
             this.x = x;
             this.y = y;
         }
 
         public String getKey() {
-            return x + "," + y;
+            return this.x + "," + this.y;
         }
     }
 
     public static class Rope {
-        
-        private List<Coord> knots;
 
-        public Rope(int knotCount) {
-            knots = new ArrayList<>();
+        private final List<Coord> knots;
+
+        public Rope(final int knotCount) {
+            this.knots = new ArrayList<>();
             for (int i = 0; i < knotCount; i++) {
-                knots.add(new Coord(0, 0));
+                this.knots.add(new Coord(0, 0));
             }
         }
 
         public Coord getHead() {
-            return knots.get(0);
+            return this.knots.get(0);
         }
 
         public void tailFollows() {
             // just the same, only I have to ripple down the rope
-            for (int index = 0; index < knots.size() - 1; index ++) {
-                tailFollowsOne(knots.get(index), knots.get(index + 1));
+            for (int index = 0; index < this.knots.size() - 1; index++) {
+                this.tailFollowsOne(this.knots.get(index), this.knots.get(index + 1));
             }
         }
 
-        public void tailFollowsOne(Coord head, Coord tail) {
+        public void tailFollowsOne(final Coord head, final Coord tail) {
             // cardinal points and overlapping
-            int manhattanDistance = manhattanDistance(head, tail);
+            final int manhattanDistance = this.manhattanDistance(head, tail);
             if (manhattanDistance <= 1) {
                 return;
             }
             // diagonals
-            double euclideanDistance = euclideanDistance(head, tail);
+            final double euclideanDistance = this.euclideanDistance(head, tail);
             if (String.valueOf(euclideanDistance).startsWith("1.414")) {
                 return;
             }
             // ok, onto the moves
             if (head.x == tail.x) {
-                moveVertically(head, tail);
+                this.moveVertically(head, tail);
                 return;
             }
             if (head.y == tail.y) {
-                moveHorizontally(head, tail);
+                this.moveHorizontally(head, tail);
                 return;
             }
-            moveDiagonally(head, tail);
+            this.moveDiagonally(head, tail);
         }
 
         public Coord tail() {
-            return knots.get(knots.size() -1);
+            return this.knots.get(this.knots.size() - 1);
         }
 
-        public void moveHead(Coord head, String direction, int steps) {
+        public void moveHead(final Coord head, final String direction, final int steps) {
             switch (direction) {
                 case "R":
-                    move(head, 1, 0);
+                    this.move(head, 1, 0);
                     break;
                 case "L":
-                    move(head, -1, 0);
+                    this.move(head, -1, 0);
                     break;
                 case "U":
-                    move(head, 0, 1);
+                    this.move(head, 0, 1);
                     break;
                 case "D":
-                    move(head, 0, -1);
+                    this.move(head, 0, -1);
                     break;
                 default:
                     throw new RuntimeException("Bad move " + direction);
             }
         }
 
-        private void move(Coord head, int deltaX, int deltaY) {
+        private void move(final Coord head, final int deltaX, final int deltaY) {
             head.x = head.x + deltaX;
             head.y = head.y + deltaY;
         }
 
-        private void moveDiagonally(Coord head, Coord tail) {
+        private void moveDiagonally(final Coord head, final Coord tail) {
             if (head.y > tail.y) {
                 tail.y = tail.y + 1;
             } else {
                 tail.y = tail.y - 1;
             }
-            tail.x = tail.x +  ((head.x > tail.x) ? 1 : -1);
+            tail.x = tail.x + ((head.x > tail.x) ? 1 : -1);
         }
 
-        private void moveVertically(Coord head, Coord tail) {
-            tail.y = tail.y +  ((head.y > tail.y) ? 1 : -1);
+        private void moveVertically(final Coord head, final Coord tail) {
+            tail.y = tail.y + ((head.y > tail.y) ? 1 : -1);
         }
 
-        private void moveHorizontally(Coord head, Coord tail) {
-            tail.x = tail.x +  ((head.x > tail.x) ? 1 : -1);
+        private void moveHorizontally(final Coord head, final Coord tail) {
+            tail.x = tail.x + ((head.x > tail.x) ? 1 : -1);
         }
 
-        protected double euclideanDistance(Coord first, Coord second) {
+        protected double euclideanDistance(final Coord first, final Coord second) {
             return Math.sqrt(
                     Math.pow(first.x - second.x, 2) +
                             Math.pow(first.y - second.y, 2)
             );
         }
 
-        protected int manhattanDistance(Coord first, Coord second) {
+        protected int manhattanDistance(final Coord first, final Coord second) {
             return Math.abs(first.x - second.x) + Math.abs(first.y - second.y);
         }
     }
 
     public static class Cell {
 
-        private Coord coord;
+        private final Coord coord;
         private boolean tailHasVisited;
 
-        public Cell(Coord coord) {
+        public Cell(final Coord coord) {
             this.coord = coord;
             this.tailHasVisited = false;
         }

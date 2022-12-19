@@ -15,6 +15,11 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
     private Bounds bounds;
 
     @Override
+    public String title() {
+        return "Day 15: Beacon Exclusion Zone";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 15);
     }

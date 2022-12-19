@@ -5,6 +5,11 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 public class Year2022Day2 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 2: Rock Paper Scissors";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 2);
     }

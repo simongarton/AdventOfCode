@@ -15,6 +15,11 @@ public class Year2022Day10 extends AdventOfCodeChallenge {
     private String[] crt;
 
     @Override
+    public String title() {
+        return "Day 10: Cathode-Ray Tube";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 10);
     }
@@ -42,7 +47,7 @@ public class Year2022Day10 extends AdventOfCodeChallenge {
         for (final String instruction : input) {
             this.processInstruction(instruction);
         }
-        this.drawCRT();
+//        this.drawCRT();
         // this has to be hardcoded after reading the screen.
         return "PGPHBEAB";
     }

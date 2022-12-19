@@ -10,6 +10,11 @@ import java.util.List;
 public class Year2022Day1 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 1: Calorie Counting";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 1);
     }

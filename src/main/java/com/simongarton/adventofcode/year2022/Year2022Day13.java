@@ -19,6 +19,11 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
     }
 
     @Override
+    public String title() {
+        return "Day 13: Distress Signal";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 13);
     }
@@ -42,7 +47,9 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
                 System.out.println("\npair " + (i + 1) + " is" + this.isFalse(inOrder) + "in order.\n");
             }
         }
-        System.out.println("total in order " + countPairsInOrder + " not in order : " + notInOrder);
+        if (this.COMPARE_DEBUG) {
+            System.out.println("total in order " + countPairsInOrder + " not in order : " + notInOrder);
+        }
         return String.valueOf(pairsInOrder);
     }
 
@@ -55,7 +62,9 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
         int total = 1;
         for (int index = 0; index < packets.size(); index++) {
             final String packet = packets.get(index);
-            System.out.printf("%s:%s\n", index + 1, packet);
+            if (this.COMPARE_DEBUG) {
+                System.out.printf("%s:%s\n", index + 1, packet);
+            }
             if (packet.equalsIgnoreCase("[[2]]") ||
                     packet.equalsIgnoreCase("[[6]]")) {
                 total *= (index + 1);
@@ -353,7 +362,13 @@ public class Year2022Day13 extends AdventOfCodeChallenge {
             final Item item2 = Year2022Day13.this.parseItemNew(o2, null);
             final ItemPair itemPair = new ItemPair(item1, item2);
             final boolean inOrder = Year2022Day13.this.inOrder(0, itemPair);
-            return inOrder ? -1 : 0;
+            if (inOrder) {
+                return -1;
+            }
+            if (!inOrder) {
+                return 1;
+            }
+            return 0;
         }
     }
 }

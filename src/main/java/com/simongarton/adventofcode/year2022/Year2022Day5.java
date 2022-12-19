@@ -13,6 +13,11 @@ public class Year2022Day5 extends AdventOfCodeChallenge {
     private List<String> moves;
 
     @Override
+    public String title() {
+        return "Day 5: Supply Stacks";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 5);
     }

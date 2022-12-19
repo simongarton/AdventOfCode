@@ -16,6 +16,11 @@ public class Year2022Day12 extends AdventOfCodeChallenge {
     private int width;
 
     @Override
+    public String title() {
+        return "Day 12: Hill Climbing Algorithm";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 12);
     }
