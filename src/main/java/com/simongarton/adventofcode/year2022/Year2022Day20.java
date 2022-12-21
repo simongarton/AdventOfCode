@@ -25,27 +25,31 @@ public class Year2022Day20 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
         this.loadList(input);
-        final List<GPSNumber> rearranged = new ArrayList<>();
-        rearranged.addAll(this.numbers);
+        final List<GPSNumber> rearranged = this.mix(this.numbers);
+        return this.findMagicValue(rearranged);
+    }
+
+    @Override
+    public String part2(final String[] input) {
+        this.loadList(input);
+        this.debugPrint(this.numbers);
+        this.scaleUp();
+        this.debugPrint(this.numbers);
+        List<GPSNumber> rearranged = this.mix(this.numbers);
         this.debugPrint(rearranged);
-        for (final GPSNumber gpsNumber : this.numbers) {
-            final int currentPosition = rearranged.indexOf(gpsNumber);
-            int newPosition = (currentPosition + gpsNumber.value);
-            while (newPosition >= (this.numbers.size() - 1)) {
-                newPosition = newPosition - (this.numbers.size() - 1);
-            }
-            while (newPosition < 0) {
-                newPosition += this.numbers.size() - 1;
-            }
-            if (newPosition == 0) {
-                newPosition = this.numbers.size() - 1;
-            }
-            System.out.println("working on " + gpsNumber.value + "/" + gpsNumber.originalPosition +
-                    " now at " + currentPosition + " going to " + newPosition);
-            rearranged.remove(gpsNumber);
-            rearranged.add(newPosition, gpsNumber);
+        for (int i = 0; i < 9; i++) {
+            rearranged = this.mix(rearranged);
             this.debugPrint(rearranged);
         }
+        return this.findMagicValue(rearranged);
+
+    }
+
+    private void scaleUp() {
+        this.numbers.stream().forEach(GPSNumber::scaleUpNumber);
+    }
+
+    private String findMagicValue(final List<GPSNumber> rearranged) {
         int zero = 0;
         for (int i = 0; i < rearranged.size(); i++) {
             if (rearranged.get(i).value == 0) {
@@ -53,10 +57,37 @@ public class Year2022Day20 extends AdventOfCodeChallenge {
                 break;
             }
         }
-        final int a = rearranged.get((1000 + zero) % this.numbers.size()).value;
-        final int b = rearranged.get((2000 + zero) % this.numbers.size()).value;
-        final int c = rearranged.get((3000 + zero) % this.numbers.size()).value;
+        final long a = rearranged.get((1000 + zero) % this.numbers.size()).value;
+        final long b = rearranged.get((2000 + zero) % this.numbers.size()).value;
+        final long c = rearranged.get((3000 + zero) % this.numbers.size()).value;
         return String.valueOf(a + b + c);
+
+    }
+
+    private List<GPSNumber> mix(final List<GPSNumber> numbers) {
+        final List<GPSNumber> rearranged = new ArrayList<>(numbers);
+        this.debugPrint(rearranged);
+        for (final GPSNumber gpsNumber : this.numbers) {
+            final int currentPosition = rearranged.indexOf(gpsNumber);
+            long newPosition = (currentPosition + gpsNumber.value);
+            if (newPosition >= (numbers.size() - 1)) {
+                newPosition = newPosition % (numbers.size() - 1);
+            }
+            if (newPosition < 0) {
+                final long a = (-newPosition / (numbers.size() - 1));
+                newPosition = newPosition + ((a + 1) * (numbers.size() - 1));
+                newPosition = newPosition % (numbers.size() - 1);
+            }
+            if (newPosition == 0) {
+                newPosition = numbers.size() - 1;
+            }
+//            System.out.println("working on " + gpsNumber.value + "/" + gpsNumber.originalPosition +
+//                    " now at " + currentPosition + " going to " + newPosition);
+            rearranged.remove(gpsNumber);
+            rearranged.add((int) newPosition, gpsNumber);
+//            this.debugPrint(rearranged);
+        }
+        return rearranged;
     }
 
     private void debugPrint(final List<GPSNumber> rearranged) {
@@ -71,19 +102,18 @@ public class Year2022Day20 extends AdventOfCodeChallenge {
         }
     }
 
-    @Override
-    public String part2(final String[] input) {
-        return null;
-    }
-
     public static final class GPSNumber {
 
-        int value;
+        long value;
         int originalPosition;
 
-        public GPSNumber(final int value, final int originalPosition) {
+        public GPSNumber(final long value, final int originalPosition) {
             this.value = value;
             this.originalPosition = originalPosition;
+        }
+
+        private void scaleUpNumber() {
+            this.value *= 811589153;
         }
     }
 }
