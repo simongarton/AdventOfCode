@@ -23,7 +23,6 @@ public class Year2022Day21 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
-
         final List<Monkey> troop = this.loadMonkeys(input);
         troop.stream().forEach(m -> m.addDependencies(troop));
         final Monkey root = troop.stream().filter(m -> m.name.equalsIgnoreCase("root"))
@@ -41,7 +40,28 @@ public class Year2022Day21 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+        final long val = 3373767893067L;
+        for (int i = 1; i < 1000; i++) {
+            final List<Monkey> troop = this.loadMonkeys(input);
+            troop.stream().forEach(m -> m.addDependencies(troop));
+            final Monkey root = troop.stream().filter(m -> m.name.equalsIgnoreCase("root"))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Didn't find root"));
+            final Monkey humn = troop.stream().filter(m -> m.name.equalsIgnoreCase("humn"))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Didn't find humn"));
+            humn.operation = String.valueOf(val);
+            humn.numberYelled = val;
+            root.operation = root.operation.replace("+", "=");
+            int iteration = 0;
+            while (!root.hasYelled) {
+                this.debugPrint(String.format("\niteration %s\n\n", iteration));
+                troop.stream().forEach(Monkey::lookAroundAndYell);
+                iteration++;
+            }
+        }
+        this.debugPrint("\n");
+        return "";
     }
 
     private void debugPrint(final String s) {
@@ -118,6 +138,10 @@ public class Year2022Day21 extends AdventOfCodeChallenge {
                     break;
                 case "*":
                     this.numberYelled = value1 * value2;
+                    break;
+                case "=":
+                    this.numberYelled = 0;
+                    System.out.printf("equalling %s - %s = %s\n", value1, value2, value1 - value2);
                     break;
                 default:
                     throw new RuntimeException("Bad operation " + this.operation);
