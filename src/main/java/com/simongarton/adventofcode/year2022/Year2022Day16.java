@@ -11,7 +11,9 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
     private List<Valve> valves;
     private Map<String, Integer> travelCosts;
     private State bestState;
+    private TwoPersonState bestTwoPersonState;
     private Map<String, State> visitedStateKeys;
+    private Map<String, TwoPersonState> visitedTwoPersonStateKeys;
 
     private static final int ONE_TO_TURN_ON = 1;
     private static final boolean DEBUG = false;
@@ -38,7 +40,15 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+        this.loadNetwork(input);
+//        this.graphViz();
+        this.buildTravelCosts();
+        this.exploreTwoPersonStates();
+        this.debugPrint(DEBUG, this.bestTwoPersonState.toString());
+        return String.valueOf(this.bestTwoPersonState.pressureReleased);
+    }
+
+    private void exploreTwoPersonStates() {
     }
 
     private void exploreStates() {
@@ -353,6 +363,56 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
 
         public State(final Valve valve, final int minutesElapsed) {
             this.valve = valve;
+            this.minutesElapsed = minutesElapsed;
+            this.valvesOpened = new ArrayList<>();
+        }
+
+        @Override
+        public String toString() {
+            return String.format("State at %s minutes is %s released with %s visited : %s",
+                    this.minutesElapsed,
+                    this.pressureReleased,
+                    this.valvesOpened.size(),
+                    this.valvesOpened.stream().map(v -> v.name).collect(Collectors.joining("->"))
+            );
+        }
+
+        private void buildKey() {
+            final List<String> values = this.valvesOpened.stream()
+                    .map(v -> v.name)
+                    .sorted(Comparator.comparing(String::valueOf))
+                    .collect(Collectors.toList());
+            this.key = String.join("->", values);
+        }
+
+        public void addOpenedValve(final Valve valve) {
+            this.valvesOpened.add(valve);
+            this.buildKey();
+        }
+
+        public void addOpenedValves(final List<Valve> valvesOpened) {
+            this.valvesOpened.addAll(valvesOpened);
+            this.buildKey();
+        }
+    }
+
+    public static final class TwoPersonState {
+
+        private final Valve current;
+        private final Valve elephant;
+
+        private final int minutesElapsed;
+        private int pressureReleased;
+        private String key;
+
+        private final List<Valve> valvesOpened;
+
+
+        public TwoPersonState(final Valve current,
+                              final Valve elephant,
+                              final int minutesElapsed) {
+            this.current = current;
+            this.elephant = elephant;
             this.minutesElapsed = minutesElapsed;
             this.valvesOpened = new ArrayList<>();
         }
