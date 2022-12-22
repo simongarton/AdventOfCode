@@ -8,6 +8,9 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
 
     // 4344721 is NOT right for part 1. Too low. But the sample works.
     // 4344721 is same answer for 2000001
+    // 4344722 isn't right, either.
+    // 4355287 when I redid the calc isn't right, either. 4355288 is the width
+    // 4344721 got another way so consistently wrong.
 
     private List<Coord> sensors;
     private List<Coord> beacons;
@@ -37,43 +40,103 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
     }
 
     private long countImpossibles(final int row) {
+        System.out.printf("Bounds is %s,%s to %s,%s.\n",
+                this.bounds.minX,
+                this.bounds.minY,
+                this.bounds.maxX,
+                this.bounds.maxY);
+        System.out.printf("Row is %s wide.\n", this.bounds.getWidth());
         final int[] rowData = new int[this.bounds.getWidth()];
-        for (final Coord sensor : this.sensors) {
-            if (sensor.getY() == row) {
-                rowData[sensor.getX() - this.bounds.minX] = 1;
-            }
-        }
+//        final List<Interval> intervals = new ArrayList<>();
         for (final Coord sensor : this.sensors) {
             final Coord beacon = this.map.get(sensor);
             this.updateArrayWithSensorAndBeacon(sensor, beacon, rowData, row);
+//            final Interval interval = this.getRange(sensor, beacon, rowData, row);
+//            if (interval != null) {
+//                intervals.add(interval);
+//            }
         }
+
+//        for (final Interval interval : intervals) {
+//            System.out.println(interval);
+//        }
+//
+//        final Interval[] mergedRanges = this.mergeIntervals(intervals.toArray(new Interval[0]));
+//        final int distance = mergedRanges[0].end - mergedRanges[0].start;
+//        System.out.println(distance);
+
+        // there are no sensors on this row
+        for (final Coord sensor : this.sensors) {
+            if (sensor.getY() == row) {
+                System.out.printf("Removing sensor at %s,%s\n", sensor.getX(), sensor.getY());
+                rowData[sensor.getX() - this.bounds.minX] = 0;
+            }
+        }
+
+        // looking back, surely if there is a beacon here, the missing beacon
+        // can't be here ? but setting it to = 1 gives the wrong error for the
+        // sample (and a wrong for part 1). There's only 1 beacon on this row : x=745731, y=2000000
         for (final Coord beacon : this.beacons) {
             if (beacon.getY() == row) {
+                System.out.printf("Removing beacon at %s,%s\n", beacon.getX(), beacon.getY());
                 rowData[beacon.getX() - this.bounds.minX] = 0;
             }
         }
         return Arrays.stream(rowData).filter(p -> p == 1).count();
     }
 
-    private void updateArrayWithSensorAndBeacon(final Coord sensor, final Coord beacon, final int[] rowData, final int row) {
+    private Interval getRange(final Coord sensor, final Coord beacon, final int[] rowData, final int row) {
         final int distance = sensor.manhattanDistance(beacon);
-        if (Math.abs(sensor.getY() - row) > distance) {
-            System.out.println("Sensor " + sensor + " has distance of " + distance + " and is too far away from " + row + " at " + Math.abs(sensor.getY() - row));
-            return;
+        // this doesn't change the outcome
+        final int deltay = Math.abs(sensor.getY() - row);
+        if (deltay > distance) {
+            System.out.println("Sensor " + sensor +
+                    " has distance of " + distance +
+                    " to it's beacon at " + beacon.getX() + "," + beacon.getY() +
+                    " and is too far away from " + row +
+                    " at " + sensor.getY() +
+                    " leaving a vertical distance of " + deltay);
+            return null;
+        }
+        final int deltax = distance - deltay;
+        int left = sensor.getX() - deltax;
+        int right = sensor.getX() + deltax;
+        if (left < this.bounds.minX) {
+            left = this.bounds.minX;
+        }
+        if (right > this.bounds.maxX) {
+            right = this.bounds.maxX;
+        }
+        return new Interval(left, right);
+    }
+
+    private int updateArrayWithSensorAndBeacon(final Coord sensor, final Coord beacon, final int[] rowData, final int row) {
+        final int distance = sensor.manhattanDistance(beacon);
+        // this doesn't change the outcome
+        final int deltay = Math.abs(sensor.getY() - row);
+        if (deltay > distance) {
+            System.out.println("Sensor " + sensor +
+                    " has distance of " + distance +
+                    " and is too far away from " + row +
+                    " to it's beacon at " + beacon.getX() + "," + beacon.getY() +
+                    " at " + sensor.getY() +
+                    " leaving a vertical distance of " + deltay);
+            return 0;
         }
         int updates = 0;
-        for (int x = sensor.getX() - distance; x <= sensor.getX() + distance; x++) {
-            if (x < this.bounds.minX || x > this.bounds.maxX) {
-                continue;
+        final int deltax = distance - deltay;
+        final int left = sensor.getX() - deltax;
+        final int right = sensor.getX() + deltax;
+        for (int x = left; x <= right; x++) {
+            try {
+                rowData[x - this.bounds.minX] = 1;
+                updates++;
+            } catch (final ArrayIndexOutOfBoundsException e) {
+
             }
-            final Coord test = new Coord(x + "," + row);
-            if (sensor.manhattanDistance(test) > distance) {
-                continue;
-            }
-            rowData[x - this.bounds.minX] = 1;
-            updates++;
         }
         System.out.println("Sensor " + sensor + " has distance " + distance + " and made " + updates + " updates.");
+        return updates;
     }
 
     private void loadMap(final String[] input) {
@@ -155,6 +218,68 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
 
         public int getHeight() {
             return 1 + this.maxY - this.minY;
+        }
+    }
+
+
+    // The main function that takes a set of intervals, merges
+    // overlapping intervals and prints the result
+    public Interval[] mergeIntervals(final Interval[] arr) {
+        // Test if the given set has at least one interval
+        if (arr.length <= 0) {
+            return new Interval[0];
+        }
+
+        // Create an empty stack of intervals
+        final Stack<Interval> stack = new Stack<>();
+
+        // sort the intervals in increasing order of start time
+        Arrays.sort(arr, new Comparator<>() {
+            @Override
+            public int compare(final Interval i1, final Interval i2) {
+                return i1.start - i2.start;
+            }
+        });
+
+        // push the first interval to stack
+        stack.push(arr[0]);
+
+        // Start from the next interval and merge if necessary
+        for (int i = 1; i < arr.length; i++) {
+            // get interval from stack top
+            final Interval top = stack.peek();
+
+            // if current interval is not overlapping with stack top,
+            // push it to the stack
+            if (top.end < arr[i].start) {
+                stack.push(arr[i]);
+            }
+
+            // Otherwise update the ending time of top if ending of current
+            // interval is more
+            else if (top.end < arr[i].end) {
+                top.end = arr[i].end;
+                stack.pop();
+                stack.push(top);
+            }
+        }
+
+        // Print contents of stack
+        System.out.print("The Merged Intervals are: ");
+        final Interval[] intervals = stack.toArray(new Interval[0]);
+        while (!stack.isEmpty()) {
+            final Interval t = stack.pop();
+            System.out.print("[" + t.start + "," + t.end + "] ");
+        }
+        return intervals;
+    }
+
+    public static final class Interval {
+        int start, end;
+
+        Interval(final int start, final int end) {
+            this.start = start;
+            this.end = end;
         }
     }
 }
