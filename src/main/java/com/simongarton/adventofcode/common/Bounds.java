@@ -50,4 +50,19 @@ public class Bounds {
     public void setMaxY(final Integer maxY) {
         this.maxY = maxY;
     }
+
+    public void updateBounds(final Coord coord) {
+        if (this.minX == null || coord.getX() < this.minX) {
+            this.minX = coord.getX();
+        }
+        if (this.minY == null || coord.getY() < this.minY) {
+            this.minY = coord.getY();
+        }
+        if (this.maxX == null || coord.getX() > this.maxX) {
+            this.maxX = coord.getX();
+        }
+        if (this.maxY == null || coord.getY() > this.maxY) {
+            this.maxY = coord.getY();
+        }
+    }
 }
