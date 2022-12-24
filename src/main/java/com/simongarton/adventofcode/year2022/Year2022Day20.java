@@ -9,8 +9,10 @@ import java.util.stream.Collectors;
 
 public class Year2022Day20 extends AdventOfCodeChallenge {
 
-    List<GPSNumber> numbers;
-    Map<Integer, GPSNumber> map;
+    private static final boolean DEBUG = false;
+
+    private List<GPSNumber> numbers;
+    private Map<Integer, GPSNumber> map;
 
     @Override
     public String title() {
@@ -42,7 +44,6 @@ public class Year2022Day20 extends AdventOfCodeChallenge {
             this.debugPrint(rearranged);
         }
         return this.findMagicValue(rearranged);
-
     }
 
     private void scaleUp() {
@@ -61,7 +62,6 @@ public class Year2022Day20 extends AdventOfCodeChallenge {
         final long b = rearranged.get((2000 + zero) % this.numbers.size()).value;
         final long c = rearranged.get((3000 + zero) % this.numbers.size()).value;
         return String.valueOf(a + b + c);
-
     }
 
     private List<GPSNumber> mix(final List<GPSNumber> numbers) {
@@ -91,7 +91,9 @@ public class Year2022Day20 extends AdventOfCodeChallenge {
     }
 
     private void debugPrint(final List<GPSNumber> rearranged) {
-        System.out.println(rearranged.stream().map(n -> String.valueOf(n.value)).collect(Collectors.joining(" ")));
+        if (DEBUG) {
+            System.out.println(rearranged.stream().map(n -> String.valueOf(n.value)).collect(Collectors.joining(" ")));
+        }
     }
 
     private void loadList(final String[] input) {

@@ -108,9 +108,23 @@ public class AdventOfCode {
         this.challenges.add(new Year2022Day12());
         this.challenges.add(new Year2022Day13());
         this.challenges.add(new Year2022Day14());
-        this.challenges.add(new Year2022Day15());
-        this.challenges.add(new Year2022Day16());
-        this.challenges.add(new Year2022Day17());
+        // not done yet
+        //this.challenges.add(new Year2022Day15());
+        //this.challenges.add(new Year2022Day16());
+        // have only done part 1
+        //this.challenges.add(new Year2022Day17());
+        // have only done part 1
+        //this.challenges.add(new Year2022Day18());
+        // have only done part 1
+        //this.challenges.add(new Year2022Day19());
+        this.challenges.add(new Year2022Day20());
+        // need hillclimber for part 2
+        //this.challenges.add(new Year2022Day21());
+        // have only done part 1
+        //this.challenges.add(new Year2022Day22());
+        this.challenges.add(new Year2022Day23());
+        this.challenges.add(new Year2022Day24());
+        this.challenges.add(new Year2022Day25());
     }
 
     public AdventOfCode() {

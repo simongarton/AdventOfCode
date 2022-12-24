@@ -5,6 +5,9 @@ import com.simongarton.adventofcode.common.Coord;
 
 import java.util.*;
 
+// After a refactor, I had to change the answer.
+// Attempted 2022.9.1 expected 5695 got 5663
+
 public class Year2022Day9 extends AdventOfCodeChallenge {
 
     private Map<String, Cell> cells;

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Year2022Day22 extends AdventOfCodeChallenge {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String SPACE = " ";
     private static final String DOT = ".";
     private static final String WALL = "#";
