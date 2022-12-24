@@ -49,13 +49,25 @@ public abstract class AdventOfCodeChallenge {
                         expected,
                         actual);
             }
-            System.out.printf("Attempted %s.%02d.%s and got correct answer in %s ms : %s%n",
-                    year,
-                    day,
-                    part,
-                    this.leftPad("" + (System.currentTimeMillis() - start), 8),
-                    actual
-            );
+            if (this.title() == null) {
+                System.out.printf("Attempted %s.%02d.%s and got correct answer in %s ms : %15s%n",
+                        year,
+                        day,
+                        part,
+                        this.leftPad("" + (System.currentTimeMillis() - start), 8),
+                        actual
+                );
+            } else {
+                System.out.printf("Attempted %s.%02d.%s and got correct answer in %s ms : %15s (%s part %s)%n",
+                        year,
+                        day,
+                        part,
+                        this.leftPad("" + (System.currentTimeMillis() - start), 8),
+                        actual,
+                        this.title(),
+                        part
+                );
+            }
         }
         return true;
     }

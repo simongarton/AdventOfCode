@@ -11,6 +11,11 @@ public class Year2022Day6 extends AdventOfCodeChallenge {
     private static final int MESSAGE = 14;
 
     @Override
+    public String title() {
+        return "Day 6: Tuning Trouble";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 6);
     }

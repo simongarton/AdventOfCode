@@ -14,6 +14,11 @@ public class Year2022Day8 extends AdventOfCodeChallenge {
     private int height;
 
     @Override
+    public String title() {
+        return "Day 8: Treetop Tree House";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 8);
     }

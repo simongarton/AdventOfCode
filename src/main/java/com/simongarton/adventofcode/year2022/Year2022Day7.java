@@ -15,6 +15,11 @@ public class Year2022Day7 extends AdventOfCodeChallenge {
     private List<CommunicatorDirectory> all;
 
     @Override
+    public String title() {
+        return "Day 7: No Space Left On Device";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 7);
     }

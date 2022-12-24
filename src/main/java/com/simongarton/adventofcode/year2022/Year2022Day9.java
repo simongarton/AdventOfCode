@@ -3,14 +3,16 @@ package com.simongarton.adventofcode.year2022;
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import com.simongarton.adventofcode.common.Coord;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Year2022Day9 extends AdventOfCodeChallenge {
 
     private Map<String, Cell> cells;
+
+    @Override
+    public String title() {
+        return "Day 9: Rope Bridge";
+    }
 
     @Override
     public boolean run() {
@@ -105,11 +107,11 @@ public class Year2022Day9 extends AdventOfCodeChallenge {
                 return;
             }
             // ok, onto the moves
-            if (head.getX() == tail.getX()) {
+            if (Objects.equals(head.getX(), tail.getX())) {
                 this.moveVertically(head, tail);
                 return;
             }
-            if (head.getY() == tail.getY()) {
+            if (Objects.equals(head.getY(), tail.getY())) {
                 this.moveHorizontally(head, tail);
                 return;
             }

@@ -5,6 +5,11 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 public class Year2022Day0 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 0: Template code";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 0);
     }

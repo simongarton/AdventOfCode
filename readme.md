@@ -5,6 +5,77 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2022
 
+### Day 18: Boiling Boulders
+
+https://adventofcode.com/2022/day/18
+
+### Day 17: Pyroclastic Flow
+
+Tetris ! Given a cavern with 5 suspiciously Tetris shaped rocks falling down and stacking up on each other, work out how
+high the stack will be at a given time.
+
+Part 1 : 2,022 rocks, no worries.
+Part 2 : 1,000,000,000,000. Logic will take 11 years.
+
+https://adventofcode.com/2022/day/17
+
+### Day 16: Proboscidea Volcanium
+
+Loved it. Super challenging - build a graph of rooms, some of which have useful valves in, then work out how to travel
+around those rooms in limited time, turning certain valves on to maximise the pressure. So I needed to (a) parse the
+input
+and build the graph (b) use A* to build up a map of distances, and then (c) create an array of states - at this point I
+have visited these rooms and turned these valves on a these times, and use a BFS to figure out the best route.
+
+Part 1 done. Part 2 changes it so it's you and an elephant (!) both walking around and turning valves on. I think I can
+extend my approach - but reading the subreddit, part 2 seems to take a lot longer.
+
+https://adventofcode.com/2022/day/16
+
+### Day 15: Beacon Exclusion Zone
+
+Driving me up the wall : not complete yet. Given an array of sensors, each of
+which can pick up the closet beacon, use the overlapping areas to figure out where
+a missing beacon CAN'T be. Currently got example working, but not part 1.
+
+https://adventofcode.com/2022/day/15
+
+### Day 14: Regolith Reservoir
+
+Much easier and nice to do. Drip sand onto a pile of rocks, figuring out which
+way it goes, until it fills up.
+
+![Part 1](2022-14.1.png)
+
+https://adventofcode.com/2022/day/14
+
+### Day 13: Distress Signal
+
+Frustrating. Given some arrays of arrays (recursive) figure out if they are equal.
+
+```
+[1,1,3,1,1]
+[1,1,5,1,1]
+
+[[1],[2,3,4]]
+[[1],4]
+```
+
+Got there eventually.
+
+- Read the damn question carefully. Now read it again.
+- Realize that they are JSON lists, so you don't actually need to write your own parser.
+- Learn how Comparators work, and how you deal with lists that don't ever have equal items.
+
+https://adventofcode.com/2022/day/13
+
+### Day 12: Hill Climbing Algorithm
+
+Nice. As it says, a hill climbing algorithm. You need to construct a 3d model, and then navigate to the top under
+certain rules. I used A* and it worked just fine. Did see a lovely example on Reddit using Minecraft, though.
+
+https://adventofcode.com/2022/day/12
+
 ### Day 11: Monkey in the Middle
 
 Awesome. First part is reasonably straight forward, just detailed - you need to script some monkeys handling items and
