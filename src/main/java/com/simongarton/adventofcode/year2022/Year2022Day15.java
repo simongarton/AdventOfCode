@@ -1,6 +1,7 @@
 package com.simongarton.adventofcode.year2022;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
+import com.simongarton.adventofcode.common.Coord;
 
 import java.util.*;
 

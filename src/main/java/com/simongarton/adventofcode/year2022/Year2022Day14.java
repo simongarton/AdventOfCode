@@ -1,6 +1,8 @@
 package com.simongarton.adventofcode.year2022;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
+import com.simongarton.adventofcode.common.Bounds;
+import com.simongarton.adventofcode.common.Coord;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -61,21 +63,21 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
             coordLines.add(coordLine);
         }
         // silly hack for map
-        this.bounds.minY = 0;
+        this.bounds.setMinY(0);
         if (extendMap) {
-            this.bounds.maxY = this.bounds.maxY + 2;
-            this.bounds.minX = this.bounds.minX - this.bounds.maxY;
-            this.bounds.maxX = this.bounds.maxX + this.bounds.maxY;
+            this.bounds.setMaxY(this.bounds.getMaxY() + 2);
+            this.bounds.setMinX(this.bounds.getMinX() - this.bounds.getMaxY());
+            this.bounds.setMaxX(this.bounds.getMaxX() + this.bounds.getMaxY());
         }
         this.map = new char[this.bounds.getWidth() * this.bounds.getHeight()];
-        for (int x = this.bounds.minX; x <= this.bounds.maxX; x++) {
-            for (int y = this.bounds.minY; y <= this.bounds.maxY; y++) {
+        for (int x = this.bounds.getMinX(); x <= this.bounds.getMaxX(); x++) {
+            for (int y = this.bounds.getMinY(); y <= this.bounds.getMaxY(); y++) {
                 this.setMap(WATER, x, y);
             }
         }
         if (extendMap) {
-            for (int x = this.bounds.minX; x <= this.bounds.maxX; x++) {
-                this.setMap(ROCK, x, this.bounds.maxY);
+            for (int x = this.bounds.getMinX(); x <= this.bounds.getMaxX(); x++) {
+                this.setMap(ROCK, x, this.bounds.getMaxY());
             }
         }
         // now draw the rocks
@@ -88,7 +90,7 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
         final Coord sand = new Coord("500,0");
         int sunkSand = 0;
         while (true) {
-            if (sand.getY() >= this.bounds.maxY) {
+            if (sand.getY() >= this.bounds.getMaxY()) {
                 // this feels hacky, but worked.
                 break;
             }
@@ -99,7 +101,7 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
             // try down left
             int newX = sand.getX() - 1;
             final int newY = sand.getY() + 1;
-            if (newX >= this.bounds.minX) {
+            if (newX >= this.bounds.getMinX()) {
                 if (this.getMap(newX, newY) == WATER) {
                     sand.setX(newX);
                     sand.setY(newY);
@@ -110,7 +112,7 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
             }
             // try down right
             newX = sand.getX() + 1;
-            if (newX <= this.bounds.maxX) {
+            if (newX <= this.bounds.getMaxX()) {
                 if (this.getMap(newX, newY) == WATER) {
                     sand.setX(newX);
                     sand.setY(newY);
@@ -133,16 +135,16 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
 
     private void setMap(final char code, final int x, final int y) {
         // this should be real, not 0 based
-        final int mapX = x - this.bounds.minX;
-        final int mapY = y - this.bounds.minY;
+        final int mapX = x - this.bounds.getMinX();
+        final int mapY = y - this.bounds.getMinY();
         final int index = mapY * this.bounds.getWidth() + mapX;
         this.map[index] = code;
     }
 
     private char getMap(final int x, final int y) {
         // this should be real, not 0 based
-        final int mapX = x - this.bounds.minX;
-        final int mapY = y - this.bounds.minY;
+        final int mapX = x - this.bounds.getMinX();
+        final int mapY = y - this.bounds.getMinY();
         final int index = mapY * this.bounds.getWidth() + mapX;
         return this.map[index];
     }
@@ -180,9 +182,9 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
     }
 
     private void displayMap() {
-        for (int y = this.bounds.minY; y <= this.bounds.maxY; y++) {
+        for (int y = this.bounds.getMinY(); y <= this.bounds.getMaxY(); y++) {
             String line = "";
-            for (int x = this.bounds.minX; x <= this.bounds.maxX; x++) {
+            for (int x = this.bounds.getMinX(); x <= this.bounds.getMaxX(); x++) {
                 final char contents = this.getMap(x, y);
                 switch (contents) {
                     case WATER:
@@ -205,9 +207,9 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
 
     private void saveMap() {
         final List<String> lines = new ArrayList<>();
-        for (int y = this.bounds.minY; y <= this.bounds.maxY; y++) {
+        for (int y = this.bounds.getMinY(); y <= this.bounds.getMaxY(); y++) {
             String line = "";
-            for (int x = this.bounds.minX; x <= this.bounds.maxX; x++) {
+            for (int x = this.bounds.getMinX(); x <= this.bounds.getMaxX(); x++) {
                 final char contents = this.getMap(x, y);
                 switch (contents) {
                     case WATER:
@@ -234,18 +236,18 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
 
     private void saveImage(final String filename) {
         final BufferedImage img = new BufferedImage(this.bounds.getWidth(), this.bounds.getHeight(), BufferedImage.TYPE_INT_RGB);
-        for (int y = this.bounds.minY; y <= this.bounds.maxY; y++) {
-            for (int x = this.bounds.minX; x <= this.bounds.maxX; x++) {
+        for (int y = this.bounds.getMinY(); y <= this.bounds.getMaxY(); y++) {
+            for (int x = this.bounds.getMinX(); x <= this.bounds.getMaxX(); x++) {
                 final char contents = this.getMap(x, y);
                 switch (contents) {
                     case WATER:
-                        img.setRGB(x - this.bounds.minX, y - this.bounds.minY, Color.CYAN.getRGB());
+                        img.setRGB(x - this.bounds.getMinX(), y - this.bounds.getMinY(), Color.CYAN.getRGB());
                         break;
                     case ROCK:
-                        img.setRGB(x - this.bounds.minX, y - this.bounds.minY, Color.GRAY.getRGB());
+                        img.setRGB(x - this.bounds.getMinX(), y - this.bounds.getMinY(), Color.GRAY.getRGB());
                         break;
                     case SAND:
-                        img.setRGB(x - this.bounds.minX, y - this.bounds.minY, Color.YELLOW.getRGB());
+                        img.setRGB(x - this.bounds.getMinX(), y - this.bounds.getMinY(), Color.YELLOW.getRGB());
                         break;
                     default:
                         throw new RuntimeException("Something else");
@@ -262,38 +264,18 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
 
     private void updateBounds(final List<Coord> coordLine) {
         for (final Coord coord : coordLine) {
-            if (this.bounds.minX == null || coord.getX() < this.bounds.minX) {
-                this.bounds.minX = coord.getX();
+            if (this.bounds.getMinX() == null || coord.getX() < this.bounds.getMinX()) {
+                this.bounds.setMinY(coord.getX());
             }
-            if (this.bounds.minY == null || coord.getY() < this.bounds.minY) {
-                this.bounds.minY = coord.getY();
+            if (this.bounds.getMinX() == null || coord.getY() < this.bounds.getMinY()) {
+                this.bounds.setMinX(coord.getY());
             }
-            if (this.bounds.maxX == null || coord.getX() > this.bounds.maxX) {
-                this.bounds.maxX = coord.getX();
+            if (this.bounds.getMaxX() == null || coord.getX() > this.bounds.getMaxX()) {
+                this.bounds.setMaxX(coord.getX());
             }
-            if (this.bounds.maxY == null || coord.getY() > this.bounds.maxY) {
-                this.bounds.maxY = coord.getY();
+            if (this.bounds.getMaxY() == null || coord.getY() > this.bounds.getMaxY()) {
+                this.bounds.setMaxY(coord.getY());
             }
-        }
-    }
-
-    public static final class Bounds {
-        private Integer minX;
-        private Integer minY;
-        private Integer maxX;
-        private Integer maxY;
-
-        @Override
-        public String toString() {
-            return this.minX + "," + this.minY + " -> " + this.maxX + "," + this.maxY;
-        }
-
-        public int getWidth() {
-            return 1 + this.maxX - this.minX;
-        }
-
-        public int getHeight() {
-            return 1 + this.maxY - this.minY;
         }
     }
 }
