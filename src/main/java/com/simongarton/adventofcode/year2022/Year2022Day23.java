@@ -24,8 +24,15 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
         this.loadGridAndElves(input);
-        this.moveElves();
+        final int rounds = this.moveElves(true);
         return String.valueOf(this.calculateElfBox());
+    }
+
+    @Override
+    public String part2(final String[] input) {
+        this.loadGridAndElves(input);
+        final int rounds = this.moveElves(false);
+        return String.valueOf(rounds);
     }
 
     private int calculateElfBox() {
@@ -58,7 +65,7 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
         return blanks;
     }
 
-    private void moveElves() {
+    private int moveElves(final boolean breakOn10) {
         int movesMade = 1;
         int roundIndex = 0;
         while (movesMade > 0) {
@@ -87,10 +94,11 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
                 this.grid.drawOnTerminal();
             }
             roundIndex++;
-            if (roundIndex == 10) {
+            if (breakOn10 && (roundIndex == 10)) {
                 break;
             }
         }
+        return roundIndex;
     }
 
     private void loadGridAndElves(final String[] input) {
@@ -113,11 +121,6 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
             this.grid.drawOnTerminal();
         }
         this.grid.setDefaultResult(DOT);
-    }
-
-    @Override
-    public String part2(final String[] input) {
-        return null;
     }
 
     public static final class Elf {
