@@ -4,13 +4,11 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import com.simongarton.adventofcode.common.Coord;
 import com.simongarton.adventofcode.common.InfiniteGrid;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Year2022Day23 extends AdventOfCodeChallenge {
 
+    private static final boolean DEBUG = false;
     private static final String ELF = "#";
     private static final String DOT = ".";
     private static final String VOID = " ";
@@ -27,7 +25,37 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
         this.loadGridAndElves(input);
         this.moveElves();
-        return null;
+        return String.valueOf(this.calculateElfBox());
+    }
+
+    private int calculateElfBox() {
+        int minX = this.elves.get(0).original.getX();
+        int maxX = this.elves.get(0).original.getX();
+        int minY = this.elves.get(0).original.getY();
+        int maxY = this.elves.get(0).original.getY();
+        for (final Elf elf : this.elves) {
+            if (elf.original.getX() < minX) {
+                minX = elf.original.getX();
+            }
+            if (elf.original.getX() > maxX) {
+                maxX = elf.original.getX();
+            }
+            if (elf.original.getY() < minY) {
+                minY = elf.original.getY();
+            }
+            if (elf.original.getY() > maxY) {
+                maxY = elf.original.getY();
+            }
+        }
+        int blanks = 0;
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                if (!Objects.equals(this.grid.getXY(x, y), ELF)) {
+                    blanks++;
+                }
+            }
+        }
+        return blanks;
     }
 
     private void moveElves() {
@@ -47,16 +75,21 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
                         && (!(elf.next.toString().equalsIgnoreCase(elf.original.toString())))) {
                     this.grid.putCoord(elf.original, DOT);
                     this.grid.putCoord(elf.next, ELF);
-                    System.out.println("Elf " + elf.index + " moves to " + elf.next);
+                    this.debugPrint("Elf " + elf.index + " moves to " + elf.next);
                     elf.move();
                     movesMade++;
                 } else {
-                    System.out.println("Elf " + elf.index + " stays at " + elf.original);
+                    this.debugPrint("Elf " + elf.index + " stays at " + elf.original);
                     elf.stay();
                 }
             }
-            this.grid.drawOnTerminal();
+            if (DEBUG) {
+                this.grid.drawOnTerminal();
+            }
             roundIndex++;
+            if (roundIndex == 10) {
+                break;
+            }
         }
     }
 
@@ -69,15 +102,17 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
             for (int col = 0; col < line.length(); col++) {
                 final String m = line.charAt(col) + "";
                 this.grid.putXY(col, row, m);
-                if (m.equalsIgnoreCase(DOT)) {
+                if (!m.equalsIgnoreCase(ELF)) {
                     continue;
                 }
                 final Elf elf = new Elf(this.elves.size(), new Coord(col, row));
                 this.elves.add(elf);
             }
         }
-        this.grid.drawOnTerminal();
-        this.grid.setDefaultResult(VOID);
+        if (DEBUG) {
+            this.grid.drawOnTerminal();
+        }
+        this.grid.setDefaultResult(DOT);
     }
 
     @Override
@@ -130,22 +165,22 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
 
         private void nswe(final InfiniteGrid grid) {
             if (this.canMoveNorth(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move North.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move North.");
                 this.next = new Coord(this.original.getX(), this.original.getY() - 1);
                 return;
             }
             if (this.canMoveSouth(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move South.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move South.");
                 this.next = new Coord(this.original.getX(), this.original.getY() + 1);
                 return;
             }
             if (this.canMoveWest(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move West.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move West.");
                 this.next = new Coord(this.original.getX() - 1, this.original.getY());
                 return;
             }
             if (this.canMoveEast(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move East.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move East.");
                 this.next = new Coord(this.original.getX() + 1, this.original.getY());
                 return;
             }
@@ -154,22 +189,22 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
 
         private void swen(final InfiniteGrid grid) {
             if (this.canMoveSouth(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move South.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move South.");
                 this.next = new Coord(this.original.getX(), this.original.getY() + 1);
                 return;
             }
             if (this.canMoveWest(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move West.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move West.");
                 this.next = new Coord(this.original.getX() - 1, this.original.getY());
                 return;
             }
             if (this.canMoveEast(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move East.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move East.");
                 this.next = new Coord(this.original.getX() + 1, this.original.getY());
                 return;
             }
             if (this.canMoveNorth(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move North.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move North.");
                 this.next = new Coord(this.original.getX(), this.original.getY() - 1);
                 return;
             }
@@ -178,22 +213,22 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
 
         private void wens(final InfiniteGrid grid) {
             if (this.canMoveWest(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move West.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move West.");
                 this.next = new Coord(this.original.getX() - 1, this.original.getY());
                 return;
             }
             if (this.canMoveEast(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move East.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move East.");
                 this.next = new Coord(this.original.getX() + 1, this.original.getY());
                 return;
             }
             if (this.canMoveNorth(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move North.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move North.");
                 this.next = new Coord(this.original.getX(), this.original.getY() - 1);
                 return;
             }
             if (this.canMoveSouth(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move South.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move South.");
                 this.next = new Coord(this.original.getX(), this.original.getY() + 1);
                 return;
             }
@@ -202,22 +237,22 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
 
         private void ensw(final InfiniteGrid grid) {
             if (this.canMoveEast(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move East.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move East.");
                 this.next = new Coord(this.original.getX() + 1, this.original.getY());
                 return;
             }
             if (this.canMoveNorth(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move North.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move North.");
                 this.next = new Coord(this.original.getX(), this.original.getY() - 1);
                 return;
             }
             if (this.canMoveSouth(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move South.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move South.");
                 this.next = new Coord(this.original.getX(), this.original.getY() + 1);
                 return;
             }
             if (this.canMoveWest(grid)) {
-                System.out.println("Elf " + this.index + " (" + this.original + ") can move West.");
+                this.debugPrint("Elf " + this.index + " (" + this.original + ") can move West.");
                 this.next = new Coord(this.original.getX() - 1, this.original.getY());
                 return;
             }
@@ -225,27 +260,27 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
         }
 
         private boolean canMoveNorth(final InfiniteGrid grid) {
-            return grid.getXY(this.original.getX() - 1, this.original.getY() - 1).equalsIgnoreCase(DOT) &&
-                    grid.getXY(this.original.getX(), this.original.getY() - 1).equalsIgnoreCase(DOT) &&
-                    grid.getXY(this.original.getX() + 1, this.original.getY() - 1).equalsIgnoreCase(DOT);
+            return (!(grid.getXY(this.original.getX() - 1, this.original.getY() - 1).equalsIgnoreCase(ELF) ||
+                    grid.getXY(this.original.getX(), this.original.getY() - 1).equalsIgnoreCase(ELF) ||
+                    grid.getXY(this.original.getX() + 1, this.original.getY() - 1).equalsIgnoreCase(ELF)));
         }
 
         private boolean canMoveSouth(final InfiniteGrid grid) {
-            return grid.getXY(this.original.getX() - 1, this.original.getY() + 1).equalsIgnoreCase(DOT) &&
-                    grid.getXY(this.original.getX(), this.original.getY() + 1).equalsIgnoreCase(DOT) &&
-                    grid.getXY(this.original.getX() + 1, this.original.getY() + 1).equalsIgnoreCase(DOT);
+            return (!(grid.getXY(this.original.getX() - 1, this.original.getY() + 1).equalsIgnoreCase(ELF) ||
+                    grid.getXY(this.original.getX(), this.original.getY() + 1).equalsIgnoreCase(ELF) ||
+                    grid.getXY(this.original.getX() + 1, this.original.getY() + 1).equalsIgnoreCase(ELF)));
         }
 
         private boolean canMoveWest(final InfiniteGrid grid) {
-            return grid.getXY(this.original.getX() - 1, this.original.getY() - 1).equalsIgnoreCase(DOT) &&
-                    grid.getXY(this.original.getX() - 1, this.original.getY()).equalsIgnoreCase(DOT) &&
-                    grid.getXY(this.original.getX() - 1, this.original.getY() + 1).equalsIgnoreCase(DOT);
+            return (!(grid.getXY(this.original.getX() - 1, this.original.getY() - 1).equalsIgnoreCase(ELF) ||
+                    grid.getXY(this.original.getX() - 1, this.original.getY()).equalsIgnoreCase(ELF) ||
+                    grid.getXY(this.original.getX() - 1, this.original.getY() + 1).equalsIgnoreCase(ELF)));
         }
 
         private boolean canMoveEast(final InfiniteGrid grid) {
-            return grid.getXY(this.original.getX() + 1, this.original.getY() - 1).equalsIgnoreCase(DOT) &&
-                    grid.getXY(this.original.getX() + 1, this.original.getY()).equalsIgnoreCase(DOT) &&
-                    grid.getXY(this.original.getX() + 1, this.original.getY() + 1).equalsIgnoreCase(DOT);
+            return (!(grid.getXY(this.original.getX() + 1, this.original.getY() - 1).equalsIgnoreCase(ELF) ||
+                    grid.getXY(this.original.getX() + 1, this.original.getY()).equalsIgnoreCase(ELF) ||
+                    grid.getXY(this.original.getX() + 1, this.original.getY() + 1).equalsIgnoreCase(ELF)));
         }
 
         public void move() {
@@ -254,6 +289,18 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
 
         public void stay() {
             this.next = this.original;
+        }
+
+        private void debugPrint(final String s) {
+            if (DEBUG) {
+                System.out.println("  " + s);
+            }
+        }
+    }
+
+    private void debugPrint(final String s) {
+        if (DEBUG) {
+            System.out.println("  " + s);
         }
     }
 }
