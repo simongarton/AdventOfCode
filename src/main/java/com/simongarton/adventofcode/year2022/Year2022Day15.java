@@ -31,6 +31,7 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
         this.loadMap(input);
+//        this.analyseRow(2000000);
         return String.valueOf(this.countImpossibles(2000000));
 //        return String.valueOf(this.countImpossibles(10));
     }
@@ -38,6 +39,33 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
         return null;
+    }
+
+    private void analyseRow(final int row) {
+        System.out.printf("Bounds is %s,%s to %s,%s.\n",
+                this.bounds.minX,
+                this.bounds.minY,
+                this.bounds.maxX,
+                this.bounds.maxY);
+        System.out.printf("Row is %s wide.\n", this.bounds.getWidth());
+        int coordsOutOfRange = 0;
+        for (int x = this.bounds.minX; x <= this.bounds.maxX; x++) {
+            final Coord c = new Coord(x, row);
+            int withinRange = 0;
+            for (final Coord sensor : this.sensors) {
+                final Coord beacon = this.map.get(sensor);
+                final int beaconDistance = beacon.manhattanDistance(sensor);
+                final int xDistance = c.manhattanDistance(sensor);
+                if (xDistance <= beaconDistance) {
+                    withinRange++;
+                }
+            }
+            if (withinRange == 0) {
+                coordsOutOfRange++;
+            }
+        }
+        // this got to 4344722 - which I have seen before. And I know there's just one beacon on this row, so -1.
+        System.out.printf("%s coords out of range, leaving %s\n", coordsOutOfRange, this.bounds.getWidth() - coordsOutOfRange);
     }
 
     private long countImpossibles(final int row) {
@@ -48,23 +76,10 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
                 this.bounds.maxY);
         System.out.printf("Row is %s wide.\n", this.bounds.getWidth());
         final int[] rowData = new int[this.bounds.getWidth()];
-//        final List<Interval> intervals = new ArrayList<>();
         for (final Coord sensor : this.sensors) {
             final Coord beacon = this.map.get(sensor);
             this.updateArrayWithSensorAndBeacon(sensor, beacon, rowData, row);
-//            final Interval interval = this.getRange(sensor, beacon, rowData, row);
-//            if (interval != null) {
-//                intervals.add(interval);
-//            }
         }
-
-//        for (final Interval interval : intervals) {
-//            System.out.println(interval);
-//        }
-//
-//        final Interval[] mergedRanges = this.mergeIntervals(intervals.toArray(new Interval[0]));
-//        final int distance = mergedRanges[0].end - mergedRanges[0].start;
-//        System.out.println(distance);
 
         // there are no sensors on this row
         for (final Coord sensor : this.sensors) {
@@ -77,6 +92,7 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
         // looking back, surely if there is a beacon here, the missing beacon
         // can't be here ? but setting it to = 1 gives the wrong error for the
         // sample (and a wrong for part 1). There's only 1 beacon on this row : x=745731, y=2000000
+        // ah no, a beacon can be closest to more than one sensor.
         for (final Coord beacon : this.beacons) {
             if (beacon.getY() == row) {
                 System.out.printf("Removing beacon at %s,%s\n", beacon.getX(), beacon.getY());
@@ -221,7 +237,6 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
             return 1 + this.maxY - this.minY;
         }
     }
-
 
     // The main function that takes a set of intervals, merges
     // overlapping intervals and prints the result
