@@ -59,7 +59,7 @@ public class Year2022Day21 extends AdventOfCodeChallenge {
             if (difference < 0) {
                 // I've overshot
                 current = current - lastIncrement;
-                increment /= 4;
+                increment = 1;
                 continue;
             }
             current = current + increment;
