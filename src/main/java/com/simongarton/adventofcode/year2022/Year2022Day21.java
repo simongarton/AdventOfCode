@@ -41,6 +41,7 @@ public class Year2022Day21 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
         // this is horrible, and I really don't like it - but it does (eventually) work.
+        // 36688 ms on my old MacbookPro.
         long current = 0L;
         long increment = 1L;
 

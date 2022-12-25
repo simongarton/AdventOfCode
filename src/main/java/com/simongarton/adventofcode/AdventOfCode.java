@@ -118,13 +118,14 @@ public class AdventOfCode {
         // have only done part 1
         //this.challenges.add(new Year2022Day19());
         this.challenges.add(new Year2022Day20());
-        // need hillclimber for part 2
-        //this.challenges.add(new Year2022Day21());
+        this.challenges.add(new Year2022Day21());
         // have only done part 1
         //this.challenges.add(new Year2022Day22());
         this.challenges.add(new Year2022Day23());
-        this.challenges.add(new Year2022Day24());
-        this.challenges.add(new Year2022Day25());
+        // not yet done
+        //this.challenges.add(new Year2022Day24());
+        // not yet done
+        //this.challenges.add(new Year2022Day25());
     }
 
     public AdventOfCode() {

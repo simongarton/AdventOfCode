@@ -5,45 +5,102 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2022
 
-### Day 18: Boiling Boulders
+### Day 25: Full of Hot Air (0/2)
+
+Hmm. Having skim-read this, it looks like just encoding numbers in base 5 with symbols. Probably more complicated
+thinking than programming at this point.
+
+https://adventofcode.com/2022/day/25
+
+### Day 24: Blizzard Basin (0/2)
+
+Another map : you have to get from one corner to another, avoiding storms that move across the map; you'll end up moving
+in one of the 4 cardinal directions (including retracing a previous step) or even waiting. I can see the storms location
+is deterministic; I don't know if I can map a graph of the storms given they keep changing.
+
+https://adventofcode.com/2022/day/24
+
+### Day 23: Unstable Diffusion
+
+Again a map, this time with elves spread around, but wanting to move so not too close to each other. Initially I thought
+this would be a cellular automaton, but it turned out to be simpler (once I read the question again)
+and you just need to keep track of which elf goes where, and not move any that would collide.
+
+https://adventofcode.com/2022/day/23
+
+### Day 22: Monkey Map (1/2)
+
+First part awesome : you get a map with space and walls, and a list of instructions. Following the instructions, move
+through the map to find out where you end up. The second part revealed that the map was actually a cube, flattened out,
+and you need to redo it, given that being on the side of a cube changes orientation of the instructions. I haven't yet
+understood how the orientation works.
+
+https://adventofcode.com/2022/day/22
+
+### Day 21: Monkey Math
+
+First part fun, second part annoying - 36s to hill climb a result. You have a troop of monkeys which either yell out a
+number, or are listening for two other monkeys, at which point they perform some operation on those two numbers and yell
+that out. The second part saw you having to decide what number a particular monkey yelled out to get a given result -
+and I couldn't figure out how else to do it apart from try different numbers and see if you're getting warmer or colder.
+
+https://adventofcode.com/2022/day/21
+
+### Day 20: Grove Positioning System
+
+Sequences of numbers, which define how to move them around to "decrypt" them; the trick being you need to keep track of
+the original order, which has a couple of nice gotchas. Second part just made them very long.
+
+https://adventofcode.com/2022/day/20
+
+### Day 19: Not Enough Minerals (0/2)
+
+Super excited by this one, but haven't yet figured out how to do it. 4 different kinds of robots, each mining a
+different kind of ore, and then you have recipes to use different amounts of ore to make the robot. Aim is to end with
+the most of the ore (actually geodes) collected by the most complicated robot. You're given different recipes to
+evaluate - but end up having to make decisions (do I use up minerals early to make more simple robots, or save them up
+for the most complex ones)
+
+https://adventofcode.com/2022/day/19
+
+### Day 18: Boiling Boulders (1/2)
+
+A 3d puzzle. Model cubes in 3d and for part 1, work out if any cubes are touching another; part 2 I think is to find
+contiguous space between cubes.
 
 https://adventofcode.com/2022/day/18
 
-### Day 17: Pyroclastic Flow
+### Day 17: Pyroclastic Flow (1/2)
 
 Tetris ! Given a cavern with 5 suspiciously Tetris shaped rocks falling down and stacking up on each other, work out how
 high the stack will be at a given time.
 
-Part 1 : 2,022 rocks, no worries.
-Part 2 : 1,000,000,000,000. Logic will take 11 years.
+Part 1 : 2,022 rocks, no worries. Part 2 : 1,000,000,000,000. Logic will take 11 years.
 
 https://adventofcode.com/2022/day/17
 
-### Day 16: Proboscidea Volcanium
+### Day 16: Proboscidea Volcanium (1/2)
 
 Loved it. Super challenging - build a graph of rooms, some of which have useful valves in, then work out how to travel
 around those rooms in limited time, turning certain valves on to maximise the pressure. So I needed to (a) parse the
-input
-and build the graph (b) use A* to build up a map of distances, and then (c) create an array of states - at this point I
-have visited these rooms and turned these valves on a these times, and use a BFS to figure out the best route.
+input and build the graph (b) use A* to build up a map of distances, and then (c) create an array of states - at this
+point I have visited these rooms and turned these valves on a these times, and use a BFS to figure out the best route.
 
 Part 1 done. Part 2 changes it so it's you and an elephant (!) both walking around and turning valves on. I think I can
 extend my approach - but reading the subreddit, part 2 seems to take a lot longer.
 
 https://adventofcode.com/2022/day/16
 
-### Day 15: Beacon Exclusion Zone
+### Day 15: Beacon Exclusion Zone (0/2)
 
-Driving me up the wall : not complete yet. Given an array of sensors, each of
-which can pick up the closet beacon, use the overlapping areas to figure out where
-a missing beacon CAN'T be. Currently got example working, but not part 1.
+Driving me up the wall : not complete yet. Given an array of sensors, each of which can pick up the closet beacon, use
+the overlapping areas to figure out where a missing beacon CAN'T be. Currently got example working, but not part 1.
 
 https://adventofcode.com/2022/day/15
 
 ### Day 14: Regolith Reservoir
 
-Much easier and nice to do. Drip sand onto a pile of rocks, figuring out which
-way it goes, until it fills up.
+Much easier and nice to do. Drip sand onto a pile of rocks, figuring out which way it goes, until it fills up.
 
 ![Part 1](2022-14.1.png)
 
