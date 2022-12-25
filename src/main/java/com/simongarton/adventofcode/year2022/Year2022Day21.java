@@ -40,31 +40,37 @@ public class Year2022Day21 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
+        // this is horrible, and I really don't like it - but it does (eventually) work.
         long current = 0L;
         long increment = 1L;
-        long lastIncrement = 0L;
+
+        final Monkey firstPass = this.letHumanPlayGame(current, input);
+        long lastDifference = firstPass.value2 - firstPass.value1;
 
         while (true) {
             final Monkey root = this.letHumanPlayGame(current + increment, input);
-            System.out.printf("%s = %s with %s and %s\n",
-                    root.value1,
-                    root.value2,
-                    current,
-                    increment);
             if (root.value1 == root.value2) {
                 // I've found it
                 break;
             }
             final long difference = root.value2 - root.value1;
-            if (difference < 0) {
+            this.debugPrint(String.format("v1 %s = v2 %s with cur %s inc %s diff %s last %s\n",
+                    root.value1,
+                    root.value2,
+                    current,
+                    increment,
+                    difference,
+                    lastDifference));
+            final boolean lastDiffNegative = lastDifference < 0;
+            final boolean diffNegative = difference < 0;
+            if (lastDiffNegative != diffNegative) {
                 // I've overshot
-                current = current - lastIncrement;
                 increment = 1;
                 continue;
             }
             current = current + increment;
-            lastIncrement = increment;
             increment *= 2;
+            lastDifference = difference;
         }
         return String.valueOf(current);
     }
