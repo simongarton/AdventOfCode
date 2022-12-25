@@ -40,28 +40,54 @@ public class Year2022Day21 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        final long val = 3373767893067L;
-        for (int i = 1; i < 1000; i++) {
-            final List<Monkey> troop = this.loadMonkeys(input);
-            troop.stream().forEach(m -> m.addDependencies(troop));
-            final Monkey root = troop.stream().filter(m -> m.name.equalsIgnoreCase("root"))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Didn't find root"));
-            final Monkey humn = troop.stream().filter(m -> m.name.equalsIgnoreCase("humn"))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Didn't find humn"));
-            humn.operation = String.valueOf(val);
-            humn.numberYelled = val;
-            root.operation = root.operation.replace("+", "=");
-            int iteration = 0;
-            while (!root.hasYelled) {
-                this.debugPrint(String.format("\niteration %s\n\n", iteration));
-                troop.stream().forEach(Monkey::lookAroundAndYell);
-                iteration++;
+        long current = 0L;
+        long increment = 1L;
+        long lastIncrement = 0L;
+
+        while (true) {
+            final Monkey root = this.letHumanPlayGame(current + increment, input);
+            System.out.printf("%s = %s with %s and %s\n",
+                    root.value1,
+                    root.value2,
+                    current,
+                    increment);
+            if (root.value1 == root.value2) {
+                // I've found it
+                break;
             }
+            final long difference = root.value2 - root.value1;
+            if (difference < 0) {
+                // I've overshot
+                current = current - lastIncrement;
+                increment /= 4;
+                continue;
+            }
+            current = current + increment;
+            lastIncrement = increment;
+            increment *= 2;
         }
-        this.debugPrint("\n");
-        return "";
+        return String.valueOf(current);
+    }
+
+    private Monkey letHumanPlayGame(final long val, final String[] input) {
+        final List<Monkey> troop = this.loadMonkeys(input);
+        troop.stream().forEach(m -> m.addDependencies(troop));
+        final Monkey root = troop.stream().filter(m -> m.name.equalsIgnoreCase("root"))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Didn't find root"));
+        final Monkey humn = troop.stream().filter(m -> m.name.equalsIgnoreCase("humn"))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Didn't find humn"));
+        humn.operation = null;
+        humn.numberYelled = val;
+        root.operation = root.operation.replace("+", "=");
+        int iteration = 0;
+        while (!root.hasYelled) {
+            this.debugPrint(String.format("\niteration %s\n\n", iteration));
+            troop.stream().forEach(Monkey::lookAroundAndYell);
+            iteration++;
+        }
+        return root;
     }
 
     private void debugPrint(final String s) {
@@ -82,6 +108,8 @@ public class Year2022Day21 extends AdventOfCodeChallenge {
         String calculation;
         String operation;
         List<Monkey> dependencies;
+        long value1;
+        long value2;
 
         public Monkey(final String line) {
             final String[] parts = line.split(":");
@@ -89,7 +117,7 @@ public class Year2022Day21 extends AdventOfCodeChallenge {
             this.calculation = parts[1].trim();
         }
 
-        public int addDependencies(final List<Monkey> troop) {
+        public void addDependencies(final List<Monkey> troop) {
             this.dependencies = new ArrayList<>();
             if (this.calculation.contains(" ")) {
                 final String[] parts = this.calculation.split(" ");
@@ -104,19 +132,18 @@ public class Year2022Day21 extends AdventOfCodeChallenge {
                         .orElseThrow(() -> new RuntimeException("Didn't find " + parts[2])));
             } else {
                 this.numberYelled = Long.parseLong(this.calculation);
-                return 0;
+                return;
             }
             if (this.dependencies.size() != 2) {
                 throw new RuntimeException("Bad dependencies " + this.dependencies.size() + " for " + this.calculation);
             }
-            return this.dependencies.size();
         }
 
         public void lookAroundAndYell() {
             if (this.hasYelled) {
                 return;
             }
-            if (this.numberYelled > 0) {
+            if (this.operation == null) {
                 this.debugPrint(String.format("%s yells out %s\n", this.name, this.numberYelled));
                 this.hasYelled = true;
                 return;
@@ -141,12 +168,15 @@ public class Year2022Day21 extends AdventOfCodeChallenge {
                     break;
                 case "=":
                     this.numberYelled = 0;
-                    System.out.printf("equalling %s - %s = %s\n", value1, value2, value1 - value2);
+                    this.value1 = value1;
+                    this.value2 = value2;
+//                    System.out.printf("equalling %s - %s = %s\n", value1, value2, value1 - value2);
                     break;
                 default:
                     throw new RuntimeException("Bad operation " + this.operation);
             }
             this.debugPrint(String.format("%s yells out %s\n", this.name, this.numberYelled));
+            this.operation = null;
             this.hasYelled = true;
         }
 
@@ -155,6 +185,5 @@ public class Year2022Day21 extends AdventOfCodeChallenge {
                 System.out.printf(s);
             }
         }
-
     }
 }
