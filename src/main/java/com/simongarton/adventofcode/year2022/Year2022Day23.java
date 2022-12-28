@@ -17,6 +17,11 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
     private List<Elf> elves;
 
     @Override
+    public String title() {
+        return "Day 23: Unstable Diffusion";
+    }
+
+    @Override
     public boolean run() {
         return this.runChallenge(2022, 23);
     }
