@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Year2022Day16 extends AdventOfCodeChallenge {
-
+    
     private List<Valve> valves;
     private Map<String, Integer> travelCosts;
     private State bestState;
@@ -360,7 +360,6 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
 
         private final List<Valve> valvesOpened;
 
-
         public State(final Valve valve, final int minutesElapsed) {
             this.valve = valve;
             this.minutesElapsed = minutesElapsed;
@@ -406,7 +405,6 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
         private String key;
 
         private final List<Valve> valvesOpened;
-
 
         public TwoPersonState(final Valve current,
                               final Valve elephant,

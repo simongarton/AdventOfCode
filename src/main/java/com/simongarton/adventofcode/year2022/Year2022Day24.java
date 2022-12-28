@@ -3,12 +3,11 @@ package com.simongarton.adventofcode.year2022;
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import com.simongarton.adventofcode.common.Coord;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class Year2022Day24 extends AdventOfCodeChallenge {
+
+    // 669 is too high
 
     private int width;
     private int height;
@@ -24,11 +23,11 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
         this.loadMaps(input);
         this.drawMap(0);
-        for (int i = 0; i < 10; i++) {
-            this.addMap();
-            this.drawMap(this.maps.size() - 1);
-        }
-        return null;
+        final State start = new State(0, new Coord(1, 0), this);
+        start.buildNeighbours();
+        final State end = new State(-1, new Coord(this.width - 2, this.height - 1), this);
+        final List<State> states = this.aStar(start, end);
+        return String.valueOf(states.size() - 1); // -1 as includes start
     }
 
     @Override
@@ -38,10 +37,21 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
 
     private void loadMaps(final String[] input) {
         this.maps = new ArrayList<>();
-        this.maps.add(Arrays.asList(input).stream().collect(Collectors.joining()));
+        this.maps.add(String.join("", Arrays.asList(input)));
         this.width = input[0].length();
         this.height = input.length;
         this.loadBlizzards(this.maps.get(0));
+    }
+
+    private String getOrCreateMap(final int index) {
+        if (index < this.maps.size()) {
+            return this.maps.get(index);
+        }
+        if (index > this.maps.size()) {
+            throw new RuntimeException("woah");
+        }
+        this.addMap();
+        return this.maps.get(index);
     }
 
     private void loadBlizzards(final String map) {
@@ -61,6 +71,12 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     }
 
     private String getSymbol(final String map, final int col, final int row) {
+        if (col < 0 || col >= this.width) {
+            return "x";
+        }
+        if (row < 0 || row >= this.height) {
+            return "x";
+        }
         return map.substring((row * this.width) + col, (row * this.width) + col + 1);
     }
 
@@ -153,13 +169,139 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
 
     public static final class State {
         private final int iteration;
-        private final List<Coord> stepsMade;
-        private final String map;
+        private final Coord position;
+        private final Year2022Day24 challenge;
+        private final List<State> neighbours;
 
-        public State(final int iteration, final String map) {
-            this.stepsMade = new ArrayList<>();
+        public State(final int iteration,
+                     final Coord position,
+                     final Year2022Day24 challenge) {
             this.iteration = iteration;
-            this.map = map;
+            this.position = position;
+            this.challenge = challenge;
+            this.neighbours = new ArrayList<>();
         }
+
+        public void buildNeighbours() {
+            final String map = this.challenge.getOrCreateMap(this.iteration + 1);
+            if (this.challenge.getSymbol(map, this.position.getX(), this.position.getY()).equalsIgnoreCase(".")) {
+                this.neighbours.add(new State(this.iteration + 1, this.position, this.challenge));
+            }
+            if (this.challenge.getSymbol(map, this.position.getX() - 1, this.position.getY()).equalsIgnoreCase(".")) {
+                final Coord newPosition = new Coord(this.position.getX() - 1, this.position.getY());
+                this.neighbours.add(new State(this.iteration + 1, newPosition, this.challenge));
+            }
+            if (this.challenge.getSymbol(map, this.position.getX() + 1, this.position.getY()).equalsIgnoreCase(".")) {
+                final Coord newPosition = new Coord(this.position.getX() + 1, this.position.getY());
+                this.neighbours.add(new State(this.iteration + 1, newPosition, this.challenge));
+            }
+            if (this.challenge.getSymbol(map, this.position.getX(), this.position.getY() - 1).equalsIgnoreCase(".")) {
+                final Coord newPosition = new Coord(this.position.getX(), this.position.getY() - 1);
+                this.neighbours.add(new State(this.iteration + 1, newPosition, this.challenge));
+            }
+            if (this.challenge.getSymbol(map, this.position.getX(), this.position.getY() + 1).equalsIgnoreCase(".")) {
+                final Coord newPosition = new Coord(this.position.getX(), this.position.getY() + 1);
+                this.neighbours.add(new State(this.iteration + 1, newPosition, this.challenge));
+            }
+        }
+
+        public String key() {
+            return this.iteration + " (" + this.position + ") ";
+        }
+
+        @Override
+        public String toString() {
+            return this.iteration + " (" + this.position + ") " + this.neighbours.size();
+        }
+    }
+
+    private List<State> aStar(final State start, final State end) {
+        final boolean debug = true;
+
+        final Set<State> openSet = new HashSet<>(Collections.singleton(start));
+        final Map<State, State> cameFrom = new HashMap<>();
+        final Map<State, Integer> costToGetHereFromStart = new HashMap<>();
+        costToGetHereFromStart.put(start, 0);
+
+        final Map<State, Integer> rankingScoreAsToHerePlusEstimateToEnd = new HashMap<>();
+        rankingScoreAsToHerePlusEstimateToEnd.put(start, this.estimateCostToEnd(start, start));
+
+        while (!openSet.isEmpty()) {
+            final State current = this.bestOpenSetWithLowestFScoreValue(openSet, rankingScoreAsToHerePlusEstimateToEnd);
+            if (Objects.equals(current.position.toString(), end.position.toString())) {
+                return this.reconstructPath(cameFrom, current);
+            }
+            this.debugPrint(debug, "working on / removing current " + current.toString() + " with openSet.size()=" + openSet.size());
+            openSet.remove(current);
+            this.drawMapWithPlayer(this.maps.get(current.iteration), current.position);
+            for (final State neighbor : current.neighbours) {
+                if (neighbor.neighbours.isEmpty()) {
+                    neighbor.buildNeighbours();
+                }
+                // tentative_gScore is the distance from start to the neighbor through current
+                final int tentative_gScore = costToGetHereFromStart.get(current) + this.cost(current, neighbor);
+                this.debugPrint(debug, "  checking neighbour " + neighbor + " tentative_gScore=" + tentative_gScore);
+                if (tentative_gScore < costToGetHereFromStart.getOrDefault(neighbor, Integer.MAX_VALUE)) {
+                    // This path to neighbor is better than any previous one. Record it!
+                    this.debugPrint(debug, "     storing neighbour " + neighbor);
+                    cameFrom.put(neighbor, current);
+                    costToGetHereFromStart.put(neighbor, tentative_gScore);
+                    rankingScoreAsToHerePlusEstimateToEnd.put(neighbor, tentative_gScore + this.estimateCostToEnd(neighbor, end));
+                    openSet.add(neighbor);
+                } else {
+                    this.debugPrint(debug, "     ignoring neighbour " + neighbor);
+                }
+            }
+        }
+
+        // Open set is empty but goal was never reached
+        throw new RuntimeException("AStar failed.");
+    }
+
+    private void drawMapWithPlayer(final String map, final Coord position) {
+        final String yetAnotherMap = this.updateMapWithSymbol(map, position.getX(), position.getY(), "P");
+        this.drawMapString(yetAnotherMap);
+    }
+
+    private void debugPrint(final boolean debug, final String s) {
+        if (debug) {
+            System.out.println(s);
+        }
+    }
+
+    private State bestOpenSetWithLowestFScoreValue(final Set<State> openSet, final Map<State, Integer> fScore) {
+        State best = null;
+        int bestValue = Integer.MAX_VALUE;
+        for (final State cell : openSet) {
+            final int cost = fScore.get(cell); // may not be there ?
+            if (best == null || bestValue > cost) {
+                best = cell;
+                bestValue = cost;
+            }
+        }
+        return best;
+    }
+
+    private Integer estimateCostToEnd(final State start, final State end) {
+        return this.manhattan(start, end);
+    }
+
+    private Integer manhattan(final State start, final State end) {
+        return start.position.manhattanDistance(end.position);
+    }
+
+    private Integer cost(final State current, final State neighbor) {
+        return -current.position.manhattanDistance(neighbor.position);
+    }
+
+    private List<State> reconstructPath(final Map<State, State> cameFrom, final State end) {
+        State current = end;
+        final List<State> path = new ArrayList<>();
+        path.add(current);
+        while (cameFrom.containsKey(current)) {
+            current = cameFrom.get(current);
+            path.add(0, current);
+        }
+        return path;
     }
 }
