@@ -10,6 +10,15 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 Hmm. Having skim-read this, it looks like just encoding numbers in base 5 with symbols. Probably more complicated
 thinking than programming at this point.
 
+Lol. Way harder. Instead of counting up powers of 5, you have to shift your counts - you can't have a count of any power
+of 5 greater than 2. So if you wanted say 3 x 5^2, you actually end up having to have an extra 1 x 5^3, and then you
+have to take away 5 x 5^2 to balance, ending up with 1 x 5^3 and -2 x 5^2.
+
+I got a brute force working quite quickly, but the real sample was too large, so I had to work out how to map it
+directly. Attempts to do it directly, starting from the beginning or the end, turned out too hard to figure out - so I
+did it with a 'mancala' style approach, divvying it up into a normal base 5 number, and then re-distributing numbers
+repeatedly : if I have say 3 of one power, add 1 to the next higher power and take 5 away from this one.
+
 https://adventofcode.com/2022/day/25
 
 ### Day 24: Blizzard Basin (0/2)

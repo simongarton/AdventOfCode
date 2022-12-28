@@ -124,8 +124,8 @@ public class AdventOfCode {
         this.challenges.add(new Year2022Day23());
         // not yet done
         //this.challenges.add(new Year2022Day24());
-        // not yet done
-        //this.challenges.add(new Year2022Day25());
+        // part 2 is just adding up remaining stars
+        this.challenges.add(new Year2022Day25());
     }
 
     public AdventOfCode() {
