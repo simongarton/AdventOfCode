@@ -8,6 +8,7 @@ import java.util.*;
 public class Year2022Day24 extends AdventOfCodeChallenge {
 
     // 669 is too high
+    // 464 is too high - made cost -1
 
     private int width;
     private int height;
@@ -213,6 +214,23 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
         public String toString() {
             return this.iteration + " (" + this.position + ") " + this.neighbours.size();
         }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || this.getClass() != o.getClass()) {
+                return false;
+            }
+            final State state = (State) o;
+            return this.key().equalsIgnoreCase(state.key());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.key());
+        }
     }
 
     private List<State> aStar(final State start, final State end) {
@@ -233,11 +251,10 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
             }
             this.debugPrint(debug, "working on / removing current " + current.toString() + " with openSet.size()=" + openSet.size());
             openSet.remove(current);
-            this.drawMapWithPlayer(this.maps.get(current.iteration), current.position);
+            if (debug) {
+                this.drawMapWithPlayer(this.maps.get(current.iteration), current.position);
+            }
             for (final State neighbor : current.neighbours) {
-                if (neighbor.neighbours.isEmpty()) {
-                    neighbor.buildNeighbours();
-                }
                 // tentative_gScore is the distance from start to the neighbor through current
                 final int tentative_gScore = costToGetHereFromStart.get(current) + this.cost(current, neighbor);
                 this.debugPrint(debug, "  checking neighbour " + neighbor + " tentative_gScore=" + tentative_gScore);
@@ -247,6 +264,8 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
                     cameFrom.put(neighbor, current);
                     costToGetHereFromStart.put(neighbor, tentative_gScore);
                     rankingScoreAsToHerePlusEstimateToEnd.put(neighbor, tentative_gScore + this.estimateCostToEnd(neighbor, end));
+                    // calculate neighbours lazily
+                    neighbor.buildNeighbours();
                     openSet.add(neighbor);
                 } else {
                     this.debugPrint(debug, "     ignoring neighbour " + neighbor);
@@ -291,6 +310,9 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     }
 
     private Integer cost(final State current, final State neighbor) {
+        // if this is positive, I never get there
+        // return -1;
+        // if I do this, I must make it a bad idea to stay still
         return -current.position.manhattanDistance(neighbor.position);
     }
 
