@@ -31,7 +31,7 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
         this.loadMap(input);
-//        this.analyseRow(2000000);
+        this.analyseRow(2000000);
         return String.valueOf(this.countImpossibles(2000000));
 //        return String.valueOf(this.countImpossibles(10));
     }
@@ -56,7 +56,7 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
                 final Coord beacon = this.map.get(sensor);
                 final int beaconDistance = beacon.manhattanDistance(sensor);
                 final int xDistance = c.manhattanDistance(sensor);
-                if (xDistance <= beaconDistance) {
+                if (xDistance < beaconDistance) {
                     withinRange++;
                 }
             }
