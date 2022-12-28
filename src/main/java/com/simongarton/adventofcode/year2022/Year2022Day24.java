@@ -23,7 +23,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
         this.loadMaps(input);
-        this.drawMap(0);
+        this.drawMap(this.maps.get(0));
         final State start = new State(0, new Coord(1, 0), this);
         start.buildNeighbours();
         final State end = new State(-1, new Coord(this.width - 2, this.height - 1), this);
@@ -87,11 +87,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
                 map.substring((row * this.width) + col + 1);
     }
 
-    private void drawMap(final int index) {
-        this.drawMapString(this.maps.get(index));
-    }
-
-    private void drawMapString(final String map) {
+    private void drawMap(final String map) {
         for (int row = 0; row < (map.length() / this.width); row++) {
             System.out.println(map.substring(row * this.width, (row + 1) * this.width));
         }
@@ -145,8 +141,6 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
                 newMap = this.updateMapWithSymbol(newMap, blizzard.position.getX(), blizzard.position.getY(), blizzard.symbol);
                 return newMap;
             case "*":
-                newMap = this.updateMapWithSymbol(newMap, blizzard.position.getX(), blizzard.position.getY(), blizzard.symbol);
-                return newMap;
             case ">":
             case "<":
             case "^":
@@ -279,7 +273,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
 
     private void drawMapWithPlayer(final String map, final Coord position) {
         final String yetAnotherMap = this.updateMapWithSymbol(map, position.getX(), position.getY(), "P");
-        this.drawMapString(yetAnotherMap);
+        this.drawMap(yetAnotherMap);
     }
 
     private void debugPrint(final boolean debug, final String s) {
