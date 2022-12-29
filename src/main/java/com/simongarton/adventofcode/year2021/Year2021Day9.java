@@ -5,6 +5,11 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 public class Year2021Day9 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 9: Smoke Basin";
+    }
+
+    @Override
     public Outcome run() {
         return this.runChallenge(2021, 9);
     }

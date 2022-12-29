@@ -193,7 +193,8 @@ https://adventofcode.com/2022/day/9
 ### Day 8: Treetop Tree House
 
 Nice. Given a grid of tree heights, work out first how many trees are visible from any edge (a tree must be taller than
-all the trees between it and the edge) and then how big an area you can see around it.
+all the trees between it and the edge) and then how big an area you can see around it. Cross
+reference [day 8](https://adventofcode.com/2021/day/9) last year,
 
 https://adventofcode.com/2022/day/8
 
@@ -247,6 +248,44 @@ part 2) the top 3 groups.
 https://adventofcode.com/2022/day/1
 
 ## 2021
+
+### Day 10: Syntax Scoring
+
+Parsing lots of brackets to figure out if it's valid.
+
+https://adventofcode.com/2021/day/10
+
+### Day 9: Smoke Basin
+
+A map of heights - cross reference https://adventofcode.com/2022/day/8.
+
+https://adventofcode.com/2021/day/9
+
+### Day 8: Seven Segment Search
+
+Fun - based around 7 segment displays with mixed up wiring, analyse input and output to figure out the wiring. Had to
+use some frequency analysis as part of the solution.
+
+https://adventofcode.com/2021/day/8
+
+### Day 8: Seven Segment Search
+
+Fun - based around 7 segment displays with mixed up wiring, analyse input and output to figure out the wiring. Had to
+use some frequency analysis as part of the solution.
+
+https://adventofcode.com/2021/day/8
+
+### Day 7: The Treachery of Whales
+
+Cute : align a group of crabs in a vertical line by minimizing their horizontal moves, using two algorithms.
+
+https://adventofcode.com/2021/day/7
+
+### Day 6: Lanternfish
+
+A population of fish that are breeding at various intervals. Not unlike Wa-Tor.
+
+https://adventofcode.com/2021/day/6
 
 ### Day 5: Hydrothermal Venture
 
