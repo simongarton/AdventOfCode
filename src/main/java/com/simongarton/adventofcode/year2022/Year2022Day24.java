@@ -1,8 +1,16 @@
 package com.simongarton.adventofcode.year2022;
 
+import com.googlecode.lanterna.TerminalPosition;
+import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.screen.TerminalScreen;
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.terminal.Terminal;
+import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import com.simongarton.adventofcode.common.Coord;
 
+import java.io.IOException;
 import java.util.*;
 
 public class Year2022Day24 extends AdventOfCodeChallenge {
@@ -14,6 +22,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     private int height;
     private List<String> maps;
     private List<Blizzard> blizzards;
+    private TerminalScreen screen;
 
     @Override
     public boolean run() {
@@ -28,6 +37,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
         start.buildNeighbours();
         final State end = new State(-1, new Coord(this.width - 2, this.height - 1), this);
         final List<State> states = this.aStar(start, end);
+        // safelyAnimateStates(states);
         return String.valueOf(states.size() - 1); // -1 as includes start
     }
 
@@ -41,6 +51,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
         this.maps.add(String.join("", Arrays.asList(input)));
         this.width = input[0].length();
         this.height = input.length;
+        System.out.printf("Map is %s x %s area %s\n", this.width, this.height, this.width * this.height);
         this.loadBlizzards(this.maps.get(0));
     }
 
@@ -228,7 +239,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     }
 
     private List<State> aStar(final State start, final State end) {
-        final boolean debug = true;
+        final boolean debug = false;
 
         final Set<State> openSet = new HashSet<>(Collections.singleton(start));
         final Map<State, State> cameFrom = new HashMap<>();
@@ -319,5 +330,83 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
             path.add(0, current);
         }
         return path;
+    }
+
+    private void animateStates(final List<State> states) throws IOException, InterruptedException {
+        final Terminal terminal = new DefaultTerminalFactory().createTerminal();
+        ((SwingTerminalFrame) terminal).setTitle("AdventOfCode 2022.5 : Supply Stacks");
+        ((SwingTerminalFrame) terminal).setSize(800, 600);
+        this.screen = new TerminalScreen(terminal);
+        this.screen.setCursorPosition(null);
+
+        this.screen.startScreen();
+
+        for (final State state : states) {
+            this.drawScreen(state);
+            Thread.sleep(500);
+        }
+
+        Thread.sleep(3000);
+
+//        while (true) {
+//            final KeyStroke keyStroke = this.screen.pollInput();
+//            if (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.EOF)) {
+//                break;
+//            }
+//        }
+    }
+
+    private void drawScreen(final State state) throws IOException {
+        final String map = this.getOrCreateMap(state.iteration);
+        this.screen.clear();
+        for (int row = 0; row < this.height; row++) {
+            for (int col = 0; col < this.width; col++) {
+                final String mapSymbol = this.getSymbol(map, col, row);
+                final TextColor foregroundColor = this.colorForSymbol(mapSymbol);
+                this.drawString(mapSymbol, col, row, foregroundColor, TextColor.ANSI.BLACK);
+            }
+        }
+        this.drawString("P", state.position.getX(), state.position.getY(), TextColor.ANSI.YELLOW_BRIGHT, TextColor.ANSI.BLACK);
+        this.screen.refresh();
+    }
+
+    private TextColor colorForSymbol(final String mapSymbol) {
+        switch (mapSymbol) {
+            case "*":
+                return TextColor.ANSI.WHITE_BRIGHT;
+            case "v":
+                return TextColor.ANSI.YELLOW;
+            case "^":
+                return TextColor.ANSI.RED;
+            case ">":
+                return TextColor.ANSI.GREEN;
+            case "<":
+                return TextColor.ANSI.CYAN;
+            case "#":
+                return TextColor.ANSI.WHITE;
+            case ".":
+                return TextColor.ANSI.BLACK_BRIGHT;
+            default:
+                throw new RuntimeException(mapSymbol);
+        }
+    }
+
+    private void drawChar(final char c, final int x, final int y, final TextColor foreground, final TextColor background) {
+        final TextCharacter textCharacter = new TextCharacter(c, foreground, background);
+        this.screen.setCharacter(new TerminalPosition(x, y), textCharacter);
+    }
+
+    private void drawString(final String s, final int x, final int y, final TextColor foreground, final TextColor background) {
+        for (int i = 0; i < s.length(); i++) {
+            this.drawChar(s.charAt(i), x + i, y, foreground, background);
+        }
+    }
+
+    private void safelyAnimateStates(final List<State> states) {
+        try {
+            this.animateStates(states);
+        } catch (final IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
