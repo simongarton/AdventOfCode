@@ -24,8 +24,11 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     private static final String PLAYER = "P";
 
     // 669 is too high
-    // 464 is too high - made cost -1
+    // 464 is too high - made cost -1 OR always try neighbours
+    // 410 is too high - made cost -1 AND always try neighbours
+    // 395 is too high - made cost 0 AND always try neighbours
     // linear is about 146.
+    // why is the cost thing making a difference ?
     // 347: 39,25; has been here 10 times before
 
     private int width;
@@ -246,7 +249,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
 
         @Override
         public String toString() {
-            return this.iteration + " (" + this.position + ") " + this.neighbours.size();
+            return this.iteration + " (" + this.position + ") n=" + this.neighbours.size();
         }
 
         @Override
@@ -278,10 +281,28 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
         final Map<State, Integer> rankingScoreAsToHerePlusEstimateToEnd = new HashMap<>();
         rankingScoreAsToHerePlusEstimateToEnd.put(start, this.estimateCostToEnd(start, start));
 
+        final List<State> solutions = new ArrayList<>();
+        int bestSoFar = Integer.MAX_VALUE;
+
         while (!openSet.isEmpty()) {
             final State current = this.bestOpenSetWithLowestFScoreValue(openSet, rankingScoreAsToHerePlusEstimateToEnd);
+//            System.out.printf("%s costs %s\n", current, costToGetHereFromStart.get(current));
+            if (costToGetHereFromStart.get(current) >= bestSoFar) {
+                openSet.remove(current);
+                continue;
+            }
             if (Objects.equals(current.position.toString(), end.position.toString())) {
-                return this.reconstructPath(cameFrom, current);
+//                return this.reconstructPath(cameFrom, current);
+                // this was an idea, but I just get an infinite loop of solutions from the previous state.
+                final List<State> path = this.reconstructPath(cameFrom, current);
+                solutions.add(current);
+                costToGetHereFromStart.put(current, path.size());
+                openSet.remove(current);
+                if (path.size() < bestSoFar) {
+                    bestSoFar = path.size();
+                }
+                System.out.println("Found a solution at " + current + " with " + path.size() + " best now " + bestSoFar);
+                continue;
             }
             this.debugPrint(debug, "working on / removing current " + current + " with openSet.size()=" + openSet.size());
             openSet.remove(current);
@@ -303,6 +324,9 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
                     openSet.add(neighbor);
                 } else {
                     this.debugPrint(debug, "     ignoring neighbour " + neighbor);
+//                    // calculate neighbours lazily
+//                    neighbor.buildNeighbours();
+//                    openSet.add(neighbor);
                 }
             }
         }
@@ -345,9 +369,10 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
 
     private Integer cost(final State current, final State neighbor) {
         // if this is positive, I never get there
-        // return -1;
+//        return -1;
         // if I do this, I must make it a bad idea to stay still
-        return -current.position.manhattanDistance(neighbor.position);
+        // return current.position.manhattanDistance(neighbor.position);
+        return 1;
     }
 
     private List<State> reconstructPath(final Map<State, State> cameFrom, final State end) {
