@@ -135,6 +135,8 @@ Much easier and nice to do. Drip sand onto a pile of rocks, figuring out which w
 
 ![Part 1](2022-14.1.png)
 
+![Part 2](2022-14.2.png)
+
 https://adventofcode.com/2022/day/14
 
 ### Day 13: Distress Signal
