@@ -22,52 +22,6 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
     private static final int WALL_WIDTH = 1;
     private static final int TWO = 2;
 
-    // 1566272190007 is too high
-    // 1566272190004 is also too high
-
-
-    /*
-
-    Part 1 - 2022 rocks - working. Part 2 is 1000000000000 : 1,000,000,000,000 1 trillion
-
-    Is it possible to predict, in advance, where the rock will end up / how much the tower will grow ? I have a
-    deterministic wind - which is very long though - and a deterministic sequence.
-
-    This is the output
-
-    After 2000 rocks, found a sequence at 209 matching that at 1900 with an offset of 1691
-    After 3000 rocks, found a sequence at 1209 matching that at 2900 with an offset of 1691
-    After 4000 rocks, found a sequence at 519 matching that at 3900 with an offset of 3381
-    After 4000 rocks, found a sequence at 2209 matching that at 3900 with an offset of 1691
-    After 5000 rocks, found a sequence at 1519 matching that at 4900 with an offset of 3381
-    After 5000 rocks, found a sequence at 3209 matching that at 4900 with an offset of 1691
-
-    The actual sequence length is 1690 - those offsets differ by 1690 after the first
-    3381 - 1691 = 1690
-    5071 - 3381 = 1690
-    6761 - 5071 = 1690
-
-    So what I want to do is build up a list of 1690 height changes, starting at height 209. Actually I should be basing this
-    on rocks dropped. Those heights are based on dropped rocks though.
-
-    wait
-
-10: -14
-11: 16
-
-50: -12
-51: 14
-
-At 1909 I predicted 2980 and got 2964, a difference of 16
-At 1910 I predicted 2966 and got 2980, a difference of -14
-
-At 1949 I predicted 3044 and got 3030, a difference of 14
-At 1950 I predicted 3032 and got 3044, a difference of -12
-
-those are out of order ...
-
-     */
-
     @Override
     public String title() {
         return "Day 17: Pyroclastic Flow";
@@ -81,7 +35,6 @@ those are out of order ...
     @Override
     public String part1(final String[] input) {
         final String windForecast = input[0];
-        int iteration = 0;
         int windIndex = 0;
         this.buildCave();
         int rockIndex = 1;
@@ -123,7 +76,6 @@ those are out of order ...
                 windIndex = 0;
             }
             wind = windForecast.substring(windIndex, windIndex + 1);
-            iteration++;
             if (rocksDropped > 2022) {
                 running = false;
             }
@@ -133,6 +85,77 @@ those are out of order ...
 
     @Override
     public String part2(final String[] input) {
+
+        final MagicNumbers magicNumbers = this.dropRockforMagicNumbers(input);
+        this.updateWithRockDeltas(magicNumbers, input);
+
+        final long numberOfRocksDroppedAfterSequenceStarted = 1000000000000L - magicNumbers.offset;
+        final long numberOfSequences = numberOfRocksDroppedAfterSequenceStarted / magicNumbers.length;
+        final long sequenceIndex = numberOfRocksDroppedAfterSequenceStarted % magicNumbers.length;
+        final long predictedHeight = magicNumbers.firstSequenceRockHeight +
+                (magicNumbers.rockHeight * numberOfSequences) +
+                this.cumulativeAddition(magicNumbers.rockDeltas, sequenceIndex);
+        return String.valueOf(predictedHeight);
+    }
+
+    private void updateWithRockDeltas(final MagicNumbers magicNumbers, final String[] input) {
+        final String windForecast = input[0];
+        int windIndex = 0;
+        this.buildCave();
+        int rockIndex = 1;
+        long rocksDropped = 0;
+        Rock rock = new Rock(rockIndex);
+        this.putRockInCave(rock);
+        rocksDropped++;
+        String wind = windForecast.substring(windIndex, windIndex + 1);
+        long lastRockHeight = 0;
+
+        while (true) {
+            boolean needToChangeRock = false;
+            if (wind.equalsIgnoreCase(LEFT)) {
+                if (!this.moveWouldCauseCollision(rock, -1, 0)) {
+                    rock.moveLeft();
+                }
+            } else {
+                if (!this.moveWouldCauseCollision(rock, 1, 0)) {
+                    rock.moveRight();
+                }
+            }
+            if (this.moveWouldCauseCollision(rock, 0, 1)) {
+                needToChangeRock = true;
+            } else {
+                rock.moveDown();
+            }
+            if (needToChangeRock) {
+                this.addRockToCave(rock);
+                rockIndex++;
+                if (rockIndex > 5) {
+                    rockIndex = 1;
+                }
+                if (rocksDropped == magicNumbers.offset) {
+                    magicNumbers.firstSequenceRockHeight = rock.position.getY();
+                }
+                if (rocksDropped > magicNumbers.offset && magicNumbers.rockDeltas.size() < magicNumbers.length) {
+                    magicNumbers.rockDeltas.add((int) (rock.position.getY() - lastRockHeight));
+                    magicNumbers.rockHeight = magicNumbers.rockHeight + magicNumbers.rockDeltas.get(magicNumbers.rockDeltas.size() - 1);
+                }
+                if (magicNumbers.rockDeltas.size() == magicNumbers.length) {
+                    return;
+                }
+                lastRockHeight = rock.position.getY();
+                rock = new Rock(rockIndex);
+                this.putRockInCave(rock);
+                rocksDropped++;
+            }
+            windIndex = windIndex + 1;
+            if (windIndex == windForecast.length()) {
+                windIndex = 0;
+            }
+            wind = windForecast.substring(windIndex, windIndex + 1);
+        }
+    }
+
+    private MagicNumbers dropRockforMagicNumbers(final String[] input) {
         final String windForecast = input[0];
         int windIndex = 0;
         this.buildCave();
@@ -144,14 +167,7 @@ those are out of order ...
         boolean running = true;
         String wind = windForecast.substring(windIndex, windIndex + 1);
         final List<Integer> heights = new ArrayList<>();
-        final List<Integer> rockDeltas = new ArrayList<>();
-        long firstSequenceRockHeight = 0;
-        // I should be able to get these from my method.
-        final int firstRockToStartSequence = 209; // varying this +/- 1 same story, just different. also 1209
-        final int sequenceLength = 1690;
-        long lastRockHeight = 0;
-        long rockSequenceHeight = 0;
-        boolean haveDumpedDeltas = false;
+        MagicNumbers magicNumbers = null;
 
         while (running) {
             boolean needToChangeRock = false;
@@ -173,42 +189,18 @@ those are out of order ...
                 this.addRockToCave(rock);
                 heights.add(rock.position.getY());
                 if (heights.size() % 1000 == 0) {
-                    this.lookForPatterns(heights, rocksDropped);
+                    magicNumbers = this.lookForPatterns(heights);
                 }
                 rockIndex++;
                 if (rockIndex > 5) {
                     rockIndex = 1;
                 }
-                if (rocksDropped == firstRockToStartSequence) {
-                    firstSequenceRockHeight = rock.position.getY();
-                }
-                if (rocksDropped > firstRockToStartSequence && rockDeltas.size() < sequenceLength) {
-                    rockDeltas.add((int) (rock.position.getY() - lastRockHeight));
-                    rockSequenceHeight = rockSequenceHeight + rockDeltas.get(rockDeltas.size() - 1);
-                }
-                if (rockDeltas.size() == sequenceLength && !haveDumpedDeltas) {
-                    int index = 0;
-                    for (final Integer rockDelta : rockDeltas) {
-//                        System.out.println(index + ": " + rockDelta);
-                        index++;
-                    }
-                    haveDumpedDeltas = true;
-                }
-                if (rockDeltas.size() == sequenceLength) {
-                    final long numberOfRocksDroppedAfterSequenceStarted = rocksDropped - firstRockToStartSequence;
-                    final long numberOfSequences = numberOfRocksDroppedAfterSequenceStarted / sequenceLength;
-                    final long sequenceIndex = numberOfRocksDroppedAfterSequenceStarted % sequenceLength;
-                    final long predictedHeight = firstSequenceRockHeight +
-                            (rockSequenceHeight * numberOfSequences) +
-                            this.cumulativeAddition(rockDeltas, sequenceIndex);
-//                    System.out.println("At " + rocksDropped + " I predicted " + predictedHeight + " and got " + rock.position.getY() +
-//                            ", a difference of " + (predictedHeight - rock.position.getY()));
-                }
-
-                lastRockHeight = rock.position.getY();
                 rock = new Rock(rockIndex);
                 this.putRockInCave(rock);
                 rocksDropped++;
+                if (magicNumbers != null) {
+                    break;
+                }
             }
             windIndex = windIndex + 1;
             if (windIndex == windForecast.length()) {
@@ -218,15 +210,11 @@ those are out of order ...
             if (rocksDropped > 5000) {
                 running = false;
             }
+            if (magicNumbers != null) {
+                break;
+            }
         }
-
-        final long numberOfRocksDroppedAfterSequenceStarted = 1000000000000L - firstRockToStartSequence;
-        final long numberOfSequences = numberOfRocksDroppedAfterSequenceStarted / sequenceLength;
-        final long sequenceIndex = numberOfRocksDroppedAfterSequenceStarted % sequenceLength;
-        final long predictedHeight = firstSequenceRockHeight +
-                (rockSequenceHeight * numberOfSequences) +
-                this.cumulativeAddition(rockDeltas, sequenceIndex);
-        return String.valueOf(predictedHeight);
+        return magicNumbers;
     }
 
     private long cumulativeAddition(final List<Integer> rockDeltas, final long sequenceIndex) {
@@ -237,18 +225,15 @@ those are out of order ...
         return total;
     }
 
-    private void lookForPatterns(final List<Integer> heights, final long rocksDropped) {
-        // get the last 10, 2 cycles of rocks
-        final List<Integer> deltas = new ArrayList<>();
+    private MagicNumbers lookForPatterns(final List<Integer> heights) {
         // I don't think we can use the initial sequence, it has to slide
-//        for (int i = 1; i < 101; i++) {
+        final List<Integer> deltas = new ArrayList<>();
         final int sequenceLength = 100;
         final int sequenceStart = heights.size() - sequenceLength;
         final int sequenceEndExclusive = heights.size();
         for (int i = sequenceStart; i < sequenceEndExclusive; i++) {
             deltas.add(heights.get(i) - heights.get(i - 1));
         }
-//        System.out.println("Got sequence of " + deltas.size() + " starting at " + (heights.size() - 11));
         for (int startPoint = 1; startPoint < heights.size() - 101; startPoint++) {
             boolean allMatch = true;
             final List<Integer> targets = new ArrayList<>();
@@ -264,11 +249,12 @@ those are out of order ...
             if (!allMatch) {
                 continue;
             }
-            System.out.println("After " + rocksDropped + " rocks, found a sequence at " + startPoint + " matching that at " + sequenceStart + " with an offset of " + (sequenceStart - startPoint));
-            for (int i = 0; i < deltas.size(); i++) {
-//                System.out.println("  start " + (i + 1) + "=" + deltas.get(i) + " found again at " + (startPoint + i) + "=" + targets.get(i));
-            }
+            final MagicNumbers magicNumbers = new MagicNumbers();
+            magicNumbers.offset = startPoint;
+            magicNumbers.length = sequenceStart - startPoint - 1;
+            return magicNumbers;
         }
+        return null;
     }
 
     private void debugRocks() {
@@ -279,17 +265,6 @@ those are out of order ...
                     rock.getWidth(),
                     rock.getHeight()
             );
-        }
-    }
-
-    private String move(final String wind) {
-        switch (wind) {
-            case RIGHT:
-                return "right";
-            case LEFT:
-                return "left";
-            default:
-                throw new RuntimeException(wind);
         }
     }
 
@@ -367,7 +342,7 @@ those are out of order ...
         return false;
     }
 
-    private int putRockInCave(final Rock rock) {
+    private void putRockInCave(final Rock rock) {
         final int top = this.findLevel(); // 0 based
         int rowsAdded = 0;
         while (this.cave.size() <= (top + EMPTY + rock.getHeight())) {
@@ -376,13 +351,6 @@ those are out of order ...
         }
         final int position = top + EMPTY + rock.getHeight();
         rock.position = new Coord(WALL_WIDTH + TWO, position);
-//        System.out.printf("Adding rock %s top %s rowsAdded %s cave.size() %s\n",
-//                rock.id,
-//                top,
-//                rowsAdded,
-//                this.cave.size()
-//        );
-        return position;
     }
 
     public void drawCave(final Rock rock) {
@@ -521,12 +489,21 @@ those are out of order ...
             }
         }
 
-        public void moveUp() {
-            this.position.setY(this.position.getY() - 1);
-        }
-
         public void moveDown() {
             this.position.setY(this.position.getY() - 1);
+        }
+    }
+
+    public static final class MagicNumbers {
+
+        private int offset;
+        private int length;
+        private int rockHeight;
+        private int firstSequenceRockHeight;
+        private final List<Integer> rockDeltas;
+
+        public MagicNumbers() {
+            this.rockDeltas = new ArrayList<>();
         }
     }
 }
