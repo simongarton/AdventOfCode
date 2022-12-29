@@ -23,14 +23,6 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     private static final String DOWN = "v";
     private static final String PLAYER = "P";
 
-    // 669 is too high
-    // 464 is too high - made cost -1 OR always try neighbours
-    // 410 is too high - made cost -1 AND always try neighbours
-    // 395 is too high - made cost 0 AND always try neighbours
-    // linear is about 146.
-    // why is the cost thing making a difference ?
-    // 347: 39,25; has been here 10 times before
-
     private int width;
     private int height;
     private List<String> maps;
@@ -45,37 +37,33 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
         this.loadMaps(input);
-        this.drawMap(this.maps.get(0));
+//        this.drawMap(this.maps.get(0));
         final State start = new State(0, new Coord(1, 0), this);
         start.buildNeighbours();
         final State end = new State(-1, new Coord(this.width - 2, this.height - 1), this);
         final List<State> states = this.aStar(start, end);
-        // safelyAnimateStates(states);
-        this.analyseStates(states);
+//        this.safelyAnimateStates(states);
+//        this.analyseStates(states);
         return String.valueOf(states.size() - 1); // -1 as includes start
-    }
-
-    private void analyseStates(final List<State> states) {
-        Coord position = new Coord(0, 0);
-        final Map<String, Integer> visits = new HashMap<>();
-        for (final State state : states) {
-            String line = state.iteration + ": " + state.position;
-            final String key = state.position.toString();
-            if (position.toString().equalsIgnoreCase(key)) {
-                line += "; unmoved";
-            }
-            if (visits.containsKey(key)) {
-                line += "; has been here " + visits.get(key) + " times before";
-            }
-            visits.put(key, visits.getOrDefault(key, 0) + 1);
-            System.out.println(line);
-            position = state.position;
-        }
     }
 
     @Override
     public String part2(final String[] input) {
-        return null;
+        this.loadMaps(input);
+//        this.drawMap(this.maps.get(0));
+        final State top = new State(0, new Coord(1, 0), this);
+        top.buildNeighbours();
+        final State bottom = new State(-1, new Coord(this.width - 2, this.height - 1), this);
+        bottom.buildNeighbours();
+        final List<State> statesOne = this.aStar(top, bottom);
+        final List<State> statesTwo = this.aStar(statesOne.get(statesOne.size() - 1), top);
+        final List<State> statesThree = this.aStar(statesTwo.get(statesTwo.size() - 1), bottom);
+        final List<State> allStates = new ArrayList<>();
+        allStates.addAll(statesOne);
+        allStates.addAll(statesTwo);
+        allStates.addAll(statesThree);
+//        this.safelyAnimateStates(allStates);
+        return String.valueOf(allStates.size() - 3); // -1 for each as includes start
     }
 
     private void loadMaps(final String[] input) {
@@ -83,7 +71,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
         this.maps.add(String.join("", Arrays.asList(input)));
         this.width = input[0].length();
         this.height = input.length;
-        System.out.printf("Map is %s x %s area %s\n", this.width, this.height, this.width * this.height);
+//        System.out.printf("Map is %s x %s area %s\n", this.width, this.height, this.width * this.height);
         this.loadBlizzards(this.maps.get(0));
     }
 
@@ -281,32 +269,21 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
         final Map<State, Integer> rankingScoreAsToHerePlusEstimateToEnd = new HashMap<>();
         rankingScoreAsToHerePlusEstimateToEnd.put(start, this.estimateCostToEnd(start, start));
 
-        final List<State> solutions = new ArrayList<>();
-        int bestSoFar = Integer.MAX_VALUE;
+        final int bestSoFar = Integer.MAX_VALUE;
 
         while (!openSet.isEmpty()) {
             final State current = this.bestOpenSetWithLowestFScoreValue(openSet, rankingScoreAsToHerePlusEstimateToEnd);
-//            System.out.printf("%s costs %s\n", current, costToGetHereFromStart.get(current));
             if (costToGetHereFromStart.get(current) >= bestSoFar) {
                 openSet.remove(current);
                 continue;
             }
             if (Objects.equals(current.position.toString(), end.position.toString())) {
-//                return this.reconstructPath(cameFrom, current);
-                // this was an idea, but I just get an infinite loop of solutions from the previous state.
-                final List<State> path = this.reconstructPath(cameFrom, current);
-                solutions.add(current);
-                costToGetHereFromStart.put(current, path.size());
-                openSet.remove(current);
-                if (path.size() < bestSoFar) {
-                    bestSoFar = path.size();
-                }
-                System.out.println("Found a solution at " + current + " with " + path.size() + " best now " + bestSoFar);
-                continue;
+                return this.reconstructPath(cameFrom, current);
             }
             this.debugPrint(debug, "working on / removing current " + current + " with openSet.size()=" + openSet.size());
             openSet.remove(current);
             if (debug) {
+                System.out.println("current " + current + "\n");
                 this.drawMapWithPlayer(this.maps.get(current.iteration), current.position);
             }
             for (final State neighbor : current.neighbours) {
@@ -324,9 +301,6 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
                     openSet.add(neighbor);
                 } else {
                     this.debugPrint(debug, "     ignoring neighbour " + neighbor);
-//                    // calculate neighbours lazily
-//                    neighbor.buildNeighbours();
-//                    openSet.add(neighbor);
                 }
             }
         }
@@ -397,7 +371,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
 
         for (final State state : states) {
             this.drawScreen(state);
-            Thread.sleep(500);
+            Thread.sleep(250);
         }
 
         Thread.sleep(3000);
@@ -461,6 +435,24 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
             this.animateStates(states);
         } catch (final IOException | InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void analyseStates(final List<State> states) {
+        Coord position = new Coord(0, 0);
+        final Map<String, Integer> visits = new HashMap<>();
+        for (final State state : states) {
+            String line = state.iteration + ": " + state.position;
+            final String key = state.position.toString();
+            if (position.toString().equalsIgnoreCase(key)) {
+                line += "; unmoved";
+            }
+            if (visits.containsKey(key)) {
+                line += "; has been here " + visits.get(key) + " times before";
+            }
+            visits.put(key, visits.getOrDefault(key, 0) + 1);
+            System.out.println(line);
+            position = state.position;
         }
     }
 }
