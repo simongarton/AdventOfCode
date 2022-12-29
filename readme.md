@@ -269,13 +269,6 @@ use some frequency analysis as part of the solution.
 
 https://adventofcode.com/2021/day/8
 
-### Day 8: Seven Segment Search
-
-Fun - based around 7 segment displays with mixed up wiring, analyse input and output to figure out the wiring. Had to
-use some frequency analysis as part of the solution.
-
-https://adventofcode.com/2021/day/8
-
 ### Day 7: The Treachery of Whales
 
 Cute : align a group of crabs in a vertical line by minimizing their horizontal moves, using two algorithms.
