@@ -27,6 +27,10 @@ Another map : you have to get from one corner to another, avoiding storms that m
 in one of the 4 cardinal directions (including retracing a previous step) or even waiting. I can see the storms location
 is deterministic; I don't know if I can map a graph of the storms given they keep changing.
 
+OK, so a simple approach is to just use A* but make the map time sensitive. This works nicely for the sample, but gives
+me a too long on part 1. I do note on my solution `347: 39,25; has been here 10 times before` - I visit one coordinate
+11 times ! I'm wondering if I'm missing out staying in one place e.g 5 times to get a better map.
+
 https://adventofcode.com/2022/day/24
 
 ### Day 23: Unstable Diffusion
