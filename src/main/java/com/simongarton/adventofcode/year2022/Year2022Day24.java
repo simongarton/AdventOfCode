@@ -367,7 +367,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
 
     private void animateStates(final List<State> states) throws IOException, InterruptedException {
         final Terminal terminal = new DefaultTerminalFactory().createTerminal();
-        ((SwingTerminalFrame) terminal).setTitle("AdventOfCode 2022.5 : Supply Stacks");
+        ((SwingTerminalFrame) terminal).setTitle(this.title());
         ((SwingTerminalFrame) terminal).setSize(800, 600);
         this.screen = new TerminalScreen(terminal);
         this.screen.setCursorPosition(null);
@@ -376,7 +376,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
 
         for (final State state : states) {
             this.drawScreen(state);
-            Thread.sleep(250);
+            Thread.sleep(500);
         }
 
         Thread.sleep(3000);

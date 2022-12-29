@@ -19,7 +19,7 @@ older years.)
 
 ## 2022
 
-### Day 25: Full of Hot Air (0/2)
+### Day 25: Full of Hot Air
 
 Hmm. Having skim-read this, it looks like just encoding numbers in base 5 with symbols. Probably more complicated
 thinking than programming at this point.
@@ -35,15 +35,16 @@ repeatedly : if I have say 3 of one power, add 1 to the next higher power and ta
 
 https://adventofcode.com/2022/day/25
 
-### Day 24: Blizzard Basin (0/2)
+### Day 24: Blizzard Basin
 
 Another map : you have to get from one corner to another, avoiding storms that move across the map; you'll end up moving
 in one of the 4 cardinal directions (including retracing a previous step) or even waiting. I can see the storms location
 is deterministic; I don't know if I can map a graph of the storms given they keep changing.
 
-OK, so a simple approach is to just use A* but make the map time sensitive. This works nicely for the sample, but gives
-me a too long on part 1. I do note on my solution `347: 39,25; has been here 10 times before` - I visit one coordinate
-11 times ! I'm wondering if I'm missing out staying in one place e.g 5 times to get a better map.
+OK, so a simple approach is to just use A* but make the map time sensitive. This works nicely for the sample; and indeed
+once I'd sorted out a couple of bugs, both part 1 and 2.
+
+![Part 2](2022-24.2.png)
 
 https://adventofcode.com/2022/day/24
 
@@ -97,12 +98,15 @@ contiguous space between cubes.
 
 https://adventofcode.com/2022/day/18
 
-### Day 17: Pyroclastic Flow (1/2)
+### Day 17: Pyroclastic Flow
 
 Tetris ! Given a cavern with 5 suspiciously Tetris shaped rocks falling down and stacking up on each other, work out how
 high the stack will be at a given time.
 
-Part 1 : 2,022 rocks, no worries. Part 2 : 1,000,000,000,000. Logic will take 11 years.
+Part 1 : 2,022 rocks, no worries.
+
+Part 2 : 1,000,000,000,000. Logic will take 11 years. On a hunch, I thought we might get a repeating sequence - and we
+do, so it's a matter of finding it and then using it.
 
 https://adventofcode.com/2022/day/17
 
