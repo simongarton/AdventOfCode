@@ -9,6 +9,11 @@ import java.util.List;
 public class Year2021Day4 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 4: Giant Squid";
+    }
+
+    @Override
     public Outcome run() {
         return this.runChallenge(2021, 4);
     }

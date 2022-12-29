@@ -7,6 +7,11 @@ import lombok.Data;
 public class Year2021Day2 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 2: Dive!";
+    }
+
+    @Override
     public Outcome run() {
         return this.runChallenge(2021, 2);
     }

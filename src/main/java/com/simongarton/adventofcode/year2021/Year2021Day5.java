@@ -5,6 +5,11 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 public class Year2021Day5 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 5: Hydrothermal Venture";
+    }
+
+    @Override
     public Outcome run() {
         return this.runChallenge(2021, 5);
     }
@@ -81,7 +86,6 @@ public class Year2021Day5 extends AdventOfCodeChallenge {
                 this.squares[(startY * MAX_DIM) + startX] = this.squares[(startY * MAX_DIM) + startX] + 1;
                 startX = startX + deltaX;
                 startY = startY + deltaY;
-
             }
             this.squares[(startY * MAX_DIM) + startX] = this.squares[(startY * MAX_DIM) + startX] + 1;
         }

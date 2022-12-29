@@ -10,6 +10,11 @@ import java.util.stream.Collectors;
 public class Year2021Day3 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 3: Binary Diagnostic";
+    }
+    
+    @Override
     public Outcome run() {
         return this.runChallenge(2021, 3);
     }
