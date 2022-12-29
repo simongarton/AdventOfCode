@@ -3,7 +3,7 @@
 [Advent of Code](https://adventofcode.com/) is an annual programming competition, with initially simple puzzles starting
 on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
-2022 wasn't too shabby though.
+2022 wasn't too shabby though. (And I need to import a stack of solutions from other projects into this one.)
 
 ```
                 1111111111222222
