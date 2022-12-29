@@ -44,13 +44,13 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
     }
 
     @Override
-    public boolean run() {
+    public Outcome run() {
         return this.runChallenge(2022, 19);
     }
 
     @Override
     public String part1(final String[] input) {
-        this.loadFactories(input);
+//        this.loadFactories(input);
         return null;
     }
 
@@ -188,5 +188,4 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             this.geodes += this.geodeCollectingRobots;
         }
     }
-
 }

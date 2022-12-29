@@ -4,15 +4,10 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class Year2021Day2 extends AdventOfCodeChallenge {
 
     @Override
-    public boolean run() {
+    public Outcome run() {
         return this.runChallenge(2021, 2);
     }
 

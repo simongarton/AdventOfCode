@@ -8,7 +8,7 @@ import java.util.List;
 public class Year2020Day3 extends AdventOfCodeChallenge {
 
     @Override
-    public boolean run() {
+    public Outcome run() {
         return this.runChallenge(2020, 3);
     }
 

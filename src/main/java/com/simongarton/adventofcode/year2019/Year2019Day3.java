@@ -14,7 +14,7 @@ public class Year2019Day3 extends AdventOfCodeChallenge {
     List<Coord> path2 = new ArrayList<>();
 
     @Override
-    public boolean run() {
+    public Outcome run() {
         return this.runChallenge(2019, 3);
     }
 

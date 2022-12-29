@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Year2022Day16 extends AdventOfCodeChallenge {
-    
+
     private List<Valve> valves;
     private Map<String, Integer> travelCosts;
     private State bestState;
@@ -24,7 +24,7 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
     }
 
     @Override
-    public boolean run() {
+    public Outcome run() {
         return this.runChallenge(2022, 16);
     }
 
@@ -40,12 +40,13 @@ public class Year2022Day16 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        this.loadNetwork(input);
+        return null;
+//        this.loadNetwork(input);
 //        this.graphViz();
-        this.buildTravelCosts();
-        this.exploreTwoPersonStates();
-        this.debugPrint(DEBUG, this.bestTwoPersonState.toString());
-        return String.valueOf(this.bestTwoPersonState.pressureReleased);
+//        this.buildTravelCosts();
+//        this.exploreTwoPersonStates();
+//        this.debugPrint(DEBUG, this.bestTwoPersonState.toString());
+//        return String.valueOf(this.bestTwoPersonState.pressureReleased);
     }
 
     private void exploreTwoPersonStates() {

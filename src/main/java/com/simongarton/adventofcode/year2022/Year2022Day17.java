@@ -37,7 +37,7 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
     }
 
     @Override
-    public boolean run() {
+    public Outcome run() {
         return this.runChallenge(2022, 17);
     }
 
@@ -61,10 +61,7 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
         String wind = windForecast.substring(windIndex, windIndex + 1);
 
         while (running) {
-            final boolean debug = (rocksDropped == -1);
-            if (debug) {
-                System.out.printf("%s : %s = %s %s\n\n", iteration, windIndex, wind, this.move(wind));
-            }
+//                System.out.printf("%s : %s = %s %s\n\n", iteration, windIndex, wind, this.move(wind));
             boolean needToChangeRock = false;
             if (wind.equalsIgnoreCase(LEFT)) {
                 if (!this.moveWouldCauseCollision(rock, -1, 0)) {
@@ -75,9 +72,7 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
                     rock.moveRight();
                 }
             }
-            if (debug) {
-                this.drawCave(rock);
-            }
+//                this.drawCave(rock);
             if (this.moveWouldCauseCollision(rock, 0, 1)) {
                 needToChangeRock = true;
             } else {
@@ -92,9 +87,7 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
                 rock = new Rock(rockIndex);
                 this.putRockInCave(rock);
                 rocksDropped++;
-                if (debug) {
-                    System.out.printf("%s : adding %s as the %s rock\n\n", iteration, rock.id, rocksDropped);
-                }
+//                    System.out.printf("%s : adding %s as the %s rock\n\n", iteration, rock.id, rocksDropped);
             }
             windIndex = windIndex + 1;
             if (windIndex == windForecast.length()) {
@@ -105,13 +98,11 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
             if (rocksDropped > 2022) {
                 running = false;
             }
-            if (debug) {
-                this.drawCave(rock);
-            }
+//                this.drawCave(rock);
         }
-        this.drawCave(rock);
-        System.out.println("got answer in " + (System.currentTimeMillis() - start) + " ms.");
-        System.out.println((1000000000000L / 2022) * (System.currentTimeMillis() - start) / 1000);
+//        this.drawCave(rock);
+//        System.out.println("got answer in " + (System.currentTimeMillis() - start) + " ms.");
+//        System.out.println((1000000000000L / 2022) * (System.currentTimeMillis() - start) / 1000);
         return String.valueOf(this.findLevel());
     }
 

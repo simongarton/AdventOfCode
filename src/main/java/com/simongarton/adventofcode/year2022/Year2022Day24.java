@@ -30,7 +30,12 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     private TerminalScreen screen;
 
     @Override
-    public boolean run() {
+    public String title() {
+        return "Day 24: Blizzard Basin";
+    }
+
+    @Override
+    public Outcome run() {
         return this.runChallenge(2022, 24);
     }
 

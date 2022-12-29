@@ -18,14 +18,13 @@ public class Year2022Day18 extends AdventOfCodeChallenge {
 
      */
 
-
     @Override
     public String title() {
         return "Day 18: Boiling Boulders";
     }
 
     @Override
-    public boolean run() {
+    public Outcome run() {
         return this.runChallenge(2022, 18);
     }
 
@@ -37,18 +36,17 @@ public class Year2022Day18 extends AdventOfCodeChallenge {
         return String.valueOf(this.countSurfaceArea());
     }
 
-
     // 4194 is too high
     // 4826 is the possibles - the cubes on the inside
     @Override
     public String part2(final String[] input) {
-        this.loadCube(input);
+        return null;
+//        this.loadCube(input);
 //        this.debugCube();
-        final int surface = this.countSurfaceArea();
-        final int completelyEnclosed = this.countCompletelyEnclosed();
-        return String.valueOf(surface - completelyEnclosed);
+//        final int surface = this.countSurfaceArea();
+//        final int completelyEnclosed = this.countCompletelyEnclosed();
+//        return String.valueOf(surface - completelyEnclosed);
     }
-
 
     private int countSurfaceArea() {
         int surfaceArea = 0;
@@ -201,7 +199,6 @@ public class Year2022Day18 extends AdventOfCodeChallenge {
                 throw new RuntimeException("Already got.");
             }
             this.cube[x][y][z] = 1;
-
         }
     }
 
@@ -225,5 +222,4 @@ public class Year2022Day18 extends AdventOfCodeChallenge {
         // scale up
         this.cube = new int[this.xMax + 1][this.yMax + 1][this.zMax + 1];
     }
-
 }

@@ -16,7 +16,7 @@ import java.util.Map;
 public class AdventOfCode {
 
     private final List<AdventOfCodeChallenge> challenges;
-    private final Map<Integer, Map<Integer, Boolean>> complete = new HashMap<>();
+    private final Map<Integer, Map<Integer, AdventOfCodeChallenge.Outcome>> complete = new HashMap<>();
 
     public static void main(final String[] args) {
         final AdventOfCode adventOfCode = new AdventOfCode();
@@ -30,7 +30,7 @@ public class AdventOfCode {
     private void run() {
         this.complete.clear();
         for (final AdventOfCodeChallenge codeChallenge : this.challenges) {
-            final boolean outcome = codeChallenge.run();
+            final AdventOfCodeChallenge.Outcome outcome = codeChallenge.run();
             final int year = codeChallenge.getYear();
             final int day = codeChallenge.getDay();
             if (!this.complete.containsKey(year)) {
@@ -52,10 +52,14 @@ public class AdventOfCode {
             for (int day = 1; day <= 25; day++) {
                 if (this.complete.containsKey(year)) {
                     if (this.complete.get(year).containsKey(day)) {
-                        if (this.complete.get(year).get(day)) {
+                        if (this.complete.get(year).get(day).both()) {
                             line += "✓";
                         } else {
-                            line += ".";
+                            if (this.complete.get(year).get(day).part1) {
+                                line += ".";
+                            } else {
+                                line += " ";
+                            }
                         }
                     } else {
                         line += " ";
@@ -108,23 +112,16 @@ public class AdventOfCode {
         this.challenges.add(new Year2022Day12());
         this.challenges.add(new Year2022Day13());
         this.challenges.add(new Year2022Day14());
-        // not done yet
-        //this.challenges.add(new Year2022Day15());
-        //this.challenges.add(new Year2022Day16());
-        // have only done part 1
-        //this.challenges.add(new Year2022Day17());
-        // have only done part 1
-        //this.challenges.add(new Year2022Day18());
-        // have only done part 1
-        //this.challenges.add(new Year2022Day19());
+        this.challenges.add(new Year2022Day15());
+        this.challenges.add(new Year2022Day16());
+        this.challenges.add(new Year2022Day17());
+        this.challenges.add(new Year2022Day18());
+        this.challenges.add(new Year2022Day19());
         this.challenges.add(new Year2022Day20());
         this.challenges.add(new Year2022Day21());
-        // have only done part 1
-        //this.challenges.add(new Year2022Day22());
+        this.challenges.add(new Year2022Day22());
         this.challenges.add(new Year2022Day23());
-        // not yet done
-        //this.challenges.add(new Year2022Day24());
-        // part 2 is just adding up remaining stars
+        this.challenges.add(new Year2022Day24());
         this.challenges.add(new Year2022Day25());
     }
 

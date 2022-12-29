@@ -40,7 +40,7 @@ public class Year2022Day22 extends AdventOfCodeChallenge {
     }
 
     @Override
-    public boolean run() {
+    public Outcome run() {
         return this.runChallenge(2022, 22);
     }
 
@@ -50,14 +50,14 @@ public class Year2022Day22 extends AdventOfCodeChallenge {
         final int left = this.leftMost(0);
         this.position = new Coord(left, 0);
         this.facing = Direction.EAST;
-        System.out.printf("%s x %s\n", this.width, this.height);
+//        System.out.printf("%s x %s\n", this.width, this.height);
         for (final String mapLine : this.map) {
-            System.out.printf("\t%s\n", mapLine.length());
+//            System.out.printf("\t%s\n", mapLine.length());
         }
-        System.out.printf("Starting at %s, facing %s\n", this.position, this.facing);
+//        System.out.printf("Starting at %s, facing %s\n", this.position, this.facing);
         for (final String instruction : this.instructions) {
             this.followInstruction(instruction);
-            System.out.printf("Now at %s, facing %s\n", this.position, this.facing);
+//            System.out.printf("Now at %s, facing %s\n", this.position, this.facing);
         }
         return String.valueOf(1000 * (this.position.getY() + 1) + 4 * (this.position.getX() + 1) + this.facing.facing);
     }

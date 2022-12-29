@@ -5,7 +5,7 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 public class Year2020Day22 extends AdventOfCodeChallenge {
 
     @Override
-    public boolean run() {
+    public Outcome run() {
         return this.runChallenge(2020, 22);
     }
 

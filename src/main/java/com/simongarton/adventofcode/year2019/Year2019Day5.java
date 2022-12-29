@@ -17,7 +17,7 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
     private List<Integer> memory;
 
     @Override
-    public boolean run() {
+    public Outcome run() {
         return this.runChallenge(2019, 5);
     }
 

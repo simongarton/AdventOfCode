@@ -1,7 +1,6 @@
 package com.simongarton.adventofcode;
 
 import com.simongarton.adventofcode.exceptions.InvalidSetupException;
-import com.simongarton.adventofcode.exceptions.WrongAnswerException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +16,7 @@ public abstract class AdventOfCodeChallenge {
         return null;
     }
 
-    public abstract boolean run();
+    public abstract Outcome run();
 
     public int getYear() {
         return this.year;
@@ -34,42 +33,63 @@ public abstract class AdventOfCodeChallenge {
 
     public abstract String part2(final String[] input);
 
-    public boolean runChallenge(final int year, final int day) {
+    public Outcome runChallenge(final int year, final int day) {
         this.year = year;
         this.day = day;
+        final Outcome outcome = new Outcome();
         for (int part = 1; part <= 2; part++) {
             final long start = System.currentTimeMillis();
             final String[] input = this.loadStrings(year, day, part);
             final String expected = this.loadAnswer(year, day, part);
             final String actual = part == 1 ? this.part1(input) : this.part2(input);
             if (!expected.equals(actual)) {
-                throw new WrongAnswerException(year,
-                        day,
-                        part,
-                        expected,
-                        actual);
-            }
-            if (this.title() == null) {
-                System.out.printf("Attempted %s.%02d.%s and got correct answer in %s ms : %15s%n",
-                        year,
-                        day,
-                        part,
-                        this.leftPad("" + (System.currentTimeMillis() - start), 8),
-                        actual
-                );
+                if (part == 1) {
+                    outcome.part1 = false;
+                } else {
+                    outcome.part2 = false;
+                }
+                if (this.title() == null) {
+                    System.out.printf("Attempted %s.%02d.%s but wrong/null answer in %s ms : %16s%n",
+                            year,
+                            day,
+                            part,
+                            this.leftPad("" + (System.currentTimeMillis() - start), 8),
+                            actual
+                    );
+                } else {
+                    System.out.printf("Attempted %s.%02d.%s but wrong/null answer in %s ms : %16s (%s part %s)%n",
+                            year,
+                            day,
+                            part,
+                            this.leftPad("" + (System.currentTimeMillis() - start), 8),
+                            actual,
+                            this.title(),
+                            part
+                    );
+                }
             } else {
-                System.out.printf("Attempted %s.%02d.%s and got correct answer in %s ms : %15s (%s part %s)%n",
-                        year,
-                        day,
-                        part,
-                        this.leftPad("" + (System.currentTimeMillis() - start), 8),
-                        actual,
-                        this.title(),
-                        part
-                );
+                if (this.title() == null) {
+                    System.out.printf("Attempted %s.%02d.%s and got correct answer in %s ms : %15s%n",
+                            year,
+                            day,
+                            part,
+                            this.leftPad("" + (System.currentTimeMillis() - start), 8),
+                            actual
+                    );
+                } else {
+                    System.out.printf("Attempted %s.%02d.%s and got correct answer in %s ms : %15s (%s part %s)%n",
+                            year,
+                            day,
+                            part,
+                            this.leftPad("" + (System.currentTimeMillis() - start), 8),
+                            actual,
+                            this.title(),
+                            part
+                    );
+                }
             }
         }
-        return true;
+        return outcome;
     }
 
     private String leftPad(final String s, final int length) {
@@ -109,6 +129,15 @@ public abstract class AdventOfCodeChallenge {
         } catch (final IOException e) {
             e.printStackTrace();
             throw new InvalidSetupException(e.getMessage());
+        }
+    }
+
+    public static final class Outcome {
+        boolean part1 = true;
+        boolean part2 = true;
+
+        public boolean both() {
+            return this.part1 && this.part2;
         }
     }
 }

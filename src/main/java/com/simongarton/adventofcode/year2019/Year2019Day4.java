@@ -8,7 +8,7 @@ import java.util.Map;
 public class Year2019Day4 extends AdventOfCodeChallenge {
 
     @Override
-    public boolean run() {
+    public Outcome run() {
         return this.runChallenge(2019, 4);
     }
 

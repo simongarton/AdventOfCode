@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class Year2020Day1 extends AdventOfCodeChallenge {
 
     @Override
-    public boolean run() {
+    public Outcome run() {
         return this.runChallenge(2020, 1);
     }
 

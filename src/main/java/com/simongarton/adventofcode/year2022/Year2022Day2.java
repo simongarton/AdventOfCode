@@ -10,7 +10,7 @@ public class Year2022Day2 extends AdventOfCodeChallenge {
     }
 
     @Override
-    public boolean run() {
+    public AdventOfCodeChallenge.Outcome run() {
         return this.runChallenge(2022, 2);
     }
 
