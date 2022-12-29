@@ -35,7 +35,7 @@ class Year2021DayTest {
     void part2() throws IOException {
 
         // given
-//        final Path path = Paths.get("src/main/resources/2021/sample2.txt");
+//        final Path path = Paths.get("src/main/resources/2021/sample.txt");
         final Path path = Paths.get("src/main/resources/2021/2021-Day9-2.txt");
         final List<String> lines = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.toList());
         final Year2021Day9 year2021Day9 = new Year2021Day9();

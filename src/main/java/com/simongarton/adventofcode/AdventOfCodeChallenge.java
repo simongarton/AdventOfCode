@@ -49,19 +49,19 @@ public abstract class AdventOfCodeChallenge {
                     outcome.part2 = false;
                 }
                 if (this.title() == null) {
-                    System.out.printf("Attempted %s.%02d.%s but wrong/null answer in %s ms : %16s%n",
+                    System.out.printf("Attempted %s.%02d.%s but wrong/null answer in %s ms : %20s%n",
                             year,
                             day,
                             part,
-                            this.leftPad("" + (System.currentTimeMillis() - start), 8),
+                            this.leftPad("" + (System.currentTimeMillis() - start), 9),
                             actual
                     );
                 } else {
-                    System.out.printf("Attempted %s.%02d.%s but wrong/null answer in %s ms : %16s (%s part %s)%n",
+                    System.out.printf("Attempted %s.%02d.%s but wrong/null answer in %s ms : %20s (%s part %s)%n",
                             year,
                             day,
                             part,
-                            this.leftPad("" + (System.currentTimeMillis() - start), 8),
+                            this.leftPad("" + (System.currentTimeMillis() - start), 9),
                             actual,
                             this.title(),
                             part
@@ -69,7 +69,7 @@ public abstract class AdventOfCodeChallenge {
                 }
             } else {
                 if (this.title() == null) {
-                    System.out.printf("Attempted %s.%02d.%s and got correct answer in %s ms : %15s%n",
+                    System.out.printf("Attempted %s.%02d.%s and got correct answer in %s ms : %20s%n",
                             year,
                             day,
                             part,
@@ -77,7 +77,7 @@ public abstract class AdventOfCodeChallenge {
                             actual
                     );
                 } else {
-                    System.out.printf("Attempted %s.%02d.%s and got correct answer in %s ms : %15s (%s part %s)%n",
+                    System.out.printf("Attempted %s.%02d.%s and got correct answer in %s ms : %20s (%s part %s)%n",
                             year,
                             day,
                             part,

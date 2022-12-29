@@ -11,7 +11,7 @@ older years.)
        1234567890123456789012345
 2019 : ✓✓✓✓                     
 2020 : ✓✓✓✓✓                    
-2021 : ✓✓✓✓✓                    
+2021 : ✓✓✓✓✓✓✓✓✓✓               
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓. ✓✓.✓✓✓
        1234567890123456789012345
                 1111111111222222
@@ -257,7 +257,8 @@ https://adventofcode.com/2021/day/10
 
 ### Day 9: Smoke Basin
 
-A map of heights - cross reference https://adventofcode.com/2022/day/8.
+A map of heights - cross reference https://adventofcode.com/2022/day/8. Wrote what I think is a flood-fill to solve part
+2, and it worked first time ! Though I have recreated the code in 2022, can't find the class I used in 2021.
 
 https://adventofcode.com/2021/day/9
 
