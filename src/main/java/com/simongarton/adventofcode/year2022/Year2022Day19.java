@@ -1,42 +1,19 @@
 package com.simongarton.adventofcode.year2022;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
+import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Year2022Day19 extends AdventOfCodeChallenge {
 
-    private List<Factory> factories;
+    private static final String GEODE = "G";
+    private static final String OBSIDIAN = "B";
+    private static final String CLAY = "C";
+    private static final String ORE = "O";
 
-    /*
-
-    I fear.
-
-    Blueprint 1 shows the trouble.  Clay robots are cheaper in ore than ore robots, so the simplest
-    algorithm keeps making more clay robots, so we don't get enough ore robots to harvest enough ore to
-    make an obsidian robot.
-
-    Clever girl.
-
-    Have considered various options :
-
-    - tree searching : set up State, and for each option at each minute, create a new state and explore. I think there
-      will be too many options, e.g. if I have 10 ore robots, I will have 10 ore, and could make 1,2,3,4,5,6,7,8,9 or 10
-      new ore robots; then also use that ore for better robots (in different quantities, again); or save it for later ...
-    - set up a plan - I want to make n of ore robots, then m of clay, etc; that will be a smaller space I think
-    - use the numbers to work out the fastest way to get to 1 geode robot; this probably has tradeoffs between making
-      the better robots earlier and letting them work vs later and in more quantity; though I suspect its make them as
-      early as possible.
-
-    So in blueprint 1 I need 2 ore and 7 obsidian for a geode; to get 1 obsidian I need 3 ore, 14 clay; for 1 clay = 2 ore
-    and 1 ore = 4 ore. So I need to get to 98 clay for the geode. Do I alternate clay and ore to get clay earlier, or
-    focus on ore to get more ore robots so I can then build others faster ?
-
-
-     */
+    private static final int MAX_TIME = 24;
 
     @Override
     public String title() {
@@ -50,21 +27,16 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
-//        this.loadFactories(input);
-        return null;
-    }
-
-    private void loadFactories(final String[] input) {
-        this.factories = new ArrayList<>();
+        final Map<Factory, Integer> bestScores = new HashMap<>();
         for (final String blueprint : input) {
-            this.factories.add(new Factory(blueprint));
+            final Factory factory = new Factory(blueprint);
+            bestScores.put(factory, factory.bestScore());
         }
-        for (final Factory factory : this.factories) {
-            for (int minute = 1; minute <= 24; minute++) {
-                factory.mustGrow();
-                System.out.printf("%3d : %s\n", minute, factory);
-            }
+        int quality = 0;
+        for (final Map.Entry<Factory, Integer> entry : bestScores.entrySet()) {
+            quality += entry.getKey().id * entry.getValue();
         }
+        return String.valueOf(quality);
     }
 
     @Override
@@ -72,9 +44,13 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
         return null;
     }
 
-    public static final class Factory {
+    @Getter
+    public static final class Factory implements Cloneable {
+
+        private static final boolean FACTORY_DEBUG = false;
 
         private String blueprintTitle;
+        private int id;
         private int ore;
         private int clay;
         private int obsidian;
@@ -92,14 +68,30 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
         private int obsidianCollectingRobots;
         private int geodeCollectingRobots;
 
-        private Factory(final String fullBlueprint) {
+        private int time = 0;
+
+        public Factory(final String fullBlueprint) {
             this.oreCollectingRobots = 1;
             this.loadBlueprint(fullBlueprint);
+        }
+
+        public void setTitle(final String newTitle) {
+            this.blueprintTitle = newTitle;
+        }
+
+        @Override
+        public Factory clone() {
+            try {
+                return (Factory) super.clone();
+            } catch (final CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         private void loadBlueprint(final String fullBlueprint) {
             final String[] parts = fullBlueprint.split(":");
             this.blueprintTitle = parts[0];
+            this.id = Integer.parseInt(this.blueprintTitle.replace("Blueprint ", ""));
             final List<String> blueprint = Arrays.stream(parts[1].trim().split("\\. "))
                     .map(String::trim)
                     .collect(Collectors.toList());
@@ -116,10 +108,17 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             return Integer.parseInt(parts[i]);
         }
 
+        private void factoryDebugPrint(final String s) {
+            if (FACTORY_DEBUG) {
+                System.out.println(s);
+            }
+        }
+
         @Override
         public String toString() {
-            return String.format("%s | o:%3d, c:%3d, O:%3d, g:%3d [%3d, %3d, %3d, %3d] {%3d, %3d, {%3d, %3d}, {%3d, %3d}}",
+            return String.format("%s | @%3d o:%3d, c:%3d, O:%3d, g:%3d [%3d, %3d, %3d, %3d] {%3d, %3d, {%3d, %3d}, {%3d, %3d}}",
                     this.blueprintTitle,
+                    this.time,
                     this.ore,
                     this.clay,
                     this.obsidian,
@@ -137,48 +136,74 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             );
         }
 
-        public void mustGrow() {
-            this.collectOres();
-            this.buildNewRobots();
+        private boolean makeRobot(final String nextRobot) {
+            while (this.time < MAX_TIME) {
+                this.time++;
+                switch (nextRobot) {
+                    case ORE:
+                        if (this.canMakeRobot(ORE)) {
+                            this.collectOres();
+                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
+                            this.oreCollectingRobots++;
+                            this.ore -= this.oreRobotCostOre;
+                            this.factoryDebugPrint("iterated : " + this);
+                            return true;
+                        }
+                        break;
+                    case CLAY:
+                        if (this.canMakeRobot(CLAY)) {
+                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
+                            this.collectOres();
+                            this.clayCollectingRobots++;
+                            this.ore -= this.clayRobotCostOre;
+                            this.factoryDebugPrint("iterated : " + this);
+                            return true;
+                        }
+                        break;
+                    case OBSIDIAN:
+                        if (this.canMakeRobot(OBSIDIAN)) {
+                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
+                            this.collectOres();
+                            this.obsidianCollectingRobots++;
+                            this.ore -= this.obsidianRobotCostOre;
+                            this.clay -= this.obsidianRobotCostClay;
+                            this.factoryDebugPrint("iterated : " + this);
+                            return true;
+                        }
+                        break;
+                    case GEODE:
+                        if (this.canMakeRobot(GEODE)) {
+                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
+                            this.collectOres();
+                            this.geodeCollectingRobots++;
+                            this.ore -= this.geodeRobotCostOre;
+                            this.obsidian -= this.geodeRobotCostObsidian;
+                            this.factoryDebugPrint("iterated : " + this);
+                            return true;
+                        }
+                        break;
+                    default:
+                        throw new RuntimeException(nextRobot);
+                }
+                this.collectOres();
+                this.factoryDebugPrint("iterated : " + this);
+            }
+            return false;
         }
 
-        private void buildNewRobots() {
-            // I am assuming we go for the most expensive first.
-            // But I fear.
-            this.buildGeodeRobots();
-            this.buildObsidianRobots();
-            this.buildClayRobots();
-            this.buildOreRobots();
-        }
-
-        private void buildGeodeRobots() {
-            final int possibleGeodeRobotsFromOre = this.ore / this.geodeRobotCostOre;
-            final int possibleGeodeRobotsFromObsidian = this.obsidian / this.geodeRobotCostObsidian;
-            final int newRobots = Math.min(possibleGeodeRobotsFromOre, possibleGeodeRobotsFromObsidian);
-            this.geodeCollectingRobots += newRobots;
-            this.ore -= (newRobots * this.geodeRobotCostOre);
-            this.obsidian -= (newRobots * this.geodeRobotCostObsidian);
-        }
-
-        private void buildObsidianRobots() {
-            final int possibleObsidianRobotsFromOre = this.ore / this.obsidianRobotCostOre;
-            final int possibleObsidianRobotsFromClay = this.clay / this.obsidianRobotCostClay;
-            final int newRobots = Math.min(possibleObsidianRobotsFromOre, possibleObsidianRobotsFromClay);
-            this.obsidianCollectingRobots += newRobots;
-            this.ore -= (newRobots * this.obsidianRobotCostOre);
-            this.clay -= (newRobots * this.obsidianRobotCostClay);
-        }
-
-        private void buildClayRobots() {
-            final int newRobots = this.ore / this.clayRobotCostOre;
-            this.clayCollectingRobots += newRobots;
-            this.ore -= (newRobots * this.clayRobotCostOre);
-        }
-
-        private void buildOreRobots() {
-            final int newRobots = this.ore / this.oreRobotCostOre;
-            this.oreCollectingRobots += newRobots;
-            this.ore -= (newRobots * this.oreRobotCostOre);
+        private boolean canMakeRobot(final String robot) {
+            switch (robot) {
+                case ORE:
+                    return this.ore >= this.oreRobotCostOre;
+                case CLAY:
+                    return this.ore >= this.clayRobotCostOre;
+                case OBSIDIAN:
+                    return this.ore >= this.obsidianRobotCostOre && this.clay >= this.obsidianRobotCostClay;
+                case GEODE:
+                    return this.ore >= this.geodeRobotCostOre && this.obsidian >= this.geodeRobotCostObsidian;
+                default:
+                    throw new RuntimeException(robot);
+            }
         }
 
         private void collectOres() {
@@ -186,6 +211,90 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             this.clay += this.clayCollectingRobots;
             this.obsidian += this.obsidianCollectingRobots;
             this.geodes += this.geodeCollectingRobots;
+        }
+
+        public void testSequence(final String sequence) {
+            for (int i = 0; i < sequence.length(); i++) {
+                final String nextRobot = sequence.substring(i, i + 1);
+                final boolean success = this.makeRobot(nextRobot);
+//                System.out.println(this);
+            }
+            while (this.time < MAX_TIME) {
+                this.collectOres();
+                this.factoryDebugPrint("iterated : " + this);
+                this.time++;
+            }
+        }
+
+        public Integer bestScore() {
+            /*
+             I need to make best use of this blueprint. To this, I need to try out all reasonable sequences of
+             robot plans. Starting with an empty string, I will set up "O", "C", "B" or "G" to make one of these as fast
+             as possible. This will mean waiting - nothing smart - until I have enough resources to make that one robot -
+             so I know ahead of time I won't be able to make a B or a G at all, as I won't initially have any clay or
+             obsidian, respectively. So I need to stop after 24 minutes.
+             
+             If I do manage to make the first one, then I need to add on all the variations as a second robot; etc. Each time 
+             I run out of time, work out how many geodes I mined, and store that, as well as the factory (?).
+             
+             */
+
+            final List<Plan> availablePlans = new ArrayList<>();
+            availablePlans.add(new Plan(ORE, this.clone()));
+            availablePlans.add(new Plan(CLAY, this.clone()));
+            availablePlans.add(new Plan(OBSIDIAN, this.clone()));
+            availablePlans.add(new Plan(GEODE, this.clone()));
+
+            int geodes = 0;
+            Plan bestPlan = null;
+
+            int iteration = 0;
+
+            while (!availablePlans.isEmpty()) {
+                final Plan current = availablePlans.get(0);
+                availablePlans.remove(0);
+                if (iteration % 100000 == 0) {
+                    System.out.println("iteration " + iteration + " : " + "current plan is " + current.plan + " and I have " + availablePlans.size() + " left : " + current.factory);
+                }
+                iteration++;
+
+                final String nextRobot = current.plan.substring(current.plan.length() - 1);
+//                System.out.println("current plan is " + current.plan + " and I have " + availablePlans.size() + " left : " + current.factory);
+                final boolean success = current.factory.makeRobot(nextRobot);
+//                System.out.println("Outcome " + success + " at time " + current.factory.time + " and geodes " + current.factory.geodes);
+                if (current.factory.time >= MAX_TIME) {
+                    if ((bestPlan == null || geodes < current.factory.geodes) &&
+                            current.factory.geodes > 0 &&
+                            current.factory.time == MAX_TIME) {
+                        bestPlan = current;
+                        geodes = current.factory.geodes;
+                        System.out.println("New best plan : geodes " + geodes + " with " + bestPlan.plan + " still got " + availablePlans.size());
+                    }
+                } else {
+                    availablePlans.add(this.newPlanFrom(current, ORE));
+                    availablePlans.add(this.newPlanFrom(current, CLAY));
+                    availablePlans.add(this.newPlanFrom(current, OBSIDIAN));
+                    availablePlans.add(this.newPlanFrom(current, GEODE));
+                }
+            }
+
+            return geodes;
+        }
+
+        private Plan newPlanFrom(final Plan current, final String robot) {
+            final Plan plan = new Plan(current.plan + robot, current.factory.clone());
+            return plan;
+        }
+    }
+
+    public static final class Plan {
+
+        private final String plan;
+        private final Factory factory;
+
+        public Plan(final String plan, final Factory factory) {
+            this.plan = plan;
+            this.factory = factory;
         }
     }
 }
