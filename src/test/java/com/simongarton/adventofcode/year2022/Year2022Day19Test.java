@@ -63,7 +63,7 @@ class Year2022Day19Test {
         return Stream.of(
 //                Arguments.of("CCBBGG", 4)
 //                Arguments.of("OCOCCBCBBGG", 12)
-                Arguments.of("OCOCCCCBBBBGGGG", 11)
+                Arguments.of("COOCOCCBCOBOOGOOG", 11)
         );
 
     }

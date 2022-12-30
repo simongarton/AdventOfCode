@@ -23,6 +23,8 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
     Double checked the rules, had a look at one example. Might be dropping out too early ? Oh wait, I didn't have a
     "do nothing" step, which could be an option.
 
+    2113 is too low
+
      */
 
     @Override
@@ -81,10 +83,30 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
         private int geodeCollectingRobots;
 
         private int time = 0;
+        final Map<Integer, Integer> timeToMakeGeodes;
 
         public Factory(final String fullBlueprint) {
             this.oreCollectingRobots = 1;
             this.loadBlueprint(fullBlueprint);
+            this.timeToMakeGeodes = new HashMap<>();
+            this.setupGeodeTimings();
+        }
+
+        private void setupGeodeTimings() {
+            this.timeToMakeGeodes.put(1, 0);
+            this.timeToMakeGeodes.put(2, 1);
+            this.timeToMakeGeodes.put(3, 1);
+            this.timeToMakeGeodes.put(4, 2);
+            this.timeToMakeGeodes.put(5, 2);
+            this.timeToMakeGeodes.put(6, 2);
+            this.timeToMakeGeodes.put(7, 3);
+            this.timeToMakeGeodes.put(8, 3);
+            this.timeToMakeGeodes.put(9, 3);
+            this.timeToMakeGeodes.put(10, 3);
+            this.timeToMakeGeodes.put(11, 4);
+            this.timeToMakeGeodes.put(12, 4);
+            this.timeToMakeGeodes.put(13, 4);
+            this.timeToMakeGeodes.put(14, 4);
         }
 
         public void setTitle(final String newTitle) {
@@ -235,6 +257,7 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
         }
 
         public void testSequence(final String sequence) {
+            System.out.println("\nTesting sequence " + sequence + "\n");
             for (int i = 0; i < sequence.length(); i++) {
                 final String nextRobot = sequence.substring(i, i + 1);
                 final boolean robotMade = this.makeRobot(nextRobot);
@@ -249,13 +272,13 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
         public Integer bestScore() {
 
             final List<Plan> availablePlans = new ArrayList<>();
-            availablePlans.add(new Plan(WAIT, this.clone()));
             availablePlans.add(new Plan(ORE, this.clone()));
             availablePlans.add(new Plan(CLAY, this.clone()));
             availablePlans.add(new Plan(OBSIDIAN, this.clone()));
             availablePlans.add(new Plan(GEODE, this.clone()));
 
             int bestGeodes = 0;
+            int firstGeodeFoundAtTime = Integer.MAX_VALUE;
             Plan bestPlan = null;
 
             int iteration = 0;
@@ -264,12 +287,11 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
 
             long loopStart = System.currentTimeMillis();
 
-            // would a stack be faster than a list ? apparently not, but there is also ArrayDequeue.
             while (!availablePlans.isEmpty()) {
-                final Plan current = availablePlans.get(loopIteration);
-//                availablePlans.remove(0);
+                final Plan current = availablePlans.get(0);
+                availablePlans.remove(0);
                 availablePlanCount--;
-                if (iteration % 1000000 == 0) {
+                if (iteration % 100000 == 0 && false) {
                     final long elapsedSeconds = (System.currentTimeMillis() - loopStart);
                     System.out.println("iteration " + iteration +
                             " : best " + bestGeodes +
@@ -278,67 +300,76 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
                             " and I have " + availablePlanCount +
                             " left : " + current.factory);
                     loopStart = System.currentTimeMillis();
-                    for (int i = 0; i < loopIteration; i++) {
-                        availablePlans.remove(i);
-                    }
                     loopIteration = 0;
                 } else {
                     loopIteration++;
                 }
                 iteration++;
-                if (!this.worthChecking(current, bestGeodes)) {
+                if (!this.worthChecking(current, bestGeodes, firstGeodeFoundAtTime)) {
+                    // this may have been too aggressive.
                     continue;
                 }
 
                 final String nextRobot = current.plan.substring(current.plan.length() - 1);
                 final boolean robotMade = current.factory.makeRobot(nextRobot);
+                if (current.factory.geodes > 0) {
+                    if (current.factory.time < firstGeodeFoundAtTime) {
+                        firstGeodeFoundAtTime = current.factory.time;
+                    }
+                }
                 if (current.factory.time == MAX_TIME) {
                     if (
                             (bestPlan == null || bestGeodes < current.factory.geodes) &&
                                     current.factory.geodes > 0) {
                         bestPlan = current;
                         bestGeodes = current.factory.geodes;
-                        System.out.println("New best plan : geodes " +
-                                bestGeodes +
-                                " with " +
-                                bestPlan.plan +
-                                " still got " +
-                                availablePlans.size() +
-                                " using " +
-                                current.factory);
+                        System.out.println(
+                                current.factory.blueprintTitle +
+                                        " : best is " +
+                                        bestGeodes +
+                                        " geodes with " +
+                                        bestPlan.plan +
+                                        ", still got " +
+                                        availablePlans.size() +
+                                        " plans; currently trying " +
+                                        current.factory);
                     }
                 } else {
                     // not worth checking plans that won't add anything
-                    if (current.factory.time <= (MAX_TIME - 1)) {
-                        availablePlans.add(this.newPlanFrom(current, GEODE));
+                    final int timeToGo = MAX_TIME - current.factory.time;
+                    availablePlans.add(0, this.newPlanFrom(current, WAIT));
+                    availablePlanCount++;
+                    if (timeToGo > 1) {
+                        availablePlans.add(0, this.newPlanFrom(current, GEODE));
                         availablePlanCount++;
                     }
-                    if (current.factory.time <= (MAX_TIME - 2)) {
-                        availablePlans.add(this.newPlanFrom(current, WAIT));
-                        availablePlans.add(this.newPlanFrom(current, OBSIDIAN));
-                        availablePlans.add(this.newPlanFrom(current, CLAY));
-                        availablePlans.add(this.newPlanFrom(current, ORE));
-                        availablePlanCount += 4;
+                    // these magic numbers from Reddit.
+                    if (timeToGo > 4) {
+                        availablePlans.add(0, this.newPlanFrom(current, OBSIDIAN));
+                        availablePlanCount++;
+                    }
+                    if (timeToGo > 7) {
+                        availablePlans.add(0, this.newPlanFrom(current, CLAY));
+                        availablePlanCount++;
+                    }
+                    if (timeToGo > 16) {
+                        availablePlans.add(0, this.newPlanFrom(current, ORE));
+                        availablePlanCount++;
                     }
                 }
             }
             return bestGeodes;
         }
 
-        private boolean worthChecking(final Plan current, final int bestGeodes) {
-            if (current.factory.geodeCollectingRobots < 2) {
-                if (current.factory.time > (MAX_TIME - (bestGeodes - current.factory.geodes))) {
-                    return false;
-                }
+        private boolean worthChecking(final Plan current, final int bestGeodes, final int firstGeodeFoundAtTime) {
+            if (current.factory.geodes == 0 && current.factory.time > firstGeodeFoundAtTime) {
+                return false;
             }
-            if (current.factory.time > (MAX_TIME - this.geodes)) {
-                if (current.factory.geodeCollectingRobots == 0 ||
-                        current.factory.obsidianCollectingRobots < 2
-                ) {
-                    return false;
-                }
+            final int timeToGo = MAX_TIME - current.factory.time;
+            final int minutesNeeded = this.timeToMakeGeodes.getOrDefault(bestGeodes, 0);
+            if (current.factory.geodeCollectingRobots == 0 && timeToGo < minutesNeeded) {
+                return false;
             }
-            // more cunning pruning here - count up different types of robots, existing ore.
             return true;
         }
 
