@@ -31,7 +31,6 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             final Factory factory = new Factory(blueprint, 24);
             final int bestScore = factory.bestScore();
             bestScores.put(factory, bestScore);
-            System.out.println("Best score for " + factory.id + " is " + bestScore);
         }
         int quality = 0;
         for (final Map.Entry<Factory, Integer> entry : bestScores.entrySet()) {
@@ -52,20 +51,19 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             final Factory factory = new Factory(blueprint, 32);
             final int bestScore = factory.bestScore();
             bestScores.put(factory, bestScore);
-            System.out.println("Best score for " + factory.id + " is " + bestScore);
         }
         int total = 1;
         for (final Map.Entry<Factory, Integer> entry : bestScores.entrySet()) {
             total = total * entry.getValue();
         }
         return String.valueOf(total);
-
     }
 
     @Getter
     public static final class Factory implements Cloneable {
 
         private boolean factoryDebug = false;
+        private static final boolean DEBUG = true;
 
         private String blueprintTitle;
         private int id;
@@ -85,6 +83,11 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
         private int clayCollectingRobots;
         private int obsidianCollectingRobots;
         private int geodeCollectingRobots;
+
+        private int maxOreCost;
+        private int maxClayCost;
+        private int maxObsidianCost;
+
 
         private int time = 0;
         private final int maxTime;
@@ -145,6 +148,15 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             this.obsidianRobotCostClay = this.extractNumber(blueprint.get(2), 7);
             this.geodeRobotCostOre = this.extractNumber(blueprint.get(3), 4);
             this.geodeRobotCostObsidian = this.extractNumber(blueprint.get(3), 7);
+
+            this.maxOreCost = Math.max(
+                    Math.max(
+                            Math.max(
+                                    this.oreRobotCostOre, this.clayRobotCostOre),
+                            this.obsidianRobotCostOre),
+                    this.geodeRobotCostOre);
+            this.maxClayCost = this.obsidianRobotCostClay;
+            this.maxObsidianCost = this.geodeRobotCostObsidian;
         }
 
         private int extractNumber(final String s, final int i) {
@@ -154,6 +166,12 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
 
         private void factoryDebugPrint(final String s) {
             if (this.factoryDebug) {
+                System.out.println(s);
+            }
+        }
+
+        private void debugPrint(final String s) {
+            if (DEBUG) {
                 System.out.println(s);
             }
         }
@@ -180,62 +198,51 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             );
         }
 
+        // this is a core method. I have to collect ores AFTER deciding if I can make a robot.
+        // I can inline the tests.
         private void makeRobot(final String nextRobot) {
             while (this.time < this.maxTime) {
                 this.time++;
                 switch (nextRobot) {
                     case ORE:
                         if (this.canMakeRobot(ORE)) {
-//                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
                             this.collectOres();
                             this.oreCollectingRobots++;
                             this.ore -= this.oreRobotCostOre;
-//                            this.factoryDebugPrint("iterated : " + this);
                             return;
                         }
                         break;
                     case CLAY:
                         if (this.canMakeRobot(CLAY)) {
-//                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
                             this.collectOres();
                             this.clayCollectingRobots++;
                             this.ore -= this.clayRobotCostOre;
-//                            this.factoryDebugPrint("iterated : " + this);
                             return;
                         }
                         break;
                     case OBSIDIAN:
                         if (this.canMakeRobot(OBSIDIAN)) {
-//                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
                             this.collectOres();
                             this.obsidianCollectingRobots++;
                             this.ore -= this.obsidianRobotCostOre;
                             this.clay -= this.obsidianRobotCostClay;
-//                            this.factoryDebugPrint("iterated : " + this);
                             return;
                         }
                         break;
                     case GEODE:
                         if (this.canMakeRobot(GEODE)) {
-//                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
                             this.collectOres();
                             this.geodeCollectingRobots++;
                             this.ore -= this.geodeRobotCostOre;
                             this.obsidian -= this.geodeRobotCostObsidian;
-//                            this.factoryDebugPrint("iterated : " + this);
                             return;
                         }
                         break;
                     case WAIT:
-//                        this.factoryDebugPrint("waiting during minute " + this.time);
                         this.collectOres();
-//                        this.factoryDebugPrint("iterated : " + this);
                         return;
-//                    default:
-//                        throw new RuntimeException(nextRobot);
                 }
                 this.collectOres();
-//                this.factoryDebugPrint("iterated : " + this);
             }
         }
 
@@ -274,48 +281,27 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             }
         }
 
-        public Integer bestScore() {
+        public int bestScore() {
 
             final long start = System.currentTimeMillis();
 
             final List<Plan> availablePlans = new ArrayList<>();
+            // no point in starting with a wait, an obsidian or a geode
             availablePlans.add(new Plan(ORE, this.clone()));
             availablePlans.add(new Plan(CLAY, this.clone()));
-            availablePlans.add(new Plan(OBSIDIAN, this.clone()));
-            availablePlans.add(new Plan(GEODE, this.clone()));
 
             int bestGeodes = 0;
             int firstGeodeFoundAtTime = Integer.MAX_VALUE;
             Plan bestPlan = null;
 
             long iteration = 0;
-//            int loopIteration = 0;
-//            int availablePlanCount = availablePlans.size();
-
-            final long loopStart = System.currentTimeMillis();
 
             while (!availablePlans.isEmpty()) {
                 final Plan current = availablePlans.get(0);
                 availablePlans.remove(0);
-//                availablePlanCount--;
-//                if (iteration % 100000 == 0 && false) {
-//                    final long elapsedSeconds = (System.currentTimeMillis() - loopStart);
-//                    System.out.println("iteration " + iteration +
-//                            " : best " + bestGeodes +
-//                            " rate " + String.format("%5.2f", loopIteration * 1.0 / elapsedSeconds) + "/ms" +
-//                            " having taken " + String.format("%5.2f", elapsedSeconds / 1000.0) + " seconds;" +
-//                            " current plan is " + current.plan +
-//                            " and I have " + availablePlanCount +
-//                            " left : " + current.factory);
-//                    loopStart = System.currentTimeMillis();
-//                    loopIteration = 0;
-//                } else {
-//                    loopIteration++;
-//                }
                 iteration++;
-//                if (!this.worthChecking(current, bestGeodes, firstGeodeFoundAtTime)) {
-//                    continue;
-//                }
+
+                // pruning
                 final int currentFactoryTime = current.factory.time;
                 if (current.factory.geodes == 0 && currentFactoryTime > firstGeodeFoundAtTime) {
                     continue;
@@ -334,13 +320,12 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
                     }
                 }
                 if (currentFactoryTime == this.maxTime) {
-                    if (
-                            (bestPlan == null || bestGeodes < current.factory.geodes) &&
-                                    current.factory.geodes > 0) {
+                    if ((bestPlan == null || bestGeodes < current.factory.geodes) &&
+                            current.factory.geodes > 0) {
                         bestPlan = current;
                         bestGeodes = current.factory.geodes;
                         final long elapsedSeconds = (System.currentTimeMillis() - start);
-                        System.out.println(
+                        this.debugPrint(
                                 current.factory.blueprintTitle +
                                         " : " +
                                         bestGeodes +
@@ -355,31 +340,32 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
                                         "currently working with " + current.factory);
                     }
                 } else {
-                    // not worth checking plans that won't add anything
-                    availablePlans.add(0, this.newPlanFrom(current, WAIT));
-//                    availablePlanCount++;
                     if (timeToGo > 1) {
                         availablePlans.add(0, this.newPlanFrom(current, GEODE));
-//                        availablePlanCount++;
-                        // these are magic numbers from Reddit.
+                        availablePlans.add(0, this.newPlanFrom(current, WAIT));
+                        // various optimisations gleaned from the subreddit.
                         if (timeToGo > 4) {
-                            availablePlans.add(0, this.newPlanFrom(current, OBSIDIAN));
-//                        availablePlanCount++;
+                            if (current.factory.obsidianCollectingRobots < current.factory.maxObsidianCost) {
+                                availablePlans.add(0, this.newPlanFrom(current, OBSIDIAN));
+                            }
                             if (timeToGo > 7) {
-                                availablePlans.add(0, this.newPlanFrom(current, CLAY));
-//                        availablePlanCount++;
+                                if (current.factory.clayCollectingRobots < current.factory.maxClayCost) {
+                                    availablePlans.add(0, this.newPlanFrom(current, CLAY));
+                                }
                                 if (timeToGo > 16) {
-                                    availablePlans.add(0, this.newPlanFrom(current, ORE));
-//                        availablePlanCount++;
+                                    if (current.factory.oreCollectingRobots < current.factory.maxOreCost) {
+                                        availablePlans.add(0, this.newPlanFrom(current, ORE));
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+
             final long elapsedSeconds = (System.currentTimeMillis() - start);
             if (bestPlan != null) {
-                System.out.println(
+                this.debugPrint(
                         bestPlan.factory.blueprintTitle +
                                 " : best is " +
                                 bestGeodes +
@@ -390,7 +376,7 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
                                 "having taken " + String.format("%1.2f", elapsedSeconds / 1000.0) + " seconds " +
                                 "@ rate " + String.format("%1.2f", iteration * 1.0 / elapsedSeconds) + "/ms.");
             } else {
-                System.out.println(
+                this.debugPrint(
                         "Nothing found after " +
                                 String.format("%,d", iteration) + " iterations, " +
                                 "having taken " + String.format("%5.2f", elapsedSeconds / 1000.0) + " seconds " +
