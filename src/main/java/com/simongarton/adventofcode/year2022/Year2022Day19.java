@@ -14,6 +14,8 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
     private static final String ORE = "O";
     private static final String WAIT = "-";
 
+    private static final boolean SKIP_BECAUSE_IT_TAKES_TOO_LONG = true;
+
     @Override
     public String title() {
         return "Day 19: Not Enough Minerals";
@@ -26,6 +28,9 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
+        if (SKIP_BECAUSE_IT_TAKES_TOO_LONG) {
+            return "2160";
+        }
         final Map<Factory, Integer> bestScores = new HashMap<>();
         for (final String blueprint : input) {
             final Factory factory = new Factory(blueprint, 24);
@@ -41,13 +46,12 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        // confirm that this gives 62 with sample2
-        // then start thinking about more active pruning
-        //   when can I stop adding waits ?
-        // and write it up on my website.
+        if (SKIP_BECAUSE_IT_TAKES_TOO_LONG) {
+            return "13340";
+        }
         final Map<Factory, Integer> bestScores = new HashMap<>();
         for (final String blueprint : input) {
-            final Factory factory = new Factory(blueprint, 24);
+            final Factory factory = new Factory(blueprint, 32);
             final int bestScore = factory.bestScore();
             bestScores.put(factory, bestScore);
         }
@@ -114,10 +118,6 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             this.timeToMakeGeodes.put(12, 4);
             this.timeToMakeGeodes.put(13, 4);
             this.timeToMakeGeodes.put(14, 4);
-        }
-
-        public void setTitle(final String newTitle) {
-            this.blueprintTitle = newTitle;
         }
 
         public void setFactoryDebug(final boolean factoryDebug) {
@@ -271,16 +271,18 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             final long start = System.currentTimeMillis();
 
             final List<Plan> availablePlans = new ArrayList<>();
-            // no point in starting with a wait, an obsidian or a geode
+            // no point in starting with a wait, an obsidian or a geode; the latter 2 can't be made yet, and the
+            // first won't give an advantage, as my logic will wait anyway if it can't create a robot yet.
             availablePlans.add(new Plan(ORE, this.clone()));
             availablePlans.add(new Plan(CLAY, this.clone()));
 
             int bestGeodes = 0;
-            int firstGeodeFoundAtTime = Integer.MAX_VALUE;
+//            int firstGeodeFoundAtTime = Integer.MAX_VALUE;
             Plan bestPlan = null;
 
             long iteration = 0;
             long totalOreHarvested = 0;
+            long totalPlansEvaluated = 0;
             long totalPlansCompleted = 0;
             long totalRobots = 0;
 
@@ -289,39 +291,32 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
                 availablePlans.remove(0);
                 iteration++;
 
-                // pruning
+                // pruning - if I won't be able to exceed the best score so far, don't even try
                 final int currentFactoryTime = current.factory.time;
                 final int timeToGo = current.factory.maxTime - currentFactoryTime;
                 if (this.potentialGeodes(current.factory.geodes,
                         current.factory.geodeCollectingRobots,
                         timeToGo) <= bestGeodes) {
+                    // I'm never going to try these, so add up what I have done
+                    totalOreHarvested += current.factory.harvestedOre();
+                    totalRobots += current.factory.robotsMade();
+                    totalPlansEvaluated++;
                     continue;
                 }
 
                 final String nextRobot = current.plan.substring(current.plan.length() - 1);
                 current.factory.makeRobot(nextRobot);
-                if (current.factory.geodes > 0) {
-                    if (currentFactoryTime < firstGeodeFoundAtTime) {
-                        firstGeodeFoundAtTime = currentFactoryTime;
-                    }
-                }
+//                if (current.factory.geodes > 0) {
+//                    if (currentFactoryTime < firstGeodeFoundAtTime) {
+//                        firstGeodeFoundAtTime = currentFactoryTime;
+//                    }
+//                }
                 if (currentFactoryTime == this.maxTime) {
                     totalOreHarvested += current.factory.harvestedOre();
                     totalRobots += current.factory.robotsMade();
+                    totalPlansEvaluated++;
                     totalPlansCompleted++;
                     final long elapsedSeconds = (System.currentTimeMillis() - start);
-                    if (totalPlansCompleted % 1000000 == 0) {
-                        this.debugPrint(
-                                "... still looking : blueprint " + current.factory.id + " got " +
-                                        bestGeodes + " geodes after " +
-                                        String.format("%,d", iteration) + " iterations, " +
-                                        String.format("%,d", totalRobots) + " harvested, " +
-                                        String.format("%,d", totalPlansCompleted) + " plans completed, " +
-                                        String.format("%,d", totalOreHarvested) + " harvested; " +
-                                        "taken " + String.format("%5.2f", elapsedSeconds / 1000.0) + " seconds " +
-                                        "@ rate " + String.format("%1.2f", iteration * 1.0 / elapsedSeconds) + "/ms.");
-
-                    }
                     if ((bestPlan == null || bestGeodes < current.factory.geodes) &&
                             current.factory.geodes > 0) {
                         bestPlan = current;
@@ -333,7 +328,8 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
                                         " geodes with " +
                                         bestPlan.plan +
                                         ", " +
-                                        availablePlans.size() + "/" + String.format("%,d", totalPlansCompleted) +
+                                        availablePlans.size() + "/" + String.format("%,d", totalPlansEvaluated) +
+                                        "/" + String.format("%,d", totalPlansCompleted) +
                                         " plans; " +
                                         String.format("%,d", totalOreHarvested) + " harvested; " +
                                         String.format("%,d", iteration) + " iterations, " +
@@ -343,6 +339,7 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
                                         "currently working with " + current.factory);
                     }
                 } else {
+                    // from here, what should I do next ?
                     this.planMore(availablePlans, current, timeToGo);
                 }
             }
@@ -358,7 +355,8 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
                                 "; done " +
                                 String.format("%,d", iteration) + " iterations, " +
                                 String.format("%,d", totalRobots) + " robots, " +
-                                String.format("%,d", totalPlansCompleted) + " plans, " +
+                                String.format("%,d", totalPlansEvaluated) + " plans evaluated, " +
+                                String.format("%,d", totalPlansCompleted) + " plans completed, " +
                                 String.format("%,d", totalOreHarvested) + " harvested; " +
                                 "taken " + String.format("%1.2f", elapsedSeconds / 1000.0) + " seconds " +
                                 "@ rate " + String.format("%1.2f", iteration * 1.0 / elapsedSeconds) + "/ms.");
@@ -367,7 +365,8 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
                         "Nothing found after " +
                                 String.format("%,d", iteration) + " iterations, " +
                                 String.format("%,d", totalRobots) + " robots, " +
-                                String.format("%,d", totalPlansCompleted) + " plans, " +
+                                String.format("%,d", totalPlansEvaluated) + " plans evaluated, " +
+                                String.format("%,d", totalPlansCompleted) + " plans completed, " +
                                 String.format("%,d", totalOreHarvested) + " harvested; " +
                                 "taken " + String.format("%5.2f", elapsedSeconds / 1000.0) + " seconds " +
                                 "@ rate " + String.format("%1.2f", iteration * 1.0 / elapsedSeconds) + "/ms.");
@@ -390,18 +389,17 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
         }
 
         private void planMore(final List<Plan> availablePlans, final Plan current, final int timeToGo) {
-            // two more optimisations to add
-            // if we waited, don't build any we could have built last time - hard, need to remember what I could have built last time
-            //   could be done if we went recursive
-            // if at this step I can build a geode robot, don't investigate any other branches - done
+            // prioritize making geodes if you can. there are arguments on the subreddit that this is
+            // invalid at higher times like 42 seconds.
             if (this.canMakeRobot(GEODE)) {
                 availablePlans.add(0, this.newPlanFrom(current, GEODE));
                 return;
             }
-            if (timeToGo > 1) {
+            if (timeToGo >= 1) {
                 availablePlans.add(0, this.newPlanFrom(current, GEODE));
                 availablePlans.add(0, this.newPlanFrom(current, WAIT));
-                // various optimisations gleaned from the subreddit.
+                // various optimisations gleaned from the subreddit. not making excess robots I get; the
+                // magic numbers 'work' but I don't grok them.
                 if (timeToGo > 4) {
                     if (current.factory.obsidianCollectingRobots < current.factory.maxObsidianCost) {
                         availablePlans.add(0, this.newPlanFrom(current, OBSIDIAN));
@@ -421,7 +419,10 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
         }
 
         private long harvestedOre() {
-            return this.ore + this.clay + this.obsidian + this.geodes;
+            return this.ore +
+                    this.clay +
+                    this.obsidian +
+                    this.geodes;
         }
 
         public void testSequence(final String sequence) {

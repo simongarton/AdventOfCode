@@ -12,7 +12,7 @@ older years.)
 2019 : ✓✓✓✓                     
 2020 : ✓✓✓✓✓                    
 2021 : ✓✓✓✓✓✓✓✓✓✓               
-2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓. ✓✓.✓✓✓
+2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓✓
        1234567890123456789012345
                 1111111111222222
 ```
@@ -81,13 +81,15 @@ the original order, which has a couple of nice gotchas. Second part just made th
 
 https://adventofcode.com/2022/day/20
 
-### Day 19: Not Enough Minerals (0/2)
+### Day 19: Not Enough Minerals
 
 Super excited by this one, but haven't yet figured out how to do it. 4 different kinds of robots, each mining a
 different kind of ore, and then you have recipes to use different amounts of ore to make the robot. Aim is to end with
 the most of the ore (actually geodes) collected by the most complicated robot. You're given different recipes to
 evaluate - but end up having to make decisions (do I use up minerals early to make more simple robots, or save them up
 for the most complex ones)
+
+Update : absolutely loved this one. Wrote it up.
 
 https://adventofcode.com/2022/day/19
 

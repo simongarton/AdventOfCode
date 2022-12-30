@@ -1,6 +1,5 @@
 package com.simongarton.adventofcode.year2022;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -10,23 +9,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Year2022Day19Test {
-
-    @Test
-    void testClone() {
-
-        // given
-        final String blueprint = "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.";
-        final Year2022Day19.Factory factory = new Year2022Day19.Factory(blueprint, 24);
-
-        // when
-        final Year2022Day19.Factory factory2 = factory.clone();
-        factory2.setTitle("Not me.");
-        factory.setTitle("Me.");
-
-        // then
-        assertEquals("Me.", factory.getBlueprintTitle());
-        assertEquals("Not me.", factory2.getBlueprintTitle());
-    }
 
     @ParameterizedTest
     @MethodSource("sequencesAndGeodes")
