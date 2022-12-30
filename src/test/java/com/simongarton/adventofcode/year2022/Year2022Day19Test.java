@@ -43,6 +43,31 @@ class Year2022Day19Test {
         assertEquals(expected, factory.getGeodes());
     }
 
+    @ParameterizedTest
+    @MethodSource("sequencesAndGeodes2")
+    void testSequenceOnBlueprint2(final String sequence, final int expected) {
+
+        // given
+        final String blueprint = "Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.";
+        final Year2022Day19.Factory factory = new Year2022Day19.Factory(blueprint);
+        factory.setFactoryDebug(true);
+
+        // when
+        factory.testSequence(sequence);
+
+        // then
+        assertEquals(expected, factory.getGeodes());
+    }
+
+    public static Stream<Arguments> sequencesAndGeodes2() {
+        return Stream.of(
+//                Arguments.of("CCBBGG", 4)
+//                Arguments.of("OCOCCBCBBGG", 12)
+                Arguments.of("OCOCCCCBBBBGGGG", 11)
+        );
+
+    }
+
     public static Stream<Arguments> sequencesAndGeodes() {
         return Stream.of(
                 Arguments.of("CCCBCBGG", 9),
