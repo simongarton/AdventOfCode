@@ -16,7 +16,7 @@ class Year2022Day19Test {
 
         // given
         final String blueprint = "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.";
-        final Year2022Day19.Factory factory = new Year2022Day19.Factory(blueprint);
+        final Year2022Day19.Factory factory = new Year2022Day19.Factory(blueprint, 24);
 
         // when
         final Year2022Day19.Factory factory2 = factory.clone();
@@ -34,7 +34,7 @@ class Year2022Day19Test {
 
         // given
         final String blueprint = "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.";
-        final Year2022Day19.Factory factory = new Year2022Day19.Factory(blueprint);
+        final Year2022Day19.Factory factory = new Year2022Day19.Factory(blueprint, 24);
 
         // when
         factory.testSequence(sequence);
@@ -49,7 +49,7 @@ class Year2022Day19Test {
 
         // given
         final String blueprint = "Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.";
-        final Year2022Day19.Factory factory = new Year2022Day19.Factory(blueprint);
+        final Year2022Day19.Factory factory = new Year2022Day19.Factory(blueprint, 24);
         factory.setFactoryDebug(true);
 
         // when
