@@ -14,17 +14,6 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
     private static final String ORE = "O";
     private static final String WAIT = "-";
 
-    /*
-    This is going pretty well, but on the sample, I can get Blueprint 1 to match with 9 geodes,
-    but Blueprint 2 is only giving me 10 geodes, not 12.
-
-    Double checked the rules, had a look at one example. Might be dropping out too early ? Oh wait, I didn't have a
-    "do nothing" step, which could be an option.
-
-    2113 is too low
-
-     */
-
     @Override
     public String title() {
         return "Day 19: Not Enough Minerals";
@@ -191,64 +180,63 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             );
         }
 
-        private boolean makeRobot(final String nextRobot) {
+        private void makeRobot(final String nextRobot) {
             while (this.time < this.maxTime) {
                 this.time++;
                 switch (nextRobot) {
                     case ORE:
                         if (this.canMakeRobot(ORE)) {
-                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
+//                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
                             this.collectOres();
                             this.oreCollectingRobots++;
                             this.ore -= this.oreRobotCostOre;
-                            this.factoryDebugPrint("iterated : " + this);
-                            return true;
+//                            this.factoryDebugPrint("iterated : " + this);
+                            return;
                         }
                         break;
                     case CLAY:
                         if (this.canMakeRobot(CLAY)) {
-                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
+//                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
                             this.collectOres();
                             this.clayCollectingRobots++;
                             this.ore -= this.clayRobotCostOre;
-                            this.factoryDebugPrint("iterated : " + this);
-                            return true;
+//                            this.factoryDebugPrint("iterated : " + this);
+                            return;
                         }
                         break;
                     case OBSIDIAN:
                         if (this.canMakeRobot(OBSIDIAN)) {
-                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
+//                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
                             this.collectOres();
                             this.obsidianCollectingRobots++;
                             this.ore -= this.obsidianRobotCostOre;
                             this.clay -= this.obsidianRobotCostClay;
-                            this.factoryDebugPrint("iterated : " + this);
-                            return true;
+//                            this.factoryDebugPrint("iterated : " + this);
+                            return;
                         }
                         break;
                     case GEODE:
                         if (this.canMakeRobot(GEODE)) {
-                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
+//                            this.factoryDebugPrint("making " + nextRobot + " robot during minute " + this.time);
                             this.collectOres();
                             this.geodeCollectingRobots++;
                             this.ore -= this.geodeRobotCostOre;
                             this.obsidian -= this.geodeRobotCostObsidian;
-                            this.factoryDebugPrint("iterated : " + this);
-                            return true;
+//                            this.factoryDebugPrint("iterated : " + this);
+                            return;
                         }
                         break;
                     case WAIT:
-                        this.factoryDebugPrint("waiting during minute " + this.time);
+//                        this.factoryDebugPrint("waiting during minute " + this.time);
                         this.collectOres();
-                        this.factoryDebugPrint("iterated : " + this);
-                        return true;
-                    default:
-                        throw new RuntimeException(nextRobot);
+//                        this.factoryDebugPrint("iterated : " + this);
+                        return;
+//                    default:
+//                        throw new RuntimeException(nextRobot);
                 }
                 this.collectOres();
-                this.factoryDebugPrint("iterated : " + this);
+//                this.factoryDebugPrint("iterated : " + this);
             }
-            return false;
         }
 
         private boolean canMakeRobot(final String robot) {
@@ -277,7 +265,7 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             System.out.println("\nTesting sequence " + sequence + "\n");
             for (int i = 0; i < sequence.length(); i++) {
                 final String nextRobot = sequence.substring(i, i + 1);
-                final boolean robotMade = this.makeRobot(nextRobot);
+                this.makeRobot(nextRobot);
             }
             while (this.time < this.maxTime) {
                 this.collectOres();
@@ -301,43 +289,51 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             Plan bestPlan = null;
 
             long iteration = 0;
-            int loopIteration = 0;
-            int availablePlanCount = availablePlans.size();
+//            int loopIteration = 0;
+//            int availablePlanCount = availablePlans.size();
 
-            long loopStart = System.currentTimeMillis();
+            final long loopStart = System.currentTimeMillis();
 
             while (!availablePlans.isEmpty()) {
                 final Plan current = availablePlans.get(0);
                 availablePlans.remove(0);
-                availablePlanCount--;
-                if (iteration % 100000 == 0 && false) {
-                    final long elapsedSeconds = (System.currentTimeMillis() - loopStart);
-                    System.out.println("iteration " + iteration +
-                            " : best " + bestGeodes +
-                            " rate " + String.format("%5.2f", loopIteration * 1.0 / elapsedSeconds) + "/ms" +
-                            " having taken " + String.format("%5.2f", elapsedSeconds / 1000.0) + " seconds;" +
-                            " current plan is " + current.plan +
-                            " and I have " + availablePlanCount +
-                            " left : " + current.factory);
-                    loopStart = System.currentTimeMillis();
-                    loopIteration = 0;
-                } else {
-                    loopIteration++;
-                }
+//                availablePlanCount--;
+//                if (iteration % 100000 == 0 && false) {
+//                    final long elapsedSeconds = (System.currentTimeMillis() - loopStart);
+//                    System.out.println("iteration " + iteration +
+//                            " : best " + bestGeodes +
+//                            " rate " + String.format("%5.2f", loopIteration * 1.0 / elapsedSeconds) + "/ms" +
+//                            " having taken " + String.format("%5.2f", elapsedSeconds / 1000.0) + " seconds;" +
+//                            " current plan is " + current.plan +
+//                            " and I have " + availablePlanCount +
+//                            " left : " + current.factory);
+//                    loopStart = System.currentTimeMillis();
+//                    loopIteration = 0;
+//                } else {
+//                    loopIteration++;
+//                }
                 iteration++;
-                if (!this.worthChecking(current, bestGeodes, firstGeodeFoundAtTime)) {
-                    // this may have been too aggressive.
+//                if (!this.worthChecking(current, bestGeodes, firstGeodeFoundAtTime)) {
+//                    continue;
+//                }
+                final int currentFactoryTime = current.factory.time;
+                if (current.factory.geodes == 0 && currentFactoryTime > firstGeodeFoundAtTime) {
+                    continue;
+                }
+                final int timeToGo = current.factory.maxTime - currentFactoryTime;
+                final int minutesNeeded = this.timeToMakeGeodes.getOrDefault(bestGeodes, 0);
+                if (current.factory.geodeCollectingRobots == 0 && timeToGo < minutesNeeded) {
                     continue;
                 }
 
                 final String nextRobot = current.plan.substring(current.plan.length() - 1);
-                final boolean robotMade = current.factory.makeRobot(nextRobot);
+                current.factory.makeRobot(nextRobot);
                 if (current.factory.geodes > 0) {
-                    if (current.factory.time < firstGeodeFoundAtTime) {
-                        firstGeodeFoundAtTime = current.factory.time;
+                    if (currentFactoryTime < firstGeodeFoundAtTime) {
+                        firstGeodeFoundAtTime = currentFactoryTime;
                     }
                 }
-                if (current.factory.time == this.maxTime) {
+                if (currentFactoryTime == this.maxTime) {
                     if (
                             (bestPlan == null || bestGeodes < current.factory.geodes) &&
                                     current.factory.geodes > 0) {
@@ -360,25 +356,24 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
                     }
                 } else {
                     // not worth checking plans that won't add anything
-                    final int timeToGo = current.factory.maxTime - current.factory.time;
                     availablePlans.add(0, this.newPlanFrom(current, WAIT));
-                    availablePlanCount++;
+//                    availablePlanCount++;
                     if (timeToGo > 1) {
                         availablePlans.add(0, this.newPlanFrom(current, GEODE));
-                        availablePlanCount++;
-                    }
-                    // these are magic numbers from Reddit.
-                    if (timeToGo > 4) {
-                        availablePlans.add(0, this.newPlanFrom(current, OBSIDIAN));
-                        availablePlanCount++;
-                    }
-                    if (timeToGo > 7) {
-                        availablePlans.add(0, this.newPlanFrom(current, CLAY));
-                        availablePlanCount++;
-                    }
-                    if (timeToGo > 16) {
-                        availablePlans.add(0, this.newPlanFrom(current, ORE));
-                        availablePlanCount++;
+//                        availablePlanCount++;
+                        // these are magic numbers from Reddit.
+                        if (timeToGo > 4) {
+                            availablePlans.add(0, this.newPlanFrom(current, OBSIDIAN));
+//                        availablePlanCount++;
+                            if (timeToGo > 7) {
+                                availablePlans.add(0, this.newPlanFrom(current, CLAY));
+//                        availablePlanCount++;
+                                if (timeToGo > 16) {
+                                    availablePlans.add(0, this.newPlanFrom(current, ORE));
+//                        availablePlanCount++;
+                                }
+                            }
+                        }
                     }
                 }
             }
