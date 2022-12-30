@@ -44,11 +44,10 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
         // confirm that this gives 62 with sample2
         // then start thinking about more active pruning
         //   when can I stop adding waits ?
-        //   when can I stop adding robots (I've got more than enough by now)
         // and write it up on my website.
         final Map<Factory, Integer> bestScores = new HashMap<>();
         for (final String blueprint : input) {
-            final Factory factory = new Factory(blueprint, 32);
+            final Factory factory = new Factory(blueprint, 24);
             final int bestScore = factory.bestScore();
             bestScores.put(factory, bestScore);
         }
@@ -87,7 +86,6 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
         private int maxOreCost;
         private int maxClayCost;
         private int maxObsidianCost;
-
 
         private int time = 0;
         private final int maxTime;
@@ -199,7 +197,7 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
         }
 
         // this is a core method. I have to collect ores AFTER deciding if I can make a robot.
-        // I can inline the tests.
+        // I can inline the tests and collections, but it didn't make a significant change
         private void makeRobot(final String nextRobot) {
             while (this.time < this.maxTime) {
                 this.time++;
@@ -268,20 +266,7 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             this.geodes += this.geodeCollectingRobots;
         }
 
-        public void testSequence(final String sequence) {
-            System.out.println("\nTesting sequence " + sequence + "\n");
-            for (int i = 0; i < sequence.length(); i++) {
-                final String nextRobot = sequence.substring(i, i + 1);
-                this.makeRobot(nextRobot);
-            }
-            while (this.time < this.maxTime) {
-                this.collectOres();
-                this.factoryDebugPrint("iterated : " + this);
-                this.time++;
-            }
-        }
-
-        public int bestScore() {
+        private int bestScore() {
 
             final long start = System.currentTimeMillis();
 
@@ -295,6 +280,9 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             Plan bestPlan = null;
 
             long iteration = 0;
+            long totalOreHarvested = 0;
+            long totalPlansCompleted = 0;
+            long totalRobots = 0;
 
             while (!availablePlans.isEmpty()) {
                 final Plan current = availablePlans.get(0);
@@ -303,12 +291,10 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
 
                 // pruning
                 final int currentFactoryTime = current.factory.time;
-                if (current.factory.geodes == 0 && currentFactoryTime > firstGeodeFoundAtTime) {
-                    continue;
-                }
                 final int timeToGo = current.factory.maxTime - currentFactoryTime;
-                final int minutesNeeded = this.timeToMakeGeodes.getOrDefault(bestGeodes, 0);
-                if (current.factory.geodeCollectingRobots == 0 && timeToGo < minutesNeeded) {
+                if (this.potentialGeodes(current.factory.geodes,
+                        current.factory.geodeCollectingRobots,
+                        timeToGo) <= bestGeodes) {
                     continue;
                 }
 
@@ -320,81 +306,135 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
                     }
                 }
                 if (currentFactoryTime == this.maxTime) {
+                    totalOreHarvested += current.factory.harvestedOre();
+                    totalRobots += current.factory.robotsMade();
+                    totalPlansCompleted++;
+                    final long elapsedSeconds = (System.currentTimeMillis() - start);
+                    if (totalPlansCompleted % 1000000 == 0) {
+                        this.debugPrint(
+                                "... still looking : blueprint " + current.factory.id + " got " +
+                                        bestGeodes + " geodes after " +
+                                        String.format("%,d", iteration) + " iterations, " +
+                                        String.format("%,d", totalRobots) + " harvested, " +
+                                        String.format("%,d", totalPlansCompleted) + " plans completed, " +
+                                        String.format("%,d", totalOreHarvested) + " harvested; " +
+                                        "taken " + String.format("%5.2f", elapsedSeconds / 1000.0) + " seconds " +
+                                        "@ rate " + String.format("%1.2f", iteration * 1.0 / elapsedSeconds) + "/ms.");
+
+                    }
                     if ((bestPlan == null || bestGeodes < current.factory.geodes) &&
                             current.factory.geodes > 0) {
                         bestPlan = current;
                         bestGeodes = current.factory.geodes;
-                        final long elapsedSeconds = (System.currentTimeMillis() - start);
                         this.debugPrint(
-                                current.factory.blueprintTitle +
+                                current.factory.id +
                                         " : " +
                                         bestGeodes +
                                         " geodes with " +
                                         bestPlan.plan +
-                                        ", still got " +
-                                        availablePlans.size() +
-                                        " plans; done " +
+                                        ", " +
+                                        availablePlans.size() + "/" + String.format("%,d", totalPlansCompleted) +
+                                        " plans; " +
+                                        String.format("%,d", totalOreHarvested) + " harvested; " +
                                         String.format("%,d", iteration) + " iterations, " +
-                                        "having taken " + String.format("%1.2f", elapsedSeconds / 1000.0) + " seconds " +
+                                        String.format("%,d", totalRobots) + " robots, " +
+                                        "taken " + String.format("%1.2f", elapsedSeconds / 1000.0) + " seconds " +
                                         "@ rate " + String.format("%1.2f", iteration * 1.0 / elapsedSeconds) + "/ms; " +
                                         "currently working with " + current.factory);
                     }
                 } else {
-                    if (timeToGo > 1) {
-                        availablePlans.add(0, this.newPlanFrom(current, GEODE));
-                        availablePlans.add(0, this.newPlanFrom(current, WAIT));
-                        // various optimisations gleaned from the subreddit.
-                        if (timeToGo > 4) {
-                            if (current.factory.obsidianCollectingRobots < current.factory.maxObsidianCost) {
-                                availablePlans.add(0, this.newPlanFrom(current, OBSIDIAN));
-                            }
-                            if (timeToGo > 7) {
-                                if (current.factory.clayCollectingRobots < current.factory.maxClayCost) {
-                                    availablePlans.add(0, this.newPlanFrom(current, CLAY));
-                                }
-                                if (timeToGo > 16) {
-                                    if (current.factory.oreCollectingRobots < current.factory.maxOreCost) {
-                                        availablePlans.add(0, this.newPlanFrom(current, ORE));
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    this.planMore(availablePlans, current, timeToGo);
                 }
             }
 
             final long elapsedSeconds = (System.currentTimeMillis() - start);
             if (bestPlan != null) {
                 this.debugPrint(
-                        bestPlan.factory.blueprintTitle +
+                        bestPlan.factory.id +
                                 " : best is " +
                                 bestGeodes +
                                 " geodes with " +
                                 bestPlan.plan +
                                 "; done " +
                                 String.format("%,d", iteration) + " iterations, " +
-                                "having taken " + String.format("%1.2f", elapsedSeconds / 1000.0) + " seconds " +
+                                String.format("%,d", totalRobots) + " robots, " +
+                                String.format("%,d", totalPlansCompleted) + " plans, " +
+                                String.format("%,d", totalOreHarvested) + " harvested; " +
+                                "taken " + String.format("%1.2f", elapsedSeconds / 1000.0) + " seconds " +
                                 "@ rate " + String.format("%1.2f", iteration * 1.0 / elapsedSeconds) + "/ms.");
             } else {
                 this.debugPrint(
                         "Nothing found after " +
                                 String.format("%,d", iteration) + " iterations, " +
-                                "having taken " + String.format("%5.2f", elapsedSeconds / 1000.0) + " seconds " +
+                                String.format("%,d", totalRobots) + " robots, " +
+                                String.format("%,d", totalPlansCompleted) + " plans, " +
+                                String.format("%,d", totalOreHarvested) + " harvested; " +
+                                "taken " + String.format("%5.2f", elapsedSeconds / 1000.0) + " seconds " +
                                 "@ rate " + String.format("%1.2f", iteration * 1.0 / elapsedSeconds) + "/ms.");
             }
             return bestGeodes;
         }
 
-        private boolean worthChecking(final Plan current, final int bestGeodes, final int firstGeodeFoundAtTime) {
-            if (current.factory.geodes == 0 && current.factory.time > firstGeodeFoundAtTime) {
-                return false;
+        private int potentialGeodes(final int geodes, final int geodeCollectingRobots, final int timeToGo) {
+            int potentialGeodes = geodes;
+            int robots = geodeCollectingRobots;
+            for (int i = 0; i < timeToGo; i++) {
+                robots++;
+                potentialGeodes += robots;
             }
-            final int timeToGo = current.factory.maxTime - current.factory.time;
-            final int minutesNeeded = this.timeToMakeGeodes.getOrDefault(bestGeodes, 0);
-            if (current.factory.geodeCollectingRobots == 0 && timeToGo < minutesNeeded) {
-                return false;
+            return potentialGeodes;
+        }
+
+        private long robotsMade() {
+            return this.oreCollectingRobots + this.clayCollectingRobots + this.obsidianCollectingRobots + this.geodeCollectingRobots;
+        }
+
+        private void planMore(final List<Plan> availablePlans, final Plan current, final int timeToGo) {
+            // two more optimisations to add
+            // if we waited, don't build any we could have built last time - hard, need to remember what I could have built last time
+            //   could be done if we went recursive
+            // if at this step I can build a geode robot, don't investigate any other branches - done
+            if (this.canMakeRobot(GEODE)) {
+                availablePlans.add(0, this.newPlanFrom(current, GEODE));
+                return;
             }
-            return true;
+            if (timeToGo > 1) {
+                availablePlans.add(0, this.newPlanFrom(current, GEODE));
+                availablePlans.add(0, this.newPlanFrom(current, WAIT));
+                // various optimisations gleaned from the subreddit.
+                if (timeToGo > 4) {
+                    if (current.factory.obsidianCollectingRobots < current.factory.maxObsidianCost) {
+                        availablePlans.add(0, this.newPlanFrom(current, OBSIDIAN));
+                    }
+                    if (timeToGo > 7) {
+                        if (current.factory.clayCollectingRobots < current.factory.maxClayCost) {
+                            availablePlans.add(0, this.newPlanFrom(current, CLAY));
+                        }
+                        if (timeToGo > 16) {
+                            if (current.factory.oreCollectingRobots < current.factory.maxOreCost) {
+                                availablePlans.add(0, this.newPlanFrom(current, ORE));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private long harvestedOre() {
+            return this.ore + this.clay + this.obsidian + this.geodes;
+        }
+
+        public void testSequence(final String sequence) {
+            System.out.println("\nTesting sequence " + sequence + "\n");
+            for (int i = 0; i < sequence.length(); i++) {
+                final String nextRobot = sequence.substring(i, i + 1);
+                this.makeRobot(nextRobot);
+            }
+            while (this.time < this.maxTime) {
+                this.collectOres();
+                this.factoryDebugPrint("iterated : " + this);
+                this.time++;
+            }
         }
 
         private Plan newPlanFrom(final Plan current, final String robot) {
