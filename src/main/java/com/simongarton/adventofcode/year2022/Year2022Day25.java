@@ -34,7 +34,7 @@ public class Year2022Day25 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return this.part1(input);
+        return null;
     }
 
     public String decimalToSnafuBruteForce(final long total) {
