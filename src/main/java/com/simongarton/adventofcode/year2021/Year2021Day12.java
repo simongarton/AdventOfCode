@@ -24,7 +24,6 @@ public class Year2021Day12 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
-        final long start = System.currentTimeMillis();
         this.buildNodes(input);
         this.journeys = new ArrayList<>();
         this.allowDoubleVisits = false;
@@ -35,7 +34,6 @@ public class Year2021Day12 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        final long start = System.currentTimeMillis();
         this.buildNodes(input);
         this.journeys = new ArrayList<>();
         this.allowDoubleVisits = true;
