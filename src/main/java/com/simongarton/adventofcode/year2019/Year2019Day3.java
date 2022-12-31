@@ -14,6 +14,11 @@ public class Year2019Day3 extends AdventOfCodeChallenge {
     List<Coord> path2 = new ArrayList<>();
 
     @Override
+    public String title() {
+        return "Day 3: Crossed Wires";
+    }
+
+    @Override
     public Outcome run() {
         return this.runChallenge(2019, 3);
     }

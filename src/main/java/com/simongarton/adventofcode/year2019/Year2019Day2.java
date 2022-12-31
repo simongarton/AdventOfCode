@@ -11,6 +11,11 @@ public class Year2019Day2 extends AdventOfCodeChallenge {
     List<Integer> memory;
 
     @Override
+    public String title() {
+        return "Day 2: 1202 Program Alarm";
+    }
+
+    @Override
     public Outcome run() {
         return this.runChallenge(2019, 2);
     }

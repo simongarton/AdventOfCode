@@ -8,6 +8,11 @@ import java.util.List;
 public class Year2019Day1 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 1: The Tyranny of the Rocket Equation";
+    }
+
+    @Override
     public Outcome run() {
         return this.runChallenge(2019, 1);
     }
@@ -25,7 +30,6 @@ public class Year2019Day1 extends AdventOfCodeChallenge {
         final long totalFuelNeeded = this.calculateTotalFuel(result);
         return String.valueOf(totalFuelNeeded);
     }
-
 
     private long calculateTotalFuel(final List<String> masses) {
         long total = 0;

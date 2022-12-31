@@ -8,6 +8,11 @@ import java.util.Map;
 public class Year2019Day4 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 4: Secure Container";
+    }
+
+    @Override
     public Outcome run() {
         return this.runChallenge(2019, 4);
     }
