@@ -277,7 +277,6 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
             availablePlans.add(new Plan(CLAY, this.clone()));
 
             int bestGeodes = 0;
-//            int firstGeodeFoundAtTime = Integer.MAX_VALUE;
             Plan bestPlan = null;
 
             long iteration = 0;
@@ -306,11 +305,6 @@ public class Year2022Day19 extends AdventOfCodeChallenge {
 
                 final String nextRobot = current.plan.substring(current.plan.length() - 1);
                 current.factory.makeRobot(nextRobot);
-//                if (current.factory.geodes > 0) {
-//                    if (currentFactoryTime < firstGeodeFoundAtTime) {
-//                        firstGeodeFoundAtTime = currentFactoryTime;
-//                    }
-//                }
                 if (currentFactoryTime == this.maxTime) {
                     totalOreHarvested += current.factory.harvestedOre();
                     totalRobots += current.factory.robotsMade();
