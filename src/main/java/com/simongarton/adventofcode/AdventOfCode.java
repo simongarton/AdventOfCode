@@ -23,7 +23,7 @@ public class AdventOfCode {
         adventOfCode.load2019();
         adventOfCode.load2020();
         adventOfCode.load2021();
-        adventOfCode.load2022();
+//        adventOfCode.load2022();
         adventOfCode.run();
     }
 
@@ -100,6 +100,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2021Day8());
         this.challenges.add(new Year2021Day9());
         this.challenges.add(new Year2021Day10());
+        this.challenges.add(new Year2021Day11());
     }
 
     private void load2022() {
