@@ -7,6 +7,19 @@ import java.util.*;
 
 public class Year2020Day7 extends AdventOfCodeChallenge {
 
+    /*
+
+        Extremely bizarre.
+
+        If I run this as a test, part1 gives 115 and 2 gives 1250 - which is what AoC expects.
+        If I run it within my AdventOfCode, part 2 is 9905.
+
+        I can't figure out why.
+
+        Oh, now it's working ...
+
+     */
+
     private final List<Rule> rules = new ArrayList<>();
 
     @Override
@@ -42,6 +55,7 @@ public class Year2020Day7 extends AdventOfCodeChallenge {
     }
 
     private void loadRules(final List<String> lines) {
+        this.rules.clear();
         lines.forEach(this::addRule);
         lines.forEach(this::configureRule);
     }

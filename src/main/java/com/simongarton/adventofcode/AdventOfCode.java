@@ -88,6 +88,14 @@ public class AdventOfCode {
         this.challenges.add(new Year2020Day4());
         this.challenges.add(new Year2020Day5());
         this.challenges.add(new Year2020Day6());
+        this.challenges.add(new Year2020Day7());
+        this.challenges.add(new Year2020Day8());
+        this.challenges.add(new Year2020Day9());
+        this.challenges.add(new Year2020Day10());
+        this.challenges.add(new Year2020Day11());
+        this.challenges.add(new Year2020Day12());
+        this.challenges.add(new Year2020Day13());
+        this.challenges.add(new Year2020Day14());
     }
 
     private void load2021() {

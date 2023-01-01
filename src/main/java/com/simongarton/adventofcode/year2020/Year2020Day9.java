@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 public class Year2020Day9 extends AdventOfCodeChallenge {
 
-    private static final int TEST_LENGTH = 5;
     private static final int LENGTH = 25;
 
     @Override
