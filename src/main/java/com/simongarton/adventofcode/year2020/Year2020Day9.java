@@ -26,8 +26,7 @@ public class Year2020Day9 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
         final List<String> lines = Arrays.asList(input);
         final List<Long> numbers = lines.stream().map(Long::parseLong).collect(Collectors.toList());
-        final long error = this.findError(numbers, TEST_LENGTH);
-        return String.valueOf(this.findWeakness(error, numbers));
+        return String.valueOf(this.findError(numbers, LENGTH));
     }
 
     @Override
