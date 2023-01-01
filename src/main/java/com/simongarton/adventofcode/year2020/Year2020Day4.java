@@ -10,6 +10,11 @@ import java.util.List;
 public class Year2020Day4 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 4: Passport Processing";
+    }
+
+    @Override
     public Outcome run() {
         return this.runChallenge(2020, 4);
     }

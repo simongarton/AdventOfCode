@@ -10,6 +10,11 @@ import java.util.Map;
 public class Year2020Day5 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 5: Binary Boarding";
+    }
+
+    @Override
     public Outcome run() {
         return this.runChallenge(2020, 5);
     }

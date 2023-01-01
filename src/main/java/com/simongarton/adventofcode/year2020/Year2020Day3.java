@@ -8,6 +8,11 @@ import java.util.List;
 public class Year2020Day3 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 3: Toboggan Trajectory";
+    }
+
+    @Override
     public Outcome run() {
         return this.runChallenge(2020, 3);
     }

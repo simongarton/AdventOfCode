@@ -12,6 +12,11 @@ import java.util.stream.Collectors;
 public class Year2020Day1 extends AdventOfCodeChallenge {
 
     @Override
+    public String title() {
+        return "Day 1: Report Repair";
+    }
+
+    @Override
     public Outcome run() {
         return this.runChallenge(2020, 1);
     }
