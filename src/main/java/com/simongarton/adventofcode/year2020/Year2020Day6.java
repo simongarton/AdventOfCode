@@ -9,8 +9,6 @@ import java.util.Set;
 
 public class Year2020Day6 extends AdventOfCodeChallenge {
 
-    private static final boolean DEBUG = false;
-
     @Override
     public String title() {
         return "Day 6: Custom Customs";

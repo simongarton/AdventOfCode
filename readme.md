@@ -3,14 +3,13 @@
 [Advent of Code](https://adventofcode.com/) is an annual programming competition, with initially simple puzzles starting
 on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
-2022 wasn't too shabby though. (And I need to import a stack of solutions from other projects into this one, for the
-older years.)
+2022 wasn't too shabby though.
 
 ```
                 1111111111222222
        1234567890123456789012345
 2019 : ✓✓✓✓                     
-2020 : ✓✓✓✓✓                    
+2020 : ✓✓✓✓✓✓                   
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
        1234567890123456789012345
