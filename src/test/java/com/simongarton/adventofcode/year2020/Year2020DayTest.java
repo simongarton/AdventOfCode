@@ -1,6 +1,5 @@
 package com.simongarton.adventofcode.year2020;
 
-import com.simongarton.adventofcode.year2022.Year2022Day6;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -19,13 +18,13 @@ class Year2020DayTest {
     void part1() throws IOException {
 
         // given
-        final Path path = Paths.get("src/main/resources/2020/sample.txt");
-//        final Path path = Paths.get("src/main/resources/2020/2022-Day6-1.txt");
+//        final Path path = Paths.get("src/main/resources/2020/sample.txt");
+        final Path path = Paths.get("src/main/resources/2020/2020-Day6-1.txt");
         final List<String> lines = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.toList());
-        final Year2020Day5 year2022Day5 = new Year2020Day5();
+        final Year2020Day6 year2020Day6 = new Year2020Day6();
 
         // when
-        final String result = year2022Day5.part1(lines.toArray(new String[0]));
+        final String result = year2020Day6.part1(lines.toArray(new String[0]));
 
         // then
         assertNotNull(result);
@@ -36,13 +35,13 @@ class Year2020DayTest {
     void part2() throws IOException {
 
         // given
-//        final Path path = Paths.get("src/main/resources/2022/sample.txt");
-        final Path path = Paths.get("src/main/resources/2022/2022-Day6-1.txt");
+//        final Path path = Paths.get("src/main/resources/2020/sample.txt");
+        final Path path = Paths.get("src/main/resources/2020/2020-Day6-1.txt");
         final List<String> lines = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.toList());
-        final Year2022Day6 year2022Day6 = new Year2022Day6();
+        final Year2020Day6 year2020Day6 = new Year2020Day6();
 
         // when
-        final String result = year2022Day6.part2(lines.toArray(new String[0]));
+        final String result = year2020Day6.part2(lines.toArray(new String[0]));
 
         // then
         assertNotNull(result);

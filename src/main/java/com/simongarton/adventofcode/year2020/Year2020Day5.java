@@ -21,7 +21,6 @@ public class Year2020Day5 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
-
         final List<String> lines = Arrays.asList(input);
         long maxId = 0;
         final Map<Long, String> ids = new HashMap<>();
@@ -37,7 +36,6 @@ public class Year2020Day5 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-
         final List<String> lines = Arrays.asList(input);
         long maxId = 0;
         final Map<Long, String> ids = new HashMap<>();
