@@ -19,12 +19,12 @@ class Year2020DayTest {
 
         // given
 //        final Path path = Paths.get("src/main/resources/2020/sample.txt");
-        final Path path = Paths.get("src/main/resources/2020/2020-Day12-1.txt");
+        final Path path = Paths.get("src/main/resources/2020/2020-Day13-1.txt");
         final List<String> lines = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.toList());
-        final Year2020Day12 year2020Day12 = new Year2020Day12();
+        final Year2020Day13 year2020Day13 = new Year2020Day13();
 
         // when
-        final String result = year2020Day12.part1(lines.toArray(new String[0]));
+        final String result = year2020Day13.part1(lines.toArray(new String[0]));
 
         // then
         assertNotNull(result);
@@ -36,12 +36,12 @@ class Year2020DayTest {
 
         // given
 //        final Path path = Paths.get("src/main/resources/2020/sample.txt");
-        final Path path = Paths.get("src/main/resources/2020/2020-Day12-1.txt");
+        final Path path = Paths.get("src/main/resources/2020/2020-Day13-1.txt");
         final List<String> lines = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.toList());
-        final Year2020Day12 year2020Day12 = new Year2020Day12();
+        final Year2020Day13 year2020Day13 = new Year2020Day13();
 
         // when
-        final String result = year2020Day12.part2(lines.toArray(new String[0]));
+        final String result = year2020Day13.part2(lines.toArray(new String[0]));
 
         // then
         assertNotNull(result);
