@@ -32,18 +32,14 @@ public class Year2020Day11 extends AdventOfCodeChallenge {
 
 
     private int runToSolution(final List<String> lines, final int part) {
-        int iterations = 0;
         List<String> working = new ArrayList<>(lines);
-        //print(0, working);
         while (true) {
             List<String> updated = new ArrayList<>(working);
             updated = part == 1 ? this.update1(updated) : this.update2(updated);
-            iterations++;
             if (this.noChange(working, updated)) {
                 break;
             }
             working = new ArrayList<>(updated);
-            //print(iterations, working);
         }
         return this.countOccupied(working);
     }
