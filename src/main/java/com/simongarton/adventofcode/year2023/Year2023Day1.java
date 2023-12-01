@@ -23,7 +23,7 @@ public class Year2023Day1 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day10: Template code";
+        return "Day1: Trebuchet?!";
     }
 
     @Override
@@ -65,39 +65,45 @@ public class Year2023Day1 extends AdventOfCodeChallenge {
     public String part2(final String[] input) {
         long total = 0;
         for (final String line : input) {
-            final String fixedLine = this.fixLine(line);
-            final long number = this.getNumber(fixedLine);
+            final long number = this.getNumberAlphanumeric(line);
             total += number;
-            System.out.println(number + ": " + line + " -> " + fixedLine + " = " + number + " total " + total);
         }
         return String.valueOf(total);
-
     }
 
-    private String fixLine(final String line) {
-        String fixedLine = line;
+    private long getNumberAlphanumeric(final String line) {
+        final String first = this.findNumber(line, true);
+        final String last = this.findNumber(line, false);
+        return Long.valueOf(first + last);
+    }
+
+    private String findNumber(final String line, final boolean first) {
         int position = 0;
-        while (position < fixedLine.length()) {
+        String result = null;
+        while (position < line.length()) {
+            final String c = line.substring(position, position + 1);
+            if (this.isNumeric(c)) {
+                if (first) {
+                    return c;
+                } else {
+                    result = c;
+                }
+            }
             for (final Map.Entry<String, String> entry : NUMBER_MAP.entrySet()) {
                 final String target = entry.getKey();
                 final int targetLength = target.length();
-                if (fixedLine.length() >= (position + targetLength)) {
-                    final String source = fixedLine.substring(position, position + targetLength);
+                if (line.length() >= (position + targetLength)) {
+                    final String source = line.substring(position, position + targetLength);
                     if (source.equalsIgnoreCase(target)) {
-                        fixedLine = fixedLine.substring(0, position) +
-                                entry.getValue() +
-                                // this was the problem. I assumed that we should replace all the
-                                // characters of the number so xxeightwoyy becomes xx8woyy,
-                                // but they're just looking for the last one : not replacing at all
-                                // so two is the last readable one
-                                // fixedLine.substring(position + targetLength);
-                                fixedLine.substring(position + 1);
-                        break;
+                        if (first) {
+                            return entry.getValue();
+                        }
+                        result = entry.getValue();
                     }
                 }
             }
-            position = position + 1;
+            position++;
         }
-        return fixedLine;
+        return result;
     }
 }
