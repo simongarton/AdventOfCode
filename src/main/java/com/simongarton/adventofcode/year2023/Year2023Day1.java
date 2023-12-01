@@ -68,26 +68,10 @@ public class Year2023Day1 extends AdventOfCodeChallenge {
             final String fixedLine = this.fixLine(line);
             final long number = this.getNumber(fixedLine);
             total += number;
-//            System.out.println(number + ": " + line + " -> " + fixedLine + " = " + number + " total " + total);
-            System.out.println(number + " : " + fixedLine);
+            System.out.println(number + ": " + line + " -> " + fixedLine + " = " + number + " total " + total);
         }
         return String.valueOf(total);
 
-        /*
-        Sample works OK : 281
-        I have tried 54780 and it's not right.
-        ninesevensrzxkzpmgz8kcjxsbdftwoner -> 97srzxkzpmgz8kcjxsbdf2ner = 92 : "twone" at the end I go to 2 ...
-        .. one of the samples had the same thing, works.
-
-        Interesting: A manual search/replace turned into 54014 which also isn't right. But that means my algorithm
-        and the manual approach are different.
-
-        eight3fiveninefivemtxm9eightwot is another example : if you replace manually, the two at the end goes first,
-        whereas if you do it from the left the eight goes first. Most of the differences were eightwo ...
-
-        new approach gave 54780 :sadface
-
-         */
     }
 
     private String fixLine(final String line) {
@@ -115,62 +99,5 @@ public class Year2023Day1 extends AdventOfCodeChallenge {
             position = position + 1;
         }
         return fixedLine;
-    }
-
-    private String fixLineOriginal(final String line) {
-        String fixedLine = line;
-        int position = 0;
-        while (position < fixedLine.length()) {
-            for (final Map.Entry<String, String> entry : NUMBER_MAP.entrySet()) {
-                final String target = entry.getKey();
-                final int targetLength = target.length();
-                if (fixedLine.length() >= (position + targetLength)) {
-                    final String source = fixedLine.substring(position, position + targetLength);
-                    if (source.equalsIgnoreCase(target)) {
-                        fixedLine = fixedLine.substring(0, position) +
-                                entry.getValue() +
-                                fixedLine.substring(position + targetLength);
-                        break;
-                    }
-                }
-            }
-            position = position + 1;
-        }
-        return fixedLine;
-    }
-
-    private String fixLineHorrible(final String line) {
-        String answer = "";
-        int position = 0;
-        int skip = 0;
-        String adder = "";
-        while (position < line.length()) {
-            boolean found = false;
-            for (final Map.Entry<String, String> entry : NUMBER_MAP.entrySet()) {
-                if (found) {
-                    break;
-                }
-                final String target = entry.getKey();
-                final int targetLength = target.length();
-                if (line.length() < (position + targetLength + 0)) {
-                    continue;
-                }
-                final String source = line.substring(position, position + targetLength);
-                if (source.equalsIgnoreCase(target)) {
-                    adder = entry.getValue();
-                    found = true;
-                    skip = targetLength;
-                    break;
-                }
-            }
-            if (!found) {
-                answer = answer + line.substring(position, position + 1);
-                position = position + 1;
-            } else {
-                answer = answer + adder;
-                position = position + skip;
-            }
-        }
-        return answer;
     }
 }
