@@ -12,9 +12,25 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
+2023 : ✓
        1234567890123456789012345
                 1111111111222222
 ```
+
+## 2023
+
+### Day 21: Trebuchet ?!
+
+Ostensibly simply, I took a couple of hours to do this because I misinterpreted part 2. Ironically, only when rewriting
+it a third time - this time switching to Python - and getting the logic wrong but getting the right answer did I figure
+out what the problem was.
+
+It's to do with finding digits in a string : find the first and last and append them, so `x3jd7gshr8kg` becomes `38`.
+
+Part two involved spelled out numbers e.g. `a3eightwox` and this is where I went wrong : I assumed that because `eight`
+was
+in there, I should substitute `8` and continue with `a38wox` leading to `38`; but what they meant was (easier) just find
+the last written number, so the `two` should still be valid. :facepalm.
 
 ## 2022
 
