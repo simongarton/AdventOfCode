@@ -12,14 +12,20 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓
+2023 : ✓✓
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
 
-### Day 21: Trebuchet ?!
+### Day 2: Cube Conundrum
+
+Faith restored in myself. Simple string parsing, and having done this competition a few times, I know to set up
+some nice sensible data structures in the first part, 'cos they'll probably be useful in part 2. Into the top 4k
+globally which feels a bit better than not making the top 10k on part 2 yesterday.
+
+### Day 1: Trebuchet ?!
 
 Ostensibly simple, I took a couple of hours to do this because I misinterpreted part 2. Ironically, only when rewriting
 it a third time - this time switching to Python - and getting the logic wrong but getting the right answer did I figure

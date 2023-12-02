@@ -11,7 +11,7 @@ public class Year2023Day2 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 2: Template code";
+        return "Day 2: Cube Conundrum";
     }
 
     @Override
@@ -84,9 +84,23 @@ public class Year2023Day2 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+        long score = 0;
+        for (final String line : input) {
+            final Hand bestHand = new Hand(0, 0, 0);
+            final Game game = this.readGame(line);
+            this.calculateGame(game, bestHand);
+            score = score + ((long) bestHand.getRed() * bestHand.getGreen() * bestHand.getBlue());
+        }
+        return String.valueOf(score);
     }
 
+    private void calculateGame(final Game game, final Hand bestHand) {
+        for (final Hand hand : game.getHands()) {
+            bestHand.setRed(Math.max(hand.getRed(), bestHand.getRed()));
+            bestHand.setGreen(Math.max(hand.getGreen(), bestHand.getGreen()));
+            bestHand.setBlue(Math.max(hand.getBlue(), bestHand.getBlue()));
+        }
+    }
 
     @Data
     private static class Game {
