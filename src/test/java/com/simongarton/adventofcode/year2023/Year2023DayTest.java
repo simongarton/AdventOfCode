@@ -18,8 +18,8 @@ class Year2023DayTest {
     void part1() throws IOException {
 
         // given
-        final Path path = Paths.get("src/main/resources/2023/sample.txt");
-//        final Path path = Paths.get("src/main/resources/2023/2023-Day2-1.txt");
+//        final Path path = Paths.get("src/main/resources/2023/sample.txt");
+        final Path path = Paths.get("src/main/resources/2023/2023-Day2-1.txt");
         final List<String> lines = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.toList());
         final Year2023Day2 year2023Day2 = new Year2023Day2();
 
