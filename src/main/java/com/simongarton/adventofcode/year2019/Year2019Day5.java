@@ -11,10 +11,9 @@ import java.util.stream.Collectors;
 
 public class Year2019Day5 extends AdventOfCodeChallenge {
 
-    /* not working and not really understanding. Need to redo this properly. */
-
     private List<Integer> memory;
     private Integer output;
+    private static final boolean DEBUG = true;
 
     @Override
     public Outcome run() {
@@ -41,9 +40,16 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
         this.memory = Arrays.stream(input[0].split(",")).map(Integer::parseInt).collect(Collectors.toList());
     }
 
+    private void debugPrint(final String message) {
+        if (DEBUG) {
+            System.out.println(message);
+        }
+    }
+
     private void runProgram(final int input) {
         int pointer = 0;
         while (true) {
+            System.out.println(this.showMemory());
             final String instruction = String.valueOf(this.memory.get(pointer));
             final Operation operation = new Operation(pointer, instruction);
             if (operation.type == OperationType.HALT) {
@@ -52,36 +58,45 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
             final int result;
             final int first;
             final int second;
-            final int third;
+            final int target;
             switch (operation.type) {
                 case ADDITION:
                     first = operation.get(this.memory, 1);
                     second = operation.get(this.memory, 2);
                     result = first + second;
-                    this.memory.set(this.memory.get(pointer + 3), result);
+                    target = this.memory.get(pointer + 3);
+                    this.debugPrint(operation + "(" + first + "+" + second + ")=" + result + " -> " + target);
+                    this.memory.set(target, result);
                     pointer += 4;
                     break;
                 case MULTIPLICATION:
                     first = operation.get(this.memory, 1);
                     second = operation.get(this.memory, 2);
                     result = first * second;
-                    this.memory.set(this.memory.get(pointer + 3), result);
+                    target = this.memory.get(pointer + 3);
+                    this.debugPrint(operation + "(" + first + "*" + second + ")=" + result + " -> " + target);
+                    this.memory.set(target, result);
                     pointer += 4;
                     break;
                 case INPUT:
-                    this.memory.set(this.memory.get(pointer + 1), input);
+                    target = this.memory.get(pointer + 1);
+                    this.debugPrint(operation + "input " + input + " -> " + target);
+                    this.memory.set(target, input);
                     pointer += 2;
                     break;
                 case OUTPUT:
                     this.output(operation.get(this.memory, 1));
+                    this.debugPrint(operation + "output " + this.output);
                     pointer += 2;
                     break;
                 case JUMP_IF_TRUE:
                     first = operation.get(this.memory, 1);
                     second = operation.get(this.memory, 2);
                     if (first != 0) {
+                        this.debugPrint(operation + "true to " + second);
                         pointer = second;
                     } else {
+                        this.debugPrint(operation + "false to " + pointer + 3);
                         pointer += 3;
                     }
                     break;
@@ -89,30 +104,36 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
                     first = operation.get(this.memory, 1);
                     second = operation.get(this.memory, 2);
                     if (first == 0) {
+                        this.debugPrint(operation + "true to " + second);
                         pointer = second;
                     } else {
+                        this.debugPrint(operation + "false to " + pointer + 3);
                         pointer += 3;
                     }
                     break;
                 case LESS_THAN:
                     first = operation.get(this.memory, 1);
                     second = operation.get(this.memory, 2);
-                    third = this.memory.get(pointer + 3);
+                    target = this.memory.get(pointer + 3);
                     if (first < second) {
-                        this.memory.set(third, 1);
+                        this.debugPrint(operation + "true set 1");
+                        this.memory.set(target, 1);
                     } else {
-                        this.memory.set(third, 0);
+                        this.debugPrint(operation + "false set 0");
+                        this.memory.set(target, 0);
                     }
                     pointer += 4;
                     break;
                 case EQUALS:
                     first = operation.get(this.memory, 1);
                     second = operation.get(this.memory, 2);
-                    third = this.memory.get(pointer + 3);
+                    target = this.memory.get(pointer + 3);
                     if (first == second) {
-                        this.memory.set(third, 1);
+                        this.debugPrint(operation + "true set 1");
+                        this.memory.set(target, 1);
                     } else {
-                        this.memory.set(third, 0);
+                        this.debugPrint(operation + "false set 0");
+                        this.memory.set(target, 0);
                     }
                     pointer += 4;
                     break;
@@ -125,28 +146,8 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
         return result;
     }
 
-    private String getMemory(final Operation operation, final List<Integer> memory) {
-        String line = "instruction " + operation.pointer + " ";
-        line = line + "operation " + operation.type + " ";
-        line = line + memory.get(operation.pointer + 1);
-        if (operation.type == OperationType.ADDITION || operation.type == OperationType.MULTIPLICATION) {
-            line = line + ", " + memory.get(operation.pointer + 2);
-            line = line + ", " + memory.get(operation.pointer + 3);
-        }
-        return line;
-    }
-
     private void output(final Integer value) {
         this.output = value;
-    }
-
-    private int getInputPart1() {
-        return 1;
-    }
-
-    private void setInitial(final int one, final int two) {
-        this.memory.set(1, one);
-        this.memory.set(2, two);
     }
 
     @Getter
@@ -198,7 +199,7 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
 
         @Override
         public String toString() {
-            return this.pointer + ":" + this.type + " " + this.modes.stream().map(Object::toString).collect(Collectors.joining(","));
+            return this.pointer + ":" + this.type + " [" + this.modes.stream().map(Object::toString).collect(Collectors.joining(",")) + "] ";
         }
 
         public int get(final List<Integer> memory, final int i) {
