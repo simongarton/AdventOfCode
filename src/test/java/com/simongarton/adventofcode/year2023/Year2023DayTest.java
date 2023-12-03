@@ -19,12 +19,12 @@ class Year2023DayTest {
 
         // given
 //        final Path path = Paths.get("src/main/resources/2023/sample.txt");
-        final Path path = Paths.get("src/main/resources/2023/2023-Day2-1.txt");
+        final Path path = Paths.get("src/main/resources/2023/2023-Day3-1.txt");
         final List<String> lines = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.toList());
-        final Year2023Day2 year2023Day2 = new Year2023Day2();
+        final Year2023Day3 year2023Day3 = new Year2023Day3();
 
         // when
-        final String result = year2023Day2.part1(lines.toArray(new String[0]));
+        final String result = year2023Day3.part1(lines.toArray(new String[0]));
 
         // then
         assertNotNull(result);
@@ -36,13 +36,13 @@ class Year2023DayTest {
     void part2() throws IOException {
 
         // given
-//        final Path path = Paths.get("src/main/resources/2023/sample.txt");
-        final Path path = Paths.get("src/main/resources/2023/2023-Day2-2.txt");
+        final Path path = Paths.get("src/main/resources/2023/sample.txt");
+//        final Path path = Paths.get("src/main/resources/2023/2023-Day3-2.txt");
         final List<String> lines = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.toList());
-        final Year2023Day2 year2023Day2 = new Year2023Day2();
+        final Year2023Day3 year2023Day3 = new Year2023Day3();
 
         // when
-        final String result = year2023Day2.part2(lines.toArray(new String[0]));
+        final String result = year2023Day3.part2(lines.toArray(new String[0]));
 
         // then
         assertNotNull(result);
