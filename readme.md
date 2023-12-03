@@ -12,12 +12,18 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓
+2023 : ✓✓✓
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
+
+### Day 3: Gear Ratios
+
+Still happy. Read a map and place various entities : some are single coord, some are rows of several coords
+which makes it trickier. Good data structures and supporting methods, so part 2 was straight forward.
+Top 3k for both parts so `<smug_mode>on</smug_mode>`
 
 ### Day 2: Cube Conundrum
 

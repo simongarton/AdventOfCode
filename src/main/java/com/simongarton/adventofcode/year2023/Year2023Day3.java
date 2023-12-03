@@ -10,12 +10,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Year2023Day3 extends AdventOfCodeChallenge {
 
     private List<Symbol> symbols;
     private List<Number> numbers;
 
+    // this looks inefficient, but it was a copy/paste from Day 1. And then I had to add zero.
     private static final Map<String, String> NUMBER_MAP = new LinkedHashMap<>();
 
     static {
@@ -33,7 +35,7 @@ public class Year2023Day3 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 3: ";
+        return "Day 3: Gear Ratios";
     }
 
     @Override
@@ -43,15 +45,8 @@ public class Year2023Day3 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
-        this.symbols = new ArrayList<>();
-        this.numbers = new ArrayList<>();
 
-        int row = 0;
-        for (final String line : input) {
-            this.symbols.addAll(this.findSymbols(line, row));
-            this.numbers.addAll(this.findNumbers(line, row));
-            row = row + 1;
-        }
+        this.buildLists(input);
 
         long total = 0;
         for (final Number number : this.numbers) {
@@ -63,7 +58,21 @@ public class Year2023Day3 extends AdventOfCodeChallenge {
         return String.valueOf(total);
     }
 
+    private void buildLists(final String[] input) {
+
+        this.symbols = new ArrayList<>();
+        this.numbers = new ArrayList<>();
+
+        int row = 0;
+        for (final String line : input) {
+            this.symbols.addAll(this.findSymbols(line, row));
+            this.numbers.addAll(this.findNumbers(line, row));
+            row = row + 1;
+        }
+    }
+
     private boolean isEnginePart(final Number number) {
+
         for (final Coord coord : number.coords) {
             if (this.nextToSymbol(coord)) {
                 return true;
@@ -73,6 +82,7 @@ public class Year2023Day3 extends AdventOfCodeChallenge {
     }
 
     private boolean nextToSymbol(final Coord coord) {
+
         for (int x = -1; x < 2; x++) {
             for (int y = -1; y < 2; y++) {
                 if (this.reallyNextToSymbol(new Coord(coord.getX() + x, coord.getY() + y))) {
@@ -84,6 +94,7 @@ public class Year2023Day3 extends AdventOfCodeChallenge {
     }
 
     private boolean reallyNextToSymbol(final Coord coord) {
+
         for (final Symbol symbol : this.symbols) {
             if (symbol.getCoord().getX() == coord.getX()) {
                 if (symbol.getCoord().getY() == coord.getY()) {
@@ -133,6 +144,7 @@ public class Year2023Day3 extends AdventOfCodeChallenge {
     }
 
     private List<Symbol> findSymbols(final String line, final int row) {
+
         final List<Symbol> symbols = new ArrayList<>();
         for (int col = 0; col < line.length(); col++) {
             final String c = line.substring(col, col + 1);
@@ -153,7 +165,52 @@ public class Year2023Day3 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.buildLists(input);
+
+        final List<Symbol> gears = this.symbols.stream()
+                .filter(s -> s.symbol.equalsIgnoreCase("*"))
+                .collect(Collectors.toList());
+
+        long total = 0;
+        for (final Symbol gear : gears) {
+            final List<Number> pair = this.findPair(gear);
+            if (pair.size() == 2) {
+                total = total + (Long.parseLong(pair.get(0).getNumber()) * Long.parseLong(pair.get(1).getNumber()));
+            }
+        }
+
+        return String.valueOf(total);
+    }
+
+    private List<Number> findPair(final Symbol gear) {
+
+        final List<Number> numbers = new ArrayList<>();
+        for (final Number number : this.numbers) {
+            for (final Coord coord : number.getCoords()) {
+                if (this.nextToMe(coord, gear.coord)) {
+                    if (!numbers.contains(number)) {
+                        numbers.add(number);
+                    }
+                }
+            }
+        }
+        return numbers;
+    }
+
+    private boolean nextToMe(final Coord from, final Coord to) {
+
+        // not dissimilar to previous methods so refactor
+        for (int x = -1; x < 2; x++) {
+            for (int y = -1; y < 2; y++) {
+                if (from.x == (to.x + x)) {
+                    if (from.y == (to.y + y)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @Data
