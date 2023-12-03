@@ -7,7 +7,6 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class Year2019Day5 extends AdventOfCodeChallenge {
@@ -15,6 +14,7 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
     /* not working and not really understanding. Need to redo this properly. */
 
     private List<Integer> memory;
+    private Integer output;
 
     @Override
     public Outcome run() {
@@ -23,21 +23,25 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
+
         this.loadProgram(input);
-        this.runProgram();
-        return null;
+        this.runProgram(1);
+        return String.valueOf(this.output);
     }
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.loadProgram(input);
+        this.runProgram(5);
+        return String.valueOf(this.output);
     }
 
     private void loadProgram(final String[] input) {
         this.memory = Arrays.stream(input[0].split(",")).map(Integer::parseInt).collect(Collectors.toList());
     }
 
-    private void runProgram() {
+    private void runProgram(final int input) {
         int pointer = 0;
         while (true) {
             final String instruction = String.valueOf(this.memory.get(pointer));
@@ -65,7 +69,6 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
                     pointer += 4;
                     break;
                 case INPUT:
-                    final int input = this.getInput();
                     this.memory.set(this.memory.get(pointer + 1), input);
                     pointer += 2;
                     break;
@@ -117,6 +120,10 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
         }
     }
 
+    private String showMemory() {
+        final String result = this.memory.stream().map(i -> String.valueOf(i)).collect(Collectors.joining(","));
+        return result;
+    }
 
     private String getMemory(final Operation operation, final List<Integer> memory) {
         String line = "instruction " + operation.pointer + " ";
@@ -130,16 +137,11 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
     }
 
     private void output(final Integer value) {
-        System.out.println(String.valueOf(value));
+        this.output = value;
     }
 
-    private int getInput() {
-        if (true) {
-            return 5;
-        }
-        System.out.println("Enter a number, then press return.");
-        final Scanner in = new Scanner(System.in);
-        return in.nextInt();
+    private int getInputPart1() {
+        return 1;
     }
 
     private void setInitial(final int one, final int two) {
