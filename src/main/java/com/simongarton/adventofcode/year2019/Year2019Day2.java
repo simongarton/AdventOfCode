@@ -45,6 +45,11 @@ public class Year2019Day2 extends AdventOfCodeChallenge {
         throw new RuntimeException("No solution found.");
     }
 
+    private int runDefault() {
+        this.runProgram();
+        return this.memory.get(0);
+    }
+
     private int run1202() {
         this.setInitial(12, 2);
         this.runProgram();

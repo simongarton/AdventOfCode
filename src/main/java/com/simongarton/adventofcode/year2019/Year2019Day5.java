@@ -11,9 +11,11 @@ import java.util.stream.Collectors;
 
 public class Year2019Day5 extends AdventOfCodeChallenge {
 
+    // Parameters that an instruction writes to will never be in immediate mode.
+
     private List<Integer> memory;
     private Integer output;
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     @Override
     public Outcome run() {
@@ -49,7 +51,10 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
     private void runProgram(final int input) {
         int pointer = 0;
         while (true) {
-            System.out.println(this.showMemory());
+            if (DEBUG) {
+                System.out.println(this.showMemoryShort());
+                System.out.println(this.showMemory());
+            }
             final String instruction = String.valueOf(this.memory.get(pointer));
             final Operation operation = new Operation(pointer, instruction);
             if (operation.type == OperationType.HALT) {
@@ -85,8 +90,9 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
                     pointer += 2;
                     break;
                 case OUTPUT:
-                    this.output(operation.get(this.memory, 1));
-                    this.debugPrint(operation + "output " + this.output);
+                    target = this.memory.get(pointer + 1);
+                    this.output(target);
+                    this.debugPrint(operation + "output " + this.output + " from target " + target);
                     pointer += 2;
                     break;
                 case JUMP_IF_TRUE:
@@ -141,9 +147,17 @@ public class Year2019Day5 extends AdventOfCodeChallenge {
         }
     }
 
-    private String showMemory() {
+    private String showMemoryShort() {
         final String result = this.memory.stream().map(i -> String.valueOf(i)).collect(Collectors.joining(","));
         return result;
+    }
+
+    private String showMemory() {
+        final StringBuilder result = new StringBuilder();
+        for (int i = 0; i < this.memory.size(); i++) {
+            result.append(i).append(":").append(this.memory.get(i)).append(",");
+        }
+        return result.toString();
     }
 
     private void output(final Integer value) {
