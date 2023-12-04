@@ -4,7 +4,6 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ public class Year2023Day4 extends AdventOfCodeChallenge {
 
     @Override
     public Outcome run() {
-        return this.runChallenge(2023, 3);
+        return this.runChallenge(2023, 4);
     }
 
     @Override
@@ -35,18 +34,9 @@ public class Year2023Day4 extends AdventOfCodeChallenge {
         return String.valueOf(total);
     }
 
-    private long scoreCard(final Card card) {
-        int matching = 0;
-        for (final Integer myNumber : card.getMyNumbers()) {
-            if (card.getWinningNumbers().contains(myNumber)) {
-                if (matching == 0) {
-                    matching = 1;
-                } else {
-                    matching *= 2;
-                }
-            }
-        }
-        return matching;
+    private int scoreCard(final Card card) {
+        final int matching = this.countWinners(card);
+        return (int) Math.pow(2, matching - 1);
     }
 
     private int countWinners(final Card card) {
@@ -70,7 +60,7 @@ public class Year2023Day4 extends AdventOfCodeChallenge {
     private Card readCard(final String line) {
         final String[] parts = line.split(":");
         final String name = parts[0];
-        final int id = Integer.valueOf(name.replace("Card ", "").replace(" ", " ").trim());
+        final int id = Integer.valueOf(this.cleanString(name).replace("Card ", ""));
         final String[] numberParts = parts[1].trim().split("\\|");
         final String winningNumbersString = this.cleanString(numberParts[0].trim());
         final String myNumbersString = this.cleanString(numberParts[1].trim());
@@ -97,11 +87,12 @@ public class Year2023Day4 extends AdventOfCodeChallenge {
 
         final List<Card> cards = this.readCards(input);
         final List<Card> originalCards = new ArrayList<>(cards);
-        final List<Card> newCards = new ArrayList<>();
+
         int index = 0;
 
+        // concurrent modification : and it kept happening with an iterator, which I don't get.
         while (true) {
-            newCards.clear();
+            final List<Card> newCards = new ArrayList<>();
             for (int i = index; i < cards.size(); i++) {
                 final Card card = cards.get(i);
                 final int winners = this.countWinners(card);
@@ -109,6 +100,7 @@ public class Year2023Day4 extends AdventOfCodeChallenge {
                     newCards.add(originalCards.get(card.getId() + j));
                 }
             }
+            // if I didn't add any, then I'm done.
             if (index == cards.size()) {
                 break;
             }
@@ -121,7 +113,6 @@ public class Year2023Day4 extends AdventOfCodeChallenge {
 
     @Data
     @AllArgsConstructor
-    @NoArgsConstructor
     @Builder
     private static final class Card {
         private int id;

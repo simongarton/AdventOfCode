@@ -12,12 +12,20 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓
+2023 : ✓✓✓✓
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
+
+### Day 4: Scratchcards
+
+OK, here we go : part 1 deceptively simple, part 2 on of
+those [Orb](https://en.wikipedia.org/wiki/A_Huge_Ever_Growing_Pulsating_Brain_That_Rules_from_the_Centre_of_the_Ultraworld)
+-like problems which get a bit out of hand. Tribble-like, to choose another metaphor. Got stuck with concurrent
+modifications
+on the list and it's iterator but banged out a solution just in time.
 
 ### Day 3: Gear Ratios
 
