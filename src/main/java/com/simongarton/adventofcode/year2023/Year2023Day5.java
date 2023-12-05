@@ -8,76 +8,6 @@ import java.util.*;
 
 public class Year2023Day5 extends AdventOfCodeChallenge {
 
-    /* part 2
-
-    I can calculate - in a cache, or precalculate - a map of seed numbers to outcome locations.
-    But the ranges are impractical - the first seed range is 302,170,009 items long.
-
-    Basically I have a tunnel system. A given entry point will eventually lead to me a given exit point, only
-    there are lots of tunnels.
-
-    But I can't check every tunnel. What can I tell about ranges ?
-    For each number I get the map; and then I loop over the ranges, immediately skipping any that won't match.
-    Had a quick look at a chart. Jumps around so no use.
-
-    Can I do something clever ? I can tell which the best location map is : in the sample I want the second.
-    So how do I get into that map ? only the second of the temp-to-humidity maps would put me there.
-    Oooh, they look as though they are lining up.
-
-    Yeah, they do line up.
-    I don't think I need to check each value.
-    Think about distinct ranges.
-    If I start from the seed numbers, I can work up and see which ranges I could get into.
-    I then iterate over - this is branching out - until I end up in the last row of ranges.
-    At which point I should drop all paths that didn't get me to the low range.
-    But I don't think that works - I've still got some big ranges to check.
-
-    Continuing on.
-
-    humidity-to-location
-        source 171,183,359->250,187,452 : destination 0->79,004,093
-
-    I want to end up in this range, because it starts with 0; how do I get here, to the lowest point ?
-    So I need to hit 171,183,359 as a destination, being the lowest.
-
-    Look in the previous map temperature-to-humidity
-        source 1,360,551,727->1,666,127,298 : destination 0->305,575,571
-    so I need to get to (305,575,571 - 171,183,359) = 134,392,212 : add this to the start of the source
-    and the previous range is 1,494,943,939
-
-    light-to-temperature
-        source 764,560,381->872,198,108 : destination 1,494,457,034->1,602,094,761
-    need to hit 765,047,286
-
-    water-to-light
-        source 862,398,346->1,010,069,707 : destination 673,725,062->821,396,423
-    need to hit 953,720,570
-
-    fertilizer-to-water
-        source 1,610,032,336->2,003,119,061 : destination 891,504,291->1,284,591,016
-    need to hit 1,672,248,615
-
-    soil-to-fertilizer
-        source 1,273,301,814->1,346,167,078 : destination 1,633,669,237->1,706,534,501
-    need to hit 1,311,881,192
-
-    seed-to-soil
-    this falls in a gap !
-
-    need to hit 1,311,881,192
-    Too high
-    But not completely dismayed. I stuffed up the first (!) step.
-
-
-    Redo in code.
-
-    770309371
-
-    Too hight again
-
-
-     */
-
     private static final boolean DEBUG = true;
 
     private List<Long> seeds = new ArrayList<>();
@@ -113,6 +43,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         return String.valueOf(lowestLocation);
     }
 
+    // fails with brute force, too many values to check
     private long location(final SeedRange seedRange) {
         long lowestLocation = Long.MAX_VALUE;
         for (long seed = seedRange.start; seed < seedRange.start + seedRange.length; seed++) {
@@ -159,12 +90,10 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
                 .findFirst().orElseThrow(() -> new RuntimeException(mapName));
         // System.out.println("Checking " + mapName + "(" + almanacMap.getRanges().size() + ")" + " for " + lookup);
         for (final AlmanacRange almanacRange : almanacMap.getRanges()) {
-            final long sourceStart = almanacRange.getSourceStart();
-            final long sourceEnd = sourceStart + almanacRange.getRange();
-            if (lookup < sourceStart || lookup > sourceEnd) {
+            if (lookup < almanacRange.getSourceStart() || lookup > almanacRange.getSourceEnd()) {
                 continue;
             }
-            final long value = lookup - sourceStart + almanacRange.getDestinationStart();
+            final long value = lookup - almanacRange.getSourceStart() + almanacRange.getDestinationStart();
             this.cache.get(mapName).put(lookup, value);
             return value;
         }
@@ -210,12 +139,13 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
             final String[] parts = line.split(" ");
             final long destinationStart = Long.parseLong(parts[0]);
             final long sourceStart = Long.parseLong(parts[1]);
-            final long range = Long.parseLong(parts[2]);
+            final long length = Long.parseLong(parts[2]);
             final AlmanacRange almanacRange = AlmanacRange.builder()
                     .destinationStart(destinationStart)
                     .sourceStart(sourceStart)
-                    .range(range)
-                    .build();
+                    .length(length)
+                    .build()
+                    .complete();
             ranges.add(almanacRange);
         }
 
@@ -244,7 +174,8 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
                 seedRanges.add(SeedRange.builder()
                         .start(seeds.get(0))
                         .length(seeds.get(1))
-                        .build());
+                        .build()
+                        .complete());
                 seeds.clear();
             }
         }
@@ -297,7 +228,8 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         System.out.println("If I start with seed " + aimPoint + " I get to " + this.location(aimPoint));
 
         // this gives seed 70 and if I work through the tables both in
-        // code and manually I get 0 as the location :shrug
+        // code and manually I get 0 as the location :shrug Ah : I can't start
+        // with 70, it's not in a valid seed range.
 
         return String.valueOf(aimPoint);
     }
@@ -307,7 +239,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
                 .findFirst().orElseThrow(() -> new RuntimeException(mapName));
         for (final AlmanacRange range : almanacMap.getRanges()) {
             if ((range.getDestinationStart() <= target) &&
-                    (range.getDestinationStart() + range.getRange()) > target) {
+                    (range.getDestinationEnd() > target)) {
                 return range;
             }
         }
@@ -316,7 +248,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
 
     private void validateSeedRanges() {
         for (final SeedRange seedRange : this.seedRanges) {
-            System.out.println(this.f(seedRange.start) + "->" + this.f(seedRange.start + seedRange.length - 1));
+            System.out.println(this.f(seedRange.start) + "->" + this.f(seedRange.end));
         }
     }
 
@@ -330,9 +262,12 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
                 ranges.sort(Comparator.comparing(AlmanacRange::getSourceStart));
             }
             for (final AlmanacRange range : ranges) {
-                System.out.println("  source " + this.f(range.getSourceStart()) + "->" + this.f(range.getSourceStart() + range.getRange() - 1)
-                        + " : destination " +
-                        this.f(range.getDestinationStart()) + "->" + this.f(range.getDestinationStart() + range.getRange() - 1));
+                System.out.println(
+                        "  source " +
+                                this.f(range.getSourceStart()) + "->" + this.f(range.getSourceEnd()) +
+                                " : destination " +
+                                this.f(range.getDestinationStart()) + "->" + this.f(range.getDestinationEnd())
+                );
             }
         }
     }
@@ -357,6 +292,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         }
     }
 
+    // have touched this, not sure if still valid
     private List<AlmanacRange> cleanUpRanges(final String mapName, final List<AlmanacRange> possibleRanges, final String sourceMapName) {
         final AlmanacMap almanacMap = this.maps.stream().filter(m -> m.getName().equalsIgnoreCase(mapName))
                 .findFirst().orElseThrow(() -> new RuntimeException(mapName));
@@ -365,7 +301,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
             boolean validRange = true;
             for (final AlmanacRange possibleRange : possibleRanges) {
                 if (range.getDestinationStart() <= possibleRange.getDestinationStart() &&
-                        range.getDestinationStart() + range.getRange() >= possibleRange.getDestinationStart() + possibleRange.getRange()) {
+                        range.getDestinationEnd() >= possibleRange.getDestinationEnd()) {
                 } else {
                     validRange = false;
                 }
@@ -415,6 +351,12 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     private static final class SeedRange {
         private long start;
         private long length;
+        private long end;
+
+        public SeedRange complete() {
+            this.end = this.start + this.length - 1;
+            return this;
+        }
     }
 
     @Data
@@ -422,7 +364,15 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     private static final class AlmanacRange {
         private long destinationStart;
         private long sourceStart;
-        private long range;
+        private long length;
+        private long destinationEnd;
+        private long sourceEnd;
+
+        public AlmanacRange complete() {
+            this.sourceEnd = this.sourceStart + this.length - 1;
+            this.destinationEnd = this.destinationStart + this.length - 1;
+            return this;
+        }
     }
 }
 
