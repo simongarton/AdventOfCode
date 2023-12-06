@@ -185,15 +185,6 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
 
         this.validateSeedRanges();
 
-        this.dumpMap();
-
-        System.out.println(this.reverseLocation(46L));
-
-//        System.out.println("As loaded ...");
-//        for (final AlmanacMap almanacMap : this.maps) {
-//            System.out.println("  " + almanacMap.getName() + ":" + almanacMap.getRanges().size());
-//        }
-
         this.validateRanges();
 
         System.out.println("");
@@ -252,6 +243,9 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
             endPoint = Math.max(endPoint, range.getDestinationEnd());
         }
         for (long endValue = 0; endValue <= endPoint; endValue++) {
+            if (endValue % 10000000 == 0) {
+                System.out.println(this.f(endValue) + " -> " + this.f(endPoint) + " = " + String.format("%3.2f%%", 100.0 * endValue / endPoint));
+            }
             final long startValue = this.reverseLocation(endValue);
             if (this.valueInRange(startValue, seedRange)) {
                 System.out.println("  tried endValue " + endValue + " got back to " + startValue);
@@ -262,32 +256,12 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
                             .start(startValue)
                             .end(endValue)
                             .build();
+                    // controversy
+                    return result;
                 }
             }
         }
         return result;
-    }
-
-    private long findLowestForSeedRangeSneaky(final SeedRange seedRange) {
-        // I need to work backwards.
-        // for each of the final maps, loop through the ranges starting with the lowest
-        // and go back up through the maps until I hit a value in the incoming seedRange
-
-        System.out.println("SeedRange is " + seedRange);
-        long lowest = Long.MAX_VALUE;
-        for (final AlmanacRange range : this.sortedLocationRanges()) {
-            System.out.println(" range is " + range);
-            for (long endValue = range.getDestinationStart(); endValue <= range.getDestinationEnd(); endValue++) {
-                final long startValue = this.reverseLocation(endValue);
-                if (this.valueInRange(startValue, seedRange)) {
-                    System.out.println("  tried endValue " + endValue + " got back to " + startValue);
-//                    return startValue;
-                    lowest = Math.min(lowest, startValue);
-                }
-            }
-        }
-        return lowest;
-//        throw new RuntimeException("oops");
     }
 
     private List<AlmanacRange> sortedLocationRanges() {
