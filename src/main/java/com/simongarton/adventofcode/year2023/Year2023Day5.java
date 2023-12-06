@@ -8,12 +8,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class Year2023Day5 extends AdventOfCodeChallenge {
+
+    private final static boolean SHORTCUT = true;
+    private final static boolean DEBUG = false;
 
     private List<Long> seeds = new ArrayList<>();
     private List<SeedRange> seedRanges = new ArrayList<>();
@@ -57,6 +57,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         return location;
     }
 
+    // thanks Craig Goodspeed for explaining this part of the algorithm
     private long reverseLocation(final Long location) {
         final long humidity = this.reverseMap(location, "humidity-to-location");
         final long temperature = this.reverseMap(humidity, "temperature-to-humidity");
@@ -72,12 +73,10 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         final AlmanacMap almanacMap = this.maps.stream().filter(m -> m.getName().equalsIgnoreCase(mapName))
                 .findFirst().orElseThrow(() -> new RuntimeException(mapName));
         for (final AlmanacRange almanacRange : almanacMap.getRanges()) {
-//            System.out.println("    " + mapName + "." + almanacRange.getDestinationStart());
             if (lookup < almanacRange.getDestinationStart() || lookup > almanacRange.getDestinationEnd()) {
                 continue;
             }
             final long value = lookup - almanacRange.getDestinationStart() + almanacRange.getSourceStart();
-//            System.out.println("    " + mapName + "." + almanacRange.getDestinationStart() + " " + lookup + " -> " + value);
             return value;
         }
         return lookup;
@@ -144,8 +143,10 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
             ranges.add(almanacRange);
         }
 
-        System.out.println("Read " + this.maps.size() + " maps for " + this.seeds.size() + " seeds and " +
-                this.seedRanges.size() + " seed ranges.");
+        if (DEBUG) {
+            System.out.println("Read " + this.maps.size() + " maps for " + this.seeds.size() + " seeds and " +
+                    this.seedRanges.size() + " seed ranges.");
+        }
     }
 
     private List<Long> readSeeds(final String firstLine) {
@@ -180,30 +181,34 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
+        final long start = System.currentTimeMillis();
+
         this.loadSeedRanges(input);
         this.loadData(input);
 
-        this.validateSeedRanges();
-
-        this.validateRanges();
-
-        System.out.println("");
-
-        final StartAndEnd overallResult = StartAndEnd.builder()
-                .start(-1)
-                .end(Long.MAX_VALUE)
-                .build();
-        for (final SeedRange seedRange : this.seedRanges) {
-            final StartAndEnd thisResult = this.findLowestForSeedRange(seedRange);
-            if (thisResult.getEnd() < overallResult.getEnd()) {
-                overallResult.setStart(thisResult.getStart());
-                overallResult.setEnd(thisResult.getEnd());
-            }
+        if (DEBUG) {
+            this.validateSeedRanges();
+            this.validateRanges();
+            System.out.println("");
         }
 
-        return String.valueOf(overallResult.getEnd());
+        final long result = this.findLowestForSeedRanges();
+        final long end = System.currentTimeMillis();
+        if (DEBUG) {
+            System.out.println("I took " + this.formatSeconds((int) ((end - start) / 1000.0)));
+        }
+        return String.valueOf(result);
     }
 
+    private String formatSeconds(final int totalSecs) {
+        final int hours = totalSecs / 3600;
+        final int minutes = (totalSecs % 3600) / 60;
+        final int seconds = totalSecs % 60;
+        return (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":"
+                + (seconds < 10 ? "0" : "") + seconds;
+    }
+
+    // use for the sample NOT THE REAL ONE
     private void dumpMap() {
         final List<String> lines = new ArrayList<>();
         lines.add("seed,soil,fertilizer,water,light,temp,humidity,location");
@@ -230,38 +235,47 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         }
     }
 
-    private StartAndEnd findLowestForSeedRange(final SeedRange seedRange) {
-        // I need to work backwards.
-        // for each of the final maps, loop through the ranges starting with the lowest
-        // and go back up through the maps until I hit a value in the incoming seedRange
-
-        System.out.println("SeedRange is " + seedRange);
-        long lowest = Long.MAX_VALUE;
-        StartAndEnd result = null;
+    private long findLowestForSeedRanges() {
+        final Map<SeedRange, StartAndEnd> lowestValues = new HashMap<>();
         long endPoint = 0;
         for (final AlmanacRange range : this.sortedLocationRanges()) {
             endPoint = Math.max(endPoint, range.getDestinationEnd());
         }
+        // once I have a value for all of them, I don't need to keep going
+        // and once I have a value for one of them, I don't need to check that one any more ...
         for (long endValue = 0; endValue <= endPoint; endValue++) {
-            if (endValue % 10000000 == 0) {
+            if (DEBUG && endValue % 50000000 == 0) {
                 System.out.println(this.f(endValue) + " -> " + this.f(endPoint) + " = " + String.format("%3.2f%%", 100.0 * endValue / endPoint));
             }
             final long startValue = this.reverseLocation(endValue);
-            if (this.valueInRange(startValue, seedRange)) {
-                System.out.println("  tried endValue " + endValue + " got back to " + startValue);
-//                    return startValue;
-                if (endValue < lowest) {
-                    lowest = endValue;
-                    result = StartAndEnd.builder()
-                            .start(startValue)
-                            .end(endValue)
-                            .build();
-                    // controversy
-                    return result;
+            for (final SeedRange seedRange : this.seedRanges) {
+                if (lowestValues.containsKey(seedRange)) {
+                    continue;
+                }
+                if (!(this.valueInRange(startValue, seedRange))) {
+                    continue;
+                }
+                lowestValues.put(seedRange, StartAndEnd.builder().end(Long.MAX_VALUE).build());
+                final StartAndEnd startAndEnd = lowestValues.get(seedRange);
+                if (startAndEnd.getEnd() > endValue) {
+                    startAndEnd.setStart(startValue);
+                    startAndEnd.setEnd(endValue);
+                    if (DEBUG) {
+                        System.out.println("  put " + startAndEnd + " in for " + seedRange + " now got " + lowestValues.size());
+                    }
+                }
+                // and in fact, this is guaranteed to be the lowest answer !
+                if (SHORTCUT) {
+                    return endValue;
                 }
             }
         }
-        return result;
+        long lowest = Long.MAX_VALUE;
+        for (final Map.Entry<SeedRange, StartAndEnd> entry : lowestValues.entrySet()) {
+            System.out.println(entry.getKey() + ":" + entry.getValue().getStart() + "->" + entry.getValue().getEnd());
+            lowest = Math.min(lowest, entry.getValue().getEnd());
+        }
+        return lowest;
     }
 
     private List<AlmanacRange> sortedLocationRanges() {
@@ -275,18 +289,6 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
 
     private boolean valueInRange(final long startValue, final SeedRange seedRange) {
         return (startValue >= seedRange.getStart() && startValue <= seedRange.getEnd());
-    }
-
-    private AlmanacRange findRangeForThisTargetInThisMap(final long target, final String mapName) {
-        final AlmanacMap almanacMap = this.maps.stream().filter(m -> m.getName().equalsIgnoreCase(mapName))
-                .findFirst().orElseThrow(() -> new RuntimeException(mapName));
-        for (final AlmanacRange range : almanacMap.getRanges()) {
-            if ((range.getDestinationStart() <= target) &&
-                    (range.getDestinationEnd() >= target)) {
-                return range;
-            }
-        }
-        throw new RuntimeException("No destination in " + mapName + " for " + target);
     }
 
     private void validateSeedRanges() {
