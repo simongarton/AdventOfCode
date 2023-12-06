@@ -4,20 +4,31 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.*;
+
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class Year2023Day5 extends AdventOfCodeChallenge {
 
     private final static boolean SHORTCUT = true;
     private final static boolean DEBUG = false;
+    public static final int MAP_WIDTH = 800;
+    public static final int MAP_HEIGHT = 350;
 
     private List<Long> seeds = new ArrayList<>();
     private List<SeedRange> seedRanges = new ArrayList<>();
     private List<AlmanacMap> maps;
+    private long maxWidth;
+    private final Random random = new Random();
 
     @Override
     public String title() {
@@ -35,6 +46,8 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         this.loadSeeds(input);
         this.loadData(input);
 
+        this.drawRanges();
+
         long lowestLocation = Long.MAX_VALUE;
         for (final Long seed : this.seeds) {
             final long thisLocation = this.location(seed);
@@ -44,6 +57,66 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         }
 
         return String.valueOf(lowestLocation);
+    }
+
+    private void drawRanges() {
+
+        this.calculateMaxWidth();
+
+        final BufferedImage bufferedImage = new BufferedImage(MAP_WIDTH, MAP_HEIGHT, TYPE_INT_RGB);
+        final Graphics2D graphics2D = bufferedImage.createGraphics();
+        this.clearBackground(graphics2D);
+        this.paintRanges(graphics2D);
+        try {
+            ImageIO.write(bufferedImage, "PNG", new File("ranges.png"));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        graphics2D.dispose();
+    }
+
+    private void calculateMaxWidth() {
+        for (final AlmanacMap map : this.maps) {
+            for (final AlmanacRange range : map.getRanges()) {
+                this.maxWidth = Math.max(this.maxWidth, range.getSourceEnd());
+            }
+        }
+    }
+
+    private void paintRanges(final Graphics2D graphics2D) {
+        for (int i = 0; i < this.maps.size(); i++) {
+            this.paintRange(i, this.maps.get(i), graphics2D);
+        }
+    }
+
+    private void paintRange(final int i, final AlmanacMap almanacMap, final Graphics2D graphics2D) {
+
+        final int border = 1;
+        final int depth = MAP_HEIGHT / this.maps.size();
+        final int top = (i * depth) + border;
+        final int bottom = ((i + 1) * depth) - border;
+
+        for (int j = 0; j < almanacMap.getRanges().size(); j++) {
+            final AlmanacRange almanacRange = almanacMap.getRanges().get(j);
+            final int left = (int) (MAP_WIDTH * almanacRange.getSourceStart() / this.maxWidth) + border;
+            final int right = (int) (MAP_WIDTH * almanacRange.getSourceEnd() / this.maxWidth) - border;
+            graphics2D.setPaint(this.rangeColor(i));
+            graphics2D.fillRect(left, top, right - left, bottom - top);
+            graphics2D.setPaint(Color.WHITE);
+            graphics2D.drawRect(left, top, right - left, bottom - top);
+        }
+    }
+
+    private Paint rangeColor(final int i) {
+        return new Color(this.random.nextInt(255),
+                this.random.nextInt(255),
+                this.random.nextInt(255)
+        );
+    }
+
+    private void clearBackground(final Graphics2D graphics2D) {
+        graphics2D.setPaint(Color.BLACK);
+        graphics2D.fillRect(0, 0, 800, 600);
     }
 
     private long location(final Long seed) {
