@@ -19,13 +19,26 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2023
 
+### Day 6: Wait for it
+
+Phew, a slightly more sensible one. Optimization : given a distance to travel, how do you optimize spending time
+at the start to get going fast vs getting going quickly ? First part easy to iterate over every step , second part
+too big but easy to convert to maths.
+
+### Day 5: If You Give A Seed A Fertilizer
+
+I read part 1 and thought : uh-oh. And I was right. Basically a set of ranges, and you traverse through them, hopping
+from one to another, to try and end up on the smallest end value. Which is easy when you have a few points, but not
+when end up with over 4 billion numbers to check.
+
+Luckily my mate Craig explained how he did it, and that gave me an idea.
+
 ### Day 4: Scratchcards
 
 OK, here we go : part 1 deceptively simple, part 2 on of
 those [Orb](https://en.wikipedia.org/wiki/A_Huge_Ever_Growing_Pulsating_Brain_That_Rules_from_the_Centre_of_the_Ultraworld)
 -like problems which get a bit out of hand. Tribble-like, to choose another metaphor. Got stuck with concurrent
-modifications
-on the list and it's iterator but banged out a solution just in time.
+modifications on the list and it's iterator but banged out a solution just in time.
 
 ### Day 3: Gear Ratios
 
