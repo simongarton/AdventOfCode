@@ -39,67 +39,24 @@ public class Year2023Day6 extends AdventOfCodeChallenge {
         return String.valueOf(wins);
     }
 
-    private long countWinsSmartly(final Race race) {
+    private long countWins(final Race race) {
         long wins = 0;
         for (long speed = 1; speed < race.distance; speed++) {
             final long timeAvailable = race.time - speed;
             if (timeAvailable < 0) {
                 break;
             }
-            final Result result = this.figureTimeTakenSmartly(speed, race.distance, timeAvailable);
+            final Result result = this.figureTimeTaken(speed, race.distance, timeAvailable);
             if (result.isSuccess()) {
                 wins++;
             }
         }
         return wins;
-    }
-
-    private long countWins(final Race race) {
-        long wins = 0;
-        for (long speed = 1; speed < race.distance; speed++) {
-            final long timeAvailable = race.time - speed;
-            final Result result = this.figureTimeTakenSmartly(speed, race.distance, timeAvailable);
-            if (result.isSuccess()) {
-                wins++;
-            }
-        }
-        return wins;
-    }
-
-    private Result figureTimeTakenSmartly(final long speed, final long distance, final long timeAvailable) {
-        final long distanceCovered = timeAvailable * speed;
-        final long timeTaken = distance / speed;
-        if (distanceCovered > distance) {
-            return Result.builder()
-                    .speed(speed)
-                    .distance(distance)
-                    .timeAvailable(timeAvailable)
-                    .distanceCovered(distanceCovered)
-                    .timeTaken(timeTaken)
-                    .success(true)
-                    .build();
-        } else {
-            return Result.builder()
-                    .speed(speed)
-                    .distance(distance)
-                    .timeAvailable(timeAvailable)
-                    .distanceCovered(distanceCovered)
-                    .timeTaken(timeTaken)
-                    .success(false)
-                    .build();
-        }
     }
 
     private Result figureTimeTaken(final long speed, final long distance, final long timeAvailable) {
-        long timeTaken = 0;
-        long distanceCovered = 0;
-        while (distanceCovered <= distance) {
-            timeTaken++;
-            distanceCovered += speed;
-            if (timeTaken >= timeAvailable) {
-                break;
-            }
-        }
+        final long distanceCovered = timeAvailable * speed;
+        final long timeTaken = distance / speed;
         if (distanceCovered > distance) {
             return Result.builder()
                     .speed(speed)
@@ -196,7 +153,7 @@ public class Year2023Day6 extends AdventOfCodeChallenge {
 
         long wins = 1;
         for (final Race race : this.races) {
-            final long newWins = this.countWinsSmartly(race);
+            final long newWins = this.countWins(race);
             wins = wins * newWins;
         }
 
