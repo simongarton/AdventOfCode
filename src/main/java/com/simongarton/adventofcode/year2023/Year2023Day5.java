@@ -44,10 +44,16 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     }
 
     // fails with brute force, too many values to check
-    private long location(final SeedRange seedRange) {
+    private long location(final SeedRange seedRange, final int rangeCount, final int rangeTotal) {
         long lowestLocation = Long.MAX_VALUE;
+        long count = 0;
+        final long total = seedRange.length;
         for (long seed = seedRange.start; seed < seedRange.start + seedRange.length; seed++) {
-//            System.out.println("  testing seed " + seed);
+            if (++count % 10000000 == 0) {
+                System.out.println("  testing seed " + seed +
+                        " for " + count + "/" + total + "=" + String.format("%3.2f%%", 100.0 * count / total) +
+                        " of " + rangeCount + "/" + rangeTotal + "=" + String.format("%3.2f%%", 100.0 * rangeCount / rangeTotal));
+            }
             final long location = this.location(seed);
             if (location < lowestLocation) {
                 lowestLocation = location;
@@ -58,9 +64,9 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     }
 
     private long location(final Long seed) {
-        if (this.locationCache.containsKey(seed)) {
-            return this.locationCache.get(seed);
-        }
+//        if (this.locationCache.containsKey(seed)) {
+//            return this.locationCache.get(seed);
+//        }
         final long soil = this.map(seed, "seed-to-soil");
         final long fertilizer = this.map(soil, "soil-to-fertilizer");
         final long water = this.map(fertilizer, "fertilizer-to-water");
@@ -68,7 +74,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         final long temperature = this.map(light, "light-to-temperature");
         final long humidity = this.map(temperature, "temperature-to-humidity");
         final long location = this.map(humidity, "humidity-to-location");
-        this.locationCache.put(seed, location);
+//        this.locationCache.put(seed, location);
         return location;
     }
 
@@ -79,13 +85,13 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     }
 
     private long map(final Long lookup, final String mapName) {
-        if (!this.cache.containsKey(mapName)) {
-            this.cache.put(mapName, new HashMap<>());
-        }
-        if (this.cache.get(mapName).containsKey(lookup)) {
-            System.out.println("Found " + lookup + " for " + mapName + " in cache.");
-            return this.cache.get(mapName).get(lookup);
-        }
+//        if (!this.cache.containsKey(mapName)) {
+//            this.cache.put(mapName, new HashMap<>());
+//        }
+//        if (this.cache.get(mapName).containsKey(lookup)) {
+//            System.out.println("Found " + lookup + " for " + mapName + " in cache.");
+//            return this.cache.get(mapName).get(lookup);
+//        }
         final AlmanacMap almanacMap = this.maps.stream().filter(m -> m.getName().equalsIgnoreCase(mapName))
                 .findFirst().orElseThrow(() -> new RuntimeException(mapName));
         // System.out.println("Checking " + mapName + "(" + almanacMap.getRanges().size() + ")" + " for " + lookup);
@@ -94,10 +100,11 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
                 continue;
             }
             final long value = lookup - almanacRange.getSourceStart() + almanacRange.getDestinationStart();
-            this.cache.get(mapName).put(lookup, value);
+            // cache works, but runs out of space on big. ALSO SLOWER ?!
+//            this.cache.get(mapName).put(lookup, value);
             return value;
         }
-        this.cache.get(mapName).put(lookup, lookup);
+//        this.cache.get(mapName).put(lookup, lookup);
         return lookup;
     }
 
@@ -197,49 +204,25 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
 
         this.validateRanges();
 
-        // this.doCleanupOfRanges();
+        long bestLocation = Long.MAX_VALUE;
 
-        // I want to hit 0.
-        long aimPoint = 0;
-        long delta = 0;
-        AlmanacRange rangeToHit = null;
-        final List<String> reverseMaps = List.of(
-                "humidity-to-location",
-                "temperature-to-humidity",
-                "light-to-temperature",
-                "water-to-light",
-                "fertilizer-to-water",
-                "soil-to-fertilizer",
-                "seed-to-soil"
-        );
-        for (final String mapName : reverseMaps) {
-            System.out.println("I'm looking for " + aimPoint + " in " + mapName);
-            try {
-                rangeToHit = this.findDestinationInRange(aimPoint, mapName);
-                System.out.println("I found range " + rangeToHit);
-                delta = aimPoint - rangeToHit.getDestinationStart();
-                aimPoint = rangeToHit.getSourceStart() + delta;
-                System.out.println("My delta is " + delta + " so my new aimpoint is " + aimPoint);
-            } catch (final RuntimeException e) {
-                System.out.println("no range found, so stay with aimPoint " + aimPoint);
-            }
+        int count = 0;
+        final int total = this.seedRanges.size();
+        for (final SeedRange seedRange : this.seedRanges) {
+            System.out.println("Testing seedRange " + seedRange);
+            final long thisLocation = this.location(seedRange, ++count, total);
+            bestLocation = Math.min(bestLocation, thisLocation);
         }
 
-        System.out.println("If I start with seed " + aimPoint + " I get to " + this.location(aimPoint));
-
-        // this gives seed 70 and if I work through the tables both in
-        // code and manually I get 0 as the location :shrug Ah : I can't start
-        // with 70, it's not in a valid seed range.
-
-        return String.valueOf(aimPoint);
+        return String.valueOf(bestLocation);
     }
 
-    private AlmanacRange findDestinationInRange(final long target, final String mapName) {
+    private AlmanacRange findRangeForThisTargetInThisMap(final long target, final String mapName) {
         final AlmanacMap almanacMap = this.maps.stream().filter(m -> m.getName().equalsIgnoreCase(mapName))
                 .findFirst().orElseThrow(() -> new RuntimeException(mapName));
         for (final AlmanacRange range : almanacMap.getRanges()) {
             if ((range.getDestinationStart() <= target) &&
-                    (range.getDestinationEnd() > target)) {
+                    (range.getDestinationEnd() >= target)) {
                 return range;
             }
         }
@@ -274,69 +257,6 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
 
     private String f(final Long value) {
         return String.format("%,d", value);
-    }
-
-    private void doCleanupOfRanges() {
-        final List<AlmanacRange> validRanges = new ArrayList<>();
-        validRanges.add(this.lowestRange("humidity-to-location"));
-        this.cleanUpRanges("temperature-to-humidity", validRanges, "humidity-to-location");
-        this.cleanUpRanges("light-to-temperature", validRanges, "temperature-to-humidity");
-        this.cleanUpRanges("water-to-light", validRanges, "light-to-temperature");
-        this.cleanUpRanges("fertilizer-to-water", validRanges, "water-to-light");
-        this.cleanUpRanges("soil-to-fertilizer", validRanges, "fertilizer-to-water");
-        this.cleanUpRanges("seed-to-soil", validRanges, "soil-to-fertilizer");
-
-        System.out.println("After cleanup ...");
-        for (final AlmanacMap almanacMap : this.maps) {
-            System.out.println("  " + almanacMap.getName() + ":" + almanacMap.getRanges().size());
-        }
-    }
-
-    // have touched this, not sure if still valid
-    private List<AlmanacRange> cleanUpRanges(final String mapName, final List<AlmanacRange> possibleRanges, final String sourceMapName) {
-        final AlmanacMap almanacMap = this.maps.stream().filter(m -> m.getName().equalsIgnoreCase(mapName))
-                .findFirst().orElseThrow(() -> new RuntimeException(mapName));
-        final List<AlmanacRange> rangesToRemove = new ArrayList<>();
-        for (final AlmanacRange range : almanacMap.getRanges()) {
-            boolean validRange = true;
-            for (final AlmanacRange possibleRange : possibleRanges) {
-                if (range.getDestinationStart() <= possibleRange.getDestinationStart() &&
-                        range.getDestinationEnd() >= possibleRange.getDestinationEnd()) {
-                } else {
-                    validRange = false;
-                }
-            }
-            if (!validRange) {
-                rangesToRemove.add(range);
-            }
-        }
-        for (final AlmanacRange range : rangesToRemove) {
-            almanacMap.getRanges().remove(range);
-        }
-        return almanacMap.getRanges();
-    }
-
-    private AlmanacRange lowestRange(final String mapName) {
-        final AlmanacMap almanacMap = this.maps.stream().filter(m -> m.getName().equalsIgnoreCase(mapName))
-                .findFirst().orElseThrow(() -> new RuntimeException(mapName));
-        long lowestStart = Long.MAX_VALUE;
-        AlmanacRange bestRange = almanacMap.getRanges().get(0);
-        for (final AlmanacRange range : almanacMap.getRanges()) {
-            if (range.getDestinationStart() < lowestStart) {
-                bestRange = range;
-                lowestStart = range.getDestinationStart();
-            }
-        }
-        final List<AlmanacRange> badRanges = new ArrayList<>();
-        for (final AlmanacRange range : almanacMap.getRanges()) {
-            if (!range.toString().equalsIgnoreCase(bestRange.toString())) {
-                badRanges.add(range);
-            }
-        }
-        for (final AlmanacRange range : badRanges) {
-            almanacMap.getRanges().remove(range);
-        }
-        return bestRange;
     }
 
     @Data
