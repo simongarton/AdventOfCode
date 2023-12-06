@@ -17,7 +17,7 @@ public class Year2023Day6 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 6: XXX";
+        return "Day 6: Wait For It";
     }
 
     @Override
@@ -34,26 +34,60 @@ public class Year2023Day6 extends AdventOfCodeChallenge {
         for (final Race race : this.races) {
             final long newWins = this.countWins(race);
             wins = wins * newWins;
-//            System.out.println(race + " " + newWins + "=" + wins);
         }
 
         return String.valueOf(wins);
+    }
+
+    private long countWinsSmartly(final Race race) {
+        long wins = 0;
+        for (long speed = 1; speed < race.distance; speed++) {
+            final long timeAvailable = race.time - speed;
+            if (timeAvailable < 0) {
+                break;
+            }
+            final Result result = this.figureTimeTakenSmartly(speed, race.distance, timeAvailable);
+            if (result.isSuccess()) {
+                wins++;
+            }
+        }
+        return wins;
     }
 
     private long countWins(final Race race) {
         long wins = 0;
         for (long speed = 1; speed < race.distance; speed++) {
             final long timeAvailable = race.time - speed;
-            final Result result = this.figureTimeTaken(speed, race.distance, timeAvailable);
+            final Result result = this.figureTimeTakenSmartly(speed, race.distance, timeAvailable);
             if (result.isSuccess()) {
-//                System.out.println("  At speed " + speed + " timeTaken was " + result.getTimeTaken() + " distance covered " + result.getDistanceCovered() + " and race was " + race.getTime() + " and won");
                 wins++;
-            } else {
-//                System.out.println("  At speed " + speed + " timeTaken was " + result.getTimeTaken() + " distance covered " + result.getDistanceCovered() + " and race was " + race.getTime() + " but lost");
             }
-//            System.out.println(result);
         }
         return wins;
+    }
+
+    private Result figureTimeTakenSmartly(final long speed, final long distance, final long timeAvailable) {
+        final long distanceCovered = timeAvailable * speed;
+        final long timeTaken = distance / speed;
+        if (distanceCovered > distance) {
+            return Result.builder()
+                    .speed(speed)
+                    .distance(distance)
+                    .timeAvailable(timeAvailable)
+                    .distanceCovered(distanceCovered)
+                    .timeTaken(timeTaken)
+                    .success(true)
+                    .build();
+        } else {
+            return Result.builder()
+                    .speed(speed)
+                    .distance(distance)
+                    .timeAvailable(timeAvailable)
+                    .distanceCovered(distanceCovered)
+                    .timeTaken(timeTaken)
+                    .success(false)
+                    .build();
+        }
     }
 
     private Result figureTimeTaken(final long speed, final long distance, final long timeAvailable) {
@@ -93,6 +127,22 @@ public class Year2023Day6 extends AdventOfCodeChallenge {
         this.buildRaces();
     }
 
+    private void loadDataOneRace(final String[] input) {
+        this.loadTimesAsOne(input[0]);
+        this.loadDistancesAsOne(input[1]);
+        this.buildRaces();
+    }
+
+    private void loadTimesAsOne(final String s) {
+        final String[] bits = this.reallyCleanBits(s);
+        this.times = Arrays.stream(bits).map(Long::valueOf).collect(Collectors.toList());
+    }
+
+    private void loadDistancesAsOne(final String s) {
+        final String[] bits = this.reallyCleanBits(s);
+        this.distances = Arrays.stream(bits).map(Long::valueOf).collect(Collectors.toList());
+    }
+
     private void buildRaces() {
         this.races = new ArrayList<>();
         for (int i = 0; i < this.distances.size(); i++) {
@@ -104,17 +154,27 @@ public class Year2023Day6 extends AdventOfCodeChallenge {
     }
 
     private void loadDistances(final String s) {
+        final String[] bits = this.cleanBits(s);
+        this.distances = Arrays.stream(bits).map(Long::valueOf).collect(Collectors.toList());
+    }
+
+    private String[] cleanBits(final String s) {
         final String[] parts = s.split(":");
-        final String distancesString = this.cleanString(parts[1]);
-        final String[] distances = distancesString.split(" ");
-        this.distances = Arrays.stream(distances).map(Long::valueOf).collect(Collectors.toList());
+        final String bitsString = this.cleanString(parts[1]);
+        final String[] bits = bitsString.split(" ");
+        return bits;
+    }
+
+    private String[] reallyCleanBits(final String s) {
+        final String[] parts = s.split(":");
+        final String bitsString = this.reallyCleanString(parts[1]);
+        final String[] bits = bitsString.split(" ");
+        return bits;
     }
 
     private void loadTimes(final String s) {
-        final String[] parts = s.split(":");
-        final String timesString = this.cleanString(parts[1]);
-        final String[] times = timesString.split(" ");
-        this.times = Arrays.stream(times).map(Long::valueOf).collect(Collectors.toList());
+        final String[] bits = this.cleanBits(s);
+        this.times = Arrays.stream(bits).map(Long::valueOf).collect(Collectors.toList());
     }
 
     private String cleanString(String example) {
@@ -125,10 +185,22 @@ public class Year2023Day6 extends AdventOfCodeChallenge {
         return example;
     }
 
+    private String reallyCleanString(final String example) {
+        return example.trim().replace(" ", "");
+    }
+
     @Override
     public String part2(final String[] input) {
 
-        return null;
+        this.loadDataOneRace(input);
+
+        long wins = 1;
+        for (final Race race : this.races) {
+            final long newWins = this.countWinsSmartly(race);
+            wins = wins * newWins;
+        }
+
+        return String.valueOf(wins);
     }
 
     @Data
