@@ -204,17 +204,20 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
 
         this.validateRanges();
 
-        long bestLocation = Long.MAX_VALUE;
-
-        int count = 0;
-        final int total = this.seedRanges.size();
+        long lowest = Long.MAX_VALUE;
         for (final SeedRange seedRange : this.seedRanges) {
-            System.out.println("Testing seedRange " + seedRange);
-            final long thisLocation = this.location(seedRange, ++count, total);
-            bestLocation = Math.min(bestLocation, thisLocation);
+            final long thisLowest = this.findLowestForSeedRange(seedRange);
+            lowest = Math.min(lowest, thisLowest);
         }
 
-        return String.valueOf(bestLocation);
+        return String.valueOf(lowest);
+    }
+
+    private long findLowestForSeedRange(final SeedRange seedRange) {
+        // I need to work backwards.
+        // for each of the final maps, loop through the ranges starting with the lowest
+        // and go back up through the maps until I hit a value in the incoming seedRange
+        return 0;
     }
 
     private AlmanacRange findRangeForThisTargetInThisMap(final long target, final String mapName) {
