@@ -1,313 +1,666 @@
 digraph {
 rankdir="LR"
-"79->79" [style=filled, fillcolor=black fontcolor=white]
-"14->14" [style=filled, fillcolor=black fontcolor=white]
-"55->55" [style=filled, fillcolor=black fontcolor=white]
-"13->13" [style=filled, fillcolor=black fontcolor=white]
-"seed-to-soil:98->99 50->51" [style=filled, fillcolor=burlywood]
-"seed-to-soil:50->57 52->59" [style=filled, fillcolor=burlywood]
-"seed-to-soil:53->56 55->58" [style=filled, fillcolor=burlywood]
-"seed-to-soil:54->56 56->58" [style=filled, fillcolor=burlywood]
-"seed-to-soil:55->58 57->60" [style=filled, fillcolor=burlywood]
-"seed-to-soil:55->56 57->58" [style=filled, fillcolor=burlywood]
-"seed-to-soil:62->63 64->65" [style=filled, fillcolor=burlywood]
-"seed-to-soil:62->64 64->66" [style=filled, fillcolor=burlywood]
-"seed-to-soil:62->63 64->65" [style=filled, fillcolor=burlywood]
-"seed-to-soil:62->63 64->65" [style=filled, fillcolor=burlywood]
-"seed-to-soil:62->66 64->68" [style=filled, fillcolor=burlywood]
-"seed-to-soil:54->55 56->57" [style=filled, fillcolor=burlywood]
-"seed-to-soil:96->97 98->99" [style=filled, fillcolor=burlywood]
-"seed-to-soil:96->96 98->98" [style=filled, fillcolor=burlywood]
-"seed-to-soil:79->90 81->92" [style=filled, fillcolor=burlywood]
-"seed-to-soil:79->90 81->92" [style=filled, fillcolor=burlywood]
-"seed-to-soil:79->89 81->91" [style=filled, fillcolor=burlywood]
-"seed-to-soil:79->86 81->88" [style=filled, fillcolor=burlywood]
-"seed-to-soil:79->88 81->90" [style=filled, fillcolor=burlywood]
-"seed-to-soil:79->81 81->83" [style=filled, fillcolor=burlywood]
-"seed-to-soil:79->91 81->93" [style=filled, fillcolor=burlywood]
-"seed-to-soil:79->78 81->80" [style=filled, fillcolor=burlywood]
-"seed-to-soil:65->68 67->70" [style=filled, fillcolor=burlywood]
-"seed-to-soil:65->66 67->68" [style=filled, fillcolor=burlywood]
-"seed-to-soil:65->67 67->69" [style=filled, fillcolor=burlywood]
-"seed-to-soil:65->67 67->69" [style=filled, fillcolor=burlywood]
-"seed-to-soil:65->64 67->66" [style=filled, fillcolor=burlywood]
-"seed-to-soil:65->66 67->68" [style=filled, fillcolor=burlywood]
-"seed-to-soil:65->65 67->67" [style=filled, fillcolor=burlywood]
-"seed-to-soil:65->64 67->66" [style=filled, fillcolor=burlywood]
-"seed-to-soil:65->68 67->70" [style=filled, fillcolor=burlywood]
-"seed-to-soil:65->68 67->70" [style=filled, fillcolor=burlywood]
-"seed-to-soil:66->67 68->69" [style=filled, fillcolor=burlywood]
-"seed-to-soil:66->68 68->70" [style=filled, fillcolor=burlywood]
-"seed-to-soil:66->67 68->69" [style=filled, fillcolor=burlywood]
-"seed-to-soil:78->79 80->81" [style=filled, fillcolor=burlywood]
-"seed-to-soil:78->78 80->80" [style=filled, fillcolor=burlywood]
-"seed-to-soil:71->70 73->72" [style=filled, fillcolor=burlywood]
-"seed-to-soil:71->76 73->78" [style=filled, fillcolor=burlywood]
-"seed-to-soil:71->73 73->75" [style=filled, fillcolor=burlywood]
-"seed-to-soil:71->76 73->78" [style=filled, fillcolor=burlywood]
-"seed-to-soil:71->73 73->75" [style=filled, fillcolor=burlywood]
-"seed-to-soil:71->76 73->78" [style=filled, fillcolor=burlywood]
-"seed-to-soil:71->72 73->74" [style=filled, fillcolor=burlywood]
-"seed-to-soil:71->75 73->77" [style=filled, fillcolor=burlywood]
-"seed-to-soil:71->72 73->74" [style=filled, fillcolor=burlywood]
-"seed-to-soil:71->72 73->74" [style=filled, fillcolor=burlywood]
-"seed-to-soil:71->72 73->74" [style=filled, fillcolor=burlywood]
-"seed-to-soil:70->69 72->71" [style=filled, fillcolor=burlywood]
-"seed-to-soil:70->69 72->71" [style=filled, fillcolor=burlywood]
-"seed-to-soil:70->69 72->71" [style=filled, fillcolor=burlywood]
-"seed-to-soil:70->69 72->71" [style=filled, fillcolor=burlywood]
-"seed-to-soil:58->63 60->65" [style=filled, fillcolor=burlywood]
-"seed-to-soil:58->58 60->60" [style=filled, fillcolor=burlywood]
-"seed-to-soil:58->59 60->61" [style=filled, fillcolor=burlywood]
-"seed-to-soil:94->94 96->96" [style=filled, fillcolor=burlywood]
-"soil-to-fertilizer:15->16 0->1" [style=filled, fillcolor=darkgoldenrod4]
-"soil-to-fertilizer:52->53 37->38" [style=filled, fillcolor=darkgoldenrod4]
-"soil-to-fertilizer:0->3 39->42" [style=filled, fillcolor=darkgoldenrod4]
-"soil-to-fertilizer:52->51 37->36" [style=filled, fillcolor=darkgoldenrod4]
-"soil-to-fertilizer:13->14 52->53" [style=filled, fillcolor=darkgoldenrod4]
-"fertilizer-to-water:53->57 49->53" [style=filled, fillcolor=cornflowerblue]
-"fertilizer-to-water:11->13 0->2" [style=filled, fillcolor=cornflowerblue]
-"fertilizer-to-water:0->6 42->48" [style=filled, fillcolor=cornflowerblue]
-"fertilizer-to-water:7->10 57->60" [style=filled, fillcolor=cornflowerblue]
-"fertilizer-to-water:52->52 41->41" [style=filled, fillcolor=cornflowerblue]
-"fertilizer-to-water:58->60 54->56" [style=filled, fillcolor=cornflowerblue]
-"water-to-light:18->24 88->94" [style=filled, fillcolor=cadetblue1]
-"water-to-light:25->43 18->36" [style=filled, fillcolor=cadetblue1]
-"water-to-light:52->55 45->48" [style=filled, fillcolor=cadetblue1]
-"water-to-light:53->59 46->52" [style=filled, fillcolor=cadetblue1]
-"water-to-light:55->58 48->51" [style=filled, fillcolor=cadetblue1]
-"water-to-light:55->57 48->50" [style=filled, fillcolor=cadetblue1]
-"water-to-light:62->67 55->60" [style=filled, fillcolor=cadetblue1]
-"water-to-light:62->66 55->59" [style=filled, fillcolor=cadetblue1]
-"water-to-light:62->63 55->56" [style=filled, fillcolor=cadetblue1]
-"water-to-light:62->68 55->61" [style=filled, fillcolor=cadetblue1]
-"water-to-light:79->84 72->77" [style=filled, fillcolor=cadetblue1]
-"water-to-light:79->89 72->82" [style=filled, fillcolor=cadetblue1]
-"water-to-light:79->88 72->81" [style=filled, fillcolor=cadetblue1]
-"water-to-light:79->92 72->85" [style=filled, fillcolor=cadetblue1]
-"water-to-light:79->81 72->74" [style=filled, fillcolor=cadetblue1]
-"water-to-light:79->80 72->73" [style=filled, fillcolor=cadetblue1]
-"water-to-light:65->67 58->60" [style=filled, fillcolor=cadetblue1]
-"water-to-light:65->66 58->59" [style=filled, fillcolor=cadetblue1]
-"water-to-light:65->66 58->59" [style=filled, fillcolor=cadetblue1]
-"water-to-light:65->66 58->59" [style=filled, fillcolor=cadetblue1]
-"water-to-light:65->68 58->61" [style=filled, fillcolor=cadetblue1]
-"water-to-light:65->67 58->60" [style=filled, fillcolor=cadetblue1]
-"water-to-light:66->68 59->61" [style=filled, fillcolor=cadetblue1]
-"water-to-light:66->68 59->61" [style=filled, fillcolor=cadetblue1]
-"water-to-light:66->68 59->61" [style=filled, fillcolor=cadetblue1]
-"water-to-light:66->67 59->60" [style=filled, fillcolor=cadetblue1]
-"water-to-light:78->77 71->70" [style=filled, fillcolor=cadetblue1]
-"water-to-light:78->79 71->72" [style=filled, fillcolor=cadetblue1]
-"water-to-light:78->78 71->71" [style=filled, fillcolor=cadetblue1]
-"water-to-light:78->78 71->71" [style=filled, fillcolor=cadetblue1]
-"water-to-light:78->77 71->70" [style=filled, fillcolor=cadetblue1]
-"water-to-light:71->74 64->67" [style=filled, fillcolor=cadetblue1]
-"water-to-light:71->76 64->69" [style=filled, fillcolor=cadetblue1]
-"water-to-light:71->75 64->68" [style=filled, fillcolor=cadetblue1]
-"water-to-light:71->76 64->69" [style=filled, fillcolor=cadetblue1]
-"water-to-light:71->73 64->66" [style=filled, fillcolor=cadetblue1]
-"water-to-light:70->69 63->62" [style=filled, fillcolor=cadetblue1]
-"water-to-light:70->69 63->62" [style=filled, fillcolor=cadetblue1]
-"water-to-light:70->70 63->63" [style=filled, fillcolor=cadetblue1]
-"water-to-light:58->59 51->52" [style=filled, fillcolor=cadetblue1]
-"water-to-light:58->62 51->55" [style=filled, fillcolor=cadetblue1]
-"water-to-light:58->59 51->52" [style=filled, fillcolor=cadetblue1]
-"water-to-light:58->58 51->51" [style=filled, fillcolor=cadetblue1]
-"water-to-light:94->94 87->87" [style=filled, fillcolor=cadetblue1]
-"water-to-light:94->93 87->86" [style=filled, fillcolor=cadetblue1]
-"light-to-temperature:77->78 45->46" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:45->52 81->88" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:64->66 68->70" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:100->99 68->67" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:52->53 88->89" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:53->55 89->91" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:55->57 91->93" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:55->56 91->92" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:62->61 98->97" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:62->63 98->99" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:62->62 98->98" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:71->76 75->80" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:71->71 75->75" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:58->58 94->94" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:58->58 94->94" [style=filled, fillcolor=firebrick1]
-"light-to-temperature:58->57 94->93" [style=filled, fillcolor=firebrick1]
-"temperature-to-humidity:69->69 0->0" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:0->3 1->4" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:52->54 53->55" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:17->18 18->19" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:55->62 56->63" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:55->61 56->62" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:62->63 63->64" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:62->65 63->66" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:62->64 63->65" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:65->66 66->67" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:65->68 66->69" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:65->67 66->68" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:66->65 67->66" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:66->67 67->68" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:66->66 67->67" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:58->58 59->59" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:58->63 59->64" [style=filled, fillcolor=darkgray]
-"temperature-to-humidity:58->62 59->63" [style=filled, fillcolor=darkgray]
-"humidity-to-location:56->60 60->64" [style=filled, fillcolor=white]
-"humidity-to-location:93->95 56->58" [style=filled, fillcolor=white]
-"humidity-to-location:62->67 66->71" [style=filled, fillcolor=white]
-"humidity-to-location:96->96 59->59" [style=filled, fillcolor=white]
-"humidity-to-location:79->88 83->92" [style=filled, fillcolor=white]
-"humidity-to-location:79->92 83->96" [style=filled, fillcolor=white]
-"humidity-to-location:65->67 69->71" [style=filled, fillcolor=white]
-"humidity-to-location:65->66 69->70" [style=filled, fillcolor=white]
-"humidity-to-location:66->68 70->72" [style=filled, fillcolor=white]
-"humidity-to-location:78->77 82->81" [style=filled, fillcolor=white]
-"humidity-to-location:71->74 75->78" [style=filled, fillcolor=white]
-"humidity-to-location:71->76 75->80" [style=filled, fillcolor=white]
-"humidity-to-location:71->73 75->77" [style=filled, fillcolor=white]
-"humidity-to-location:70->70 74->74" [style=filled, fillcolor=white]
-"79->79" -> "seed-to-soil:79->90 81->92"
-"79->79" -> "seed-to-soil:79->90 81->92"
-"79->79" -> "seed-to-soil:79->89 81->91"
-"79->79" -> "seed-to-soil:79->86 81->88"
-"79->79" -> "seed-to-soil:79->88 81->90"
-"79->79" -> "seed-to-soil:79->81 81->83"
-"79->79" -> "seed-to-soil:79->91 81->93"
-"79->79" -> "seed-to-soil:78->79 80->81"
-"55->55" -> "seed-to-soil:50->57 52->59"
-"55->55" -> "seed-to-soil:53->56 55->58"
-"55->55" -> "seed-to-soil:54->56 56->58"
-"55->55" -> "seed-to-soil:55->58 57->60"
-"55->55" -> "seed-to-soil:55->56 57->58"
-"55->55" -> "seed-to-soil:54->55 56->57"
-"seed-to-soil:50->57 52->59" -> "soil-to-fertilizer:52->53 37->38"
-"soil-to-fertilizer:15->16 0->1" -> "fertilizer-to-water:0->6 42->48"
-"soil-to-fertilizer:13->14 52->53" -> "fertilizer-to-water:53->57 49->53"
-"soil-to-fertilizer:13->14 52->53" -> "fertilizer-to-water:52->52 41->41"
-"fertilizer-to-water:53->57 49->53" -> "water-to-light:52->55 45->48"
-"fertilizer-to-water:53->57 49->53" -> "water-to-light:53->59 46->52"
-"fertilizer-to-water:0->6 42->48" -> "water-to-light:25->43 18->36"
-"fertilizer-to-water:7->10 57->60" -> "water-to-light:53->59 46->52"
-"fertilizer-to-water:7->10 57->60" -> "water-to-light:55->58 48->51"
-"fertilizer-to-water:7->10 57->60" -> "water-to-light:55->57 48->50"
-"fertilizer-to-water:7->10 57->60" -> "water-to-light:58->59 51->52"
-"fertilizer-to-water:7->10 57->60" -> "water-to-light:58->62 51->55"
-"fertilizer-to-water:7->10 57->60" -> "water-to-light:58->59 51->52"
-"fertilizer-to-water:7->10 57->60" -> "water-to-light:58->58 51->51"
-"fertilizer-to-water:52->52 41->41" -> "water-to-light:25->43 18->36"
-"fertilizer-to-water:58->60 54->56" -> "water-to-light:52->55 45->48"
-"fertilizer-to-water:58->60 54->56" -> "water-to-light:53->59 46->52"
-"fertilizer-to-water:58->60 54->56" -> "water-to-light:55->58 48->51"
-"fertilizer-to-water:58->60 54->56" -> "water-to-light:55->57 48->50"
-"water-to-light:52->55 45->48" -> "light-to-temperature:45->52 81->88"
-"water-to-light:53->59 46->52" -> "light-to-temperature:45->52 81->88"
-"water-to-light:53->59 46->52" -> "light-to-temperature:52->53 88->89"
-"water-to-light:55->58 48->51" -> "light-to-temperature:45->52 81->88"
-"water-to-light:55->57 48->50" -> "light-to-temperature:45->52 81->88"
-"water-to-light:62->67 55->60" -> "light-to-temperature:53->55 89->91"
-"water-to-light:62->67 55->60" -> "light-to-temperature:55->57 91->93"
-"water-to-light:62->67 55->60" -> "light-to-temperature:55->56 91->92"
-"water-to-light:62->67 55->60" -> "light-to-temperature:58->58 94->94"
-"water-to-light:62->67 55->60" -> "light-to-temperature:58->58 94->94"
-"water-to-light:62->67 55->60" -> "light-to-temperature:58->57 94->93"
-"water-to-light:62->66 55->59" -> "light-to-temperature:53->55 89->91"
-"water-to-light:62->66 55->59" -> "light-to-temperature:55->57 91->93"
-"water-to-light:62->66 55->59" -> "light-to-temperature:55->56 91->92"
-"water-to-light:62->66 55->59" -> "light-to-temperature:58->58 94->94"
-"water-to-light:62->66 55->59" -> "light-to-temperature:58->58 94->94"
-"water-to-light:62->66 55->59" -> "light-to-temperature:58->57 94->93"
-"water-to-light:62->63 55->56" -> "light-to-temperature:53->55 89->91"
-"water-to-light:62->63 55->56" -> "light-to-temperature:55->57 91->93"
-"water-to-light:62->63 55->56" -> "light-to-temperature:55->56 91->92"
-"water-to-light:62->68 55->61" -> "light-to-temperature:53->55 89->91"
-"water-to-light:62->68 55->61" -> "light-to-temperature:55->57 91->93"
-"water-to-light:62->68 55->61" -> "light-to-temperature:55->56 91->92"
-"water-to-light:62->68 55->61" -> "light-to-temperature:58->58 94->94"
-"water-to-light:62->68 55->61" -> "light-to-temperature:58->58 94->94"
-"water-to-light:62->68 55->61" -> "light-to-temperature:58->57 94->93"
-"water-to-light:79->84 72->77" -> "light-to-temperature:77->78 45->46"
-"water-to-light:79->84 72->77" -> "light-to-temperature:71->76 75->80"
-"water-to-light:79->89 72->82" -> "light-to-temperature:77->78 45->46"
-"water-to-light:79->89 72->82" -> "light-to-temperature:71->76 75->80"
-"water-to-light:79->88 72->81" -> "light-to-temperature:77->78 45->46"
-"water-to-light:79->88 72->81" -> "light-to-temperature:71->76 75->80"
-"water-to-light:79->92 72->85" -> "light-to-temperature:77->78 45->46"
-"water-to-light:79->92 72->85" -> "light-to-temperature:71->76 75->80"
-"water-to-light:79->81 72->74" -> "light-to-temperature:71->76 75->80"
-"water-to-light:79->80 72->73" -> "light-to-temperature:71->76 75->80"
-"water-to-light:65->67 58->60" -> "light-to-temperature:58->58 94->94"
-"water-to-light:65->67 58->60" -> "light-to-temperature:58->58 94->94"
-"water-to-light:65->66 58->59" -> "light-to-temperature:58->58 94->94"
-"water-to-light:65->66 58->59" -> "light-to-temperature:58->58 94->94"
-"water-to-light:65->66 58->59" -> "light-to-temperature:58->58 94->94"
-"water-to-light:65->66 58->59" -> "light-to-temperature:58->58 94->94"
-"water-to-light:65->66 58->59" -> "light-to-temperature:58->58 94->94"
-"water-to-light:65->66 58->59" -> "light-to-temperature:58->58 94->94"
-"water-to-light:65->68 58->61" -> "light-to-temperature:58->58 94->94"
-"water-to-light:65->68 58->61" -> "light-to-temperature:58->58 94->94"
-"water-to-light:65->67 58->60" -> "light-to-temperature:58->58 94->94"
-"water-to-light:65->67 58->60" -> "light-to-temperature:58->58 94->94"
-"water-to-light:78->79 71->72" -> "light-to-temperature:71->76 75->80"
-"water-to-light:78->79 71->72" -> "light-to-temperature:71->71 75->75"
-"water-to-light:78->78 71->71" -> "light-to-temperature:71->76 75->80"
-"water-to-light:78->78 71->71" -> "light-to-temperature:71->71 75->75"
-"water-to-light:78->78 71->71" -> "light-to-temperature:71->76 75->80"
-"water-to-light:78->78 71->71" -> "light-to-temperature:71->71 75->75"
-"water-to-light:71->74 64->67" -> "light-to-temperature:64->66 68->70"
-"water-to-light:71->76 64->69" -> "light-to-temperature:64->66 68->70"
-"water-to-light:71->75 64->68" -> "light-to-temperature:64->66 68->70"
-"water-to-light:71->76 64->69" -> "light-to-temperature:64->66 68->70"
-"water-to-light:71->73 64->66" -> "light-to-temperature:64->66 68->70"
-"water-to-light:70->69 63->62" -> "light-to-temperature:62->63 98->99"
-"water-to-light:70->69 63->62" -> "light-to-temperature:62->63 98->99"
-"water-to-light:70->70 63->63" -> "light-to-temperature:62->63 98->99"
-"water-to-light:58->59 51->52" -> "light-to-temperature:45->52 81->88"
-"water-to-light:58->59 51->52" -> "light-to-temperature:52->53 88->89"
-"water-to-light:58->62 51->55" -> "light-to-temperature:45->52 81->88"
-"water-to-light:58->62 51->55" -> "light-to-temperature:52->53 88->89"
-"water-to-light:58->62 51->55" -> "light-to-temperature:53->55 89->91"
-"water-to-light:58->62 51->55" -> "light-to-temperature:55->57 91->93"
-"water-to-light:58->62 51->55" -> "light-to-temperature:55->56 91->92"
-"water-to-light:58->59 51->52" -> "light-to-temperature:45->52 81->88"
-"water-to-light:58->59 51->52" -> "light-to-temperature:52->53 88->89"
-"water-to-light:58->58 51->51" -> "light-to-temperature:45->52 81->88"
-"light-to-temperature:64->66 68->70" -> "temperature-to-humidity:69->69 0->0"
-"light-to-temperature:64->66 68->70" -> "temperature-to-humidity:65->68 66->69"
-"light-to-temperature:100->99 68->67" -> "temperature-to-humidity:65->68 66->69"
-"temperature-to-humidity:55->62 56->63" -> "humidity-to-location:56->60 60->64"
-"temperature-to-humidity:55->62 56->63" -> "humidity-to-location:62->67 66->71"
-"temperature-to-humidity:55->61 56->62" -> "humidity-to-location:56->60 60->64"
-"temperature-to-humidity:55->61 56->62" -> "humidity-to-location:62->67 66->71"
-"temperature-to-humidity:62->63 63->64" -> "humidity-to-location:62->67 66->71"
-"temperature-to-humidity:62->65 63->66" -> "humidity-to-location:62->67 66->71"
-"temperature-to-humidity:62->65 63->66" -> "humidity-to-location:65->67 69->71"
-"temperature-to-humidity:62->65 63->66" -> "humidity-to-location:65->66 69->70"
-"temperature-to-humidity:62->65 63->66" -> "humidity-to-location:66->68 70->72"
-"temperature-to-humidity:62->64 63->65" -> "humidity-to-location:62->67 66->71"
-"temperature-to-humidity:62->64 63->65" -> "humidity-to-location:65->67 69->71"
-"temperature-to-humidity:62->64 63->65" -> "humidity-to-location:65->66 69->70"
-"temperature-to-humidity:65->66 66->67" -> "humidity-to-location:62->67 66->71"
-"temperature-to-humidity:65->66 66->67" -> "humidity-to-location:65->67 69->71"
-"temperature-to-humidity:65->66 66->67" -> "humidity-to-location:65->66 69->70"
-"temperature-to-humidity:65->66 66->67" -> "humidity-to-location:66->68 70->72"
-"temperature-to-humidity:65->68 66->69" -> "humidity-to-location:62->67 66->71"
-"temperature-to-humidity:65->68 66->69" -> "humidity-to-location:65->67 69->71"
-"temperature-to-humidity:65->68 66->69" -> "humidity-to-location:65->66 69->70"
-"temperature-to-humidity:65->68 66->69" -> "humidity-to-location:66->68 70->72"
-"temperature-to-humidity:65->67 66->68" -> "humidity-to-location:62->67 66->71"
-"temperature-to-humidity:65->67 66->68" -> "humidity-to-location:65->67 69->71"
-"temperature-to-humidity:65->67 66->68" -> "humidity-to-location:65->66 69->70"
-"temperature-to-humidity:65->67 66->68" -> "humidity-to-location:66->68 70->72"
-"temperature-to-humidity:66->65 67->66" -> "humidity-to-location:62->67 66->71"
-"temperature-to-humidity:66->65 67->66" -> "humidity-to-location:65->67 69->71"
-"temperature-to-humidity:66->65 67->66" -> "humidity-to-location:66->68 70->72"
-"temperature-to-humidity:66->67 67->68" -> "humidity-to-location:62->67 66->71"
-"temperature-to-humidity:66->67 67->68" -> "humidity-to-location:65->67 69->71"
-"temperature-to-humidity:66->67 67->68" -> "humidity-to-location:66->68 70->72"
-"temperature-to-humidity:66->66 67->67" -> "humidity-to-location:62->67 66->71"
-"temperature-to-humidity:66->66 67->67" -> "humidity-to-location:65->67 69->71"
-"temperature-to-humidity:66->66 67->67" -> "humidity-to-location:66->68 70->72"
-"temperature-to-humidity:58->58 59->59" -> "humidity-to-location:56->60 60->64"
-"temperature-to-humidity:58->63 59->64" -> "humidity-to-location:56->60 60->64"
-"temperature-to-humidity:58->63 59->64" -> "humidity-to-location:62->67 66->71"
-"temperature-to-humidity:58->62 59->63" -> "humidity-to-location:56->60 60->64"
-"temperature-to-humidity:58->62 59->63" -> "humidity-to-location:62->67 66->71"
+"28965817" [style=filled, fillcolor=black fontcolor=white]
+"302170009" [style=filled, fillcolor=black fontcolor=white]
+"1752849261" [style=filled, fillcolor=black fontcolor=white]
+"48290258" [style=filled, fillcolor=black fontcolor=white]
+"804904201" [style=filled, fillcolor=black fontcolor=white]
+"243492043" [style=filled, fillcolor=black fontcolor=white]
+"2150339939" [style=filled, fillcolor=black fontcolor=white]
+"385349830" [style=filled, fillcolor=black fontcolor=white]
+"1267802202" [style=filled, fillcolor=black fontcolor=white]
+"350474859" [style=filled, fillcolor=black fontcolor=white]
+"2566296746" [style=filled, fillcolor=black fontcolor=white]
+"17565716" [style=filled, fillcolor=black fontcolor=white]
+"3543571814" [style=filled, fillcolor=black fontcolor=white]
+"291402104" [style=filled, fillcolor=black fontcolor=white]
+"447111316" [style=filled, fillcolor=black fontcolor=white]
+"279196488" [style=filled, fillcolor=black fontcolor=white]
+"3227221259" [style=filled, fillcolor=black fontcolor=white]
+"47952959" [style=filled, fillcolor=black fontcolor=white]
+"1828835733" [style=filled, fillcolor=black fontcolor=white]
+"9607836" [style=filled, fillcolor=black fontcolor=white]
+"SOIL 0" [style=filled, fillcolor=burlywood]
+"SOIL 1" [style=filled, fillcolor=burlywood]
+"SOIL 2" [style=filled, fillcolor=burlywood]
+"SOIL 3" [style=filled, fillcolor=burlywood]
+"SOIL 4" [style=filled, fillcolor=burlywood]
+"SOIL 5" [style=filled, fillcolor=burlywood]
+"SOIL 6" [style=filled, fillcolor=burlywood]
+"SOIL 7" [style=filled, fillcolor=burlywood]
+"SOIL 8" [style=filled, fillcolor=burlywood]
+"FERTILIZER 9" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 10" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 11" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 12" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 13" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 14" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 15" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 16" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 17" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 18" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 19" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 20" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 21" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 22" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 23" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 24" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 25" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 26" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 27" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 28" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 29" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 30" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 31" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 32" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 33" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 34" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 35" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 36" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 37" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 38" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 39" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 40" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 41" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 42" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 43" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 44" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 45" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 46" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 47" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 48" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 49" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 50" [style=filled, fillcolor=darkgoldenrod4]
+"FERTILIZER 51" [style=filled, fillcolor=darkgoldenrod4]
+"WATER 52" [style=filled, fillcolor=cornflowerblue]
+"WATER 53" [style=filled, fillcolor=cornflowerblue]
+"WATER 54" [style=filled, fillcolor=cornflowerblue]
+"WATER 55" [style=filled, fillcolor=cornflowerblue]
+"WATER 56" [style=filled, fillcolor=cornflowerblue]
+"WATER 57" [style=filled, fillcolor=cornflowerblue]
+"WATER 58" [style=filled, fillcolor=cornflowerblue]
+"WATER 59" [style=filled, fillcolor=cornflowerblue]
+"WATER 60" [style=filled, fillcolor=cornflowerblue]
+"WATER 61" [style=filled, fillcolor=cornflowerblue]
+"WATER 62" [style=filled, fillcolor=cornflowerblue]
+"WATER 63" [style=filled, fillcolor=cornflowerblue]
+"WATER 64" [style=filled, fillcolor=cornflowerblue]
+"WATER 65" [style=filled, fillcolor=cornflowerblue]
+"WATER 66" [style=filled, fillcolor=cornflowerblue]
+"WATER 67" [style=filled, fillcolor=cornflowerblue]
+"WATER 68" [style=filled, fillcolor=cornflowerblue]
+"WATER 69" [style=filled, fillcolor=cornflowerblue]
+"WATER 70" [style=filled, fillcolor=cornflowerblue]
+"WATER 71" [style=filled, fillcolor=cornflowerblue]
+"WATER 72" [style=filled, fillcolor=cornflowerblue]
+"WATER 73" [style=filled, fillcolor=cornflowerblue]
+"WATER 74" [style=filled, fillcolor=cornflowerblue]
+"WATER 75" [style=filled, fillcolor=cornflowerblue]
+"WATER 76" [style=filled, fillcolor=cornflowerblue]
+"WATER 77" [style=filled, fillcolor=cornflowerblue]
+"WATER 78" [style=filled, fillcolor=cornflowerblue]
+"WATER 79" [style=filled, fillcolor=cornflowerblue]
+"WATER 80" [style=filled, fillcolor=cornflowerblue]
+"WATER 81" [style=filled, fillcolor=cornflowerblue]
+"WATER 82" [style=filled, fillcolor=cornflowerblue]
+"WATER 83" [style=filled, fillcolor=cornflowerblue]
+"WATER 84" [style=filled, fillcolor=cornflowerblue]
+"WATER 85" [style=filled, fillcolor=cornflowerblue]
+"WATER 86" [style=filled, fillcolor=cornflowerblue]
+"WATER 87" [style=filled, fillcolor=cornflowerblue]
+"WATER 88" [style=filled, fillcolor=cornflowerblue]
+"WATER 89" [style=filled, fillcolor=cornflowerblue]
+"WATER 90" [style=filled, fillcolor=cornflowerblue]
+"WATER 91" [style=filled, fillcolor=cornflowerblue]
+"WATER 92" [style=filled, fillcolor=cornflowerblue]
+"WATER 93" [style=filled, fillcolor=cornflowerblue]
+"WATER 94" [style=filled, fillcolor=cornflowerblue]
+"WATER 95" [style=filled, fillcolor=cornflowerblue]
+"WATER 96" [style=filled, fillcolor=cornflowerblue]
+"WATER 97" [style=filled, fillcolor=cornflowerblue]
+"LIGHT 98" [style=filled, fillcolor=cadetblue1]
+"LIGHT 99" [style=filled, fillcolor=cadetblue1]
+"LIGHT 100" [style=filled, fillcolor=cadetblue1]
+"LIGHT 101" [style=filled, fillcolor=cadetblue1]
+"LIGHT 102" [style=filled, fillcolor=cadetblue1]
+"LIGHT 103" [style=filled, fillcolor=cadetblue1]
+"LIGHT 104" [style=filled, fillcolor=cadetblue1]
+"LIGHT 105" [style=filled, fillcolor=cadetblue1]
+"LIGHT 106" [style=filled, fillcolor=cadetblue1]
+"LIGHT 107" [style=filled, fillcolor=cadetblue1]
+"LIGHT 108" [style=filled, fillcolor=cadetblue1]
+"LIGHT 109" [style=filled, fillcolor=cadetblue1]
+"LIGHT 110" [style=filled, fillcolor=cadetblue1]
+"LIGHT 111" [style=filled, fillcolor=cadetblue1]
+"LIGHT 112" [style=filled, fillcolor=cadetblue1]
+"LIGHT 113" [style=filled, fillcolor=cadetblue1]
+"LIGHT 114" [style=filled, fillcolor=cadetblue1]
+"LIGHT 115" [style=filled, fillcolor=cadetblue1]
+"LIGHT 116" [style=filled, fillcolor=cadetblue1]
+"LIGHT 117" [style=filled, fillcolor=cadetblue1]
+"LIGHT 118" [style=filled, fillcolor=cadetblue1]
+"LIGHT 119" [style=filled, fillcolor=cadetblue1]
+"LIGHT 120" [style=filled, fillcolor=cadetblue1]
+"LIGHT 121" [style=filled, fillcolor=cadetblue1]
+"LIGHT 122" [style=filled, fillcolor=cadetblue1]
+"LIGHT 123" [style=filled, fillcolor=cadetblue1]
+"LIGHT 124" [style=filled, fillcolor=cadetblue1]
+"LIGHT 125" [style=filled, fillcolor=cadetblue1]
+"LIGHT 126" [style=filled, fillcolor=cadetblue1]
+"LIGHT 127" [style=filled, fillcolor=cadetblue1]
+"LIGHT 128" [style=filled, fillcolor=cadetblue1]
+"LIGHT 129" [style=filled, fillcolor=cadetblue1]
+"LIGHT 130" [style=filled, fillcolor=cadetblue1]
+"LIGHT 131" [style=filled, fillcolor=cadetblue1]
+"LIGHT 132" [style=filled, fillcolor=cadetblue1]
+"LIGHT 133" [style=filled, fillcolor=cadetblue1]
+"LIGHT 134" [style=filled, fillcolor=cadetblue1]
+"LIGHT 135" [style=filled, fillcolor=cadetblue1]
+"LIGHT 136" [style=filled, fillcolor=cadetblue1]
+"LIGHT 137" [style=filled, fillcolor=cadetblue1]
+"TEMPERATURE 138" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 139" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 140" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 141" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 142" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 143" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 144" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 145" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 146" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 147" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 148" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 149" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 150" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 151" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 152" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 153" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 154" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 155" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 156" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 157" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 158" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 159" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 160" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 161" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 162" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 163" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 164" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 165" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 166" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 167" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 168" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 169" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 170" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 171" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 172" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 173" [style=filled, fillcolor=firebrick1]
+"TEMPERATURE 174" [style=filled, fillcolor=firebrick1]
+"HUMIDITY 175" [style=filled, fillcolor=darkgray]
+"HUMIDITY 176" [style=filled, fillcolor=darkgray]
+"HUMIDITY 177" [style=filled, fillcolor=darkgray]
+"HUMIDITY 178" [style=filled, fillcolor=darkgray]
+"HUMIDITY 179" [style=filled, fillcolor=darkgray]
+"HUMIDITY 180" [style=filled, fillcolor=darkgray]
+"HUMIDITY 181" [style=filled, fillcolor=darkgray]
+"HUMIDITY 182" [style=filled, fillcolor=darkgray]
+"HUMIDITY 183" [style=filled, fillcolor=darkgray]
+"HUMIDITY 184" [style=filled, fillcolor=darkgray]
+"HUMIDITY 185" [style=filled, fillcolor=darkgray]
+"HUMIDITY 186" [style=filled, fillcolor=darkgray]
+"HUMIDITY 187" [style=filled, fillcolor=darkgray]
+"HUMIDITY 188" [style=filled, fillcolor=darkgray]
+"HUMIDITY 189" [style=filled, fillcolor=darkgray]
+"HUMIDITY 190" [style=filled, fillcolor=darkgray]
+"HUMIDITY 191" [style=filled, fillcolor=darkgray]
+"HUMIDITY 192" [style=filled, fillcolor=darkgray]
+"LOCATION 193" [style=filled, fillcolor=white]
+"LOCATION 194" [style=filled, fillcolor=white]
+"LOCATION 195" [style=filled, fillcolor=white]
+"LOCATION 196" [style=filled, fillcolor=white]
+"LOCATION 197" [style=filled, fillcolor=white]
+"LOCATION 198" [style=filled, fillcolor=white]
+"LOCATION 199" [style=filled, fillcolor=white]
+"LOCATION 200" [style=filled, fillcolor=white]
+"LOCATION 201" [style=filled, fillcolor=white]
+"LOCATION 202" [style=filled, fillcolor=white]
+"LOCATION 203" [style=filled, fillcolor=white]
+"LOCATION 204" [style=filled, fillcolor=white]
+"LOCATION 205" [style=filled, fillcolor=white]
+"LOCATION 206" [style=filled, fillcolor=white]
+"LOCATION 207" [style=filled, fillcolor=white]
+"LOCATION 208" [style=filled, fillcolor=white]
+"LOCATION 209" [style=filled, fillcolor=white]
+"LOCATION 210" [style=filled, fillcolor=white]
+"LOCATION 211" [style=filled, fillcolor=white]
+"LOCATION 212" [style=filled, fillcolor=white]
+"LOCATION 213" [style=filled, fillcolor=white]
+"LOCATION 214" [style=filled, fillcolor=white]
+"LOCATION 215" [style=filled, fillcolor=white]
+"LOCATION 216" [style=filled, fillcolor=white]
+"LOCATION 217" [style=filled, fillcolor=white]
+"LOCATION 218" [style=filled, fillcolor=white]
+"LOCATION 219" [style=filled, fillcolor=white]
+"LOCATION 220" [style=filled, fillcolor=white]
+"LOCATION 221" [style=filled, fillcolor=white]
+"LOCATION 222" [style=filled, fillcolor=white]
+"LOCATION 223" [style=filled, fillcolor=white]
+"LOCATION 224" [style=filled, fillcolor=white]
+"LOCATION 225" [style=filled, fillcolor=white]
+"LOCATION 226" [style=filled, fillcolor=white]
+"LOCATION 227" [style=filled, fillcolor=white]
+"LOCATION 228" [style=filled, fillcolor=white]
+"LOCATION 229" [style=filled, fillcolor=white]
+"LOCATION 230" [style=filled, fillcolor=white]
+"LOCATION 231" [style=filled, fillcolor=white]
+"LOCATION 232" [style=filled, fillcolor=white]
+"LOCATION 233" [style=filled, fillcolor=white]
+"LOCATION 234" [style=filled, fillcolor=white]
+"28965817" -> "SOIL 8"
+"302170009" -> "SOIL 6"
+"48290258" -> "SOIL 8"
+"804904201" -> "SOIL 2"
+"243492043" -> "SOIL 6"
+"2150339939" -> "SOIL 0"
+"385349830" -> "SOIL 6"
+"350474859" -> "SOIL 6"
+"2566296746" -> "SOIL 3"
+"17565716" -> "SOIL 8"
+"3543571814" -> "SOIL 4"
+"291402104" -> "SOIL 6"
+"447111316" -> "SOIL 6"
+"279196488" -> "SOIL 6"
+"3227221259" -> "SOIL 4"
+"47952959" -> "SOIL 8"
+"9607836" -> "SOIL 7"
+"SOIL 0" -> "FERTILIZER 13"
+"SOIL 0" -> "FERTILIZER 25"
+"SOIL 0" -> "FERTILIZER 27"
+"SOIL 0" -> "FERTILIZER 33"
+"SOIL 0" -> "FERTILIZER 37"
+"SOIL 0" -> "FERTILIZER 42"
+"SOIL 0" -> "FERTILIZER 43"
+"SOIL 0" -> "FERTILIZER 45"
+"SOIL 0" -> "FERTILIZER 51"
+"SOIL 1" -> "FERTILIZER 28"
+"SOIL 1" -> "FERTILIZER 31"
+"SOIL 1" -> "FERTILIZER 49"
+"SOIL 2" -> "FERTILIZER 15"
+"SOIL 2" -> "FERTILIZER 17"
+"SOIL 2" -> "FERTILIZER 23"
+"SOIL 2" -> "FERTILIZER 24"
+"SOIL 2" -> "FERTILIZER 40"
+"SOIL 2" -> "FERTILIZER 48"
+"SOIL 2" -> "FERTILIZER 50"
+"SOIL 3" -> "FERTILIZER 28"
+"SOIL 4" -> "FERTILIZER 10"
+"SOIL 4" -> "FERTILIZER 11"
+"SOIL 4" -> "FERTILIZER 12"
+"SOIL 4" -> "FERTILIZER 14"
+"SOIL 4" -> "FERTILIZER 19"
+"SOIL 4" -> "FERTILIZER 21"
+"SOIL 4" -> "FERTILIZER 28"
+"SOIL 4" -> "FERTILIZER 30"
+"SOIL 4" -> "FERTILIZER 32"
+"SOIL 4" -> "FERTILIZER 34"
+"SOIL 4" -> "FERTILIZER 35"
+"SOIL 4" -> "FERTILIZER 36"
+"SOIL 4" -> "FERTILIZER 39"
+"SOIL 4" -> "FERTILIZER 41"
+"SOIL 4" -> "FERTILIZER 44"
+"SOIL 4" -> "FERTILIZER 45"
+"SOIL 4" -> "FERTILIZER 46"
+"SOIL 4" -> "FERTILIZER 47"
+"SOIL 5" -> "FERTILIZER 38"
+"SOIL 6" -> "FERTILIZER 18"
+"SOIL 6" -> "FERTILIZER 26"
+"SOIL 6" -> "FERTILIZER 40"
+"SOIL 7" -> "FERTILIZER 26"
+"SOIL 8" -> "FERTILIZER 24"
+"SOIL 8" -> "FERTILIZER 38"
+"FERTILIZER 9" -> "WATER 77"
+"FERTILIZER 10" -> "WATER 55"
+"FERTILIZER 11" -> "WATER 55"
+"FERTILIZER 12" -> "WATER 73"
+"FERTILIZER 13" -> "WATER 62"
+"FERTILIZER 14" -> "WATER 73"
+"FERTILIZER 15" -> "WATER 77"
+"FERTILIZER 16" -> "WATER 58"
+"FERTILIZER 16" -> "WATER 63"
+"FERTILIZER 16" -> "WATER 86"
+"FERTILIZER 17" -> "WATER 53"
+"FERTILIZER 17" -> "WATER 63"
+"FERTILIZER 17" -> "WATER 67"
+"FERTILIZER 18" -> "WATER 77"
+"FERTILIZER 19" -> "WATER 78"
+"FERTILIZER 20" -> "WATER 63"
+"FERTILIZER 21" -> "WATER 54"
+"FERTILIZER 21" -> "WATER 65"
+"FERTILIZER 22" -> "WATER 55"
+"FERTILIZER 23" -> "WATER 55"
+"FERTILIZER 24" -> "WATER 84"
+"FERTILIZER 25" -> "WATER 62"
+"FERTILIZER 25" -> "WATER 72"
+"FERTILIZER 26" -> "WATER 52"
+"FERTILIZER 26" -> "WATER 60"
+"FERTILIZER 26" -> "WATER 71"
+"FERTILIZER 26" -> "WATER 75"
+"FERTILIZER 26" -> "WATER 77"
+"FERTILIZER 26" -> "WATER 89"
+"FERTILIZER 27" -> "WATER 73"
+"FERTILIZER 28" -> "WATER 55"
+"FERTILIZER 28" -> "WATER 66"
+"FERTILIZER 28" -> "WATER 83"
+"FERTILIZER 28" -> "WATER 88"
+"FERTILIZER 29" -> "WATER 55"
+"FERTILIZER 29" -> "WATER 68"
+"FERTILIZER 29" -> "WATER 74"
+"FERTILIZER 29" -> "WATER 77"
+"FERTILIZER 29" -> "WATER 80"
+"FERTILIZER 29" -> "WATER 82"
+"FERTILIZER 29" -> "WATER 90"
+"FERTILIZER 29" -> "WATER 91"
+"FERTILIZER 29" -> "WATER 93"
+"FERTILIZER 30" -> "WATER 62"
+"FERTILIZER 31" -> "WATER 81"
+"FERTILIZER 31" -> "WATER 86"
+"FERTILIZER 31" -> "WATER 87"
+"FERTILIZER 31" -> "WATER 95"
+"FERTILIZER 32" -> "WATER 63"
+"FERTILIZER 33" -> "WATER 73"
+"FERTILIZER 34" -> "WATER 54"
+"FERTILIZER 34" -> "WATER 61"
+"FERTILIZER 34" -> "WATER 78"
+"FERTILIZER 35" -> "WATER 77"
+"FERTILIZER 36" -> "WATER 79"
+"FERTILIZER 37" -> "WATER 54"
+"FERTILIZER 38" -> "WATER 87"
+"FERTILIZER 38" -> "WATER 94"
+"FERTILIZER 39" -> "WATER 86"
+"FERTILIZER 40" -> "WATER 52"
+"FERTILIZER 40" -> "WATER 64"
+"FERTILIZER 40" -> "WATER 67"
+"FERTILIZER 41" -> "WATER 79"
+"FERTILIZER 41" -> "WATER 97"
+"FERTILIZER 42" -> "WATER 72"
+"FERTILIZER 42" -> "WATER 79"
+"FERTILIZER 43" -> "WATER 62"
+"FERTILIZER 43" -> "WATER 78"
+"FERTILIZER 44" -> "WATER 65"
+"FERTILIZER 44" -> "WATER 73"
+"FERTILIZER 45" -> "WATER 57"
+"FERTILIZER 45" -> "WATER 69"
+"FERTILIZER 45" -> "WATER 73"
+"FERTILIZER 45" -> "WATER 76"
+"FERTILIZER 45" -> "WATER 85"
+"FERTILIZER 45" -> "WATER 92"
+"FERTILIZER 46" -> "WATER 79"
+"FERTILIZER 47" -> "WATER 84"
+"FERTILIZER 47" -> "WATER 94"
+"FERTILIZER 48" -> "WATER 77"
+"FERTILIZER 49" -> "WATER 94"
+"FERTILIZER 50" -> "WATER 77"
+"FERTILIZER 51" -> "WATER 73"
+"WATER 52" -> "LIGHT 104"
+"WATER 52" -> "LIGHT 120"
+"WATER 52" -> "LIGHT 133"
+"WATER 53" -> "LIGHT 137"
+"WATER 54" -> "LIGHT 119"
+"WATER 54" -> "LIGHT 134"
+"WATER 55" -> "LIGHT 98"
+"WATER 55" -> "LIGHT 107"
+"WATER 55" -> "LIGHT 118"
+"WATER 56" -> "LIGHT 119"
+"WATER 57" -> "LIGHT 134"
+"WATER 58" -> "LIGHT 100"
+"WATER 58" -> "LIGHT 118"
+"WATER 59" -> "LIGHT 134"
+"WATER 60" -> "LIGHT 106"
+"WATER 60" -> "LIGHT 137"
+"WATER 61" -> "LIGHT 103"
+"WATER 61" -> "LIGHT 134"
+"WATER 62" -> "LIGHT 126"
+"WATER 62" -> "LIGHT 127"
+"WATER 63" -> "LIGHT 99"
+"WATER 63" -> "LIGHT 105"
+"WATER 64" -> "LIGHT 111"
+"WATER 65" -> "LIGHT 101"
+"WATER 66" -> "LIGHT 111"
+"WATER 67" -> "LIGHT 121"
+"WATER 68" -> "LIGHT 113"
+"WATER 69" -> "LIGHT 119"
+"WATER 70" -> "LIGHT 119"
+"WATER 71" -> "LIGHT 106"
+"WATER 71" -> "LIGHT 108"
+"WATER 71" -> "LIGHT 113"
+"WATER 72" -> "LIGHT 119"
+"WATER 73" -> "LIGHT 101"
+"WATER 73" -> "LIGHT 102"
+"WATER 73" -> "LIGHT 103"
+"WATER 73" -> "LIGHT 129"
+"WATER 74" -> "LIGHT 100"
+"WATER 75" -> "LIGHT 113"
+"WATER 76" -> "LIGHT 119"
+"WATER 76" -> "LIGHT 126"
+"WATER 77" -> "LIGHT 105"
+"WATER 77" -> "LIGHT 111"
+"WATER 77" -> "LIGHT 125"
+"WATER 78" -> "LIGHT 115"
+"WATER 78" -> "LIGHT 127"
+"WATER 78" -> "LIGHT 128"
+"WATER 79" -> "LIGHT 112"
+"WATER 79" -> "LIGHT 122"
+"WATER 79" -> "LIGHT 128"
+"WATER 79" -> "LIGHT 136"
+"WATER 80" -> "LIGHT 121"
+"WATER 80" -> "LIGHT 132"
+"WATER 81" -> "LIGHT 100"
+"WATER 81" -> "LIGHT 114"
+"WATER 82" -> "LIGHT 105"
+"WATER 83" -> "LIGHT 99"
+"WATER 83" -> "LIGHT 117"
+"WATER 85" -> "LIGHT 103"
+"WATER 86" -> "LIGHT 117"
+"WATER 86" -> "LIGHT 124"
+"WATER 87" -> "LIGHT 114"
+"WATER 87" -> "LIGHT 132"
+"WATER 88" -> "LIGHT 100"
+"WATER 89" -> "LIGHT 113"
+"WATER 89" -> "LIGHT 121"
+"WATER 90" -> "LIGHT 113"
+"WATER 91" -> "LIGHT 121"
+"WATER 92" -> "LIGHT 103"
+"WATER 93" -> "LIGHT 118"
+"WATER 94" -> "LIGHT 110"
+"WATER 94" -> "LIGHT 124"
+"WATER 94" -> "LIGHT 135"
+"WATER 95" -> "LIGHT 104"
+"WATER 95" -> "LIGHT 109"
+"WATER 95" -> "LIGHT 110"
+"WATER 95" -> "LIGHT 123"
+"WATER 96" -> "LIGHT 127"
+"WATER 97" -> "LIGHT 119"
+"LIGHT 98" -> "TEMPERATURE 139"
+"LIGHT 98" -> "TEMPERATURE 153"
+"LIGHT 98" -> "TEMPERATURE 173"
+"LIGHT 99" -> "TEMPERATURE 138"
+"LIGHT 99" -> "TEMPERATURE 142"
+"LIGHT 100" -> "TEMPERATURE 143"
+"LIGHT 101" -> "TEMPERATURE 165"
+"LIGHT 102" -> "TEMPERATURE 145"
+"LIGHT 103" -> "TEMPERATURE 145"
+"LIGHT 103" -> "TEMPERATURE 155"
+"LIGHT 103" -> "TEMPERATURE 163"
+"LIGHT 103" -> "TEMPERATURE 166"
+"LIGHT 104" -> "TEMPERATURE 159"
+"LIGHT 105" -> "TEMPERATURE 148"
+"LIGHT 105" -> "TEMPERATURE 159"
+"LIGHT 106" -> "TEMPERATURE 153"
+"LIGHT 107" -> "TEMPERATURE 141"
+"LIGHT 107" -> "TEMPERATURE 160"
+"LIGHT 108" -> "TEMPERATURE 143"
+"LIGHT 109" -> "TEMPERATURE 151"
+"LIGHT 109" -> "TEMPERATURE 157"
+"LIGHT 110" -> "TEMPERATURE 148"
+"LIGHT 110" -> "TEMPERATURE 164"
+"LIGHT 110" -> "TEMPERATURE 168"
+"LIGHT 111" -> "TEMPERATURE 146"
+"LIGHT 111" -> "TEMPERATURE 147"
+"LIGHT 111" -> "TEMPERATURE 150"
+"LIGHT 111" -> "TEMPERATURE 157"
+"LIGHT 111" -> "TEMPERATURE 162"
+"LIGHT 112" -> "TEMPERATURE 167"
+"LIGHT 113" -> "TEMPERATURE 165"
+"LIGHT 113" -> "TEMPERATURE 166"
+"LIGHT 113" -> "TEMPERATURE 172"
+"LIGHT 114" -> "TEMPERATURE 145"
+"LIGHT 115" -> "TEMPERATURE 140"
+"LIGHT 115" -> "TEMPERATURE 160"
+"LIGHT 116" -> "TEMPERATURE 173"
+"LIGHT 117" -> "TEMPERATURE 151"
+"LIGHT 118" -> "TEMPERATURE 145"
+"LIGHT 119" -> "TEMPERATURE 140"
+"LIGHT 119" -> "TEMPERATURE 158"
+"LIGHT 119" -> "TEMPERATURE 174"
+"LIGHT 120" -> "TEMPERATURE 164"
+"LIGHT 121" -> "TEMPERATURE 143"
+"LIGHT 121" -> "TEMPERATURE 152"
+"LIGHT 121" -> "TEMPERATURE 153"
+"LIGHT 121" -> "TEMPERATURE 161"
+"LIGHT 121" -> "TEMPERATURE 171"
+"LIGHT 122" -> "TEMPERATURE 167"
+"LIGHT 123" -> "TEMPERATURE 151"
+"LIGHT 124" -> "TEMPERATURE 142"
+"LIGHT 124" -> "TEMPERATURE 144"
+"LIGHT 124" -> "TEMPERATURE 164"
+"LIGHT 125" -> "TEMPERATURE 150"
+"LIGHT 125" -> "TEMPERATURE 154"
+"LIGHT 126" -> "TEMPERATURE 165"
+"LIGHT 127" -> "TEMPERATURE 156"
+"LIGHT 127" -> "TEMPERATURE 170"
+"LIGHT 128" -> "TEMPERATURE 173"
+"LIGHT 129" -> "TEMPERATURE 165"
+"LIGHT 130" -> "TEMPERATURE 156"
+"LIGHT 130" -> "TEMPERATURE 165"
+"LIGHT 131" -> "TEMPERATURE 170"
+"LIGHT 132" -> "TEMPERATURE 141"
+"LIGHT 132" -> "TEMPERATURE 143"
+"LIGHT 133" -> "TEMPERATURE 151"
+"LIGHT 134" -> "TEMPERATURE 145"
+"LIGHT 134" -> "TEMPERATURE 173"
+"LIGHT 135" -> "TEMPERATURE 154"
+"LIGHT 135" -> "TEMPERATURE 159"
+"LIGHT 136" -> "TEMPERATURE 143"
+"LIGHT 137" -> "TEMPERATURE 167"
+"LIGHT 137" -> "TEMPERATURE 169"
+"LIGHT 137" -> "TEMPERATURE 170"
+"TEMPERATURE 138" -> "HUMIDITY 177"
+"TEMPERATURE 138" -> "HUMIDITY 187"
+"TEMPERATURE 139" -> "HUMIDITY 178"
+"TEMPERATURE 140" -> "HUMIDITY 179"
+"TEMPERATURE 140" -> "HUMIDITY 192"
+"TEMPERATURE 141" -> "HUMIDITY 181"
+"TEMPERATURE 142" -> "HUMIDITY 177"
+"TEMPERATURE 143" -> "HUMIDITY 181"
+"TEMPERATURE 143" -> "HUMIDITY 192"
+"TEMPERATURE 144" -> "HUMIDITY 185"
+"TEMPERATURE 145" -> "HUMIDITY 183"
+"TEMPERATURE 145" -> "HUMIDITY 186"
+"TEMPERATURE 146" -> "HUMIDITY 181"
+"TEMPERATURE 147" -> "HUMIDITY 192"
+"TEMPERATURE 148" -> "HUMIDITY 192"
+"TEMPERATURE 149" -> "HUMIDITY 177"
+"TEMPERATURE 149" -> "HUMIDITY 179"
+"TEMPERATURE 149" -> "HUMIDITY 182"
+"TEMPERATURE 150" -> "HUMIDITY 181"
+"TEMPERATURE 151" -> "HUMIDITY 178"
+"TEMPERATURE 151" -> "HUMIDITY 185"
+"TEMPERATURE 152" -> "HUMIDITY 175"
+"TEMPERATURE 153" -> "HUMIDITY 181"
+"TEMPERATURE 154" -> "HUMIDITY 185"
+"TEMPERATURE 155" -> "HUMIDITY 184"
+"TEMPERATURE 156" -> "HUMIDITY 175"
+"TEMPERATURE 156" -> "HUMIDITY 183"
+"TEMPERATURE 157" -> "HUMIDITY 177"
+"TEMPERATURE 158" -> "HUMIDITY 181"
+"TEMPERATURE 159" -> "HUMIDITY 178"
+"TEMPERATURE 159" -> "HUMIDITY 181"
+"TEMPERATURE 160" -> "HUMIDITY 181"
+"TEMPERATURE 161" -> "HUMIDITY 175"
+"TEMPERATURE 162" -> "HUMIDITY 175"
+"TEMPERATURE 162" -> "HUMIDITY 176"
+"TEMPERATURE 162" -> "HUMIDITY 187"
+"TEMPERATURE 163" -> "HUMIDITY 184"
+"TEMPERATURE 164" -> "HUMIDITY 181"
+"TEMPERATURE 165" -> "HUMIDITY 190"
+"TEMPERATURE 166" -> "HUMIDITY 180"
+"TEMPERATURE 166" -> "HUMIDITY 188"
+"TEMPERATURE 166" -> "HUMIDITY 190"
+"TEMPERATURE 167" -> "HUMIDITY 180"
+"TEMPERATURE 167" -> "HUMIDITY 184"
+"TEMPERATURE 168" -> "HUMIDITY 192"
+"TEMPERATURE 169" -> "HUMIDITY 183"
+"TEMPERATURE 170" -> "HUMIDITY 186"
+"TEMPERATURE 170" -> "HUMIDITY 190"
+"TEMPERATURE 171" -> "HUMIDITY 185"
+"TEMPERATURE 172" -> "HUMIDITY 190"
+"TEMPERATURE 173" -> "HUMIDITY 184"
+"TEMPERATURE 173" -> "HUMIDITY 189"
+"TEMPERATURE 173" -> "HUMIDITY 191"
+"TEMPERATURE 174" -> "HUMIDITY 185"
+"HUMIDITY 175" -> "LOCATION 202"
+"HUMIDITY 175" -> "LOCATION 213"
+"HUMIDITY 175" -> "LOCATION 234"
+"HUMIDITY 176" -> "LOCATION 232"
+"HUMIDITY 177" -> "LOCATION 196"
+"HUMIDITY 177" -> "LOCATION 225"
+"HUMIDITY 177" -> "LOCATION 229"
+"HUMIDITY 178" -> "LOCATION 218"
+"HUMIDITY 178" -> "LOCATION 221"
+"HUMIDITY 178" -> "LOCATION 226"
+"HUMIDITY 178" -> "LOCATION 228"
+"HUMIDITY 179" -> "LOCATION 209"
+"HUMIDITY 179" -> "LOCATION 234"
+"HUMIDITY 180" -> "LOCATION 196"
+"HUMIDITY 180" -> "LOCATION 230"
+"HUMIDITY 181" -> "LOCATION 193"
+"HUMIDITY 181" -> "LOCATION 199"
+"HUMIDITY 181" -> "LOCATION 200"
+"HUMIDITY 181" -> "LOCATION 206"
+"HUMIDITY 181" -> "LOCATION 214"
+"HUMIDITY 181" -> "LOCATION 228"
+"HUMIDITY 181" -> "LOCATION 231"
+"HUMIDITY 182" -> "LOCATION 197"
+"HUMIDITY 183" -> "LOCATION 202"
+"HUMIDITY 183" -> "LOCATION 207"
+"HUMIDITY 183" -> "LOCATION 217"
+"HUMIDITY 183" -> "LOCATION 232"
+"HUMIDITY 184" -> "LOCATION 194"
+"HUMIDITY 184" -> "LOCATION 197"
+"HUMIDITY 184" -> "LOCATION 232"
+"HUMIDITY 185" -> "LOCATION 210"
+"HUMIDITY 185" -> "LOCATION 212"
+"HUMIDITY 185" -> "LOCATION 215"
+"HUMIDITY 185" -> "LOCATION 216"
+"HUMIDITY 185" -> "LOCATION 222"
+"HUMIDITY 185" -> "LOCATION 223"
+"HUMIDITY 185" -> "LOCATION 226"
+"HUMIDITY 185" -> "LOCATION 227"
+"HUMIDITY 186" -> "LOCATION 232"
+"HUMIDITY 187" -> "LOCATION 209"
+"HUMIDITY 187" -> "LOCATION 211"
+"HUMIDITY 188" -> "LOCATION 211"
+"HUMIDITY 189" -> "LOCATION 234"
+"HUMIDITY 190" -> "LOCATION 197"
+"HUMIDITY 190" -> "LOCATION 198"
+"HUMIDITY 190" -> "LOCATION 201"
+"HUMIDITY 190" -> "LOCATION 205"
+"HUMIDITY 190" -> "LOCATION 208"
+"HUMIDITY 190" -> "LOCATION 219"
+"HUMIDITY 190" -> "LOCATION 224"
+"HUMIDITY 190" -> "LOCATION 233"
+"HUMIDITY 191" -> "LOCATION 203"
+"HUMIDITY 191" -> "LOCATION 230"
+"HUMIDITY 192" -> "LOCATION 195"
+"HUMIDITY 192" -> "LOCATION 204"
+"HUMIDITY 192" -> "LOCATION 223"
 }

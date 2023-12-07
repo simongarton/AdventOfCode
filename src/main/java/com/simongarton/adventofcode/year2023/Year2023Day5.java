@@ -30,6 +30,8 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     private long maxWidth;
     private final Random random = new Random();
 
+    private final Map<String, Integer> keysForRanges = new HashMap<>();
+
     private final String[] mapNames = {
             "seed-to-soil",
             "soil-to-fertilizer",
@@ -55,7 +57,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         this.loadSeeds(input);
         this.loadData(input);
 
-        this.chopUpRanges();
+//        this.chopUpRanges();
 
         this.drawRanges();
         this.drawGraph(false);
@@ -122,6 +124,9 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     }
 
     private String rangeName(final SeedRange seedRange) {
+        if (seedRange.getStart() == seedRange.getEnd()) {
+            return "\"" + seedRange.getStart() + "\"";
+        }
         return "\"" + seedRange.getStart() + "->" + seedRange.getEnd() + "\"";
     }
 
@@ -147,8 +152,24 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     }
 
     private String rangeName(final AlmanacRange range, final AlmanacMap map) {
-        final String line = "\"" + map.getName() + ":" + this.getRangeDetails(range) + "\"";
-        return line;
+        return "\"" + this.shortMapName(map) + " " + this.keyForRange(range) + "\"";
+//        return "\"" + this.shortMapName(map) + "\"";
+//        final String line = "\"" + this.shortMapName(map) + "\n" + this.getRangeDetails(range) + "\"";
+//        return line;
+    }
+
+    private String keyForRange(final AlmanacRange range) {
+        final String rangeDetails = this.getRangeDetails(range);
+        if (this.keysForRanges.containsKey(rangeDetails)) {
+            return String.valueOf(this.keysForRanges.get(rangeDetails));
+        }
+        this.keysForRanges.put(rangeDetails, this.keysForRanges.size());
+        return String.valueOf(this.keysForRanges.get(rangeDetails));
+    }
+
+    private String shortMapName(final AlmanacMap map) {
+        final String[] parts = map.getName().split("-");
+        return parts[2].toUpperCase();
     }
 
     private String getRangeDetails(final AlmanacRange range) {
