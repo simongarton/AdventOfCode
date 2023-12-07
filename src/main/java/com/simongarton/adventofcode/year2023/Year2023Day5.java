@@ -30,6 +30,15 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     private long maxWidth;
     private final Random random = new Random();
 
+    private final String[] mapNames = {
+            "seed-to-soil",
+            "soil-to-fertilizer",
+            "fertilizer-to-water",
+            "water-to-light",
+            "light-to-temperature",
+            "temperature-to-humidity",
+            "humidity-to-location"};
+
     @Override
     public String title() {
         return "Day 5: If You Give A Seed A Fertilizer";
@@ -47,6 +56,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         this.loadData(input);
 
         this.drawRanges();
+        this.drawGraph(false);
 
         long lowestLocation = Long.MAX_VALUE;
         for (final Long seed : this.seeds) {
@@ -57,6 +67,150 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         }
 
         return String.valueOf(lowestLocation);
+    }
+
+    private String dotStyle(final AlmanacRange range, final AlmanacMap map) {
+        String line = this.rangeName(range, map);
+        line = line + " [style=filled, fillcolor=" + this.fillStyle(map.name) + "]";
+        return line;
+    }
+
+    private String dotStyle(final SeedRange seedRange) {
+        String line = this.rangeName(seedRange);
+        line = line + " [style=filled, fillcolor=black fontcolor=white]";
+        return line;
+    }
+
+    private String rangeName(final SeedRange seedRange) {
+        return "\"" + seedRange.getStart() + "->" + seedRange.getEnd() + "\"";
+    }
+
+    private String fillStyle(final String name) {
+        switch (name) {
+            case "seed-to-soil":
+                return "burlywood";
+            case "soil-to-fertilizer":
+                return "darkgoldenrod4";
+            case "fertilizer-to-water":
+                return "cornflowerblue";
+            case "water-to-light":
+                return "cadetblue1";
+            case "light-to-temperature":
+                return "firebrick1";
+            case "temperature-to-humidity":
+                return "darkgray";
+            case "humidity-to-location":
+                return "white";
+            default:
+                throw new RuntimeException(name);
+        }
+    }
+
+    private String rangeName(final AlmanacRange range, final AlmanacMap map) {
+        final String line = "\"" + map.getName() + ":" + this.getRangeDetails(range) + "\"";
+        return line;
+    }
+
+    private String getRangeDetails(final AlmanacRange range) {
+        return range.getSourceStart() + "->" +
+                range.getSourceEnd() + " " +
+                range.getDestinationStart() + "->" +
+                range.getDestinationEnd();
+    }
+
+    private void drawGraph(final boolean useSeedRanges) {
+
+        final List<String> lines = new ArrayList<>();
+        lines.add("digraph {");
+        lines.add("rankdir=\"LR\"");
+
+        final List<SeedRange> seedRanges;
+        if (useSeedRanges) {
+            seedRanges = this.seedRanges;
+        } else {
+            seedRanges = new ArrayList<>();
+            for (final long seed : this.seeds) {
+                seedRanges.add(SeedRange.builder()
+                        .start(seed)
+                        .end(seed)
+                        .build());
+            }
+        }
+        for (final SeedRange seedRange : seedRanges) {
+            lines.add(this.dotStyle(seedRange));
+        }
+
+        for (final AlmanacMap map : this.maps) {
+            for (final AlmanacRange range : map.ranges) {
+                lines.add(this.dotStyle(range, map));
+            }
+        }
+
+        final AlmanacMap firstMap = this.getMap("seed-to-soil");
+        for (final SeedRange seedRange : seedRanges) {
+            final List<AlmanacRange> nextRanges = this.findRangesMatchingRange(seedRange, firstMap);
+            for (final AlmanacRange nextRange : nextRanges) {
+                lines.add(this.rangeName(seedRange) + " -> " + this.rangeName(nextRange, firstMap));
+            }
+        }
+
+        int mapIndex = 0;
+        for (final AlmanacMap map : this.maps) {
+            for (final AlmanacRange range : map.ranges) {
+                if (mapIndex == 6) {
+                    break;
+                }
+                final AlmanacMap nextMap = this.maps.get(mapIndex + 1);
+                final List<AlmanacRange> nextRanges = this.findRangesMatchingRange(range, nextMap);
+                for (final AlmanacRange nextRange : nextRanges) {
+                    lines.add(this.rangeName(range, map) + " -> " + this.rangeName(nextRange, nextMap));
+                }
+            }
+            mapIndex = mapIndex + 1;
+        }
+
+        lines.add("}");
+
+        final Path filePath = Path.of("maps.dot");
+        try {
+            Files.deleteIfExists(filePath);
+            Files.createFile(filePath);
+            for (final String str : lines) {
+                Files.writeString(filePath, str + System.lineSeparator(), StandardOpenOption.APPEND);
+            }
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<AlmanacRange> findRangesMatchingRange(final SeedRange range, final AlmanacMap nextMap) {
+        final List<AlmanacRange> nextRanges = new ArrayList<>();
+        for (final AlmanacRange nextRange : nextMap.getRanges()) {
+            boolean include = false;
+            if (nextRange.getSourceStart() <= range.getEnd() &&
+                    nextRange.getSourceEnd() >= range.getStart()) {
+                include = true;
+            }
+            if (include) {
+                nextRanges.add(nextRange);
+            }
+        }
+        return nextRanges;
+    }
+
+    private List<AlmanacRange> findRangesMatchingRange(final AlmanacRange range, final AlmanacMap nextMap) {
+        final List<AlmanacRange> nextRanges = new ArrayList<>();
+        for (final AlmanacRange nextRange : nextMap.getRanges()) {
+            boolean include = false;
+            if (nextRange.getSourceStart() <= range.getDestinationEnd() &&
+                    nextRange.getSourceEnd() >= range.getDestinationStart()) {
+                include = true;
+            }
+            if (include) {
+                nextRanges.add(nextRange);
+            }
+        }
+        return nextRanges;
     }
 
     private void drawRanges() {
@@ -143,8 +297,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     }
 
     private long reverseMap(final Long lookup, final String mapName) {
-        final AlmanacMap almanacMap = this.maps.stream().filter(m -> m.getName().equalsIgnoreCase(mapName))
-                .findFirst().orElseThrow(() -> new RuntimeException(mapName));
+        final AlmanacMap almanacMap = this.getMap(mapName);
         for (final AlmanacRange almanacRange : almanacMap.getRanges()) {
             if (lookup < almanacRange.getDestinationStart() || lookup > almanacRange.getDestinationEnd()) {
                 continue;
@@ -155,9 +308,13 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         return lookup;
     }
 
-    private long map(final Long lookup, final String mapName) {
-        final AlmanacMap almanacMap = this.maps.stream().filter(m -> m.getName().equalsIgnoreCase(mapName))
+    private AlmanacMap getMap(final String mapName) {
+        return this.maps.stream().filter(m -> m.getName().equalsIgnoreCase(mapName))
                 .findFirst().orElseThrow(() -> new RuntimeException(mapName));
+    }
+
+    private long map(final Long lookup, final String mapName) {
+        final AlmanacMap almanacMap = this.getMap(mapName);
         for (final AlmanacRange almanacRange : almanacMap.getRanges()) {
             if (lookup < almanacRange.getSourceStart() || lookup > almanacRange.getSourceEnd()) {
                 continue;
@@ -258,6 +415,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
 
         this.loadSeedRanges(input);
         this.loadData(input);
+        this.drawGraph(true);
 
         if (DEBUG) {
             this.validateSeedRanges();
@@ -353,8 +511,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
 
     private List<AlmanacRange> sortedLocationRanges() {
         final String mapName = "humidity-to-location";
-        final AlmanacMap almanacMap = this.maps.stream().filter(m -> m.getName().equalsIgnoreCase(mapName))
-                .findFirst().orElseThrow(() -> new RuntimeException(mapName));
+        final AlmanacMap almanacMap = this.getMap(mapName);
         final List<AlmanacRange> ranges = new ArrayList<>(almanacMap.getRanges());
         ranges.sort(Comparator.comparing(AlmanacRange::getDestinationStart));
         return ranges;

@@ -1,0 +1,651 @@
+digraph {
+rankdir="LR"
+"28965817->331135825" [style=filled, fillcolor=black fontcolor=white]
+"1752849261->1801139518" [style=filled, fillcolor=black fontcolor=white]
+"804904201->1048396243" [style=filled, fillcolor=black fontcolor=white]
+"2150339939->2535689768" [style=filled, fillcolor=black fontcolor=white]
+"1267802202->1618277060" [style=filled, fillcolor=black fontcolor=white]
+"2566296746->2583862461" [style=filled, fillcolor=black fontcolor=white]
+"3543571814->3834973917" [style=filled, fillcolor=black fontcolor=white]
+"447111316->726307803" [style=filled, fillcolor=black fontcolor=white]
+"3227221259->3275174217" [style=filled, fillcolor=black fontcolor=white]
+"1828835733->1838443568" [style=filled, fillcolor=black fontcolor=white]
+"seed-to-soil:1920754815->2535600414 3680121696->4294967295" [style=filled, fillcolor=burlywood]
+"seed-to-soil:3846369604->4294967295 1920754815->2369352506" [style=filled, fillcolor=burlywood]
+"seed-to-soil:570761634->1075886218 193356576->698481160" [style=filled, fillcolor=burlywood]
+"seed-to-soil:2535600415->2567132379 2369352507->2400884471" [style=filled, fillcolor=burlywood]
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" [style=filled, fillcolor=burlywood]
+"seed-to-soil:459278395->570761633 0->111483238" [style=filled, fillcolor=burlywood]
+"seed-to-soil:97868205->459278394 698481161->1059891350" [style=filled, fillcolor=burlywood]
+"seed-to-soil:0->15994867 1059891351->1075886218" [style=filled, fillcolor=burlywood]
+"seed-to-soil:15994868->97868204 111483239->193356575" [style=filled, fillcolor=burlywood]
+"soil-to-fertilizer:1273301814->1346167078 1633669237->1706534501" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:2671190790->2770401574 2398515176->2497725960" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3018946373->3019545164 2397916384->2398515175" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3061716397->3081733789 4034325916->4054343308" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3793795301->3808044801 3298612516->3312862016" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3051046904->3053880032 4030007411->4032840539" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:224872691->239492824 1906984482->1921604615" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:1590633724->1739678265 864506893->1013551434" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:442871336->479598353 1029530319->1066257336" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:770934113->839480290 1921604616->1990150793" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3114405501->3143227692 3560536321->3589358512" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:1263534129->1273301813 1019762634->1029530318" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3579014714->3639354605 3852235341->3912575232" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:1577946038->1590633723 2385228698->2397916383" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:239492825->390399052 2234322470->2385228697" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:170310676->224872690 0->54562014" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3808044802->3897711206 3208946111->3298612515" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:839480291->1263534128 1209615399->1633669236" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:4041982568->4043467943 4032840540->4034325915" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:2174737461->2467780270 2497725961->2790768770" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:1346167079->1577946037 2002543511->2234322469" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3475611771->3579014713 3312862017->3416264959" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:1739678266->2094427359 318739997->673489090" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3012735174->3018946372 1013551435->1019762633" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:4160859076->4176589333 4014277153->4030007410" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3143227693->3373909850 3589358513->3820040670" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:2467780271->2480172987 1990150794->2002543510" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3081733790->3114405500 3051046904->3083718614" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3761600631->3793795300 3820040671->3852235340" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:0->170310675 148429321->318739996" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:2480172988->2671190789 673489091->864506892" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:627576051->770934112 1066257337->1209615398" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:2770401575->3012735173 2790768771->3033102369" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:4043467944->4160859075 3091554979->3208946110" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3897711207->4041982567 3416264960->3560536320" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3373909851->3475611770 3912575233->4014277152" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3639354606->3743652225 4072291714->4176589333" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3053880033->3061716396 3083718615->3091554978" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3019545165->3033102369 54562015->68119219" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:479598354->627576050 1759006785->1906984481" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:2094427360->2174737460 68119220->148429320" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:390399053->442871335 1706534502->1759006784" [style=filled, fillcolor=darkgoldenrod4]
+"soil-to-fertilizer:3743652226->3761600630 4054343309->4072291713" [style=filled, fillcolor=darkgoldenrod4]
+"fertilizer-to-water:1095885172->1225682836 0->129797664" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:1044284418->1062156780 2661548513->2679420875" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:3678907615->3893737872 3282164642->3496994899" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:2218635146->2544524865 1440687421->1766577140" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:4208791298->4234703845 3496994900->3522907447" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:4136945159->4142506841 3253828209->3259389891" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:864689597->974093260 1797056017->1906459680" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:4186016548->4208791297 3259389892->3282164641" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:1225682837->1308713841 2578517508->2661548512" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:3618912124->3678907614 3193832718->3253828208" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:3214450646->3425645239 3695649169->3906843762" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:974093261->1044284417 820325042->890516198" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:1074888739->1095885171 1284591017->1305587449" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:3893737873->3979406007 2929761569->3015429703" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:2605461705->2679420875 1305587450->1379546620" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:1062156781->1074888738 2168339930->2181071887" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:2135490203->2188156269 2465234843->2517900909" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:4108091872->4108974731 3522907448->3523790307" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:4255675252->4294967295 3523790308->3563082351" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:1308713842->1369330439 2517900910->2578517507" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:3176039879->3214450645 3563082352->3601493118" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:3979406008->4108091871 3015429704->3144115567" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:2131043562->2135490202 1913427402->1917874042" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:1419841841->1610032335 2235159285->2425349779" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:4108974732->4130737714 3673886186->3695649168" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:1610032336->2003119061 891504291->1284591016" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:3425645240->3618912123 3927815169->4121082052" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:3002154636->3176039878 4121082053->4294967295" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:2004107154->2087582502 2084864581->2168339929" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:557612753->627137735 1917874043->1987399025" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:2003119062->2004107153 890516199->891504290" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:2551492587->2605461704 766355924->820325041" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:0->61140799 1379546621->1440687420" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:4130737715->4136945158 3187625274->3193832717" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:627137736->864689596 528804063->766355923" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:230411125->327876679 1987399026->2084864580" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:2544524866->2551492586 1906459681->1913427401" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:1369330440->1419841840 2184647884->2235159284" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:2091158499->2131043561 2425349780->2465234842" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:2087582503->2091158498 2181071888->2184647883" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:4142506842->4186016547 3144115568->3187625273" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:2188156270->2218635145 1766577141->1797056016" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:61140800->230411124 359533738->528804062" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:327876680->557612752 129797665->359533737" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:4234703846->4255675251 3906843763->3927815168" [style=filled, fillcolor=cornflowerblue]
+"fertilizer-to-water:2929761569->3002154635 3601493119->3673886185" [style=filled, fillcolor=cornflowerblue]
+"water-to-light:1595026882->1721361021 2375927917->2502262056" [style=filled, fillcolor=cadetblue1]
+"water-to-light:818620477->862398345 1307603095->1351380963" [style=filled, fillcolor=cadetblue1]
+"water-to-light:1855896418->1968120823 2050676589->2162900994" [style=filled, fillcolor=cadetblue1]
+"water-to-light:2909504698->3029463638 3618302244->3738261184" [style=filled, fillcolor=cadetblue1]
+"water-to-light:3088215627->3094426709 3078570200->3084781282" [style=filled, fillcolor=cadetblue1]
+"water-to-light:3094426710->3235693046 3084781283->3226047619" [style=filled, fillcolor=cadetblue1]
+"water-to-light:53020621->202078860 524666822->673725061" [style=filled, fillcolor=cadetblue1]
+"water-to-light:862398346->1010069707 673725062->821396423" [style=filled, fillcolor=cadetblue1]
+"water-to-light:2577001713->2588608947 2364320682->2375927916" [style=filled, fillcolor=cadetblue1]
+"water-to-light:1584221500->1595026881 1941578413->1952383794" [style=filled, fillcolor=cadetblue1]
+"water-to-light:2536766467->2577001712 2162900995->2203136240" [style=filled, fillcolor=cadetblue1]
+"water-to-light:237365123->241845714 162015400->166495991" [style=filled, fillcolor=cadetblue1]
+"water-to-light:241845715->383181882 821396424->962732591" [style=filled, fillcolor=cadetblue1]
+"water-to-light:1138498800->1351380963 166495992->379378155" [style=filled, fillcolor=cadetblue1]
+"water-to-light:4220367555->4237901364 4277433486->4294967295" [style=filled, fillcolor=cadetblue1]
+"water-to-light:2229635217->2536766466 3226047620->3533178869" [style=filled, fillcolor=cadetblue1]
+"water-to-light:1968120824->2002726893 2909428734->2944034803" [style=filled, fillcolor=cadetblue1]
+"water-to-light:3954749082->4010753678 1885573816->1941578412" [style=filled, fillcolor=cadetblue1]
+"water-to-light:2868267590->2909504697 2711875933->2753113040" [style=filled, fillcolor=cadetblue1]
+"water-to-light:726306378->818620476 0->92314098" [style=filled, fillcolor=cadetblue1]
+"water-to-light:1721361022->1855896417 2944034804->3078570199" [style=filled, fillcolor=cadetblue1]
+"water-to-light:3392008740->3693361055 1584221500->1885573815" [style=filled, fillcolor=cadetblue1]
+"water-to-light:34415039->53020620 962732592->981338173" [style=filled, fillcolor=cadetblue1]
+"water-to-light:2101019688->2229635216 2235705153->2364320681" [style=filled, fillcolor=cadetblue1]
+"water-to-light:4237901365->4262398383 4252936467->4277433485" [style=filled, fillcolor=cadetblue1]
+"water-to-light:202078861->237365122 92314099->127600360" [style=filled, fillcolor=cadetblue1]
+"water-to-light:400041457->726306377 981338174->1307603094" [style=filled, fillcolor=cadetblue1]
+"water-to-light:1010069708->1138498799 379378156->507807247" [style=filled, fillcolor=cadetblue1]
+"water-to-light:3693361056->3719732441 3591930858->3618302243" [style=filled, fillcolor=cadetblue1]
+"water-to-light:3719732442->3954749081 3785017329->4020033968" [style=filled, fillcolor=cadetblue1]
+"water-to-light:4010753679->4220367554 2502262057->2711875932" [style=filled, fillcolor=cadetblue1]
+"water-to-light:3029463639->3088215626 3533178870->3591930857" [style=filled, fillcolor=cadetblue1]
+"water-to-light:2821511446->2868267589 3738261185->3785017328" [style=filled, fillcolor=cadetblue1]
+"water-to-light:2806534555->2821511445 4020033969->4035010859" [style=filled, fillcolor=cadetblue1]
+"water-to-light:2002726894->2101019687 1952383795->2050676588" [style=filled, fillcolor=cadetblue1]
+"water-to-light:0->34415038 127600361->162015399" [style=filled, fillcolor=cadetblue1]
+"water-to-light:3235693047->3392008739 2753113041->2909428733" [style=filled, fillcolor=cadetblue1]
+"water-to-light:383181883->400041456 507807248->524666821" [style=filled, fillcolor=cadetblue1]
+"water-to-light:4262398384->4294967295 2203136241->2235705152" [style=filled, fillcolor=cadetblue1]
+"water-to-light:2588608948->2806534554 4035010860->4252936466" [style=filled, fillcolor=cadetblue1]
+"light-to-temperature:1335050925->1435406714 2137189745->2237545534" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:2440321747->2441309575 639139367->640127195" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:1778059435->1931889706 1663612748->1817443019" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:1950103191->2032639790 1122754252->1205290851" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:1199531530->1335050924 1929621334->2065140728" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:2032639791->2239777477 1286703174->1493840860" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:981575774->1199531529 245313533->463269288" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:2824691125->3118468902 2597564380->2891342157" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:331442633->356669367 895004176->920230910" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:236388681->237004853 1493840861->1494457033" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:764560381->872198108 1494457034->1602094761" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:1435406715->1547585028 1817443020->1929621333" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:356669368->390222010 1205290852->1238843494" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:0->164339664 474799702->639139366" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:2260378974->2360634152 2341054397->2441309575" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:2360634153->2440321746 1043066658->1122754251" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:390222011->509683400 125852143->245313532" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:3130691909->3144306126 3924383937->3937998154" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:3747288823->3823938491 2467721984->2544371652" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:164339665->236388680 2065140729->2137189744" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:1673437172->1778059434 920230911->1024853173" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:509683401->764560380 640127196->895004175" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:1931889707->1950103190 1024853174->1043066657" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:2251307891->2260378973 2331983314->2341054396" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:237004854->331442632 2237545535->2331983313" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:3118468903->3130691908 3912160931->3924383936" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:933716095->981575773 1238843495->1286703173" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:3517222025->3747288822 3326002417->3556069214" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:3144306127->3385669350 3556069215->3797432438" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:4180238804->4294967295 3797432439->3912160930" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:872198109->933716094 1602094762->1663612747" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:4127046077->4180238803 2544371653->2597564379" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:3823938492->4127046076 2891342158->3194449742" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:2239777478->2251307890 463269289->474799701" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:3385669351->3517222024 3194449743->3326002416" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:2467721984->2824691124 3937998155->4294967295" [style=filled, fillcolor=firebrick1]
+"light-to-temperature:1547585029->1673437171 0->125852142" [style=filled, fillcolor=firebrick1]
+"temperature-to-humidity:2313887435->2500993021 2687600833->2874706419" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:2291603041->2313887434 3281196981->3303481374" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:1899269239->2213436963 1771250828->2085418552" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:478456148->785415531 784031720->1090991103" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:1771250828->1829598899 2605226464->2663574535" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:3793564740->3905472342 2085418553->2197326155" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:785415532->1360551726 1090991104->1666127298" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:1829598900->1899269238 3437652344->3507322682" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:2500993022->2890032963 2874706420->3263746361" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:3905472343->4039643311 3303481375->3437652343" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:0->478456147 305575572->784031719" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:2890032964->2907483582 3263746362->3281196980" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:2213436964->2291603040 2527060387->2605226463" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:3695128196->3793564739 2428623843->2527060386" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:4270940999->4294967295 2663574536->2687600832" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:2907483583->3695128195 3507322683->4294967295" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:4039643312->4270940998 2197326156->2428623842" [style=filled, fillcolor=darkgray]
+"temperature-to-humidity:1360551727->1666127298 0->305575571" [style=filled, fillcolor=darkgray]
+"humidity-to-location:1156349110->1207463958 1919184105->1970298953" [style=filled, fillcolor=white]
+"humidity-to-location:3411510751->3437120248 4031284281->4056893778" [style=filled, fillcolor=white]
+"humidity-to-location:171183359->250187452 0->79004093" [style=filled, fillcolor=white]
+"humidity-to-location:2072782209->2194801986 1253227229->1375247006" [style=filled, fillcolor=white]
+"humidity-to-location:3437120249->3573409941 4056893779->4193183471" [style=filled, fillcolor=white]
+"humidity-to-location:4156827458->4258606442 3402931364->3504710348" [style=filled, fillcolor=white]
+"humidity-to-location:1207463959->1342265549 84557792->219359382" [style=filled, fillcolor=white]
+"humidity-to-location:1371746366->1638241760 635909965->902405359" [style=filled, fillcolor=white]
+"humidity-to-location:4127764171->4129583834 4029464617->4031284280" [style=filled, fillcolor=white]
+"humidity-to-location:2857352625->2959136448 4193183472->4294967295" [style=filled, fillcolor=white]
+"humidity-to-location:2200355685->2241801318 1375247007->1416692640" [style=filled, fillcolor=white]
+"humidity-to-location:0->171183358 1996492203->2167675561" [style=filled, fillcolor=white]
+"humidity-to-location:3699895117->4127764170 3601595563->4029464616" [style=filled, fillcolor=white]
+"humidity-to-location:1133540977->1156349109 2218993186->2241801318" [style=filled, fillcolor=white]
+"humidity-to-location:2959136449->3099521764 3217192942->3357578257" [style=filled, fillcolor=white]
+"humidity-to-location:4258606443->4267842933 2987922009->2997158499" [style=filled, fillcolor=white]
+"humidity-to-location:2543337773->2629702984 2628749093->2715114304" [style=filled, fillcolor=white]
+"humidity-to-location:369831582->421149205 2167675562->2218993185" [style=filled, fillcolor=white]
+"humidity-to-location:2446452559->2543337772 3504710349->3601595562" [style=filled, fillcolor=white]
+"humidity-to-location:421149206->530018597 902405360->1011274751" [style=filled, fillcolor=white]
+"humidity-to-location:2811999519->2857352624 3357578258->3402931363" [style=filled, fillcolor=white]
+"humidity-to-location:1638241761->1695010546 1196458443->1253227228" [style=filled, fillcolor=white]
+"humidity-to-location:693035436->710819526 1178674352->1196458442" [style=filled, fillcolor=white]
+"humidity-to-location:530018598->556211846 1970298954->1996492202" [style=filled, fillcolor=white]
+"humidity-to-location:3099521765->3191476308 2868723842->2960678385" [style=filled, fillcolor=white]
+"humidity-to-location:895259169->913871241 1522874936->1541487008" [style=filled, fillcolor=white]
+"humidity-to-location:4267842934->4294967295 2841599480->2868723841" [style=filled, fillcolor=white]
+"humidity-to-location:1695010547->1733630895 1880563756->1919184104" [style=filled, fillcolor=white]
+"humidity-to-location:913871242->1051790025 1011274752->1149193535" [style=filled, fillcolor=white]
+"humidity-to-location:556211847->693035435 219359383->356182971" [style=filled, fillcolor=white]
+"humidity-to-location:250187453->345400237 1785350971->1880563755" [style=filled, fillcolor=white]
+"humidity-to-location:4129583835->4156827457 2960678386->2987922008" [style=filled, fillcolor=white]
+"humidity-to-location:1977494858->2072782208 540622614->635909964" [style=filled, fillcolor=white]
+"humidity-to-location:710819527->895259168 356182972->540622613" [style=filled, fillcolor=white]
+"humidity-to-location:345400238->369831581 1498443592->1522874935" [style=filled, fillcolor=white]
+"humidity-to-location:1051790026->1133540976 1416692641->1498443591" [style=filled, fillcolor=white]
+"humidity-to-location:1733630896->1977494857 1541487009->1785350970" [style=filled, fillcolor=white]
+"humidity-to-location:2194801987->2200355684 79004094->84557791" [style=filled, fillcolor=white]
+"humidity-to-location:1342265550->1371746365 1149193536->1178674351" [style=filled, fillcolor=white]
+"humidity-to-location:3191476309->3411510750 2997158500->3217192941" [style=filled, fillcolor=white]
+"humidity-to-location:3573409942->3699895116 2715114305->2841599479" [style=filled, fillcolor=white]
+"humidity-to-location:2629702985->2811999518 2446452559->2628749092" [style=filled, fillcolor=white]
+"28965817->331135825" -> "seed-to-soil:97868205->459278394 698481161->1059891350"
+"28965817->331135825" -> "seed-to-soil:15994868->97868204 111483239->193356575"
+"804904201->1048396243" -> "seed-to-soil:570761634->1075886218 193356576->698481160"
+"2150339939->2535689768" -> "seed-to-soil:1920754815->2535600414 3680121696->4294967295"
+"2150339939->2535689768" -> "seed-to-soil:2535600415->2567132379 2369352507->2400884471"
+"2566296746->2583862461" -> "seed-to-soil:2535600415->2567132379 2369352507->2400884471"
+"2566296746->2583862461" -> "seed-to-soil:2567132380->3846369603 2400884472->3680121695"
+"3543571814->3834973917" -> "seed-to-soil:2567132380->3846369603 2400884472->3680121695"
+"447111316->726307803" -> "seed-to-soil:570761634->1075886218 193356576->698481160"
+"447111316->726307803" -> "seed-to-soil:459278395->570761633 0->111483238"
+"447111316->726307803" -> "seed-to-soil:97868205->459278394 698481161->1059891350"
+"3227221259->3275174217" -> "seed-to-soil:2567132380->3846369603 2400884472->3680121695"
+"seed-to-soil:1920754815->2535600414 3680121696->4294967295" -> "soil-to-fertilizer:3793795301->3808044801 3298612516->3312862016"
+"seed-to-soil:1920754815->2535600414 3680121696->4294967295" -> "soil-to-fertilizer:3808044802->3897711206 3208946111->3298612515"
+"seed-to-soil:1920754815->2535600414 3680121696->4294967295" -> "soil-to-fertilizer:4041982568->4043467943 4032840540->4034325915"
+"seed-to-soil:1920754815->2535600414 3680121696->4294967295" -> "soil-to-fertilizer:4160859076->4176589333 4014277153->4030007410"
+"seed-to-soil:1920754815->2535600414 3680121696->4294967295" -> "soil-to-fertilizer:3761600631->3793795300 3820040671->3852235340"
+"seed-to-soil:1920754815->2535600414 3680121696->4294967295" -> "soil-to-fertilizer:4043467944->4160859075 3091554979->3208946110"
+"seed-to-soil:1920754815->2535600414 3680121696->4294967295" -> "soil-to-fertilizer:3897711207->4041982567 3416264960->3560536320"
+"seed-to-soil:1920754815->2535600414 3680121696->4294967295" -> "soil-to-fertilizer:3639354606->3743652225 4072291714->4176589333"
+"seed-to-soil:1920754815->2535600414 3680121696->4294967295" -> "soil-to-fertilizer:3743652226->3761600630 4054343309->4072291713"
+"seed-to-soil:3846369604->4294967295 1920754815->2369352506" -> "soil-to-fertilizer:2174737461->2467780270 2497725961->2790768770"
+"seed-to-soil:3846369604->4294967295 1920754815->2369352506" -> "soil-to-fertilizer:1739678266->2094427359 318739997->673489090"
+"seed-to-soil:3846369604->4294967295 1920754815->2369352506" -> "soil-to-fertilizer:2094427360->2174737460 68119220->148429320"
+"seed-to-soil:570761634->1075886218 193356576->698481160" -> "soil-to-fertilizer:224872691->239492824 1906984482->1921604615"
+"seed-to-soil:570761634->1075886218 193356576->698481160" -> "soil-to-fertilizer:442871336->479598353 1029530319->1066257336"
+"seed-to-soil:570761634->1075886218 193356576->698481160" -> "soil-to-fertilizer:239492825->390399052 2234322470->2385228697"
+"seed-to-soil:570761634->1075886218 193356576->698481160" -> "soil-to-fertilizer:170310676->224872690 0->54562014"
+"seed-to-soil:570761634->1075886218 193356576->698481160" -> "soil-to-fertilizer:627576051->770934112 1066257337->1209615398"
+"seed-to-soil:570761634->1075886218 193356576->698481160" -> "soil-to-fertilizer:479598354->627576050 1759006785->1906984481"
+"seed-to-soil:570761634->1075886218 193356576->698481160" -> "soil-to-fertilizer:390399053->442871335 1706534502->1759006784"
+"seed-to-soil:2535600415->2567132379 2369352507->2400884471" -> "soil-to-fertilizer:2174737461->2467780270 2497725961->2790768770"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:2671190790->2770401574 2398515176->2497725960"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3018946373->3019545164 2397916384->2398515175"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3061716397->3081733789 4034325916->4054343308"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3051046904->3053880032 4030007411->4032840539"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3114405501->3143227692 3560536321->3589358512"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3579014714->3639354605 3852235341->3912575232"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:2174737461->2467780270 2497725961->2790768770"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3475611771->3579014713 3312862017->3416264959"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3012735174->3018946372 1013551435->1019762633"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3143227693->3373909850 3589358513->3820040670"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:2467780271->2480172987 1990150794->2002543510"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3081733790->3114405500 3051046904->3083718614"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:2480172988->2671190789 673489091->864506892"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:2770401575->3012735173 2790768771->3033102369"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3373909851->3475611770 3912575233->4014277152"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3639354606->3743652225 4072291714->4176589333"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3053880033->3061716396 3083718615->3091554978"
+"seed-to-soil:2567132380->3846369603 2400884472->3680121695" -> "soil-to-fertilizer:3019545165->3033102369 54562015->68119219"
+"seed-to-soil:459278395->570761633 0->111483238" -> "soil-to-fertilizer:0->170310675 148429321->318739996"
+"seed-to-soil:97868205->459278394 698481161->1059891350" -> "soil-to-fertilizer:770934113->839480290 1921604616->1990150793"
+"seed-to-soil:97868205->459278394 698481161->1059891350" -> "soil-to-fertilizer:839480291->1263534128 1209615399->1633669236"
+"seed-to-soil:97868205->459278394 698481161->1059891350" -> "soil-to-fertilizer:627576051->770934112 1066257337->1209615398"
+"seed-to-soil:0->15994867 1059891351->1075886218" -> "soil-to-fertilizer:839480291->1263534128 1209615399->1633669236"
+"seed-to-soil:15994868->97868204 111483239->193356575" -> "soil-to-fertilizer:170310676->224872690 0->54562014"
+"seed-to-soil:15994868->97868204 111483239->193356575" -> "soil-to-fertilizer:0->170310675 148429321->318739996"
+"soil-to-fertilizer:1273301814->1346167078 1633669237->1706534501" -> "fertilizer-to-water:1610032336->2003119061 891504291->1284591016"
+"soil-to-fertilizer:2671190790->2770401574 2398515176->2497725960" -> "fertilizer-to-water:2218635146->2544524865 1440687421->1766577140"
+"soil-to-fertilizer:3018946373->3019545164 2397916384->2398515175" -> "fertilizer-to-water:2218635146->2544524865 1440687421->1766577140"
+"soil-to-fertilizer:3061716397->3081733789 4034325916->4054343308" -> "fertilizer-to-water:3979406008->4108091871 3015429704->3144115567"
+"soil-to-fertilizer:3793795301->3808044801 3298612516->3312862016" -> "fertilizer-to-water:3214450646->3425645239 3695649169->3906843762"
+"soil-to-fertilizer:3051046904->3053880032 4030007411->4032840539" -> "fertilizer-to-water:3979406008->4108091871 3015429704->3144115567"
+"soil-to-fertilizer:224872691->239492824 1906984482->1921604615" -> "fertilizer-to-water:1610032336->2003119061 891504291->1284591016"
+"soil-to-fertilizer:1590633724->1739678265 864506893->1013551434" -> "fertilizer-to-water:864689597->974093260 1797056017->1906459680"
+"soil-to-fertilizer:1590633724->1739678265 864506893->1013551434" -> "fertilizer-to-water:974093261->1044284417 820325042->890516198"
+"soil-to-fertilizer:1590633724->1739678265 864506893->1013551434" -> "fertilizer-to-water:627137736->864689596 528804063->766355923"
+"soil-to-fertilizer:442871336->479598353 1029530319->1066257336" -> "fertilizer-to-water:1044284418->1062156780 2661548513->2679420875"
+"soil-to-fertilizer:442871336->479598353 1029530319->1066257336" -> "fertilizer-to-water:974093261->1044284417 820325042->890516198"
+"soil-to-fertilizer:442871336->479598353 1029530319->1066257336" -> "fertilizer-to-water:1062156781->1074888738 2168339930->2181071887"
+"soil-to-fertilizer:770934113->839480290 1921604616->1990150793" -> "fertilizer-to-water:1610032336->2003119061 891504291->1284591016"
+"soil-to-fertilizer:3114405501->3143227692 3560536321->3589358512" -> "fertilizer-to-water:3425645240->3618912123 3927815169->4121082052"
+"soil-to-fertilizer:1263534129->1273301813 1019762634->1029530318" -> "fertilizer-to-water:974093261->1044284417 820325042->890516198"
+"soil-to-fertilizer:3579014714->3639354605 3852235341->3912575232" -> "fertilizer-to-water:3678907615->3893737872 3282164642->3496994899"
+"soil-to-fertilizer:3579014714->3639354605 3852235341->3912575232" -> "fertilizer-to-water:3893737873->3979406007 2929761569->3015429703"
+"soil-to-fertilizer:1577946038->1590633723 2385228698->2397916383" -> "fertilizer-to-water:2218635146->2544524865 1440687421->1766577140"
+"soil-to-fertilizer:239492825->390399052 2234322470->2385228697" -> "fertilizer-to-water:2218635146->2544524865 1440687421->1766577140"
+"soil-to-fertilizer:170310676->224872690 0->54562014" -> "fertilizer-to-water:0->61140799 1379546621->1440687420"
+"soil-to-fertilizer:3808044802->3897711206 3208946111->3298612515" -> "fertilizer-to-water:3214450646->3425645239 3695649169->3906843762"
+"soil-to-fertilizer:3808044802->3897711206 3208946111->3298612515" -> "fertilizer-to-water:3176039879->3214450645 3563082352->3601493118"
+"soil-to-fertilizer:839480291->1263534128 1209615399->1633669236" -> "fertilizer-to-water:1095885172->1225682836 0->129797664"
+"soil-to-fertilizer:839480291->1263534128 1209615399->1633669236" -> "fertilizer-to-water:1225682837->1308713841 2578517508->2661548512"
+"soil-to-fertilizer:839480291->1263534128 1209615399->1633669236" -> "fertilizer-to-water:1308713842->1369330439 2517900910->2578517507"
+"soil-to-fertilizer:839480291->1263534128 1209615399->1633669236" -> "fertilizer-to-water:1419841841->1610032335 2235159285->2425349779"
+"soil-to-fertilizer:839480291->1263534128 1209615399->1633669236" -> "fertilizer-to-water:1610032336->2003119061 891504291->1284591016"
+"soil-to-fertilizer:839480291->1263534128 1209615399->1633669236" -> "fertilizer-to-water:1369330440->1419841840 2184647884->2235159284"
+"soil-to-fertilizer:4041982568->4043467943 4032840540->4034325915" -> "fertilizer-to-water:3979406008->4108091871 3015429704->3144115567"
+"soil-to-fertilizer:2174737461->2467780270 2497725961->2790768770" -> "fertilizer-to-water:2218635146->2544524865 1440687421->1766577140"
+"soil-to-fertilizer:2174737461->2467780270 2497725961->2790768770" -> "fertilizer-to-water:2605461705->2679420875 1305587450->1379546620"
+"soil-to-fertilizer:2174737461->2467780270 2497725961->2790768770" -> "fertilizer-to-water:2551492587->2605461704 766355924->820325041"
+"soil-to-fertilizer:2174737461->2467780270 2497725961->2790768770" -> "fertilizer-to-water:2544524866->2551492586 1906459681->1913427401"
+"soil-to-fertilizer:1346167079->1577946037 2002543511->2234322469" -> "fertilizer-to-water:2218635146->2544524865 1440687421->1766577140"
+"soil-to-fertilizer:1346167079->1577946037 2002543511->2234322469" -> "fertilizer-to-water:2135490203->2188156269 2465234843->2517900909"
+"soil-to-fertilizer:1346167079->1577946037 2002543511->2234322469" -> "fertilizer-to-water:2131043562->2135490202 1913427402->1917874042"
+"soil-to-fertilizer:1346167079->1577946037 2002543511->2234322469" -> "fertilizer-to-water:1610032336->2003119061 891504291->1284591016"
+"soil-to-fertilizer:1346167079->1577946037 2002543511->2234322469" -> "fertilizer-to-water:2004107154->2087582502 2084864581->2168339929"
+"soil-to-fertilizer:1346167079->1577946037 2002543511->2234322469" -> "fertilizer-to-water:2003119062->2004107153 890516199->891504290"
+"soil-to-fertilizer:1346167079->1577946037 2002543511->2234322469" -> "fertilizer-to-water:2091158499->2131043561 2425349780->2465234842"
+"soil-to-fertilizer:1346167079->1577946037 2002543511->2234322469" -> "fertilizer-to-water:2087582503->2091158498 2181071888->2184647883"
+"soil-to-fertilizer:1346167079->1577946037 2002543511->2234322469" -> "fertilizer-to-water:2188156270->2218635145 1766577141->1797056016"
+"soil-to-fertilizer:3475611771->3579014713 3312862017->3416264959" -> "fertilizer-to-water:3214450646->3425645239 3695649169->3906843762"
+"soil-to-fertilizer:1739678266->2094427359 318739997->673489090" -> "fertilizer-to-water:557612753->627137735 1917874043->1987399025"
+"soil-to-fertilizer:1739678266->2094427359 318739997->673489090" -> "fertilizer-to-water:627137736->864689596 528804063->766355923"
+"soil-to-fertilizer:1739678266->2094427359 318739997->673489090" -> "fertilizer-to-water:230411125->327876679 1987399026->2084864580"
+"soil-to-fertilizer:1739678266->2094427359 318739997->673489090" -> "fertilizer-to-water:327876680->557612752 129797665->359533737"
+"soil-to-fertilizer:3012735174->3018946372 1013551435->1019762633" -> "fertilizer-to-water:974093261->1044284417 820325042->890516198"
+"soil-to-fertilizer:4160859076->4176589333 4014277153->4030007410" -> "fertilizer-to-water:3979406008->4108091871 3015429704->3144115567"
+"soil-to-fertilizer:3143227693->3373909850 3589358513->3820040670" -> "fertilizer-to-water:3678907615->3893737872 3282164642->3496994899"
+"soil-to-fertilizer:3143227693->3373909850 3589358513->3820040670" -> "fertilizer-to-water:3618912124->3678907614 3193832718->3253828208"
+"soil-to-fertilizer:3143227693->3373909850 3589358513->3820040670" -> "fertilizer-to-water:3425645240->3618912123 3927815169->4121082052"
+"soil-to-fertilizer:2467780271->2480172987 1990150794->2002543510" -> "fertilizer-to-water:1610032336->2003119061 891504291->1284591016"
+"soil-to-fertilizer:3081733790->3114405500 3051046904->3083718614" -> "fertilizer-to-water:3002154636->3176039878 4121082053->4294967295"
+"soil-to-fertilizer:3761600631->3793795300 3820040671->3852235340" -> "fertilizer-to-water:3678907615->3893737872 3282164642->3496994899"
+"soil-to-fertilizer:0->170310675 148429321->318739996" -> "fertilizer-to-water:230411125->327876679 1987399026->2084864580"
+"soil-to-fertilizer:0->170310675 148429321->318739996" -> "fertilizer-to-water:61140800->230411124 359533738->528804062"
+"soil-to-fertilizer:2480172988->2671190789 673489091->864506892" -> "fertilizer-to-water:627137736->864689596 528804063->766355923"
+"soil-to-fertilizer:627576051->770934112 1066257337->1209615398" -> "fertilizer-to-water:1095885172->1225682836 0->129797664"
+"soil-to-fertilizer:627576051->770934112 1066257337->1209615398" -> "fertilizer-to-water:1074888739->1095885171 1284591017->1305587449"
+"soil-to-fertilizer:627576051->770934112 1066257337->1209615398" -> "fertilizer-to-water:1062156781->1074888738 2168339930->2181071887"
+"soil-to-fertilizer:2770401575->3012735173 2790768771->3033102369" -> "fertilizer-to-water:3002154636->3176039878 4121082053->4294967295"
+"soil-to-fertilizer:2770401575->3012735173 2790768771->3033102369" -> "fertilizer-to-water:2929761569->3002154635 3601493119->3673886185"
+"soil-to-fertilizer:4043467944->4160859075 3091554979->3208946110" -> "fertilizer-to-water:3176039879->3214450645 3563082352->3601493118"
+"soil-to-fertilizer:4043467944->4160859075 3091554979->3208946110" -> "fertilizer-to-water:3002154636->3176039878 4121082053->4294967295"
+"soil-to-fertilizer:3897711207->4041982567 3416264960->3560536320" -> "fertilizer-to-water:3214450646->3425645239 3695649169->3906843762"
+"soil-to-fertilizer:3897711207->4041982567 3416264960->3560536320" -> "fertilizer-to-water:3425645240->3618912123 3927815169->4121082052"
+"soil-to-fertilizer:3373909851->3475611770 3912575233->4014277152" -> "fertilizer-to-water:3893737873->3979406007 2929761569->3015429703"
+"soil-to-fertilizer:3373909851->3475611770 3912575233->4014277152" -> "fertilizer-to-water:3979406008->4108091871 3015429704->3144115567"
+"soil-to-fertilizer:3639354606->3743652225 4072291714->4176589333" -> "fertilizer-to-water:4136945159->4142506841 3253828209->3259389891"
+"soil-to-fertilizer:3639354606->3743652225 4072291714->4176589333" -> "fertilizer-to-water:4108091872->4108974731 3522907448->3523790307"
+"soil-to-fertilizer:3639354606->3743652225 4072291714->4176589333" -> "fertilizer-to-water:3979406008->4108091871 3015429704->3144115567"
+"soil-to-fertilizer:3639354606->3743652225 4072291714->4176589333" -> "fertilizer-to-water:4108974732->4130737714 3673886186->3695649168"
+"soil-to-fertilizer:3639354606->3743652225 4072291714->4176589333" -> "fertilizer-to-water:4130737715->4136945158 3187625274->3193832717"
+"soil-to-fertilizer:3639354606->3743652225 4072291714->4176589333" -> "fertilizer-to-water:4142506842->4186016547 3144115568->3187625273"
+"soil-to-fertilizer:3053880033->3061716396 3083718615->3091554978" -> "fertilizer-to-water:3002154636->3176039878 4121082053->4294967295"
+"soil-to-fertilizer:3019545165->3033102369 54562015->68119219" -> "fertilizer-to-water:0->61140799 1379546621->1440687420"
+"soil-to-fertilizer:3019545165->3033102369 54562015->68119219" -> "fertilizer-to-water:61140800->230411124 359533738->528804062"
+"soil-to-fertilizer:479598354->627576050 1759006785->1906984481" -> "fertilizer-to-water:1610032336->2003119061 891504291->1284591016"
+"soil-to-fertilizer:2094427360->2174737460 68119220->148429320" -> "fertilizer-to-water:61140800->230411124 359533738->528804062"
+"soil-to-fertilizer:390399053->442871335 1706534502->1759006784" -> "fertilizer-to-water:1610032336->2003119061 891504291->1284591016"
+"soil-to-fertilizer:3743652226->3761600630 4054343309->4072291713" -> "fertilizer-to-water:3979406008->4108091871 3015429704->3144115567"
+"fertilizer-to-water:1095885172->1225682836 0->129797664" -> "water-to-light:53020621->202078860 524666822->673725061"
+"fertilizer-to-water:1095885172->1225682836 0->129797664" -> "water-to-light:34415039->53020620 962732592->981338173"
+"fertilizer-to-water:1095885172->1225682836 0->129797664" -> "water-to-light:0->34415038 127600361->162015399"
+"fertilizer-to-water:1044284418->1062156780 2661548513->2679420875" -> "water-to-light:2588608948->2806534554 4035010860->4252936466"
+"fertilizer-to-water:3678907615->3893737872 3282164642->3496994899" -> "water-to-light:3392008740->3693361055 1584221500->1885573815"
+"fertilizer-to-water:3678907615->3893737872 3282164642->3496994899" -> "water-to-light:3235693047->3392008739 2753113041->2909428733"
+"fertilizer-to-water:2218635146->2544524865 1440687421->1766577140" -> "water-to-light:1595026882->1721361021 2375927917->2502262056"
+"fertilizer-to-water:2218635146->2544524865 1440687421->1766577140" -> "water-to-light:1584221500->1595026881 1941578413->1952383794"
+"fertilizer-to-water:2218635146->2544524865 1440687421->1766577140" -> "water-to-light:1721361022->1855896417 2944034804->3078570199"
+"fertilizer-to-water:4208791298->4234703845 3496994900->3522907447" -> "water-to-light:3392008740->3693361055 1584221500->1885573815"
+"fertilizer-to-water:4136945159->4142506841 3253828209->3259389891" -> "water-to-light:3235693047->3392008739 2753113041->2909428733"
+"fertilizer-to-water:864689597->974093260 1797056017->1906459680" -> "water-to-light:1855896418->1968120823 2050676589->2162900994"
+"fertilizer-to-water:864689597->974093260 1797056017->1906459680" -> "water-to-light:1721361022->1855896417 2944034804->3078570199"
+"fertilizer-to-water:4186016548->4208791297 3259389892->3282164641" -> "water-to-light:3235693047->3392008739 2753113041->2909428733"
+"fertilizer-to-water:1225682837->1308713841 2578517508->2661548512" -> "water-to-light:2577001713->2588608947 2364320682->2375927916"
+"fertilizer-to-water:1225682837->1308713841 2578517508->2661548512" -> "water-to-light:2588608948->2806534554 4035010860->4252936466"
+"fertilizer-to-water:3618912124->3678907614 3193832718->3253828208" -> "water-to-light:3094426710->3235693046 3084781283->3226047619"
+"fertilizer-to-water:3618912124->3678907614 3193832718->3253828208" -> "water-to-light:3235693047->3392008739 2753113041->2909428733"
+"fertilizer-to-water:3214450646->3425645239 3695649169->3906843762" -> "water-to-light:3693361056->3719732441 3591930858->3618302243"
+"fertilizer-to-water:3214450646->3425645239 3695649169->3906843762" -> "water-to-light:3719732442->3954749081 3785017329->4020033968"
+"fertilizer-to-water:974093261->1044284417 820325042->890516198" -> "water-to-light:818620477->862398345 1307603095->1351380963"
+"fertilizer-to-water:974093261->1044284417 820325042->890516198" -> "water-to-light:862398346->1010069707 673725062->821396423"
+"fertilizer-to-water:1074888739->1095885171 1284591017->1305587449" -> "water-to-light:1138498800->1351380963 166495992->379378155"
+"fertilizer-to-water:3893737873->3979406007 2929761569->3015429703" -> "water-to-light:2909504698->3029463638 3618302244->3738261184"
+"fertilizer-to-water:2605461705->2679420875 1305587450->1379546620" -> "water-to-light:1138498800->1351380963 166495992->379378155"
+"fertilizer-to-water:1062156781->1074888738 2168339930->2181071887" -> "water-to-light:2101019688->2229635216 2235705153->2364320681"
+"fertilizer-to-water:2135490203->2188156269 2465234843->2517900909" -> "water-to-light:2229635217->2536766466 3226047620->3533178869"
+"fertilizer-to-water:4108091872->4108974731 3522907448->3523790307" -> "water-to-light:3392008740->3693361055 1584221500->1885573815"
+"fertilizer-to-water:4255675252->4294967295 3523790308->3563082351" -> "water-to-light:3392008740->3693361055 1584221500->1885573815"
+"fertilizer-to-water:1308713842->1369330439 2517900910->2578517507" -> "water-to-light:2577001713->2588608947 2364320682->2375927916"
+"fertilizer-to-water:1308713842->1369330439 2517900910->2578517507" -> "water-to-light:2536766467->2577001712 2162900995->2203136240"
+"fertilizer-to-water:1308713842->1369330439 2517900910->2578517507" -> "water-to-light:2229635217->2536766466 3226047620->3533178869"
+"fertilizer-to-water:3176039879->3214450645 3563082352->3601493118" -> "water-to-light:3392008740->3693361055 1584221500->1885573815"
+"fertilizer-to-water:3979406008->4108091871 3015429704->3144115567" -> "water-to-light:2909504698->3029463638 3618302244->3738261184"
+"fertilizer-to-water:3979406008->4108091871 3015429704->3144115567" -> "water-to-light:3088215627->3094426709 3078570200->3084781282"
+"fertilizer-to-water:3979406008->4108091871 3015429704->3144115567" -> "water-to-light:3094426710->3235693046 3084781283->3226047619"
+"fertilizer-to-water:3979406008->4108091871 3015429704->3144115567" -> "water-to-light:3029463639->3088215626 3533178870->3591930857"
+"fertilizer-to-water:2131043562->2135490202 1913427402->1917874042" -> "water-to-light:1855896418->1968120823 2050676589->2162900994"
+"fertilizer-to-water:1419841841->1610032335 2235159285->2425349779" -> "water-to-light:2229635217->2536766466 3226047620->3533178869"
+"fertilizer-to-water:4108974732->4130737714 3673886186->3695649168" -> "water-to-light:3392008740->3693361055 1584221500->1885573815"
+"fertilizer-to-water:4108974732->4130737714 3673886186->3695649168" -> "water-to-light:3693361056->3719732441 3591930858->3618302243"
+"fertilizer-to-water:1610032336->2003119061 891504291->1284591016" -> "water-to-light:862398346->1010069707 673725062->821396423"
+"fertilizer-to-water:1610032336->2003119061 891504291->1284591016" -> "water-to-light:1138498800->1351380963 166495992->379378155"
+"fertilizer-to-water:1610032336->2003119061 891504291->1284591016" -> "water-to-light:1010069708->1138498799 379378156->507807247"
+"fertilizer-to-water:3425645240->3618912123 3927815169->4121082052" -> "water-to-light:3954749082->4010753678 1885573816->1941578412"
+"fertilizer-to-water:3425645240->3618912123 3927815169->4121082052" -> "water-to-light:3719732442->3954749081 3785017329->4020033968"
+"fertilizer-to-water:3425645240->3618912123 3927815169->4121082052" -> "water-to-light:4010753679->4220367554 2502262057->2711875932"
+"fertilizer-to-water:3002154636->3176039878 4121082053->4294967295" -> "water-to-light:4220367555->4237901364 4277433486->4294967295"
+"fertilizer-to-water:3002154636->3176039878 4121082053->4294967295" -> "water-to-light:4237901365->4262398383 4252936467->4277433485"
+"fertilizer-to-water:3002154636->3176039878 4121082053->4294967295" -> "water-to-light:4010753679->4220367554 2502262057->2711875932"
+"fertilizer-to-water:3002154636->3176039878 4121082053->4294967295" -> "water-to-light:4262398384->4294967295 2203136241->2235705152"
+"fertilizer-to-water:2004107154->2087582502 2084864581->2168339929" -> "water-to-light:2101019688->2229635216 2235705153->2364320681"
+"fertilizer-to-water:2004107154->2087582502 2084864581->2168339929" -> "water-to-light:2002726894->2101019687 1952383795->2050676588"
+"fertilizer-to-water:557612753->627137735 1917874043->1987399025" -> "water-to-light:1855896418->1968120823 2050676589->2162900994"
+"fertilizer-to-water:557612753->627137735 1917874043->1987399025" -> "water-to-light:1968120824->2002726893 2909428734->2944034803"
+"fertilizer-to-water:2003119062->2004107153 890516199->891504290" -> "water-to-light:862398346->1010069707 673725062->821396423"
+"fertilizer-to-water:2551492587->2605461704 766355924->820325041" -> "water-to-light:818620477->862398345 1307603095->1351380963"
+"fertilizer-to-water:2551492587->2605461704 766355924->820325041" -> "water-to-light:726306378->818620476 0->92314098"
+"fertilizer-to-water:4130737715->4136945158 3187625274->3193832717" -> "water-to-light:3094426710->3235693046 3084781283->3226047619"
+"fertilizer-to-water:627137736->864689596 528804063->766355923" -> "water-to-light:726306378->818620476 0->92314098"
+"fertilizer-to-water:627137736->864689596 528804063->766355923" -> "water-to-light:400041457->726306377 981338174->1307603094"
+"fertilizer-to-water:230411125->327876679 1987399026->2084864580" -> "water-to-light:1968120824->2002726893 2909428734->2944034803"
+"fertilizer-to-water:230411125->327876679 1987399026->2084864580" -> "water-to-light:2002726894->2101019687 1952383795->2050676588"
+"fertilizer-to-water:2544524866->2551492586 1906459681->1913427401" -> "water-to-light:1855896418->1968120823 2050676589->2162900994"
+"fertilizer-to-water:1369330440->1419841840 2184647884->2235159284" -> "water-to-light:2229635217->2536766466 3226047620->3533178869"
+"fertilizer-to-water:1369330440->1419841840 2184647884->2235159284" -> "water-to-light:2101019688->2229635216 2235705153->2364320681"
+"fertilizer-to-water:2091158499->2131043561 2425349780->2465234842" -> "water-to-light:2229635217->2536766466 3226047620->3533178869"
+"fertilizer-to-water:2087582503->2091158498 2181071888->2184647883" -> "water-to-light:2101019688->2229635216 2235705153->2364320681"
+"fertilizer-to-water:4142506842->4186016547 3144115568->3187625273" -> "water-to-light:3094426710->3235693046 3084781283->3226047619"
+"fertilizer-to-water:2188156270->2218635145 1766577141->1797056016" -> "water-to-light:1721361022->1855896417 2944034804->3078570199"
+"fertilizer-to-water:61140800->230411124 359533738->528804062" -> "water-to-light:241845715->383181882 821396424->962732591"
+"fertilizer-to-water:61140800->230411124 359533738->528804062" -> "water-to-light:400041457->726306377 981338174->1307603094"
+"fertilizer-to-water:61140800->230411124 359533738->528804062" -> "water-to-light:383181883->400041456 507807248->524666821"
+"fertilizer-to-water:327876680->557612752 129797665->359533737" -> "water-to-light:53020621->202078860 524666822->673725061"
+"fertilizer-to-water:327876680->557612752 129797665->359533737" -> "water-to-light:237365123->241845714 162015400->166495991"
+"fertilizer-to-water:327876680->557612752 129797665->359533737" -> "water-to-light:241845715->383181882 821396424->962732591"
+"fertilizer-to-water:327876680->557612752 129797665->359533737" -> "water-to-light:202078861->237365122 92314099->127600360"
+"fertilizer-to-water:4234703846->4255675251 3906843763->3927815168" -> "water-to-light:3719732442->3954749081 3785017329->4020033968"
+"fertilizer-to-water:2929761569->3002154635 3601493119->3673886185" -> "water-to-light:3392008740->3693361055 1584221500->1885573815"
+"water-to-light:1595026882->1721361021 2375927917->2502262056" -> "light-to-temperature:2440321747->2441309575 639139367->640127195"
+"water-to-light:1595026882->1721361021 2375927917->2502262056" -> "light-to-temperature:2360634153->2440321746 1043066658->1122754251"
+"water-to-light:1595026882->1721361021 2375927917->2502262056" -> "light-to-temperature:2467721984->2824691124 3937998155->4294967295"
+"water-to-light:818620477->862398345 1307603095->1351380963" -> "light-to-temperature:1335050925->1435406714 2137189745->2237545534"
+"water-to-light:818620477->862398345 1307603095->1351380963" -> "light-to-temperature:1199531530->1335050924 1929621334->2065140728"
+"water-to-light:1855896418->1968120823 2050676589->2162900994" -> "light-to-temperature:2032639791->2239777477 1286703174->1493840860"
+"water-to-light:2909504698->3029463638 3618302244->3738261184" -> "light-to-temperature:3517222025->3747288822 3326002417->3556069214"
+"water-to-light:3088215627->3094426709 3078570200->3084781282" -> "light-to-temperature:2824691125->3118468902 2597564380->2891342157"
+"water-to-light:3094426710->3235693046 3084781283->3226047619" -> "light-to-temperature:2824691125->3118468902 2597564380->2891342157"
+"water-to-light:3094426710->3235693046 3084781283->3226047619" -> "light-to-temperature:3130691909->3144306126 3924383937->3937998154"
+"water-to-light:3094426710->3235693046 3084781283->3226047619" -> "light-to-temperature:3118468903->3130691908 3912160931->3924383936"
+"water-to-light:3094426710->3235693046 3084781283->3226047619" -> "light-to-temperature:3144306127->3385669350 3556069215->3797432438"
+"water-to-light:53020621->202078860 524666822->673725061" -> "light-to-temperature:509683401->764560380 640127196->895004175"
+"water-to-light:862398346->1010069707 673725062->821396423" -> "light-to-temperature:764560381->872198108 1494457034->1602094761"
+"water-to-light:862398346->1010069707 673725062->821396423" -> "light-to-temperature:509683401->764560380 640127196->895004175"
+"water-to-light:2577001713->2588608947 2364320682->2375927916" -> "light-to-temperature:2360634153->2440321746 1043066658->1122754251"
+"water-to-light:1584221500->1595026881 1941578413->1952383794" -> "light-to-temperature:1950103191->2032639790 1122754252->1205290851"
+"water-to-light:1584221500->1595026881 1941578413->1952383794" -> "light-to-temperature:1931889707->1950103190 1024853174->1043066657"
+"water-to-light:2536766467->2577001712 2162900995->2203136240" -> "light-to-temperature:2032639791->2239777477 1286703174->1493840860"
+"water-to-light:237365123->241845714 162015400->166495991" -> "light-to-temperature:0->164339664 474799702->639139366"
+"water-to-light:237365123->241845714 162015400->166495991" -> "light-to-temperature:164339665->236388680 2065140729->2137189744"
+"water-to-light:241845715->383181882 821396424->962732591" -> "light-to-temperature:764560381->872198108 1494457034->1602094761"
+"water-to-light:241845715->383181882 821396424->962732591" -> "light-to-temperature:933716095->981575773 1238843495->1286703173"
+"water-to-light:241845715->383181882 821396424->962732591" -> "light-to-temperature:872198109->933716094 1602094762->1663612747"
+"water-to-light:1138498800->1351380963 166495992->379378155" -> "light-to-temperature:331442633->356669367 895004176->920230910"
+"water-to-light:1138498800->1351380963 166495992->379378155" -> "light-to-temperature:236388681->237004853 1493840861->1494457033"
+"water-to-light:1138498800->1351380963 166495992->379378155" -> "light-to-temperature:356669368->390222010 1205290852->1238843494"
+"water-to-light:1138498800->1351380963 166495992->379378155" -> "light-to-temperature:164339665->236388680 2065140729->2137189744"
+"water-to-light:1138498800->1351380963 166495992->379378155" -> "light-to-temperature:237004854->331442632 2237545535->2331983313"
+"water-to-light:4220367555->4237901364 4277433486->4294967295" -> "light-to-temperature:4180238804->4294967295 3797432439->3912160930"
+"water-to-light:2229635217->2536766466 3226047620->3533178869" -> "light-to-temperature:3517222025->3747288822 3326002417->3556069214"
+"water-to-light:2229635217->2536766466 3226047620->3533178869" -> "light-to-temperature:3144306127->3385669350 3556069215->3797432438"
+"water-to-light:2229635217->2536766466 3226047620->3533178869" -> "light-to-temperature:3385669351->3517222024 3194449743->3326002416"
+"water-to-light:1968120824->2002726893 2909428734->2944034803" -> "light-to-temperature:2824691125->3118468902 2597564380->2891342157"
+"water-to-light:3954749082->4010753678 1885573816->1941578412" -> "light-to-temperature:1778059435->1931889706 1663612748->1817443019"
+"water-to-light:3954749082->4010753678 1885573816->1941578412" -> "light-to-temperature:1931889707->1950103190 1024853174->1043066657"
+"water-to-light:2868267590->2909504697 2711875933->2753113040" -> "light-to-temperature:2467721984->2824691124 3937998155->4294967295"
+"water-to-light:726306378->818620476 0->92314098" -> "light-to-temperature:0->164339664 474799702->639139366"
+"water-to-light:1721361022->1855896417 2944034804->3078570199" -> "light-to-temperature:2824691125->3118468902 2597564380->2891342157"
+"water-to-light:3392008740->3693361055 1584221500->1885573815" -> "light-to-temperature:1778059435->1931889706 1663612748->1817443019"
+"water-to-light:3392008740->3693361055 1584221500->1885573815" -> "light-to-temperature:1673437172->1778059434 920230911->1024853173"
+"water-to-light:3392008740->3693361055 1584221500->1885573815" -> "light-to-temperature:1547585029->1673437171 0->125852142"
+"water-to-light:34415039->53020620 962732592->981338173" -> "light-to-temperature:933716095->981575773 1238843495->1286703173"
+"water-to-light:2101019688->2229635216 2235705153->2364320681" -> "light-to-temperature:2032639791->2239777477 1286703174->1493840860"
+"water-to-light:2101019688->2229635216 2235705153->2364320681" -> "light-to-temperature:2260378974->2360634152 2341054397->2441309575"
+"water-to-light:2101019688->2229635216 2235705153->2364320681" -> "light-to-temperature:2360634153->2440321746 1043066658->1122754251"
+"water-to-light:2101019688->2229635216 2235705153->2364320681" -> "light-to-temperature:2251307891->2260378973 2331983314->2341054396"
+"water-to-light:2101019688->2229635216 2235705153->2364320681" -> "light-to-temperature:2239777478->2251307890 463269289->474799701"
+"water-to-light:4237901365->4262398383 4252936467->4277433485" -> "light-to-temperature:4180238804->4294967295 3797432439->3912160930"
+"water-to-light:202078861->237365122 92314099->127600360" -> "light-to-temperature:0->164339664 474799702->639139366"
+"water-to-light:400041457->726306377 981338174->1307603094" -> "light-to-temperature:1199531530->1335050924 1929621334->2065140728"
+"water-to-light:400041457->726306377 981338174->1307603094" -> "light-to-temperature:981575774->1199531529 245313533->463269288"
+"water-to-light:400041457->726306377 981338174->1307603094" -> "light-to-temperature:933716095->981575773 1238843495->1286703173"
+"water-to-light:1010069708->1138498799 379378156->507807247" -> "light-to-temperature:356669368->390222010 1205290852->1238843494"
+"water-to-light:1010069708->1138498799 379378156->507807247" -> "light-to-temperature:390222011->509683400 125852143->245313532"
+"water-to-light:3693361056->3719732441 3591930858->3618302243" -> "light-to-temperature:3517222025->3747288822 3326002417->3556069214"
+"water-to-light:3719732442->3954749081 3785017329->4020033968" -> "light-to-temperature:3747288823->3823938491 2467721984->2544371652"
+"water-to-light:3719732442->3954749081 3785017329->4020033968" -> "light-to-temperature:3823938492->4127046076 2891342158->3194449742"
+"water-to-light:4010753679->4220367554 2502262057->2711875932" -> "light-to-temperature:2467721984->2824691124 3937998155->4294967295"
+"water-to-light:3029463639->3088215626 3533178870->3591930857" -> "light-to-temperature:3517222025->3747288822 3326002417->3556069214"
+"water-to-light:2821511446->2868267589 3738261185->3785017328" -> "light-to-temperature:3747288823->3823938491 2467721984->2544371652"
+"water-to-light:2821511446->2868267589 3738261185->3785017328" -> "light-to-temperature:3517222025->3747288822 3326002417->3556069214"
+"water-to-light:2806534555->2821511445 4020033969->4035010859" -> "light-to-temperature:3823938492->4127046076 2891342158->3194449742"
+"water-to-light:2002726894->2101019687 1952383795->2050676588" -> "light-to-temperature:1950103191->2032639790 1122754252->1205290851"
+"water-to-light:2002726894->2101019687 1952383795->2050676588" -> "light-to-temperature:2032639791->2239777477 1286703174->1493840860"
+"water-to-light:0->34415038 127600361->162015399" -> "light-to-temperature:0->164339664 474799702->639139366"
+"water-to-light:3235693047->3392008739 2753113041->2909428733" -> "light-to-temperature:2824691125->3118468902 2597564380->2891342157"
+"water-to-light:3235693047->3392008739 2753113041->2909428733" -> "light-to-temperature:2467721984->2824691124 3937998155->4294967295"
+"water-to-light:383181883->400041456 507807248->524666821" -> "light-to-temperature:390222011->509683400 125852143->245313532"
+"water-to-light:383181883->400041456 507807248->524666821" -> "light-to-temperature:509683401->764560380 640127196->895004175"
+"water-to-light:4262398384->4294967295 2203136241->2235705152" -> "light-to-temperature:2032639791->2239777477 1286703174->1493840860"
+"water-to-light:2588608948->2806534554 4035010860->4252936466" -> "light-to-temperature:4180238804->4294967295 3797432439->3912160930"
+"water-to-light:2588608948->2806534554 4035010860->4252936466" -> "light-to-temperature:4127046077->4180238803 2544371653->2597564379"
+"water-to-light:2588608948->2806534554 4035010860->4252936466" -> "light-to-temperature:3823938492->4127046076 2891342158->3194449742"
+"light-to-temperature:1335050925->1435406714 2137189745->2237545534" -> "temperature-to-humidity:1899269239->2213436963 1771250828->2085418552"
+"light-to-temperature:1335050925->1435406714 2137189745->2237545534" -> "temperature-to-humidity:2213436964->2291603040 2527060387->2605226463"
+"light-to-temperature:2440321747->2441309575 639139367->640127195" -> "temperature-to-humidity:478456148->785415531 784031720->1090991103"
+"light-to-temperature:1778059435->1931889706 1663612748->1817443019" -> "temperature-to-humidity:1771250828->1829598899 2605226464->2663574535"
+"light-to-temperature:1778059435->1931889706 1663612748->1817443019" -> "temperature-to-humidity:1360551727->1666127298 0->305575571"
+"light-to-temperature:1950103191->2032639790 1122754252->1205290851" -> "temperature-to-humidity:785415532->1360551726 1090991104->1666127298"
+"light-to-temperature:1199531530->1335050924 1929621334->2065140728" -> "temperature-to-humidity:1899269239->2213436963 1771250828->2085418552"
+"light-to-temperature:2032639791->2239777477 1286703174->1493840860" -> "temperature-to-humidity:785415532->1360551726 1090991104->1666127298"
+"light-to-temperature:2032639791->2239777477 1286703174->1493840860" -> "temperature-to-humidity:1360551727->1666127298 0->305575571"
+"light-to-temperature:981575774->1199531529 245313533->463269288" -> "temperature-to-humidity:0->478456147 305575572->784031719"
+"light-to-temperature:2824691125->3118468902 2597564380->2891342157" -> "temperature-to-humidity:2500993022->2890032963 2874706420->3263746361"
+"light-to-temperature:2824691125->3118468902 2597564380->2891342157" -> "temperature-to-humidity:2890032964->2907483582 3263746362->3281196980"
+"light-to-temperature:331442633->356669367 895004176->920230910" -> "temperature-to-humidity:785415532->1360551726 1090991104->1666127298"
+"light-to-temperature:236388681->237004853 1493840861->1494457033" -> "temperature-to-humidity:1360551727->1666127298 0->305575571"
+"light-to-temperature:764560381->872198108 1494457034->1602094761" -> "temperature-to-humidity:1360551727->1666127298 0->305575571"
+"light-to-temperature:1435406715->1547585028 1817443020->1929621333" -> "temperature-to-humidity:1899269239->2213436963 1771250828->2085418552"
+"light-to-temperature:1435406715->1547585028 1817443020->1929621333" -> "temperature-to-humidity:1771250828->1829598899 2605226464->2663574535"
+"light-to-temperature:1435406715->1547585028 1817443020->1929621333" -> "temperature-to-humidity:1829598900->1899269238 3437652344->3507322682"
+"light-to-temperature:356669368->390222010 1205290852->1238843494" -> "temperature-to-humidity:785415532->1360551726 1090991104->1666127298"
+"light-to-temperature:0->164339664 474799702->639139366" -> "temperature-to-humidity:478456148->785415531 784031720->1090991103"
+"light-to-temperature:0->164339664 474799702->639139366" -> "temperature-to-humidity:0->478456147 305575572->784031719"
+"light-to-temperature:2260378974->2360634152 2341054397->2441309575" -> "temperature-to-humidity:2313887435->2500993021 2687600833->2874706419"
+"light-to-temperature:2360634153->2440321746 1043066658->1122754251" -> "temperature-to-humidity:785415532->1360551726 1090991104->1666127298"
+"light-to-temperature:390222011->509683400 125852143->245313532" -> "temperature-to-humidity:0->478456147 305575572->784031719"
+"light-to-temperature:3130691909->3144306126 3924383937->3937998154" -> "temperature-to-humidity:3905472343->4039643311 3303481375->3437652343"
+"light-to-temperature:3747288823->3823938491 2467721984->2544371652" -> "temperature-to-humidity:2313887435->2500993021 2687600833->2874706419"
+"light-to-temperature:3747288823->3823938491 2467721984->2544371652" -> "temperature-to-humidity:2500993022->2890032963 2874706420->3263746361"
+"light-to-temperature:164339665->236388680 2065140729->2137189744" -> "temperature-to-humidity:1899269239->2213436963 1771250828->2085418552"
+"light-to-temperature:1673437172->1778059434 920230911->1024853173" -> "temperature-to-humidity:785415532->1360551726 1090991104->1666127298"
+"light-to-temperature:509683401->764560380 640127196->895004175" -> "temperature-to-humidity:478456148->785415531 784031720->1090991103"
+"light-to-temperature:509683401->764560380 640127196->895004175" -> "temperature-to-humidity:785415532->1360551726 1090991104->1666127298"
+"light-to-temperature:1931889707->1950103190 1024853174->1043066657" -> "temperature-to-humidity:785415532->1360551726 1090991104->1666127298"
+"light-to-temperature:2251307891->2260378973 2331983314->2341054396" -> "temperature-to-humidity:2313887435->2500993021 2687600833->2874706419"
+"light-to-temperature:237004854->331442632 2237545535->2331983313" -> "temperature-to-humidity:2313887435->2500993021 2687600833->2874706419"
+"light-to-temperature:237004854->331442632 2237545535->2331983313" -> "temperature-to-humidity:2291603041->2313887434 3281196981->3303481374"
+"light-to-temperature:237004854->331442632 2237545535->2331983313" -> "temperature-to-humidity:2213436964->2291603040 2527060387->2605226463"
+"light-to-temperature:3118468903->3130691908 3912160931->3924383936" -> "temperature-to-humidity:3905472343->4039643311 3303481375->3437652343"
+"light-to-temperature:933716095->981575773 1238843495->1286703173" -> "temperature-to-humidity:785415532->1360551726 1090991104->1666127298"
+"light-to-temperature:3517222025->3747288822 3326002417->3556069214" -> "temperature-to-humidity:2907483583->3695128195 3507322683->4294967295"
+"light-to-temperature:3144306127->3385669350 3556069215->3797432438" -> "temperature-to-humidity:3793564740->3905472342 2085418553->2197326155"
+"light-to-temperature:3144306127->3385669350 3556069215->3797432438" -> "temperature-to-humidity:3695128196->3793564739 2428623843->2527060386"
+"light-to-temperature:3144306127->3385669350 3556069215->3797432438" -> "temperature-to-humidity:2907483583->3695128195 3507322683->4294967295"
+"light-to-temperature:4180238804->4294967295 3797432439->3912160930" -> "temperature-to-humidity:3793564740->3905472342 2085418553->2197326155"
+"light-to-temperature:4180238804->4294967295 3797432439->3912160930" -> "temperature-to-humidity:3905472343->4039643311 3303481375->3437652343"
+"light-to-temperature:872198109->933716094 1602094762->1663612747" -> "temperature-to-humidity:1360551727->1666127298 0->305575571"
+"light-to-temperature:4127046077->4180238803 2544371653->2597564379" -> "temperature-to-humidity:2500993022->2890032963 2874706420->3263746361"
+"light-to-temperature:3823938492->4127046076 2891342158->3194449742" -> "temperature-to-humidity:2890032964->2907483582 3263746362->3281196980"
+"light-to-temperature:3823938492->4127046076 2891342158->3194449742" -> "temperature-to-humidity:2907483583->3695128195 3507322683->4294967295"
+"light-to-temperature:2239777478->2251307890 463269289->474799701" -> "temperature-to-humidity:0->478456147 305575572->784031719"
+"light-to-temperature:3385669351->3517222024 3194449743->3326002416" -> "temperature-to-humidity:2907483583->3695128195 3507322683->4294967295"
+"light-to-temperature:2467721984->2824691124 3937998155->4294967295" -> "temperature-to-humidity:3905472343->4039643311 3303481375->3437652343"
+"light-to-temperature:2467721984->2824691124 3937998155->4294967295" -> "temperature-to-humidity:4270940999->4294967295 2663574536->2687600832"
+"light-to-temperature:2467721984->2824691124 3937998155->4294967295" -> "temperature-to-humidity:4039643312->4270940998 2197326156->2428623842"
+"light-to-temperature:1547585029->1673437171 0->125852142" -> "temperature-to-humidity:0->478456147 305575572->784031719"
+"temperature-to-humidity:2313887435->2500993021 2687600833->2874706419" -> "humidity-to-location:2857352625->2959136448 4193183472->4294967295"
+"temperature-to-humidity:2313887435->2500993021 2687600833->2874706419" -> "humidity-to-location:2811999519->2857352624 3357578258->3402931363"
+"temperature-to-humidity:2313887435->2500993021 2687600833->2874706419" -> "humidity-to-location:2629702985->2811999518 2446452559->2628749092"
+"temperature-to-humidity:2291603041->2313887434 3281196981->3303481374" -> "humidity-to-location:3191476309->3411510750 2997158500->3217192941"
+"temperature-to-humidity:1899269239->2213436963 1771250828->2085418552" -> "humidity-to-location:2072782209->2194801986 1253227229->1375247006"
+"temperature-to-humidity:1899269239->2213436963 1771250828->2085418552" -> "humidity-to-location:1977494858->2072782208 540622614->635909964"
+"temperature-to-humidity:1899269239->2213436963 1771250828->2085418552" -> "humidity-to-location:1733630896->1977494857 1541487009->1785350970"
+"temperature-to-humidity:478456148->785415531 784031720->1090991103" -> "humidity-to-location:895259169->913871241 1522874936->1541487008"
+"temperature-to-humidity:478456148->785415531 784031720->1090991103" -> "humidity-to-location:913871242->1051790025 1011274752->1149193535"
+"temperature-to-humidity:478456148->785415531 784031720->1090991103" -> "humidity-to-location:710819527->895259168 356182972->540622613"
+"temperature-to-humidity:478456148->785415531 784031720->1090991103" -> "humidity-to-location:1051790026->1133540976 1416692641->1498443591"
+"temperature-to-humidity:1771250828->1829598899 2605226464->2663574535" -> "humidity-to-location:2543337773->2629702984 2628749093->2715114304"
+"temperature-to-humidity:1771250828->1829598899 2605226464->2663574535" -> "humidity-to-location:2629702985->2811999518 2446452559->2628749092"
+"temperature-to-humidity:3793564740->3905472342 2085418553->2197326155" -> "humidity-to-location:2072782209->2194801986 1253227229->1375247006"
+"temperature-to-humidity:3793564740->3905472342 2085418553->2197326155" -> "humidity-to-location:2194801987->2200355684 79004094->84557791"
+"temperature-to-humidity:785415532->1360551726 1090991104->1666127298" -> "humidity-to-location:1156349110->1207463958 1919184105->1970298953"
+"temperature-to-humidity:785415532->1360551726 1090991104->1666127298" -> "humidity-to-location:1207463959->1342265549 84557792->219359382"
+"temperature-to-humidity:785415532->1360551726 1090991104->1666127298" -> "humidity-to-location:1371746366->1638241760 635909965->902405359"
+"temperature-to-humidity:785415532->1360551726 1090991104->1666127298" -> "humidity-to-location:1133540977->1156349109 2218993186->2241801318"
+"temperature-to-humidity:785415532->1360551726 1090991104->1666127298" -> "humidity-to-location:1638241761->1695010546 1196458443->1253227228"
+"temperature-to-humidity:785415532->1360551726 1090991104->1666127298" -> "humidity-to-location:1051790026->1133540976 1416692641->1498443591"
+"temperature-to-humidity:785415532->1360551726 1090991104->1666127298" -> "humidity-to-location:1342265550->1371746365 1149193536->1178674351"
+"temperature-to-humidity:1829598900->1899269238 3437652344->3507322682" -> "humidity-to-location:3437120249->3573409941 4056893779->4193183471"
+"temperature-to-humidity:2500993022->2890032963 2874706420->3263746361" -> "humidity-to-location:2857352625->2959136448 4193183472->4294967295"
+"temperature-to-humidity:2500993022->2890032963 2874706420->3263746361" -> "humidity-to-location:2959136449->3099521764 3217192942->3357578257"
+"temperature-to-humidity:2500993022->2890032963 2874706420->3263746361" -> "humidity-to-location:3099521765->3191476308 2868723842->2960678385"
+"temperature-to-humidity:2500993022->2890032963 2874706420->3263746361" -> "humidity-to-location:3191476309->3411510750 2997158500->3217192941"
+"temperature-to-humidity:3905472343->4039643311 3303481375->3437652343" -> "humidity-to-location:3411510751->3437120248 4031284281->4056893778"
+"temperature-to-humidity:3905472343->4039643311 3303481375->3437652343" -> "humidity-to-location:3437120249->3573409941 4056893779->4193183471"
+"temperature-to-humidity:3905472343->4039643311 3303481375->3437652343" -> "humidity-to-location:3191476309->3411510750 2997158500->3217192941"
+"temperature-to-humidity:0->478456147 305575572->784031719" -> "humidity-to-location:369831582->421149205 2167675562->2218993185"
+"temperature-to-humidity:0->478456147 305575572->784031719" -> "humidity-to-location:421149206->530018597 902405360->1011274751"
+"temperature-to-humidity:0->478456147 305575572->784031719" -> "humidity-to-location:693035436->710819526 1178674352->1196458442"
+"temperature-to-humidity:0->478456147 305575572->784031719" -> "humidity-to-location:530018598->556211846 1970298954->1996492202"
+"temperature-to-humidity:0->478456147 305575572->784031719" -> "humidity-to-location:556211847->693035435 219359383->356182971"
+"temperature-to-humidity:0->478456147 305575572->784031719" -> "humidity-to-location:250187453->345400237 1785350971->1880563755"
+"temperature-to-humidity:0->478456147 305575572->784031719" -> "humidity-to-location:710819527->895259168 356182972->540622613"
+"temperature-to-humidity:0->478456147 305575572->784031719" -> "humidity-to-location:345400238->369831581 1498443592->1522874935"
+"temperature-to-humidity:2890032964->2907483582 3263746362->3281196980" -> "humidity-to-location:3191476309->3411510750 2997158500->3217192941"
+"temperature-to-humidity:2213436964->2291603040 2527060387->2605226463" -> "humidity-to-location:2543337773->2629702984 2628749093->2715114304"
+"temperature-to-humidity:2213436964->2291603040 2527060387->2605226463" -> "humidity-to-location:2446452559->2543337772 3504710349->3601595562"
+"temperature-to-humidity:3695128196->3793564739 2428623843->2527060386" -> "humidity-to-location:2446452559->2543337772 3504710349->3601595562"
+"temperature-to-humidity:4270940999->4294967295 2663574536->2687600832" -> "humidity-to-location:2629702985->2811999518 2446452559->2628749092"
+"temperature-to-humidity:2907483583->3695128195 3507322683->4294967295" -> "humidity-to-location:3437120249->3573409941 4056893779->4193183471"
+"temperature-to-humidity:2907483583->3695128195 3507322683->4294967295" -> "humidity-to-location:4156827458->4258606442 3402931364->3504710348"
+"temperature-to-humidity:2907483583->3695128195 3507322683->4294967295" -> "humidity-to-location:4127764171->4129583834 4029464617->4031284280"
+"temperature-to-humidity:2907483583->3695128195 3507322683->4294967295" -> "humidity-to-location:3699895117->4127764170 3601595563->4029464616"
+"temperature-to-humidity:2907483583->3695128195 3507322683->4294967295" -> "humidity-to-location:4258606443->4267842933 2987922009->2997158499"
+"temperature-to-humidity:2907483583->3695128195 3507322683->4294967295" -> "humidity-to-location:4267842934->4294967295 2841599480->2868723841"
+"temperature-to-humidity:2907483583->3695128195 3507322683->4294967295" -> "humidity-to-location:4129583835->4156827457 2960678386->2987922008"
+"temperature-to-humidity:2907483583->3695128195 3507322683->4294967295" -> "humidity-to-location:3573409942->3699895116 2715114305->2841599479"
+"temperature-to-humidity:4039643312->4270940998 2197326156->2428623842" -> "humidity-to-location:2200355685->2241801318 1375247007->1416692640"
+"temperature-to-humidity:4039643312->4270940998 2197326156->2428623842" -> "humidity-to-location:2194801987->2200355684 79004094->84557791"
+"temperature-to-humidity:1360551727->1666127298 0->305575571" -> "humidity-to-location:171183359->250187452 0->79004093"
+"temperature-to-humidity:1360551727->1666127298 0->305575571" -> "humidity-to-location:0->171183358 1996492203->2167675561"
+"temperature-to-humidity:1360551727->1666127298 0->305575571" -> "humidity-to-location:250187453->345400237 1785350971->1880563755"
+}

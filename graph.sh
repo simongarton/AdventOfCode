@@ -1,0 +1,1 @@
+dot maps.dot -Tpng -o maps.png
