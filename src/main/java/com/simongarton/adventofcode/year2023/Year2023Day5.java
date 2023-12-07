@@ -55,6 +55,8 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         this.loadSeeds(input);
         this.loadData(input);
 
+        this.chopUpRanges();
+
         this.drawRanges();
         this.drawGraph(false);
 
@@ -67,6 +69,44 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         }
 
         return String.valueOf(lowestLocation);
+    }
+
+    private void chopUpRanges() {
+        final List<Long> breaks = new ArrayList<>();
+        for (final AlmanacMap map : this.maps) {
+            for (final AlmanacRange range : map.getRanges()) {
+                breaks.add(range.getSourceStart());
+                breaks.add(range.getSourceEnd());
+            }
+        }
+        for (final Long rangeBreak : breaks) {
+            for (final AlmanacMap map : this.maps) {
+                final List<AlmanacRange> rangesToAdd = new ArrayList<>();
+                for (final AlmanacRange range : map.getRanges()) {
+                    if (range.getSourceStart() < rangeBreak &&
+                            range.getSourceEnd() > rangeBreak) {
+                        rangesToAdd.add(this.breakRange(range, rangeBreak));
+                    }
+                }
+                map.getRanges().addAll(rangesToAdd);
+            }
+        }
+    }
+
+    private AlmanacRange breakRange(final AlmanacRange range, final Long rangeBreak) {
+        final long breakAt = rangeBreak - range.getSourceStart();
+        final long oldSourceStart = range.getSourceStart();
+        final long oldSourceEnd = range.getSourceEnd();
+        final long oldDestinationStart = range.getDestinationStart();
+        final long oldDestinationEnd = range.getDestinationEnd();
+        range.setSourceEnd(range.getSourceEnd() - breakAt);
+        range.setDestinationEnd(range.getDestinationEnd() - breakAt);
+        return AlmanacRange.builder()
+                .sourceStart(oldSourceStart + breakAt + 2)
+                .sourceEnd(oldSourceEnd)
+                .destinationStart(oldDestinationStart + breakAt + 2)
+                .destinationEnd(oldDestinationEnd)
+                .build();
     }
 
     private String dotStyle(final AlmanacRange range, final AlmanacMap map) {
