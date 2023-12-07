@@ -12,12 +12,19 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓
+2023 : ✓✓✓✓✓✓✓
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
+
+### Day 7: Camel Cards
+
+Another nice example, where the first part is manageable, but the second part needs a new approach. Playing poker,
+work out from a list of hands what the best hand is - that's the first part, the second part then adds wild cards.
+
+Including 5 wild cards which kind of breaks the brute force approach unless you're expecting it. 30 seconds.
 
 ### Day 6: Wait for it
 
