@@ -24,11 +24,8 @@ public class Year2023Day7 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        // I might have changed something which breaks this.
-        // my answer as given was 248179786
-        // my answer now is 248878724
         this.handAndBidList = this.readCards(input);
-        this.handAndBidList.sort(new HandAndBitComparator(true));
+        this.handAndBidList.sort(new HandAndBitComparator(false));
         long total = 0;
         for (int i = 0; i < this.handAndBidList.size(); i++) {
             total = total + ((long) this.handAndBidList.get(i).getBid() * (i + 1));
