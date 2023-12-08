@@ -57,7 +57,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         this.loadSeeds(input);
         this.loadData(input);
 
-//        this.chopUpRanges();
+        this.chopUpRanges();
 
         this.drawRanges();
         this.drawGraph(false);
@@ -90,6 +90,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
                         rangesToAdd.add(this.breakRange(range, rangeBreak));
                     }
                 }
+                // doing this late isn't working : I end up splitting the same range multiple times
                 map.getRanges().addAll(rangesToAdd);
             }
         }
@@ -152,10 +153,10 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     }
 
     private String rangeName(final AlmanacRange range, final AlmanacMap map) {
-        return "\"" + this.shortMapName(map) + " " + this.keyForRange(range) + "\"";
+//        return "\"" + this.shortMapName(map) + " " + this.keyForRange(range) + "\"";
 //        return "\"" + this.shortMapName(map) + "\"";
-//        final String line = "\"" + this.shortMapName(map) + "\n" + this.getRangeDetails(range) + "\"";
-//        return line;
+        final String line = "\"" + this.shortMapName(map) + "\n" + this.getRangeDetails(range) + "\"";
+        return line;
     }
 
     private String keyForRange(final AlmanacRange range) {
@@ -173,8 +174,8 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
     }
 
     private String getRangeDetails(final AlmanacRange range) {
-        return range.getSourceStart() + "->" +
-                range.getSourceEnd() + " " +
+        return "s" + range.getSourceStart() + "->" +
+                range.getSourceEnd() + " d" +
                 range.getDestinationStart() + "->" +
                 range.getDestinationEnd();
     }
