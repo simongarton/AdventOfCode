@@ -25,7 +25,7 @@ public class Year2023Day7 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
 
         this.handAndBidList = this.readCards(input);
-        this.handAndBidList.sort(new HandAndBitComparator(true));
+        this.handAndBidList.sort(new HandAndBitComparator(false));
         long total = 0;
         for (int i = 0; i < this.handAndBidList.size(); i++) {
             total = total + ((long) this.handAndBidList.get(i).getBid() * (i + 1));

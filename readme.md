@@ -12,12 +12,19 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓
+2023 : ✓✓✓✓✓✓✓✓
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
+
+### Day 8: Haunted Wasteland
+
+I've seen this before ... basically you hop about through a map until you find an end; the first part is trivial,
+the second part is having to do six at once, and all 6 must hit the end at the same time. Can't do it brute force,
+but if you look for patterns, each one of the six is repeating a cycle; and we then just need to find the least
+common multiple.
 
 ### Day 7: Camel Cards
 
