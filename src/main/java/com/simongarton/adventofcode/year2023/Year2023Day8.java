@@ -11,8 +11,6 @@ import java.util.Map;
 
 public class Year2023Day8 extends AdventOfCodeChallenge {
 
-    private Node firstNode;
-    private Node lastNode;
     private Node currentNode;
     private List<Node> currentNodes;
     private final Map<String, Node> nodeMap = new HashMap<>();
@@ -21,7 +19,7 @@ public class Year2023Day8 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 8: XXX";
+        return "Day 8: Haunted Wasteland";
     }
 
     @Override
@@ -34,10 +32,10 @@ public class Year2023Day8 extends AdventOfCodeChallenge {
 
         this.loadMap(input);
         long steps = 0;
-        this.firstNode = this.nodeMap.get("AAA");
-        this.lastNode = this.nodeMap.get("ZZZ");
-        this.currentNode = this.firstNode;
-        while (!this.currentNode.getId().equalsIgnoreCase(this.lastNode.getId())) {
+        final Node firstNode = this.nodeMap.get("AAA");
+        final Node lastNode = this.nodeMap.get("ZZZ");
+        this.currentNode = firstNode;
+        while (!this.currentNode.getId().equalsIgnoreCase(lastNode.getId())) {
             this.move();
             steps++;
         }
@@ -80,7 +78,6 @@ public class Year2023Day8 extends AdventOfCodeChallenge {
     public String part2(final String[] input) {
 
         this.loadMap(input);
-        long steps = 0;
 
         this.currentNodes = new ArrayList<>();
         for (final Map.Entry<String, Node> node : this.nodeMap.entrySet()) {
@@ -89,16 +86,67 @@ public class Year2023Day8 extends AdventOfCodeChallenge {
             }
         }
 
-        System.out.println(steps + " " + this.currentNodes.size());
-        this.debugNodes(steps);
-        while (!this.finished()) {
-            this.moveMany();
-            steps++;
-//            System.out.println(steps + " " + this.currentNodes.size());
-            this.debugNodes(steps);
+        // insight : because we have to keep going until we're ALL at a Z, have a look at the
+        // patterns for EACH one. Count how many steps between EACH time we hit a Z, repeat a few
+        // times until it looks like a pattern or not.
+        final List<Long> patterns = new ArrayList<>();
+        for (final Node node : this.currentNodes) {
+            patterns.add(this.findPatterns(node));
         }
 
-        return String.valueOf(steps);
+        final long result = this.getLowestCommonMultiple(patterns);
+
+        return String.valueOf(result);
+    }
+
+    private long getLowestCommonMultiple(final List<Long> patterns) {
+        final Long[] longs = new Long[patterns.size()];
+        return lcm(patterns.toArray(longs));
+    }
+
+    private static long gcd(long a, long b) {
+        while (b > 0) {
+            final long temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+
+    private static long lcm(final long a, final long b) {
+        return a * (b / gcd(a, b));
+    }
+
+    private static long lcm(final Long[] input) {
+        long result = input[0];
+        for (int i = 1; i < input.length; i++) {
+            result = lcm(result, input[i]);
+        }
+        return result;
+    }
+
+    private long findPatterns(final Node node) {
+        this.currentNode = node;
+        long steps = 0;
+        long zs = 0;
+        final List<Long> pattern = new ArrayList<>();
+        while (true) {
+            this.move();
+            steps++;
+            if (this.currentNode.getId().substring(2, 3).equalsIgnoreCase("Z")) {
+                pattern.add(steps);
+                if (++zs == 5) {
+                    break;
+                }
+            }
+        }
+//        System.out.println(node.getId() + ":" + pattern.stream().map(String::valueOf).collect(Collectors.joining(",")));
+        final List<Long> deltas = new ArrayList<>();
+        for (int i = 1; i < 5; i++) {
+            deltas.add(pattern.get(i) - pattern.get(i - 1));
+        }
+//        System.out.println("  cycle" + ":" + deltas.stream().map(String::valueOf).collect(Collectors.joining(",")));
+        return deltas.get(0);
     }
 
     private void debugNodes(final long steps) {
@@ -109,45 +157,6 @@ public class Year2023Day8 extends AdventOfCodeChallenge {
         if (steps % 1000000 == 0) {
             System.out.println(steps + ":" + line.substring(0, line.length() - 1));
         }
-    }
-
-    private boolean finished() {
-        for (final Node node : this.currentNodes) {
-            if (!node.getId().substring(2, 3).equalsIgnoreCase("Z")) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void moveMany() {
-
-        final String direction = this.directions.substring(this.index, this.index + 1);
-        this.index = this.index + 1;
-        if (this.index == this.directions.length()) {
-            this.index = 0;
-        }
-
-        final List<Node> originals = new ArrayList<>();
-        final List<Node> splits = new ArrayList<>();
-        for (Node node : this.currentNodes) {
-            final boolean both = (node.getId().substring(2, 3).equalsIgnoreCase("A"));
-            if (direction.equalsIgnoreCase("L")) {
-                node = this.nodeMap.get(node.getLeft());
-                if (both) {
-                    splits.add(this.nodeMap.get(node.getRight()));
-                }
-            } else {
-                node = this.nodeMap.get(node.getRight());
-                if (both) {
-                    splits.add(this.nodeMap.get(node.getLeft()));
-                }
-            }
-            originals.add(node);
-        }
-        this.currentNodes.clear();
-        this.currentNodes.addAll(originals);
-//        this.currentNodes.addAll(splits);
     }
 
     @Data
