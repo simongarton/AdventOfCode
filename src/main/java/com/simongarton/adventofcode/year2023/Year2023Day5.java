@@ -57,9 +57,10 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         this.loadSeeds(input);
         this.loadData(input);
 
+        this.drawRanges("ranges-before.png");
         this.chopUpRanges();
+        this.drawRanges("ranges-after.png");
 
-        this.drawRanges();
         this.drawGraph(false);
 
         long lowestLocation = Long.MAX_VALUE;
@@ -83,15 +84,13 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         }
         for (final Long rangeBreak : breaks) {
             for (final AlmanacMap map : this.maps) {
-                final List<AlmanacRange> rangesToAdd = new ArrayList<>();
-                for (final AlmanacRange range : map.getRanges()) {
+                for (int i = 0; i < map.getRanges().size(); i++) {
+                    final AlmanacRange range = map.getRanges().get(i);
                     if (range.getSourceStart() < rangeBreak &&
                             range.getSourceEnd() > rangeBreak) {
-                        rangesToAdd.add(this.breakRange(range, rangeBreak));
+                        map.getRanges().add(this.breakRange(range, rangeBreak));
                     }
                 }
-                // doing this late isn't working : I end up splitting the same range multiple times
-                map.getRanges().addAll(rangesToAdd);
             }
         }
     }
@@ -243,6 +242,12 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
+
+        try {
+            final Process p = Runtime.getRuntime().exec("./graph.sh");
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<AlmanacRange> findRangesMatchingRange(final SeedRange range, final AlmanacMap nextMap) {
@@ -275,7 +280,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         return nextRanges;
     }
 
-    private void drawRanges() {
+    private void drawRanges(final String filename) {
 
         this.calculateMaxWidth();
 
@@ -284,7 +289,7 @@ public class Year2023Day5 extends AdventOfCodeChallenge {
         this.clearBackground(graphics2D);
         this.paintRanges(graphics2D);
         try {
-            ImageIO.write(bufferedImage, "PNG", new File("ranges.png"));
+            ImageIO.write(bufferedImage, "PNG", new File(filename));
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
