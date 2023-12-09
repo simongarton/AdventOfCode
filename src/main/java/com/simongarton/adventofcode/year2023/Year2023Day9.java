@@ -13,7 +13,7 @@ public class Year2023Day9 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 9: XXX";
+        return "Day 9: Mirage Maintenance";
     }
 
     @Override
@@ -33,18 +33,21 @@ public class Year2023Day9 extends AdventOfCodeChallenge {
     }
 
     private long solveNextValue(final String line) {
+        this.buildFirstLists(line);
+        for (int i = this.listOfLists.size() - 2; i > 0; i--) {
+            final List<Integer> bottomList = this.listOfLists.get(i);
+            final List<Integer> topList = this.listOfLists.get(i - 1);
+            topList.add(bottomList.get(bottomList.size() - 1) + topList.get(topList.size() - 1));
+        }
+        return this.listOfLists.get(0).get(this.listOfLists.get(0).size() - 1);
+    }
+
+    private void buildFirstLists(final String line) {
         this.listOfLists.clear();
         this.listOfLists.add(this.convertLineToList(line));
         while (this.nonZeroList(this.listOfLists.get(this.listOfLists.size() - 1))) {
             this.listOfLists.add(this.listOfDifferences(this.listOfLists.get(this.listOfLists.size() - 1)));
         }
-        for (int i = this.listOfLists.size() - 2; i > 0; i--) {
-            final List<Integer> bottomList = this.listOfLists.get(i);
-            final List<Integer> topList = this.listOfLists.get(i - 1);
-            topList.add(bottomList.get(bottomList.size() - 1) + topList.get(topList.size() - 1));
-            // do something with the difference in this line which will inform the difference in the previous one.
-        }
-        return this.listOfLists.get(0).get(this.listOfLists.get(0).size() - 1);
     }
 
     private List<Integer> listOfDifferences(final List<Integer> integers) {
@@ -75,17 +78,12 @@ public class Year2023Day9 extends AdventOfCodeChallenge {
     }
 
     private long solvePreviousValue(final String line) {
-        this.listOfLists.clear();
-        this.listOfLists.add(this.convertLineToList(line));
-        while (this.nonZeroList(this.listOfLists.get(this.listOfLists.size() - 1))) {
-            this.listOfLists.add(this.listOfDifferences(this.listOfLists.get(this.listOfLists.size() - 1)));
-        }
+        this.buildFirstLists(line);
         // now work backwards
         for (int i = this.listOfLists.size() - 1; i > 0; i--) {
             final List<Integer> topList = this.listOfLists.get(i - 1);
             final List<Integer> bottomList = this.listOfLists.get(i);
             topList.add(0, topList.get(0) - bottomList.get(0));
-            // do something with the difference in this line which will inform the difference in the previous one.
         }
         return this.listOfLists.get(0).get(0);
     }

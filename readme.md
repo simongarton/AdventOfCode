@@ -12,12 +12,17 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓✓
+2023 : ✓✓✓✓✓✓✓✓✓
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
+
+### Day 9: Mirage Maintenance
+
+Curiously easy ? Lists of sequences, for each figure out the next item. The worked examples made it very clear how to
+do it, and even the "Surely it's safe ..." warning about how to handle part 2 ... turned out to be safe. ¯\_(ツ)_/¯
 
 ### Day 8: Haunted Wasteland
 
