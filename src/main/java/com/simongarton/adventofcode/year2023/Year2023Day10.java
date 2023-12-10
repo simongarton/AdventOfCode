@@ -4,10 +4,16 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
+
 
 public class Year2023Day10 extends AdventOfCodeChallenge {
 
@@ -31,9 +37,15 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
 
     I don't think I can use any left-hand/right-hand rules as my pipes head off in two directions.
 
+    Flood fill won't work : I can close off entire unenclosed sections.
 
+    OK. Pick a start cell - can do with code or just eyeball. Make it a vertical one on the left hand side.
+    Now drive around the loop, following the corners - so I need to keep track of directions.
+    For each horizontal and vertical (only), look to my right. If it's "." make it a "I" and add it to a list.
+    Then floodfill the list.
+    Then loop over and count.
 
-
+    5187 too high
 
      */
 
@@ -41,6 +53,8 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
     private Cell start;
     private int width;
     private int height;
+
+    private static final int MAP_TILE = 5;
 
     @Override
     public String title() {
@@ -60,13 +74,145 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
         return String.valueOf(max);
     }
 
+    private void drawMap2() {
+
+        for (int row = 0; row < this.height; row++) {
+            final StringBuilder line = new StringBuilder();
+            for (int col = 0; col < this.width; col++) {
+                final Cell cell = this.getCell(col, row);
+                if (cell.getContents().equalsIgnoreCase(".")) {
+                    line.append(".");
+                } else {
+                    line.append("O");
+                }
+            }
+            System.out.println(line);
+        }
+        System.out.println();
+    }
+
+    private void paintMap(final String filename) {
+
+        final BufferedImage bufferedImage = new BufferedImage(this.width * MAP_TILE, this.height * MAP_TILE, TYPE_INT_RGB);
+        final Graphics2D graphics2D = bufferedImage.createGraphics();
+        this.clearBackground(graphics2D);
+        this.paintCells(graphics2D);
+        try {
+            ImageIO.write(bufferedImage, "PNG", new File(filename));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        graphics2D.dispose();
+    }
+
+    private void paintPipeMap(final String filename) {
+
+        final BufferedImage bufferedImage = new BufferedImage(this.width * MAP_TILE, this.height * MAP_TILE, TYPE_INT_RGB);
+        final Graphics2D graphics2D = bufferedImage.createGraphics();
+        this.clearBackground(graphics2D);
+        this.paintPipeCells(graphics2D);
+        try {
+            ImageIO.write(bufferedImage, "PNG", new File(filename));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        graphics2D.dispose();
+    }
+
+    private void paintCells(final Graphics2D graphics2D) {
+        for (int row = 0; row < this.height; row++) {
+            for (int col = 0; col < this.width; col++) {
+                final Cell cell = this.getCell(col, row);
+                this.paintCell(graphics2D, cell);
+            }
+        }
+    }
+
+    private void paintPipeCells(final Graphics2D graphics2D) {
+        for (int row = 0; row < this.height; row++) {
+            for (int col = 0; col < this.width; col++) {
+                final Cell cell = this.getCell(col, row);
+                this.paintPipeCell(graphics2D, cell);
+            }
+        }
+    }
+
+    private void paintPipeCell(final Graphics2D graphics2D, final Cell cell) {
+        final int x = cell.getX() * MAP_TILE;
+        final int y = cell.getY() * MAP_TILE;
+        final int x0 = x;
+        final int x1 = x + (MAP_TILE / 2);
+        final int x2 = x + MAP_TILE;
+        final int y0 = y;
+        final int y1 = y + (MAP_TILE / 2);
+        final int y2 = y + MAP_TILE;
+        graphics2D.setPaint(new Color(0, 200, 0));
+        if (cell.isStart()) {
+            graphics2D.setPaint(new Color(255, 255, 255));
+        }
+        switch (cell.getContents()) {
+            case "O":
+                graphics2D.setPaint(new Color(200, 0, 0));
+                graphics2D.fillRect(x1 - 1, y1 - 1, 3, 3);
+                break;
+            case "I":
+                graphics2D.setPaint(new Color(0, 0, 255));
+                graphics2D.fillRect(x1 - 1, y1 - 1, 3, 3);
+                break;
+            default:
+                graphics2D.setPaint(new Color(200, 0, 0));
+                graphics2D.fillRect(x1 - 0, y1 - 0, 1, 1);
+                break;
+            case "|":
+                graphics2D.drawLine(x1, y0, x1, y2);
+                break;
+            case "-":
+                graphics2D.drawLine(x0, y1, x2, y1);
+                break;
+            case "L":
+                graphics2D.drawLine(x1, y0, x1, y1);
+                graphics2D.drawLine(x1, y1, x2, y1);
+                break;
+            case "J":
+                graphics2D.drawLine(x1, y0, x1, y1);
+                graphics2D.drawLine(x1, y1, x0, y1);
+                break;
+            case "7":
+                graphics2D.drawLine(x0, y1, x1, y1);
+                graphics2D.drawLine(x1, y1, x1, y2);
+                break;
+            case "F":
+                graphics2D.drawLine(x1, y2, x1, y1);
+                graphics2D.drawLine(x1, y1, x2, y1);
+                break;
+        }
+    }
+
+    private void paintCell(final Graphics2D graphics2D, final Cell cell) {
+
+        final int left = cell.getX() * MAP_TILE;
+        final int top = cell.getY() * MAP_TILE;
+        if (cell.getContents().equalsIgnoreCase(".")) {
+            graphics2D.setPaint(Color.BLACK);
+            graphics2D.fillRect(left, top, MAP_TILE, MAP_TILE);
+        } else {
+            graphics2D.setPaint(new Color(0, 0, 200));
+            graphics2D.fillRect(left, top, MAP_TILE, MAP_TILE);
+        }
+    }
+
+    private void clearBackground(final Graphics2D graphics2D) {
+
+        graphics2D.setPaint(Color.BLACK);
+        graphics2D.fillRect(0, 0, 800, 600);
+    }
+
     private void drawMap() {
 
         for (int row = 0; row < this.height; row++) {
             String line = "";
             for (int col = 0; col < this.width; col++) {
-                final String key = col + "," + row;
-                final Cell cell = this.cells.get(key);
+                final Cell cell = this.getCell(col, row);
                 if (cell.getContents().equalsIgnoreCase(".")) {
                     line += cell.getInsideOutside() == null ? "." : cell.getInsideOutside();
                     continue;
@@ -79,10 +225,14 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
                         draw = "!";
                     }
                 }
+                if (cell.getInsideOutside() != null) {
+                    draw = cell.getInsideOutside();
+                }
                 line += draw;
             }
             System.out.println(line);
         }
+        System.out.println();
     }
 
     private int loadMap(final String[] input) {
@@ -133,13 +283,13 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
             this.maybeAddNeighbour(cellToCheck, cellsToCheck, cellToCheck.getX(), cellToCheck.getY() + 1);
 
 //            this.drawMap();
-//            System.out.println();
         }
 
         return max;
     }
 
     private void maybeAddNeighbour(final Cell cellToCheck, final List<Cell> cellsToCheck, final int col, final int row) {
+
         final Cell neighbour = this.getCell(col, row);
         if (!this.canConnect(cellToCheck, neighbour)) {
             // can't connect
@@ -173,6 +323,7 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
     }
 
     private void sortOutStart() {
+
         this.start.setDistance(0);
 
         // I'm NOT safe for edges
@@ -213,6 +364,7 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
     }
 
     private Cell getCell(final int col, final int row) {
+
         final String key = col + "," + row;
         if (!this.cells.containsKey(key)) {
             return null;
@@ -235,31 +387,90 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
 
         this.loadMap(input);
 
-        final Cell testCell = this.getCell(5, 5);
-        this.insideByAllDirections(testCell);
+        // Any tile that isn't part of the main loop can count as being enclosed by the loop.
+        // is that all junk ? or just junk enclosed ?
+        this.convertAllJunkToDots();
 
-        final int inside = this.countInside4Ways();
+        this.drawMap2();
+        this.paintMap("pipe-map-overview.png");
+        this.paintPipeMap("pipe-map-before.png");
+
+        final int inside = this.driveAround();
+
+        this.paintPipeMap("pipe-map.png");
 
         this.drawMap();
 
         return String.valueOf(inside);
     }
 
-    private int countInside4Ways() {
+    private int driveAround() {
+
+        final Set<Cell> floodFillNeeded = new HashSet<>();
+
+        PositionAndDirection driver = PositionAndDirection.builder()
+                .cell(this.start)
+                .direction("E")
+                .build();
+        do {
+            driver = this.drive(driver);
+            this.lookRight(driver, floodFillNeeded);
+        } while (driver.getCell() != this.start);
+
+        final int inside = this.staticFloodFill(floodFillNeeded);
+
+        return inside;
+    }
+
+    private int staticFloodFill(final Set<Cell> floodFillNeeded) {
 
         int inside = 0;
-        for (int row = 0; row < this.height; row++) {
-            final int insideCount = 0;
-            for (int col = 0; col < this.width; col++) {
-                final Cell cell = this.getCell(col, row);
-                if (this.isJunk(cell)) {
-                    inside++;
-                    continue;
+        final List<Cell> cellsToCheck = new ArrayList<>(floodFillNeeded);
+        while (!cellsToCheck.isEmpty()) {
+            final Cell cellToCheck = cellsToCheck.get(0);
+            cellsToCheck.remove(0);
+            if (cellToCheck.getContents().equalsIgnoreCase(".")) {
+                cellToCheck.setContents("I");
+                inside++;
+            }
+        }
+
+        return inside;
+    }
+
+    private int floodFill(final Set<Cell> floodFillNeeded) {
+
+        int inside = 0;
+        final List<Cell> cellsToCheck = new ArrayList<>(floodFillNeeded);
+        while (!cellsToCheck.isEmpty()) {
+            final Cell cellToCheck = cellsToCheck.get(0);
+            cellsToCheck.remove(0);
+            if (cellToCheck.getContents().equalsIgnoreCase(".")) {
+                cellToCheck.setContents("I");
+                inside++;
+            }
+            Cell cell = this.getCell(cellToCheck.getX() - 1, cellToCheck.getY());
+            if (cell != null && cell.getContents().equalsIgnoreCase(".")) {
+                if (!cellsToCheck.contains(cell)) {
+                    cellsToCheck.add(cell);
                 }
-                if (cell.getContents().equalsIgnoreCase(".")) {
-                    if (this.insideByAllDirections(cell)) {
-                        inside++;
-                    }
+            }
+            cell = this.getCell(cellToCheck.getX() + 1, cellToCheck.getY());
+            if (cell != null && cell.getContents().equalsIgnoreCase(".")) {
+                if (!cellsToCheck.contains(cell)) {
+                    cellsToCheck.add(cell);
+                }
+            }
+            cell = this.getCell(cellToCheck.getX(), cellToCheck.getY() - 1);
+            if (cell != null && cell.getContents().equalsIgnoreCase(".")) {
+                if (!cellsToCheck.contains(cell)) {
+                    cellsToCheck.add(cell);
+                }
+            }
+            cell = this.getCell(cellToCheck.getX(), cellToCheck.getY() + 1);
+            if (cell != null && cell.getContents().equalsIgnoreCase(".")) {
+                if (!cellsToCheck.contains(cell)) {
+                    cellsToCheck.add(cell);
                 }
             }
         }
@@ -267,54 +478,122 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
         return inside;
     }
 
-    private boolean insideByAllDirections(final Cell cell) {
-        int inside = 0;
-        inside = inside + this.trackSaysImInside(cell, "N");
-        inside = inside + this.trackSaysImInside(cell, "S");
-        inside = inside + this.trackSaysImInside(cell, "E");
-        inside = inside + this.trackSaysImInside(cell, "W");
-        if (inside == 0) {
-            return false;
+    private PositionAndDirection drive(final PositionAndDirection driver) {
+
+        driver.setCell(this.getNextCell(driver.getCell(), driver.getDirection()));
+        switch (driver.getCell().getContents()) {
+            case "|":
+                // nothing : I'm driving straight
+                break;
+            case "-":
+                // nothing : I'm driving straight
+                break;
+            case "L": {
+                if (driver.getDirection().equalsIgnoreCase("S")) {
+                    driver.setDirection("E");
+                    break;
+                }
+                if (driver.getDirection().equalsIgnoreCase("W")) {
+                    driver.setDirection("N");
+                    break;
+                }
+                throw new RuntimeException("crash");
+            }
+            case "J": {
+                if (driver.getDirection().equalsIgnoreCase("S")) {
+                    driver.setDirection("W");
+                    break;
+                }
+                if (driver.getDirection().equalsIgnoreCase("E")) {
+                    driver.setDirection("N");
+                    break;
+                }
+                throw new RuntimeException("crash");
+            }
+            case "7": {
+                if (driver.getDirection().equalsIgnoreCase("N")) {
+                    driver.setDirection("W");
+                    break;
+                }
+                if (driver.getDirection().equalsIgnoreCase("E")) {
+                    driver.setDirection("S");
+                    break;
+                }
+                throw new RuntimeException("crash");
+            }
+            case "F": {
+                if (driver.getDirection().equalsIgnoreCase("N")) {
+                    driver.setDirection("E");
+                    break;
+
+                }
+                if (driver.getDirection().equalsIgnoreCase("W")) {
+                    driver.setDirection("S");
+                    break;
+                }
+                throw new RuntimeException("crash");
+            }
+            default: {
+                throw new RuntimeException("out");
+            }
         }
-        if (inside == 4) {
-            return true;
-        }
-        throw new RuntimeException("ambiguous");
+        return driver;
     }
 
-    private int trackSaysImInside(final Cell cell, final String direction) {
-        int insideCount = 0;
-        Cell workingCell = cell;
+    private void lookRight(final PositionAndDirection driver, final Set<Cell> floodFillNeeded) {
 
-        while (true) {
-            workingCell = this.getNextCell(workingCell, direction);
-            if (workingCell == null) {
+        final Cell rightNeighbour;
+        switch (driver.getCell().getContents()) {
+            default:
+                // nothing doing
+                return;
+            case "|":
+                // assuming I can only be going N/S
+                if (driver.getDirection().equalsIgnoreCase("N")) {
+                    rightNeighbour = this.getNextCell(driver.getCell(), "E");
+                } else {
+                    rightNeighbour = this.getNextCell(driver.getCell(), "W");
+                }
+                if (rightNeighbour.getContents().equalsIgnoreCase(".")) {
+                    floodFillNeeded.add(rightNeighbour);
+                }
                 break;
-            }
-            final Cell nextWorkingCell = this.getNextCell(workingCell, direction);
-            if (this.isPipe(workingCell)) {
-                if (List.of("N", "S").contains(direction) && nextWorkingCell != null && this.hasEWExit(nextWorkingCell)) {
-                    continue;
+            case "-":
+                if (driver.getDirection().equalsIgnoreCase("E")) {
+                    rightNeighbour = this.getNextCell(driver.getCell(), "S");
+                } else {
+                    rightNeighbour = this.getNextCell(driver.getCell(), "N");
                 }
-                if (List.of("E", "W").contains(direction) && nextWorkingCell != null && this.hasNSExit(nextWorkingCell)) {
-                    continue;
+                if (rightNeighbour.getContents().equalsIgnoreCase(".")) {
+                    floodFillNeeded.add(rightNeighbour);
                 }
-                insideCount = insideCount + 1;
+                break;
+        }
+    }
+
+    private void convertAllJunkToDots() {
+        for (int row = 0; row < this.height; row++) {
+            for (int col = 0; col < this.width; col++) {
+                final Cell cell = this.getCell(col, row);
+                if (this.isJunk(cell)) {
+                    cell.setContents(".");
+                }
             }
         }
-
-        return insideCount % 2;
     }
 
     private boolean hasEWExit(final Cell workingCell) {
+
         return workingCell.outE() || workingCell.outW();
     }
 
     private boolean hasNSExit(final Cell workingCell) {
+
         return workingCell.outS() || workingCell.outN();
     }
 
     private Cell getNextCell(final Cell cell, final String direction) {
+
         switch (direction.toUpperCase()) {
             case "N":
                 return this.getCell(cell.getX(), cell.getY() - 1);
@@ -329,38 +608,6 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
         }
     }
 
-    private int countInsideFailed() {
-
-        // this not valid for solid pipes
-
-        int inside = 0;
-        for (int row = 0; row < this.height; row++) {
-            int insideCount = 0;
-            for (int col = 0; col < this.width; col++) {
-                final Cell cell = this.getCell(col, row);
-                if (this.isJunk(cell)) {
-                    inside++;
-                    continue;
-                }
-                if (this.isPipe(cell)) {
-                    insideCount++;
-                    continue;
-                }
-                if (cell.getContents().equalsIgnoreCase(".")) {
-                    if (insideCount % 2 == 1) {
-                        inside++;
-                        cell.setInsideOutside("I");
-                    } else {
-                        cell.setInsideOutside("O");
-                    }
-                    continue;
-                }
-                throw new RuntimeException("borked");
-            }
-        }
-        return inside;
-    }
-
     private boolean isPipe(final Cell cell) {
         return !cell.getContents().equalsIgnoreCase(".");
     }
@@ -373,6 +620,35 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
             return false;
         }
         return true;
+    }
+
+    @Data
+    @Builder
+    private static final class PositionAndDirection {
+
+        private Cell cell;
+        private String direction;
+
+        private String key() {
+            return this.cell.getX() + "," + this.cell.getY();
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || this.getClass() != o.getClass()) {
+                return false;
+            }
+            final PositionAndDirection that = (PositionAndDirection) o;
+            return this.key().equalsIgnoreCase(that.key());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.key());
+        }
     }
 
     @Data
@@ -401,6 +677,5 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
         public boolean outW() {
             return List.of("-", "J", "7").contains(this.contents);
         }
-
     }
 }
