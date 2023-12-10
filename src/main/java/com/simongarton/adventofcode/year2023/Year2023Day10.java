@@ -17,38 +17,6 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class Year2023Day10 extends AdventOfCodeChallenge {
 
-    /*
-
-    Start at S : that's 0.
-    For all connected neighbours, mark as N + 1;
-    For neighbours, I have to check if they ARE neighbours
-
-    Part 2 :
-    loop over rows, cols, so coming in from left
-    keep track of if I'm inside a loop
-    - a loop pipe is either the start, or distance > 0
-    - if not a loop pipe : include me
-    - if my current loop count is odd, i'm in
-
-    No, that fails for the horizontal row of pipes, which is an odd number, so the far right cell thinks it's in.
-
-    I note that the real map has very few dots. Can I check those individually ?
-    Can I head out in all four directions, and the first one to the edge is the best indicator ?
-
-    I don't think I can use any left-hand/right-hand rules as my pipes head off in two directions.
-
-    Flood fill won't work : I can close off entire unenclosed sections.
-
-    OK. Pick a start cell - can do with code or just eyeball. Make it a vertical one on the left hand side.
-    Now drive around the loop, following the corners - so I need to keep track of directions.
-    For each horizontal and vertical (only), look to my right. If it's "." make it a "I" and add it to a list.
-    Then floodfill the list.
-    Then loop over and count.
-
-    5187 too high
-
-     */
-
     private Map<String, Cell> cells;
     private Cell start;
     private int width;
@@ -74,37 +42,6 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
         return String.valueOf(max);
     }
 
-    private void drawMap2() {
-
-        for (int row = 0; row < this.height; row++) {
-            final StringBuilder line = new StringBuilder();
-            for (int col = 0; col < this.width; col++) {
-                final Cell cell = this.getCell(col, row);
-                if (cell.getContents().equalsIgnoreCase(".")) {
-                    line.append(".");
-                } else {
-                    line.append("O");
-                }
-            }
-            System.out.println(line);
-        }
-        System.out.println();
-    }
-
-    private void paintMap(final String filename) {
-
-        final BufferedImage bufferedImage = new BufferedImage(this.width * MAP_TILE, this.height * MAP_TILE, TYPE_INT_RGB);
-        final Graphics2D graphics2D = bufferedImage.createGraphics();
-        this.clearBackground(graphics2D);
-        this.paintCells(graphics2D);
-        try {
-            ImageIO.write(bufferedImage, "PNG", new File(filename));
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-        graphics2D.dispose();
-    }
-
     private void paintPipeMap(final String filename) {
 
         final BufferedImage bufferedImage = new BufferedImage(this.width * MAP_TILE, this.height * MAP_TILE, TYPE_INT_RGB);
@@ -119,15 +56,6 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
         graphics2D.dispose();
     }
 
-    private void paintCells(final Graphics2D graphics2D) {
-        for (int row = 0; row < this.height; row++) {
-            for (int col = 0; col < this.width; col++) {
-                final Cell cell = this.getCell(col, row);
-                this.paintCell(graphics2D, cell);
-            }
-        }
-    }
-
     private void paintPipeCells(final Graphics2D graphics2D) {
         for (int row = 0; row < this.height; row++) {
             for (int col = 0; col < this.width; col++) {
@@ -138,14 +66,12 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
     }
 
     private void paintPipeCell(final Graphics2D graphics2D, final Cell cell) {
-        final int x = cell.getX() * MAP_TILE;
-        final int y = cell.getY() * MAP_TILE;
-        final int x0 = x;
-        final int x1 = x + (MAP_TILE / 2);
-        final int x2 = x + MAP_TILE;
-        final int y0 = y;
-        final int y1 = y + (MAP_TILE / 2);
-        final int y2 = y + MAP_TILE;
+        final int x0 = cell.getX() * MAP_TILE;
+        final int y0 = cell.getY() * MAP_TILE;
+        final int x1 = x0 + (MAP_TILE / 2);
+        final int x2 = x0 + MAP_TILE;
+        final int y1 = y0 + (MAP_TILE / 2);
+        final int y2 = y0 + MAP_TILE;
         graphics2D.setPaint(new Color(0, 200, 0));
         if (cell.isStart()) {
             graphics2D.setPaint(new Color(255, 255, 255));
@@ -161,7 +87,7 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
                 break;
             default:
                 graphics2D.setPaint(new Color(200, 0, 0));
-                graphics2D.fillRect(x1 - 0, y1 - 0, 1, 1);
+                graphics2D.fillRect(x1, y1, 1, 1);
                 break;
             case "|":
                 graphics2D.drawLine(x1, y0, x1, y2);
@@ -188,19 +114,6 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
         }
     }
 
-    private void paintCell(final Graphics2D graphics2D, final Cell cell) {
-
-        final int left = cell.getX() * MAP_TILE;
-        final int top = cell.getY() * MAP_TILE;
-        if (cell.getContents().equalsIgnoreCase(".")) {
-            graphics2D.setPaint(Color.BLACK);
-            graphics2D.fillRect(left, top, MAP_TILE, MAP_TILE);
-        } else {
-            graphics2D.setPaint(new Color(0, 0, 200));
-            graphics2D.fillRect(left, top, MAP_TILE, MAP_TILE);
-        }
-    }
-
     private void clearBackground(final Graphics2D graphics2D) {
 
         graphics2D.setPaint(Color.BLACK);
@@ -210,11 +123,11 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
     private void drawMap() {
 
         for (int row = 0; row < this.height; row++) {
-            String line = "";
+            final StringBuilder line = new StringBuilder();
             for (int col = 0; col < this.width; col++) {
                 final Cell cell = this.getCell(col, row);
                 if (cell.getContents().equalsIgnoreCase(".")) {
-                    line += cell.getInsideOutside() == null ? "." : cell.getInsideOutside();
+                    line.append(cell.getInsideOutside() == null ? "." : cell.getInsideOutside());
                     continue;
                 }
                 String draw = "?";
@@ -228,7 +141,7 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
                 if (cell.getInsideOutside() != null) {
                     draw = cell.getInsideOutside();
                 }
-                line += draw;
+                line.append(draw);
             }
             System.out.println(line);
         }
@@ -254,14 +167,8 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
         }
 
         this.sortOutStart();
-        System.out.println("the start is a " + this.start.getContents());
-
-        this.drawMap();
 
         final int max = this.sortOutDistances();
-        System.out.println();
-
-        this.drawMap();
 
         return max;
     }
@@ -281,8 +188,6 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
             this.maybeAddNeighbour(cellToCheck, cellsToCheck, cellToCheck.getX() + 1, cellToCheck.getY());
             this.maybeAddNeighbour(cellToCheck, cellsToCheck, cellToCheck.getX(), cellToCheck.getY() - 1);
             this.maybeAddNeighbour(cellToCheck, cellsToCheck, cellToCheck.getX(), cellToCheck.getY() + 1);
-
-//            this.drawMap();
         }
 
         return max;
@@ -391,15 +296,11 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
         // is that all junk ? or just junk enclosed ?
         this.convertAllJunkToDots();
 
-        this.drawMap2();
-        this.paintMap("pipe-map-overview.png");
-        this.paintPipeMap("pipe-map-before.png");
-
         final int inside = this.driveAround();
 
         this.paintPipeMap("pipe-map.png");
 
-        this.drawMap();
+//        this.drawMap();
 
         return String.valueOf(inside);
     }
@@ -410,14 +311,14 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
 
         PositionAndDirection driver = PositionAndDirection.builder()
                 .cell(this.start)
-                .direction("E")
+                .direction("S")
                 .build();
         do {
             driver = this.drive(driver);
             this.lookRight(driver, floodFillNeeded);
         } while (driver.getCell() != this.start);
 
-        final int inside = this.staticFloodFill(floodFillNeeded);
+        final int inside = this.floodFill(floodFillNeeded);
 
         return inside;
     }
@@ -479,6 +380,8 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
     }
 
     private PositionAndDirection drive(final PositionAndDirection driver) {
+
+        // figure out the next cell I'm arriving at, and what direction I am turning in
 
         driver.setCell(this.getNextCell(driver.getCell(), driver.getDirection()));
         switch (driver.getCell().getContents()) {
@@ -542,32 +445,93 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
 
     private void lookRight(final PositionAndDirection driver, final Set<Cell> floodFillNeeded) {
 
-        final Cell rightNeighbour;
+        // I have just arrived at this cell. For the bends, I need to consider which direction I was
+        // driving in when I arrived.
+
+        // I think I'm getting confused here with travel direction and look direction
+        // at this point I HAVE TURNED
+        final String drivingDirection = driver.getDirection();
+
+        final List<Cell> rightNeighbours = new ArrayList<>();
         switch (driver.getCell().getContents()) {
             default:
-                // nothing doing
+                throw new RuntimeException(driver.getCell().getContents());
+            case ".":
                 return;
             case "|":
-                // assuming I can only be going N/S
-                if (driver.getDirection().equalsIgnoreCase("N")) {
-                    rightNeighbour = this.getNextCell(driver.getCell(), "E");
+                if (drivingDirection.equalsIgnoreCase("N")) {
+                    rightNeighbours.addAll(this.sameRightNeighboursForDirection(List.of("E"), driver));
                 } else {
-                    rightNeighbour = this.getNextCell(driver.getCell(), "W");
+                    rightNeighbours.addAll(this.sameRightNeighboursForDirection(List.of("W"), driver));
                 }
-                if (rightNeighbour.getContents().equalsIgnoreCase(".")) {
-                    floodFillNeeded.add(rightNeighbour);
-                }
+                this.checkRightNeighbours(rightNeighbours, floodFillNeeded);
                 break;
             case "-":
-                if (driver.getDirection().equalsIgnoreCase("E")) {
-                    rightNeighbour = this.getNextCell(driver.getCell(), "S");
+                if (drivingDirection.equalsIgnoreCase("E")) {
+                    rightNeighbours.addAll(this.sameRightNeighboursForDirection(List.of("S"), driver));
                 } else {
-                    rightNeighbour = this.getNextCell(driver.getCell(), "N");
+                    rightNeighbours.addAll(this.sameRightNeighboursForDirection(List.of("N"), driver));
                 }
-                if (rightNeighbour.getContents().equalsIgnoreCase(".")) {
-                    floodFillNeeded.add(rightNeighbour);
-                }
+                this.checkRightNeighbours(rightNeighbours, floodFillNeeded);
                 break;
+            case "L":
+                if (drivingDirection.equalsIgnoreCase("N")) {
+                    rightNeighbours.addAll(this.sameRightNeighboursForDirection(List.of("N", "E"), driver));
+                }
+                if (drivingDirection.equalsIgnoreCase("E")) {
+                    rightNeighbours.addAll(this.sameRightNeighboursForDirection(List.of("W", "S"), driver));
+                }
+                this.checkRightNeighbours(rightNeighbours, floodFillNeeded);
+                break;
+            case "F":
+                if (drivingDirection.equalsIgnoreCase("E")) {
+                    rightNeighbours.addAll(this.sameRightNeighboursForDirection(List.of("E", "S"), driver));
+                }
+                if (drivingDirection.equalsIgnoreCase("S")) {
+                    rightNeighbours.addAll(this.sameRightNeighboursForDirection(List.of("N", "W"), driver));
+                }
+                this.checkRightNeighbours(rightNeighbours, floodFillNeeded);
+                break;
+            case "J":
+                if (drivingDirection.equalsIgnoreCase("N")) {
+                    rightNeighbours.addAll(this.sameRightNeighboursForDirection(List.of("S", "E"), driver));
+                }
+                if (drivingDirection.equalsIgnoreCase("W")) {
+                    rightNeighbours.addAll(this.sameRightNeighboursForDirection(List.of("N", "W"), driver));
+                }
+                this.checkRightNeighbours(rightNeighbours, floodFillNeeded);
+                break;
+            case "7":
+                if (drivingDirection.equalsIgnoreCase("S")) {
+                    rightNeighbours.addAll(this.sameRightNeighboursForDirection(List.of("S", "W"), driver));
+                }
+                if (drivingDirection.equalsIgnoreCase("W")) {
+                    rightNeighbours.addAll(this.sameRightNeighboursForDirection(List.of("N", "E"), driver));
+                }
+                this.checkRightNeighbours(rightNeighbours, floodFillNeeded);
+                break;
+        }
+    }
+
+    private List<Cell> sameRightNeighboursForDirection(final List<String> directions, final PositionAndDirection driver) {
+        final List<Cell> rightNeighbours = new ArrayList<>();
+        final Map<String, String> options = new HashMap<>();
+        options.put("N", "E");
+        options.put("E", "S");
+        options.put("S", "W");
+        options.put("W", "N");
+        for (final String direction : directions) {
+            //rightNeighbours.add(this.getNextCell(driver.getCell(), options.get(direction)));
+            rightNeighbours.add(this.getNextCell(driver.getCell(), direction));
+        }
+        return rightNeighbours;
+    }
+
+    private void checkRightNeighbours(final List<Cell> rightNeighbours, final Set<Cell> floodFillNeeded) {
+        for (final Cell rightNeighbour : rightNeighbours) {
+            if (rightNeighbour.getContents().equalsIgnoreCase(".")) {
+                floodFillNeeded.add(rightNeighbour);
+            }
         }
     }
 

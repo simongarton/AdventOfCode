@@ -12,12 +12,29 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓✓✓
+2023 : ✓✓✓✓✓✓✓✓✓✓
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
+
+### Day 10: Pipe Maze
+
+Loved it ! And made up for the easy yesterday. A maze / topology problem with a couple of really nice twists : a
+continuous pipe winds around, eventually meeting itself. Given a starting point, (i) what's the furthest point and (ii)
+how much space is ENCLOSED by the pipe. The two twists are (a) a lot of junk pipes, which look as though they should
+connect, but don't; and (b) the pipes run side by side, meaning you can't use simple ray-casting or flood-fill
+algorithms to solve for point-in-polygon.
+
+So this is one of the samples : blue is space enclosed, red is space NOT enclosed, which includes the central area.
+White is the start point
+
+![Part 2](2023-10-2-sample.png)
+
+And this is the beast.
+
+![Part 2](2023-10-2.png)
 
 ### Day 9: Mirage Maintenance
 
