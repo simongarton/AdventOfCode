@@ -26,7 +26,7 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 10: ";
+        return "Day 10: Pipe Maze";
     }
 
     @Override
