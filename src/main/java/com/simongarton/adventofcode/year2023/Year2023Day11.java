@@ -8,12 +8,12 @@ import java.util.*;
 
 public class Year2023Day11 extends AdventOfCodeChallenge {
 
-    private final List<Galaxy> galaxyList = new ArrayList<>();
-    private final List<String> galaxyMap = new ArrayList<>();
-    private final List<String> expandedGalaxyMap = new ArrayList<>();
-    private final List<Integer> blankRows = new ArrayList<>();
-    private final List<Integer> blankCols = new ArrayList<>();
-    private final Map<String, Long> distances = new TreeMap<>();
+    private List<Galaxy> galaxyList;
+    private List<String> galaxyMap;
+    private List<String> expandedGalaxyMap;
+    private List<Integer> blankRows;
+    private List<Integer> blankCols;
+    private Map<String, Long> distances;
 
     private int width;
     private int height;
@@ -54,6 +54,8 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
     }
 
     private void getDistances() {
+
+        this.distances = new TreeMap<>();
         for (int i = 0; i < this.galaxyList.size(); i++) {
             for (int j = 0; j < this.galaxyList.size(); j++) {
                 if (i == j) {
@@ -69,6 +71,8 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
     }
 
     private void getStupidDistances() {
+
+        this.distances = new TreeMap<>();
         for (int i = 0; i < this.galaxyList.size(); i++) {
             for (int j = 0; j < this.galaxyList.size(); j++) {
                 if (i == j) {
@@ -88,6 +92,7 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
     }
 
     private Long stupidManhattanDistance(final Galaxy from, final Galaxy to) {
+
         long distance = 0;
         int x = from.getX();
         int y = from.getY();
@@ -121,6 +126,8 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
     }
 
     private void findGalaxies() {
+
+        this.galaxyList = new ArrayList<>();
         for (int x = 0; x < this.width; x++) {
             for (int y = 0; y < this.height; y++) {
                 if (this.getOriginalCoordinate(x, y).equalsIgnoreCase("#")) {
@@ -134,6 +141,8 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
     }
 
     private void findExpandedGalaxies() {
+
+        this.galaxyList = new ArrayList<>();
         for (int x = 0; x < this.expandedWidth; x++) {
             for (int y = 0; y < this.expandedHeight; y++) {
                 if (this.getExpandedCoordinate(x, y).equalsIgnoreCase("#")) {
@@ -147,12 +156,16 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
     }
 
     private void debugExpandedMap() {
+
         for (int row = 0; row < this.expandedHeight; row++) {
             System.out.println(this.expandedGalaxyMap.get(row));
         }
     }
 
     private void findBlanks() {
+
+        this.blankRows = new ArrayList<>();
+        this.blankCols = new ArrayList<>();
         for (int x = 0; x < this.width; x++) {
             boolean hasGalaxy = false;
             for (int y = 0; y < this.height; y++) {
@@ -194,6 +207,8 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
 
 
     private void expandUniverse() {
+
+        this.expandedGalaxyMap = new ArrayList<>();
         for (int y = 0; y < this.height; y++) {
             // quick eyeball, the first row of the real data isn't all blank
             String line = "";
@@ -213,12 +228,14 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
     }
 
     private String getBlankLine(final int length) {
+
         return ".".repeat(length);
     }
 
 
     private void loadUniverse(final String[] input) {
-        this.galaxyMap.addAll(Arrays.asList(input));
+
+        this.galaxyMap = Arrays.asList(input);
         this.width = input[0].length();
         this.height = input.length;
     }

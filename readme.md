@@ -19,6 +19,12 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2023
 
+### Day 11: Cosmic Expansion
+
+Not sure if I love or hate this one <grin> Ostensibly it's a map, with the sum of shortest distances; the first wrinkle
+is that certain rows and/or columns are twice as wide/deep as others - yeah, I can manage this in memory - then part 2
+means they are 1,000,000 times as wide/deep as others. Madness. Took about 90 minutes, answers < 200ms.
+
 ### Day 10: Pipe Maze
 
 Loved it ! And made up for the easy yesterday. A maze / topology problem with a couple of really nice twists : a
