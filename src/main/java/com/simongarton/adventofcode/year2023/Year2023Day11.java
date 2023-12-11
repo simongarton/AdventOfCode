@@ -13,13 +13,12 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
     private final List<String> expandedGalaxyMap = new ArrayList<>();
     private final List<Integer> blankRows = new ArrayList<>();
     private final List<Integer> blankCols = new ArrayList<>();
-    private final Map<String, Integer> distances = new HashMap<>();
+    private final Map<String, Long> distances = new TreeMap<>();
 
     private int width;
     private int height;
     private int expandedWidth;
     private int expandedHeight;
-
 
     @Override
     public String title() {
@@ -37,16 +36,21 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
         this.loadUniverse(input);
         this.findBlanks();
         this.expandUniverse();
-        this.debugExpandedMap();
-        this.findGalaxies();
+        this.findExpandedGalaxies();
         this.getDistances();
-        final int sumDistances = this.getSumDistances();
+        final long sumDistances = this.getSumDistances();
 
         return String.valueOf(sumDistances);
     }
 
-    private int getSumDistances() {
-        return this.distances.values().stream().mapToInt(Integer::new).sum();
+    private void debugDistances() {
+        for (final Map.Entry<String, Long> entry : this.distances.entrySet()) {
+            System.out.println(entry.getKey() + ":" + entry.getValue());
+        }
+    }
+
+    private long getSumDistances() {
+        return this.distances.values().stream().mapToLong(Long::new).sum();
     }
 
     private void getDistances() {
@@ -64,11 +68,72 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
         }
     }
 
-    private Integer manhattanDistance(final Galaxy from, final Galaxy to) {
-        return Math.abs(from.x - to.x) + Math.abs(from.y - to.y);
+    private void getStupidDistances() {
+        for (int i = 0; i < this.galaxyList.size(); i++) {
+            for (int j = 0; j < this.galaxyList.size(); j++) {
+                if (i == j) {
+                    continue;
+                }
+                final String key = i < j ? i + "," + j : j + "," + i;
+                if (this.distances.containsKey(key)) {
+                    continue;
+                }
+                this.distances.put(key, this.stupidManhattanDistance(this.galaxyList.get(i), this.galaxyList.get(j)));
+            }
+        }
+    }
+
+    private Long manhattanDistance(final Galaxy from, final Galaxy to) {
+        return (long) Math.abs(from.x - to.x) + Math.abs(from.y - to.y);
+    }
+
+    private Long stupidManhattanDistance(final Galaxy from, final Galaxy to) {
+        long distance = 0;
+        int x = from.getX();
+        int y = from.getY();
+        while (x != to.getX() || y != to.getY()) {
+            int extras = 0;
+            if (x < to.getX()) {
+                x = x + 1;
+                extras++;
+            }
+            if (x > to.getX()) {
+                x = x - 1;
+                extras++;
+            }
+            if (y < to.getY()) {
+                y = y + 1;
+                extras++;
+            }
+            if (y > to.getY()) {
+                y = y - 1;
+                extras++;
+            }
+            distance = distance + extras;
+            if (this.blankRows.contains(y)) {
+                distance = distance + 999999;
+            }
+            if (this.blankCols.contains(x)) {
+                distance = distance + 999999;
+            }
+        }
+        return distance;
     }
 
     private void findGalaxies() {
+        for (int x = 0; x < this.width; x++) {
+            for (int y = 0; y < this.height; y++) {
+                if (this.getOriginalCoordinate(x, y).equalsIgnoreCase("#")) {
+                    this.galaxyList.add(Galaxy.builder()
+                            .x(x)
+                            .y(y)
+                            .build());
+                }
+            }
+        }
+    }
+
+    private void findExpandedGalaxies() {
         for (int x = 0; x < this.expandedWidth; x++) {
             for (int y = 0; y < this.expandedHeight; y++) {
                 if (this.getExpandedCoordinate(x, y).equalsIgnoreCase("#")) {
@@ -160,7 +225,14 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.loadUniverse(input);
+        this.findBlanks();
+        this.findGalaxies();
+        this.getStupidDistances();
+        final long sumDistances = this.getSumDistances();
+
+        return String.valueOf(sumDistances);
     }
 
     @Data
