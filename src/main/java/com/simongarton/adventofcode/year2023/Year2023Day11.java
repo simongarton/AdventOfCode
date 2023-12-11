@@ -4,9 +4,7 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Year2023Day11 extends AdventOfCodeChallenge {
 
@@ -15,8 +13,11 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
     private final List<String> expandedGalaxyMap = new ArrayList<>();
     private final List<Integer> blankRows = new ArrayList<>();
     private final List<Integer> blankCols = new ArrayList<>();
+    private final Map<String, Integer> distances = new HashMap<>();
+
     private int width;
     private int height;
+    private int expandedWidth;
     private int expandedHeight;
 
 
@@ -37,8 +38,47 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
         this.findBlanks();
         this.expandUniverse();
         this.debugExpandedMap();
+        this.findGalaxies();
+        this.getDistances();
+        final int sumDistances = this.getSumDistances();
 
-        return String.valueOf(0);
+        return String.valueOf(sumDistances);
+    }
+
+    private int getSumDistances() {
+        return this.distances.values().stream().mapToInt(Integer::new).sum();
+    }
+
+    private void getDistances() {
+        for (int i = 0; i < this.galaxyList.size(); i++) {
+            for (int j = 0; j < this.galaxyList.size(); j++) {
+                if (i == j) {
+                    continue;
+                }
+                final String key = i < j ? i + "," + j : j + "," + i;
+                if (this.distances.containsKey(key)) {
+                    continue;
+                }
+                this.distances.put(key, this.manhattanDistance(this.galaxyList.get(i), this.galaxyList.get(j)));
+            }
+        }
+    }
+
+    private Integer manhattanDistance(final Galaxy from, final Galaxy to) {
+        return Math.abs(from.x - to.x) + Math.abs(from.y - to.y);
+    }
+
+    private void findGalaxies() {
+        for (int x = 0; x < this.expandedWidth; x++) {
+            for (int y = 0; y < this.expandedHeight; y++) {
+                if (this.getExpandedCoordinate(x, y).equalsIgnoreCase("#")) {
+                    this.galaxyList.add(Galaxy.builder()
+                            .x(x)
+                            .y(y)
+                            .build());
+                }
+            }
+        }
     }
 
     private void debugExpandedMap() {
@@ -81,6 +121,13 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
         return line.substring(x, x + 1);
     }
 
+    private String getExpandedCoordinate(final int x, final int y) {
+
+        final String line = this.expandedGalaxyMap.get(y);
+        return line.substring(x, x + 1);
+    }
+
+
     private void expandUniverse() {
         for (int y = 0; y < this.height; y++) {
             // quick eyeball, the first row of the real data isn't all blank
@@ -97,6 +144,7 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
             }
         }
         this.expandedHeight = this.expandedGalaxyMap.size();
+        this.expandedWidth = this.expandedGalaxyMap.get(0).length();
     }
 
     private String getBlankLine(final int length) {
