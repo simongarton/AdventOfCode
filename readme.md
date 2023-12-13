@@ -19,6 +19,14 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2023
 
+### Day 12: Hot Springs
+
+First part 2 failure of this year. Given a string with various symbols and different replacement options, how many
+groups can you make (paraphrased.) Part 1 was fun, part 2 increased the size by a factor of 5 and just takes too long.
+
+I have explored some ideas about recursing into it and abandoning branches that are never going to work, but it still
+takes far too long.
+
 ### Day 11: Cosmic Expansion
 
 Not sure if I love or hate this one <grin> Ostensibly it's a map, with the sum of shortest distances; the first wrinkle
