@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class Year2023Day13 extends AdventOfCodeChallenge {
 
-    List<List<String>> grids;
+    private List<List<String>> grids;
 
     @Override
     public String title() {
@@ -30,7 +30,6 @@ public class Year2023Day13 extends AdventOfCodeChallenge {
         long score = 0;
         for (final List<String> grid : this.grids) {
             final long thisScore = this.scoreGrid(this.findBreaks(grid));
-            System.out.println("grid " + grid + " scored " + thisScore);
             score += thisScore;
         }
         return String.valueOf(score);
@@ -66,7 +65,6 @@ public class Year2023Day13 extends AdventOfCodeChallenge {
 
     private boolean reflectsHorizontal(final List<String> grid, final int i) {
 
-        // i is a row, after which comes the split
         int diff = 0;
         final int height = grid.size();
         while (true) {
@@ -86,7 +84,6 @@ public class Year2023Day13 extends AdventOfCodeChallenge {
 
     private boolean reflectsVertical(final List<String> grid, final int i) {
 
-        // i is a col, after which comes the split
         int diff = 0;
         final int width = grid.get(0).length();
         while (true) {
@@ -132,26 +129,22 @@ public class Year2023Day13 extends AdventOfCodeChallenge {
         for (final List<String> grid : this.grids) {
             final Set<Break> newBreaks = this.findNewBreaks(grid);
             score = score + this.scoreGrid(new ArrayList<>(newBreaks));
-            System.out.println(grid + " " + newBreaks);
         }
         return String.valueOf(score);
     }
 
     private Set<Break> findNewBreaks(final List<String> grid) {
         final List<Break> existingBreaks = this.findBreaks(grid);
-//        System.out.println("Having a look at " + grid);
         final Set<Break> uniqueNewBreaks = new HashSet<>();
 
         final int width = grid.get(0).length();
         final int height = grid.size();
         for (int w = 0; w < width; w++) {
             for (int h = 0; h < height; h++) {
-//                System.out.println(" changing w " + w + " h " + h);
                 final List<String> newGrid = this.flipGrid(grid, w, h);
                 final List<Break> newBreaks = this.findBreaks(newGrid);
                 final List<Break> differentBreaks = this.findNewBreaks(existingBreaks, newBreaks);
                 if (!differentBreaks.isEmpty()) {
-//                    System.out.println("  " + differentBreaks);
                     uniqueNewBreaks.addAll(differentBreaks);
                 }
             }
@@ -187,35 +180,6 @@ public class Year2023Day13 extends AdventOfCodeChallenge {
 
     private List<Break> findNewBreaks(final List<Break> existingBreaks, final List<Break> newBreaks) {
         final List<Break> breaks = new ArrayList<>();
-        for (final Break newBreak : newBreaks) {
-            if (!existingBreaks.contains(newBreak)) {
-                breaks.add(newBreak);
-            }
-        }
-        return breaks;
-    }
-
-    private List<Break> compareBreaks(final List<Break> existingBreaks, final List<Break> newBreaks) {
-        final List<Break> breaks = new ArrayList<>();
-        if (newBreaks.size() != existingBreaks.size()) {
-            return this.differentCounts(newBreaks, existingBreaks);
-        }
-        for (int i = 0; i < newBreaks.size(); i++) {
-            if (newBreaks.get(i).getIndex() != existingBreaks.get(i).getIndex() ||
-                    newBreaks.get(i).isHorizontal() != existingBreaks.get(i).isHorizontal()) {
-                breaks.add(newBreaks.get(i));
-            }
-        }
-        return breaks;
-    }
-
-    private List<Break> differentCounts(final List<Break> newBreaks, final List<Break> existingBreaks) {
-        final List<Break> breaks = new ArrayList<>();
-        for (final Break existingBreak : existingBreaks) {
-            if (!newBreaks.contains(existingBreak)) {
-                breaks.add(existingBreak);
-            }
-        }
         for (final Break newBreak : newBreaks) {
             if (!existingBreaks.contains(newBreak)) {
                 breaks.add(newBreak);

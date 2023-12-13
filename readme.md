@@ -12,12 +12,20 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓✓✓✓.
+2023 : ✓✓✓✓✓✓✓✓✓✓✓.✓
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
+
+### Day 13: Point of Incidence
+
+Ok, an easy one to help me get over yesterday. Looking for lines of reflection in a grid. Curiously part 2 didn't add
+that much more processing time : a more complex algorithm, sure, but still brute-forcey, and just 63ms vs 21ms for
+part 1.
+
+¯\\_(ツ)_/¯
 
 ### Day 12: Hot Springs
 
