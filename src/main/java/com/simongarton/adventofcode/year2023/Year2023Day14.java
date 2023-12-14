@@ -75,9 +75,13 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
             default:
                 throw new RuntimeException(dir);
         }
+        System.out.println(" after " + dir + "\n");
+        this.debugMap();
     }
 
     private void north() {
+        // x 0 - 9
+        // y 1 to 9
         for (int col = 0; col < this.width; col++) {
             for (int row = 1; row < this.height; row++) {
                 if (this.getRock(row, col).equalsIgnoreCase("O")) {
@@ -98,8 +102,10 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
     }
 
     private void south() {
+        // x 0 - 9
+        // y 8 to 0
         for (int col = 0; col < this.width; col++) {
-            for (int row = this.height - 1; row >= 0; row--) {
+            for (int row = this.height - 2; row >= 0; row--) {
                 if (this.getRock(row, col).equalsIgnoreCase("O")) {
                     this.slideRockSouth(row, col);
                 }
@@ -109,7 +115,7 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
 
     private void east() {
         for (int row = 0; row < this.height; row++) {
-            for (int col = this.width - 1; col >= 0; col--) {
+            for (int col = this.width - 2; col >= 0; col--) {
                 if (this.getRock(row, col).equalsIgnoreCase("O")) {
                     this.slideRockEast(row, col);
                 }
@@ -152,7 +158,7 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
         if (!this.getRock(destination, col).equalsIgnoreCase(".")) {
             return false;
         }
-        while (destination < (this.height - 2) && this.getRock(destination + 1, col).equalsIgnoreCase(".")) {
+        while (destination < (this.height - 1) && this.getRock(destination + 1, col).equalsIgnoreCase(".")) {
             destination++;
         }
         final int from = (row * this.width) + col;
@@ -167,7 +173,7 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
         if (!this.getRock(row, destination).equalsIgnoreCase(".")) {
             return false;
         }
-        while (destination < (this.width - 2) && this.getRock(row, destination + 1).equalsIgnoreCase(".")) {
+        while (destination < (this.width - 1) && this.getRock(row, destination + 1).equalsIgnoreCase(".")) {
             destination++;
         }
         final int from = (row * this.width) + col;
@@ -186,6 +192,9 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
             throw new RuntimeException("got row " + row);
         }
         final int index = (row * this.width) + col;
+        if (row >= this.height) {
+            System.out.println("foo");
+        }
         return this.map.substring(index, index + 1);
     }
 
@@ -211,20 +220,22 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
             this.debugMap();
         }
 
-        //for (long spinCycle = 0; spinCycle < 1000000000; spinCycle++) {
+        // 107957 too high
+        // this appears to converge at 102
         final List<String> periods = new ArrayList<>();
         periods.add(this.map);
-        boolean running = true;
-        for (long spinCycle = 0; spinCycle < 100; spinCycle++) {
+        final boolean running = true;
+        for (long spinCycle = 0; spinCycle < 1000000000; spinCycle++) {
             this.tiltMap("N");
             this.tiltMap("W");
             this.tiltMap("S");
             this.tiltMap("E");
-            System.out.println(this.map);
+//            System.out.println(this.map);
+            this.debugMap();
             for (int i = 0; i < periods.size(); i++) {
                 if (periods.get(i).equalsIgnoreCase(this.map)) {
-                    System.out.println("breaking on " + spinCycle + " which matches " + i);
-                    running = false;
+                    System.out.println("breaking on " + spinCycle + " which matches " + i + " : " + this.weighRocks());
+//                    running = false;
                     break;
                 }
             }
@@ -236,6 +247,7 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
         if (DEBUG) {
             this.debugMap();
         }
+
         final long roundRocks = this.weighRocks();
         return String.valueOf(roundRocks);
     }
