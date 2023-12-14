@@ -2,10 +2,12 @@ package com.simongarton.adventofcode.year2023;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import javax.xml.bind.DatatypeConverter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 import java.util.stream.Collectors;
+
 
 public class Year2023Day14 extends AdventOfCodeChallenge {
 
@@ -75,8 +77,8 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
             default:
                 throw new RuntimeException(dir);
         }
-        System.out.println(" after " + dir + "\n");
-        this.debugMap();
+//        System.out.println(" after " + dir + "\n");
+//        this.debugMap();
     }
 
     private void north() {
@@ -221,34 +223,75 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
         }
 
         // 107957 too high
-        // this appears to converge at 102
+        // I can see the sample dropping into a cycle.
+        // I'm now seeing matches but the weights aren't the same and I don't understand that.
+        // OK, I can see a 65 period cycle forming : first iteration is 159 which matches 95.
+        // So run it through to 200, and remember the weights. Then come back from the cycle.
+        // 105656 for 174 will be higher than the next (wrong) answer
+        // 105641 for 175 was too high
+        // 105622 for 176 was not the right answer
+        final long targetRange = 200;
+        final long destination = 1000000000;
+        final long period = 65; // eyeballed from runs
+        final long leftOver = destination % period;
+        final int targetIndex = (int) (200 - leftOver);
+        final List<Long> targets = new ArrayList<>();
         final List<String> periods = new ArrayList<>();
+
+        final Map<String, String> cache = new HashMap<>();
+        final long start = System.currentTimeMillis() / 1000;
+
         periods.add(this.map);
         final boolean running = true;
-        for (long spinCycle = 0; spinCycle < 1000000000; spinCycle++) {
-            this.tiltMap("N");
-            this.tiltMap("W");
-            this.tiltMap("S");
-            this.tiltMap("E");
-//            System.out.println(this.map);
-            this.debugMap();
-            for (int i = 0; i < periods.size(); i++) {
-                if (periods.get(i).equalsIgnoreCase(this.map)) {
-                    System.out.println("breaking on " + spinCycle + " which matches " + i + " : " + this.weighRocks());
-//                    running = false;
-                    break;
-                }
+        for (long spinCycle = 0; spinCycle < destination; spinCycle++) {
+            if (spinCycle % 10000 == 0) {
+                final long now = System.currentTimeMillis() / 1000;
+                final double fraction = 1.0 * spinCycle / destination;
+                System.out.println(spinCycle + " : " + cache.size() + " finish in " + (now - start) / fraction + " seconds.");
             }
-            periods.add(this.map);
-            if (!running) {
-                break;
+            final String hash = this.getHash(this.map);
+            if (cache.containsKey(hash)) {
+                this.map = cache.get(hash);
+            } else {
+                this.tiltMap("N");
+                this.tiltMap("W");
+                this.tiltMap("S");
+                this.tiltMap("E");
+                cache.put(hash, this.map);
             }
+//            for (int i = 0; i < periods.size(); i++) {
+//                if (periods.get(i).equalsIgnoreCase(this.map)) {
+//                    System.out.println("breaking on " + spinCycle + " which matches " + i + " : " + this.weighRocks());
+//                    break;
+//                }
+//            }
+//            periods.add(this.map);
+//            targets.add(this.weighRocks());
+//            if (!running) {
+//                break;
+//            }
         }
         if (DEBUG) {
             this.debugMap();
         }
 
-        final long roundRocks = this.weighRocks();
-        return String.valueOf(roundRocks);
+//        for (int i = -10; i < 10; i++) {
+//            System.out.println(i + " : " + targets.get(targetIndex + i));
+//        }
+
+//        return String.valueOf(targets.get(targetIndex));
+        return String.valueOf(this.weighRocks());
+    }
+
+    private String getHash(final String line) {
+        final MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (final NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        md.update(line.getBytes());
+        final byte[] digest = md.digest();
+        return DatatypeConverter.printHexBinary(digest).toUpperCase();
     }
 }
