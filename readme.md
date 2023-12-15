@@ -12,7 +12,7 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓✓✓✓✓.✓.
+2023 : ✓✓✓✓✓✓✓✓✓✓✓.✓✓
        1234567890123456789012345
                 1111111111222222
 ```
@@ -22,7 +22,8 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 ## Day 14: Parabolic Reflector Dish
 
 Sliding rocks on a grid. Was at an AWS thing for the first part so delayed start, then got stuck with logic until
-I simplified it ;-)
+I simplified it ;-) Then part 2 took nearly 24 hours : I almost had it right several times, but each time I fixed it
+I broke something else, until I could get to the gym and plan it out in my head.
 
 ### Day 13: Point of Incidence
 
