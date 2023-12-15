@@ -12,12 +12,16 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓✓✓✓✓.✓✓
+2023 : ✓✓✓✓✓✓✓✓✓✓✓.✓✓✓
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
+
+## Day 15: Lens Library
+
+Easy enough : ascii, hashcodes, and parsing strings & managing lists. And selling a truck.
 
 ## Day 14: Parabolic Reflector Dish
 
