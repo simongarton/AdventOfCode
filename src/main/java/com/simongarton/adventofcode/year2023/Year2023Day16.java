@@ -5,16 +5,22 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.simongarton.adventofcode.year2023.Year2023Day16.Direction.*;
 
 public class Year2023Day16 extends AdventOfCodeChallenge {
 
+    private static int id = 0;
+
     private String cave;
     private String energised;
 
     private List<Beam> beams;
+
+    private Set<String> cache;
 
     private int width;
     private int height;
@@ -36,8 +42,10 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
         this.debugCave();
 
         this.beams = new ArrayList<>();
+        this.cache = new HashSet<>();
 
         this.beams.add(Beam.builder()
+                .id(Year2023Day16.id++)
                 .coord(Coord.builder()
                         .x(-1)
                         .y(0).build())
@@ -84,22 +92,30 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
             final Beam beam = this.beams.get(0);
             while (true) {
                 this.shine(beam);
-                this.debugEnergised();
                 this.checkOutOfBounds(beam);
                 if (beam.isOutOfBounds()) {
                     this.beams.remove(beam);
                     break;
                 }
+                final String key = this.buildKey(beam);
+                if (this.cache.contains(key)) {
+                    this.beams.remove(beam);
+                    break;
+                }
+                this.cache.add(key);
             }
         }
     }
 
-    private void shine(final Beam beam) {
+    private String buildKey(final Beam beam) {
+        return beam.getCoord() + "->" + beam.getDirection();
+    }
 
-        final Coord c = beam.getCoord();
+    private void shine(final Beam beam) {
 
         this.move(beam);
         if (!beam.isOutOfBounds()) {
+            this.energize(beam.getCoord());
             this.handle(beam);
         }
     }
@@ -124,58 +140,40 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
 
     private boolean reflectBack(final Beam beam) {
 
-        final Coord c = beam.getCoord();
         switch (beam.getDirection()) {
             case NORTH:
                 beam.setDirection(WEST);
-                beam.setCoord(Coord.builder().x(c.getX() - 1).y(c.getY()).build());
                 break;
             case EAST:
                 beam.setDirection(SOUTH);
-                beam.setCoord(Coord.builder().x(c.getX()).y(c.getY() + 1).build());
                 break;
             case SOUTH:
                 beam.setDirection(EAST);
-                beam.setCoord(Coord.builder().x(c.getX() + 1).y(c.getY()).build());
                 break;
             case WEST:
                 beam.setDirection(NORTH);
-                beam.setCoord(Coord.builder().x(c.getX()).y(c.getY() - 1).build());
                 break;
-        }
-        if (!this.checkOutOfBounds(beam)) {
-            this.energize(beam.getCoord());
         }
         return true;
     }
 
     private boolean reflectForward(final Beam beam) {
 
-        // /
-        final Coord c = beam.getCoord();
         switch (beam.getDirection()) {
             case NORTH:
                 beam.setDirection(EAST);
-                beam.setCoord(Coord.builder().x(c.getX() + 1).y(c.getY()).build());
                 break;
             case EAST:
                 beam.setDirection(NORTH);
-                beam.setCoord(Coord.builder().x(c.getX()).y(c.getY() - 1).build());
                 break;
             case SOUTH:
                 beam.setDirection(WEST);
-                beam.setCoord(Coord.builder().x(c.getX() - 1).y(c.getY()).build());
                 break;
             case WEST:
                 beam.setDirection(SOUTH);
-                beam.setCoord(Coord.builder().x(c.getX()).y(c.getY() + 1).build());
                 break;
         }
-        if (!this.checkOutOfBounds(beam)) {
-            this.energize(beam.getCoord());
-        }
         return true;
-
     }
 
     private boolean split(final Beam beam, final String floor) {
@@ -199,14 +197,12 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
 
         final Coord c = beam.getCoord();
         final Beam newBeam = Beam.builder()
-                .coord(Coord.builder().x(c.getX() - 1).y(c.getY()).build())
+                .id(Year2023Day16.id++)
+                .coord(Coord.builder().x(c.getX()).y(c.getY()).build())
                 .direction(WEST)
                 .build();
         beam.setDirection(EAST);
-        beam.setCoord(Coord.builder().x(c.getX() + 1).y(c.getY()).build());
-
-        this.safeEnergize(beam.getCoord());
-        this.safeEnergize(newBeam.getCoord());
+//        System.out.println(beam.getId() + " horizontal coming in from " + beam.getDirection() + " at " + c + " created " + newBeam.getId());
 
         this.beams.add(newBeam);
         return true;
@@ -217,24 +213,22 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
 
         final Coord c = beam.getCoord();
         final Beam newBeam = Beam.builder()
-                .coord(Coord.builder().x(c.getX()).y(c.getY() + 1).build())
+                .id(Year2023Day16.id++)
+                .coord(Coord.builder().x(c.getX()).y(c.getY()).build())
                 .direction(SOUTH)
                 .build();
         beam.setDirection(NORTH);
-        beam.setCoord(Coord.builder().x(c.getX()).y(c.getY() - 1).build());
-
-        this.safeEnergize(beam.getCoord());
-        this.safeEnergize(newBeam.getCoord());
+//        System.out.println(beam.getId() + " vertical coming in from " + beam.getDirection() + " at " + c + " created " + newBeam.getId());
 
         this.beams.add(newBeam);
         return true;
     }
 
-    private void safeEnergize(Coord coord) {
+    private void safeEnergize(final Coord coord) {
         try {
             this.energize(coord);
-        } catch (Exception e) {
-            
+        } catch (final Exception e) {
+
         }
     }
 
@@ -322,6 +316,7 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
     @Builder
     private static final class Beam {
 
+        private int id;
         private Coord coord;
         private Direction direction;
 
