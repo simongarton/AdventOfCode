@@ -2,13 +2,12 @@ package com.simongarton.adventofcode.year2023;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Year2023Day12 extends AdventOfCodeChallenge {
+
+    private final Map<String, Long> cache = new HashMap<>();
 
     @Override
     public String title() {
@@ -35,6 +34,7 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
         return String.valueOf(combos);
     }
 
+    // my original way
     private long arrangements(final String line) {
         final String[] parts = line.split(" ");
         final String row = parts[0];
@@ -45,6 +45,7 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
     }
 
     private long bruteForce(final String row, final List<Integer> groups) {
+
         final List<Integer> unknownLocations = new ArrayList<>();
         for (int i = 0; i < row.length(); i++) {
             if (row.substring(i, i + 1).equalsIgnoreCase("?")) {
@@ -69,6 +70,7 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
     }
 
     private boolean testGroups(final String row, final List<Integer> groupsToTest) {
+
         int groups = 0;
         final List<Integer> foundGroups = new ArrayList<>();
         boolean inGroup = false;
@@ -101,6 +103,7 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
     }
 
     private String makeTestRow(final String row, final String binary, final List<Integer> unknownLocations) {
+
         final String mappedBinary = binary.replace("0", ".").replace("1", "#");
         String testRow = row;
         for (int i = 0; i < unknownLocations.size(); i++) {
@@ -110,10 +113,12 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
     }
 
     private String replaceCharacter(final String original, final Integer index, final String replacement) {
-        return original.substring(0, index) + replacement + original.substring(index + 1, original.length());
+
+        return original.substring(0, index) + replacement + original.substring(index + 1);
     }
 
     private String leftPad(final String replace, final String binaryString, final int length) {
+
         final int rest = length - binaryString.length();
         return replace.repeat(rest) + binaryString;
     }
@@ -121,11 +126,17 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
+        this.cache.clear();
+
         long combos = 0;
         for (final String line : input) {
             final String[] parts = line.split(" ");
-            final String row = parts[0] + ".";
-            final List<Integer> groups = Arrays.stream(parts[1].split(",")).map(Integer::valueOf).collect(Collectors.toList());
+            final String row = String.join("?", parts[0], parts[0], parts[0], parts[0], parts[0]) + ".";
+            final List<Integer> firstGroups = Arrays.stream(parts[1].split(",")).map(Integer::valueOf).collect(Collectors.toList());
+            final List<Integer> groups = new ArrayList<>();
+            for (int i = 0; i < 5; i++) {
+                groups.addAll(firstGroups);
+            }
             final long result = this.countWithRecursion(row, groups);
             combos = combos + result;
         }
@@ -134,6 +145,12 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
     }
 
     private long countWithRecursion(final String cfg, final List<Integer> nums) {
+
+        final String key = cfg + nums.stream().map(String::valueOf).collect(Collectors.joining(","));
+
+        if (this.cache.containsKey(key)) {
+            return this.cache.get(key);
+        }
 
         long result = 0;
 
@@ -154,12 +171,6 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
 
         if ("#?".contains(firstSpring)) {
 
-            /*
-            if cfg[0] in '#?':
-                if nums[0] <= len(cfg) and '.' not in cfg[:nums[0]] and (nums[0] == len(cfg) or cfg[nums[0]] != '#'):
-                    result += count(cfg[nums[0] + 1:], nums[1:])
-             */
-
             final String part1 = this.pythonPart1(cfg, nums.get(0));
             final String part2 = this.pythonPart2(cfg, nums.get(0));
             final String part3 = this.pythonPart3(cfg, nums.get(0));
@@ -168,15 +179,16 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
                     !(part1.contains(".")) &&
                     (nums.get(0) == cfg.length() || !(part2.equalsIgnoreCase("#")))
             ) {
-                result = result + this.countWithRecursion(part3, this.restOfGroups(nums, 1));
+                result = result + this.countWithRecursion(part3, this.restOfGroups(nums));
             }
         }
 
-        // https://www.youtube.com/watch?v=g3Ms5e7Jdqo&t=602s
+        this.cache.put(key, result);
         return result;
     }
 
     private String pythonPart1(final String cfg, final int group) {
+
         // cfg[:nums[0]]
         try {
             return cfg.substring(0, group);
@@ -186,6 +198,7 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
     }
 
     private String pythonPart2(final String cfg, final int group) {
+
         // cfg[nums[0]]
         if (group >= cfg.length()) {
             return "";
@@ -194,6 +207,7 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
     }
 
     private String pythonPart3(final String cfg, final int group) {
+
         // cfg[nums[0] + 1:]
         if (group >= cfg.length()) {
             return "";
@@ -201,9 +215,10 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
         return cfg.substring(group + 1);
     }
 
-    private List<Integer> restOfGroups(final List<Integer> groups, final int start) {
+    private List<Integer> restOfGroups(final List<Integer> groups) {
+
         final List<Integer> restOfGroups = new ArrayList<>();
-        for (int i = start; i < groups.size(); i++) {
+        for (int i = 1; i < groups.size(); i++) {
             restOfGroups.add(groups.get(i));
         }
         return restOfGroups;
