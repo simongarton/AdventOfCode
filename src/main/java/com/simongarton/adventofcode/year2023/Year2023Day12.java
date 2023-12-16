@@ -119,141 +119,72 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
 
         long combos = 0;
         for (final String line : input) {
-            combos += this.longerArrangements(line);
+            final String[] parts = line.split(" ");
+            final String row = parts[0];
+            final List<Integer> groups = Arrays.stream(parts[1].split(",")).map(Integer::valueOf).collect(Collectors.toList());
+            final long result = this.countWithRecursion(row, groups);
+            System.out.println(line + " : " + result);
+            combos = combos + result;
         }
 
         return String.valueOf(combos);
     }
 
-    private long longerArrangements(final String line) {
+    private long countWithRecursion(final String line, final List<Integer> groups) {
 
-        // The recursion looks OK, but it's still taking too long.
+        System.out.println(line + " : " + groups.stream().map(String::valueOf).collect(Collectors.joining(",")));
 
-        final String[] parts = line.split(" ");
-//        final String row = parts[0];
-//        final List<Integer> shortGroups = Arrays.stream(parts[1].split(",")).map(Integer::valueOf).collect(Collectors.toList());
-//        final List<Integer> groups = new ArrayList<>();
-//        for (int i = 0; i < 1; i++) {
-//            groups.addAll(shortGroups);
-//        }
-        final String row = parts[0] + ("?" + parts[0]).repeat(4);
-        final List<Integer> shortGroups = Arrays.stream(parts[1].split(",")).map(Integer::valueOf).collect(Collectors.toList());
-        final List<Integer> groups = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            groups.addAll(shortGroups);
+        long result = 0;
+
+        if (line.isEmpty()) {
+            result = (groups.isEmpty()) ? 1 : 0;
+            System.out.println("  empty line = " + result);
+            return result;
         }
-        final List<Integer> unknownLocations = new ArrayList<>();
-        for (int i = 0; i < row.length(); i++) {
-            if (row.substring(i, i + 1).equalsIgnoreCase("?")) {
-                unknownLocations.add(i);
+
+        if (groups.isEmpty()) {
+            result = line.contains("#") ? 0 : 1;
+            System.out.println("  empty groups = " + result);
+            return result;
+        }
+
+        final String firstSpring = line.substring(0, 1);
+        if (".?".contains(firstSpring)) {
+            result = result + this.countWithRecursion(line.substring(1), groups);
+        }
+        if ("#?".contains(firstSpring)) {
+            final String startOfLine = line.substring(0, groups.get(0));
+            String endOfLine = "";
+            String endOfLineFirst = "";
+            if (line.length() > (groups.get(0) + 1)) {
+                endOfLine = line.substring(groups.get(0) + 1);
+                if (!endOfLine.isEmpty()) {
+                    endOfLineFirst = endOfLine.substring(0, 1);
+                }
+
+            }
+            if (
+                    groups.get(0) <= line.length() &&
+                            !(startOfLine.contains(".")) &&
+                            (
+                                    groups.get(0) == line.length() ||
+                                            !(endOfLineFirst.equalsIgnoreCase("#"))
+                            )
+            ) {
+                result = result + this.countWithRecursion(endOfLine, this.restOfGroups(groups, 1));
             }
         }
 
-        System.out.println(line + " -> " + row + " : " + groups.stream().map(String::valueOf).collect(Collectors.joining(",")));
-
-        final long result = this.recursive(row, groups, unknownLocations);
-        System.out.println(line + ":" + result);
+        // https://www.youtube.com/watch?v=g3Ms5e7Jdqo&t=602s
+        System.out.println("  " + result);
         return result;
     }
 
-    private long recursive(final String row, final List<Integer> groups, final List<Integer> unknownLocations) {
-        return this.recursiveAccumulator(0L, 0, row, groups, unknownLocations, "#") +
-                this.recursiveAccumulator(0L, 0, row, groups, unknownLocations, ".");
-    }
-
-    private long recursiveAccumulator(final long runningTotal,
-                                      final int index,
-                                      final String workingLine,
-                                      final List<Integer> groups,
-                                      final List<Integer> unknownLocations,
-                                      final String replacement) {
-        final String testLine = this.replaceCharacter(workingLine, unknownLocations.get(index), replacement);
-
-//        System.out.println(testLine);
-        final int definiteGroups = this.countDefiniteGroups(testLine);
-        // go no further ...
-        if (definiteGroups > groups.size()) {
-            return 0;
+    private List<Integer> restOfGroups(final List<Integer> groups, final int start) {
+        final List<Integer> restOfGroups = new ArrayList<>();
+        for (int i = start; i < groups.size(); i++) {
+            restOfGroups.add(groups.get(i));
         }
-        if (index == (unknownLocations.size() - 1)) {
-            return runningTotal + this.countValidGroups(testLine, groups);
-        }
-        return this.recursiveAccumulator(runningTotal, index + 1, testLine, groups, unknownLocations, "#") +
-                this.recursiveAccumulator(runningTotal, index + 1, testLine, groups, unknownLocations, ".");
-
+        return restOfGroups;
     }
-
-    private int countDefiniteGroups(final String testLine) {
-        // count definite groups - assume any ? is a .
-        // no, this isn't valid.
-        final String definiteLine = testLine.replace("?", ".");
-        final String cleanerLine = this.splitIntoGroups(definiteLine);
-        final String[] groups = cleanerLine.split("\\.");
-        return groups.length;
-    }
-
-    private long countValidGroups(final String testLine, final List<Integer> desiredGroups) {
-        final String cleanerLine = this.splitIntoGroups(testLine);
-        final String[] groups = cleanerLine.split("\\.");
-        final List<Integer> groupCounts = Arrays.stream(groups).map(String::length).collect(Collectors.toList());
-        if (groupCounts.size() != desiredGroups.size()) {
-            return 0;
-        }
-        for (int index = 0; index < desiredGroups.size(); index++) {
-            if (!Objects.equals(groupCounts.get(index), desiredGroups.get(index))) {
-                return 0;
-            }
-        }
-        return 1;
-    }
-
-    private String splitIntoGroups(String testLine) {
-        while (testLine.contains("..")) {
-            testLine = testLine.replace("..", ".");
-        }
-        return testLine;
-    }
-
-    /*
-
-    Five times as long is clearly not going to work.
-    I either need to significantly reduce the numbers involved, or find a short cut from inspection.
-
-    ???.### 1,1,3 does simplify to ??? 1,1 but still need to check same number
-    ????.#...#... and ???.######..#####. would also simplify but also still as big
-    .??..??...?##. 1,1,3 : that last one has to be a #
-
-    ?#?#?#?#?#?#?#? 1,3,1,6 and ?###???????? 3,2,1 no idea.
-    well, ?###???????? does go to .###.??????? which then goes to ??????? 2,1
-
-    glimmerings : lookup. if I see ### and 1,1 I should be able to tell immediately, or memo it
-    can I chop up the line into bits I know
-
-    but i can't break the solid ones, no idea
-
-    reading the reddit, there are algorithms for breaking it down.
-    https://www.reddit.com/r/adventofcode/comments/18ghux0/2023_day_12_no_idea_how_to_start_with_this_puzzle/
-
-    to figure out if I can fit S springs into N tiles, test S-1 springs in N-1 tiles ? Makes no sense.
-    Can't break the long ranges into groups.
-
-    Pick the first ? and make it a spring. now repeat, with the rest, recursively.
-    Then make it not a spring. At each step, return 1 if it is solved, 0 if not, or recurse.
-
-    But how do I remove the springs I've already used ? count possible groups, ? and # both count
-    ???.###
-  a #??.### can't tell yet
-        ##?.### not going to work, only two groups, return 0
-        #?#.### might work continue
-            #.#.### might work continue works return 1
-  b .#?.### can't tell yet
-        .##.### not going to work, return 0
-        ..#.### not going to work, return 0
-
-   answer(xxx) = answer(xxx1) + answer(xxx2)
-
-   only when I get to the end of the springs can I check to see if I got a match
-
-
-     */
 }
