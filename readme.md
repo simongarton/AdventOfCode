@@ -12,7 +12,7 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓✓✓✓✓.✓✓✓
+2023 : ✓✓✓✓✓✓✓✓✓✓✓.✓✓✓✓
        1234567890123456789012345
                 1111111111222222
 ```
@@ -22,7 +22,7 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 ## Day 16: The Floor Will Be Lava
 
 Heaps of fun, a grid with mirrors and splitters directing light beams. There is a trick to it, which I eventually
-tumbled to reading the reddit : the beams split infinitely, _but you don't need to worry about tracing an infinite
+tumbled to after reading the reddit : the beams split infinitely, _but you don't need to worry about tracing an infinite
 number of beams_ : as soon as you hit a tile that you have energised before, going in the same direction as last time,
 you can stop that beam. Part 2 trivial.
 
