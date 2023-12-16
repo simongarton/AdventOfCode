@@ -12,12 +12,49 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓✓✓✓
+2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
+
+## Day 16: The Floor Will Be Lava
+
+Heaps of fun, a grid with mirrors and splitters directing light beams. There is a trick to it, which I eventually
+tumbled to after reading the reddit : the beams split infinitely, _but you don't need to worry about tracing an infinite
+number of beams_ : as soon as you hit a tile that you have energised before, going in the same direction as last time,
+you can stop that beam. Part 2 trivial.
+
+## Day 15: Lens Library
+
+Easy enough : ascii, hashcodes, and parsing strings & managing lists. And selling a truck.
+
+## Day 14: Parabolic Reflector Dish
+
+Sliding rocks on a grid. Was at an AWS thing for the first part so delayed start, then got stuck with logic until
+I simplified it ;-) Then part 2 took nearly 24 hours : I almost had it right several times, but each time I fixed it
+I broke something else, until I could get to the gym and plan it out in my head.
+
+### Day 13: Point of Incidence
+
+Ok, an easy one to help me get over yesterday. Looking for lines of reflection in a grid. Curiously part 2 didn't add
+that much more processing time : a more complex algorithm, sure, but still brute-forcey, and just 63ms vs 21ms for
+part 1.
+
+¯\\_(ツ)_/¯
+
+### Day 12: Hot Springs
+
+First part 2 failure of this year. Given a string with various symbols and different replacement options, how many
+groups can you make (paraphrased.) Part 1 was fun, part 2 increased the size by a factor of 5 and just takes too long.
+
+I have explored some ideas about recursing into it and abandoning branches that are never going to work, but it still
+takes far too long.
+
+Update several days later : I ended up adapting [this solution](https://www.youtube.com/watch?v=NmxHw_bHhGM) by
+a young Canadian called HyperNeutrino : it's the best explained version I found on Reddit. What is really interesting
+is how much extra work I had to do with Java and string manipulation that just works in Python.
 
 ### Day 11: Cosmic Expansion
 
