@@ -39,7 +39,6 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
 
         this.loadCave(input);
-        this.debugCave();
 
         this.beams = new ArrayList<>();
         this.cache = new HashSet<>();
@@ -53,8 +52,6 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
                 .build());
 
         this.shineBeams();
-
-        this.debugEnergised();
 
         return String.valueOf(this.countEnergised());
     }
@@ -108,6 +105,7 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
     }
 
     private String buildKey(final Beam beam) {
+
         return beam.getCoord() + "->" + beam.getDirection();
     }
 
@@ -140,43 +138,50 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
 
     private boolean reflectBack(final Beam beam) {
 
-        switch (beam.getDirection()) {
-            case NORTH:
-                beam.setDirection(WEST);
-                break;
-            case EAST:
-                beam.setDirection(SOUTH);
-                break;
-            case SOUTH:
-                beam.setDirection(EAST);
-                break;
-            case WEST:
-                beam.setDirection(NORTH);
-                break;
-        }
-        return true;
+        return this.reflect(beam, false);
     }
 
     private boolean reflectForward(final Beam beam) {
+        return this.reflect(beam, true);
+    }
+
+    private boolean reflect(final Beam beam, final boolean forward) {
 
         switch (beam.getDirection()) {
             case NORTH:
-                beam.setDirection(EAST);
+                if (forward) {
+                    beam.setDirection(EAST);
+                } else {
+                    beam.setDirection(WEST);
+                }
                 break;
             case EAST:
-                beam.setDirection(NORTH);
+                if (forward) {
+                    beam.setDirection(NORTH);
+                } else {
+                    beam.setDirection(SOUTH);
+                }
                 break;
             case SOUTH:
-                beam.setDirection(WEST);
+                if (forward) {
+                    beam.setDirection(WEST);
+                } else {
+                    beam.setDirection(EAST);
+                }
                 break;
             case WEST:
-                beam.setDirection(SOUTH);
+                if (forward) {
+                    beam.setDirection(SOUTH);
+                } else {
+                    beam.setDirection(NORTH);
+                }
                 break;
         }
         return true;
     }
 
     private boolean split(final Beam beam, final String floor) {
+
         if (floor.equalsIgnoreCase("|")) {
             if (List.of(NORTH, SOUTH).contains(beam.getDirection())) {
                 return false;
@@ -224,20 +229,14 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
         return true;
     }
 
-    private void safeEnergize(final Coord coord) {
-        try {
-            this.energize(coord);
-        } catch (final Exception e) {
-
-        }
-    }
-
     private String getFloor(final Coord coord) {
+
         final int index = (coord.getY() * this.height) + coord.getX();
         return this.cave.substring(index, index + 1);
     }
 
     private void move(final Beam beam) {
+        
         final Coord c = beam.getCoord();
         switch (beam.getDirection()) {
             case NORTH:
@@ -259,6 +258,7 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
     }
 
     private boolean checkOutOfBounds(final Beam beam) {
+
         boolean outOfBounds = false;
         if (beam.getCoord().getX() < 0 || beam.getCoord().getX() >= this.width) {
             outOfBounds = true;
@@ -271,15 +271,18 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
     }
 
     private void energize(final Coord coord) {
+
         this.energised = this.replaceCharacter(this.energised, coord);
     }
 
     private String replaceCharacter(final String energised, final Coord coord) {
+
         final int index = (coord.getY() * this.height) + coord.getX();
         return this.replaceCharacter(energised, index, "#");
     }
 
     private String replaceCharacter(final String original, final Integer index, final String replacement) {
+
         return original.substring(0, index) + replacement + original.substring(index + 1);
     }
 
@@ -289,6 +292,11 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
         this.width = input[0].length();
         this.height = input.length;
 
+        this.buildEnergised();
+    }
+
+    private void buildEnergised() {
+
         this.energised = "";
         for (int i = 0; i < this.height; i++) {
             this.energised = this.energised + ".".repeat(this.width);
@@ -297,7 +305,50 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.loadCave(input);
+
+        long maxScore = 0;
+        long score;
+
+        for (int i = 0; i < this.width; i++) {
+            score = this.getScore(i, -1, SOUTH);
+            maxScore = Math.max(score, maxScore);
+            score = this.getScore(i, this.height, NORTH);
+            maxScore = Math.max(score, maxScore);
+        }
+        score = this.getScore(-1, 0, EAST);
+        maxScore = Math.max(score, maxScore);
+        score = this.getScore(this.width, 0, WEST);
+        maxScore = Math.max(score, maxScore);
+
+        for (int j = 1; j < this.height - 1; j++) {
+            score = this.getScore(-1, j, EAST);
+            maxScore = Math.max(score, maxScore);
+            score = this.getScore(this.width, j, WEST);
+            maxScore = Math.max(score, maxScore);
+        }
+
+        return String.valueOf(maxScore);
+    }
+
+    private long getScore(final int i, final int j, final Direction direction) {
+
+        this.beams = new ArrayList<>();
+        this.cache = new HashSet<>();
+        this.buildEnergised();
+
+        this.beams.add(Beam.builder()
+                .id(Year2023Day16.id++)
+                .coord(Coord.builder()
+                        .x(i)
+                        .y(j).build())
+                .direction(direction)
+                .build());
+
+        this.shineBeams();
+
+        return this.countEnergised();
     }
 
     @Data
@@ -320,7 +371,6 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
         private Coord coord;
         private Direction direction;
 
-        public boolean outOfBounds = false;
+        public boolean outOfBounds;
     }
-
 }

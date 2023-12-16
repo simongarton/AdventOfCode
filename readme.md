@@ -19,6 +19,13 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2023
 
+## Day 16: The Floor Will Be Lava
+
+Heaps of fun, a grid with mirrors and splitters directing light beams. There is a trick to it, which I eventually
+tumbled to reading the reddit : the beams split infinitely, _but you don't need to worry about tracing an infinite
+number of beams_ : as soon as you hit a tile that you have energised before, going in the same direction as last time,
+you can stop that beam. Part 2 trivial.
+
 ## Day 15: Lens Library
 
 Easy enough : ascii, hashcodes, and parsing strings & managing lists. And selling a truck.
