@@ -25,7 +25,11 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
 
         long combos = 0;
         for (final String line : input) {
-            combos += this.arrangements(line);
+            final String[] parts = line.split(" ");
+            final String row = parts[0] + ".";
+            final List<Integer> groups = Arrays.stream(parts[1].split(",")).map(Integer::valueOf).collect(Collectors.toList());
+            final long result = this.countWithRecursion(row, groups);
+            combos = combos + result;
         }
 
         return String.valueOf(combos);
@@ -120,64 +124,81 @@ public class Year2023Day12 extends AdventOfCodeChallenge {
         long combos = 0;
         for (final String line : input) {
             final String[] parts = line.split(" ");
-            final String row = parts[0];
+            final String row = parts[0] + ".";
             final List<Integer> groups = Arrays.stream(parts[1].split(",")).map(Integer::valueOf).collect(Collectors.toList());
             final long result = this.countWithRecursion(row, groups);
-            System.out.println(line + " : " + result);
             combos = combos + result;
         }
 
         return String.valueOf(combos);
     }
 
-    private long countWithRecursion(final String line, final List<Integer> groups) {
-
-        System.out.println(line + " : " + groups.stream().map(String::valueOf).collect(Collectors.joining(",")));
+    private long countWithRecursion(final String cfg, final List<Integer> nums) {
 
         long result = 0;
 
-        if (line.isEmpty()) {
-            result = (groups.isEmpty()) ? 1 : 0;
-            System.out.println("  empty line = " + result);
+        if (cfg.isEmpty()) {
+            result = (nums.isEmpty()) ? 1 : 0;
             return result;
         }
 
-        if (groups.isEmpty()) {
-            result = line.contains("#") ? 0 : 1;
-            System.out.println("  empty groups = " + result);
+        if (nums.isEmpty()) {
+            result = cfg.contains("#") ? 0 : 1;
             return result;
         }
 
-        final String firstSpring = line.substring(0, 1);
+        final String firstSpring = cfg.substring(0, 1);
         if (".?".contains(firstSpring)) {
-            result = result + this.countWithRecursion(line.substring(1), groups);
+            result = result + this.countWithRecursion(cfg.substring(1), nums);
         }
-        if ("#?".contains(firstSpring)) {
-            final String startOfLine = line.substring(0, groups.get(0));
-            String endOfLine = "";
-            String endOfLineFirst = "";
-            if (line.length() > (groups.get(0) + 1)) {
-                endOfLine = line.substring(groups.get(0) + 1);
-                if (!endOfLine.isEmpty()) {
-                    endOfLineFirst = endOfLine.substring(0, 1);
-                }
 
-            }
-            if (
-                    groups.get(0) <= line.length() &&
-                            !(startOfLine.contains(".")) &&
-                            (
-                                    groups.get(0) == line.length() ||
-                                            !(endOfLineFirst.equalsIgnoreCase("#"))
-                            )
+        if ("#?".contains(firstSpring)) {
+
+            /*
+            if cfg[0] in '#?':
+                if nums[0] <= len(cfg) and '.' not in cfg[:nums[0]] and (nums[0] == len(cfg) or cfg[nums[0]] != '#'):
+                    result += count(cfg[nums[0] + 1:], nums[1:])
+             */
+
+            final String part1 = this.pythonPart1(cfg, nums.get(0));
+            final String part2 = this.pythonPart2(cfg, nums.get(0));
+            final String part3 = this.pythonPart3(cfg, nums.get(0));
+
+            if (nums.get(0) <= cfg.length() &&
+                    !(part1.contains(".")) &&
+                    (nums.get(0) == cfg.length() || !(part2.equalsIgnoreCase("#")))
             ) {
-                result = result + this.countWithRecursion(endOfLine, this.restOfGroups(groups, 1));
+                result = result + this.countWithRecursion(part3, this.restOfGroups(nums, 1));
             }
         }
 
         // https://www.youtube.com/watch?v=g3Ms5e7Jdqo&t=602s
-        System.out.println("  " + result);
         return result;
+    }
+
+    private String pythonPart1(final String cfg, final int group) {
+        // cfg[:nums[0]]
+        try {
+            return cfg.substring(0, group);
+        } catch (final StringIndexOutOfBoundsException e) {
+            return cfg.substring(0);
+        }
+    }
+
+    private String pythonPart2(final String cfg, final int group) {
+        // cfg[nums[0]]
+        if (group >= cfg.length()) {
+            return "";
+        }
+        return cfg.substring(group, group + 1);
+    }
+
+    private String pythonPart3(final String cfg, final int group) {
+        // cfg[nums[0] + 1:]
+        if (group >= cfg.length()) {
+            return "";
+        }
+        return cfg.substring(group + 1);
     }
 
     private List<Integer> restOfGroups(final List<Integer> groups, final int start) {
