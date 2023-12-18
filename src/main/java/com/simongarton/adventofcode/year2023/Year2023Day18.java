@@ -31,6 +31,15 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
 
     private int iteration;
 
+    private final static Map<String, String> DIRECTIONS = new HashMap<>();
+
+    static {
+        DIRECTIONS.put("0", "R");
+        DIRECTIONS.put("1", "D");
+        DIRECTIONS.put("2", "L");
+        DIRECTIONS.put("3", "U");
+    }
+
     @Override
     public String title() {
         return "Day 18: Lavaduct Lagoon";
@@ -309,11 +318,27 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
         Arrays.stream(input).forEach(this::digHole);
     }
 
+    private void digHolesPart2(final String[] input) {
+        Arrays.stream(input).forEach(this::digHolePart2);
+    }
+
     private void digHole(final String h) {
         final String[] parts = h.split(" ");
         final String direction = parts[0];
         final int distance = Integer.parseInt(parts[1]);
         final String color = parts[2].replace("(", "").replace(")", "");
+        for (int i = 0; i < distance; i++) {
+            this.digOneHole(direction, color);
+        }
+    }
+
+    private void digHolePart2(final String h) {
+        final String[] parts = h.split(" ");
+        final String color = parts[2].replace("(", "").replace(")", "");
+        final String five = color.substring(1, 6);
+        final String one = color.substring(6, 7);
+        final int distance = Integer.parseInt(five, 16);
+        final String direction = DIRECTIONS.get(one);
         for (int i = 0; i < distance; i++) {
             this.digOneHole(direction, color);
         }
@@ -357,7 +382,23 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        // I need to find a start coordinate based on my map ... not sure how to.
+
+        this.diggings = new ArrayList<>();
+        this.digHolesPart2(input);
+        this.buildMap();
+        this.paintMap("holey-moley-before.png");
+
+        // sample
+//        this.floodFillRecursively(1, 1);
+        // real
+//        this.floodFillRecursively(188, 1);
+
+        this.floodFill(Coord.builder().x(1).y(-100).build());
+        this.paintMap("holey-moley-filled.png");
+
+        return String.valueOf(this.countRoom());
     }
 
     @Data
