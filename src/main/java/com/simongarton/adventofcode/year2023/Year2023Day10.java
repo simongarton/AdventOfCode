@@ -14,7 +14,6 @@ import java.util.*;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
-
 public class Year2023Day10 extends AdventOfCodeChallenge {
 
     private Map<String, Cell> cells;
