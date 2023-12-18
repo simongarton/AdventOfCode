@@ -18,6 +18,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 public class Year2023Day18 extends AdventOfCodeChallenge {
 
     private List<Hole> diggings;
+    private Map<String, Hole> diggingsMap;
     private int x;
     private int y;
 
@@ -56,15 +57,19 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
         // I need to find a start coordinate based on my map ... not sure how to.
 
         this.diggings = new ArrayList<>();
+        this.diggingsMap = new HashMap<>();
         this.digHoles(input);
         this.buildMap();
         this.paintMap("holey-moley-before.png");
 
         // sample
 //        this.floodFillRecursively(1, 1);
-        // real
+        // real - does not work
 //        this.floodFillRecursively(188, 1);
 
+        // sample - does not work ?
+//        this.floodFill(Coord.builder().x(2).y(1).build());
+        // real
         this.floodFill(Coord.builder().x(1).y(-100).build());
         this.paintMap("holey-moley-filled.png");
 
@@ -90,7 +95,14 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
             for (int col = 0; col < this.width; col++) {
                 final String floor = this.getRawFloor(col, row);
                 if (floor.equalsIgnoreCase("#")) {
-                    graphics2D.setPaint(Color.GREEN);
+                    final Coord reverseCoord = this.reverseTranslateCoord(Coord.builder().x(col).y(row).build());
+                    final Hole hole = this.diggingsMap.get(this.getCoordKey(reverseCoord));
+                    if (hole == null) {
+                        graphics2D.setPaint(Color.GREEN);
+                    } else {
+//                        graphics2D.setPaint(Color.BLUE);
+                        graphics2D.setPaint(Color.decode(hole.getColor()));
+                    }
                     graphics2D.fillRect(col, row, 1, 1);
                 }
             }
@@ -142,7 +154,6 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
         if ((y + 1) <= this.depth) {
             this.floodFillRecursively(x, y + 1);
         }
-        this.paintMap("holey-moley-partial.png");
         if (this.iteration++ % 10 == 0) {
             this.paintMap("holey-moley-partial.png");
         }
@@ -162,9 +173,9 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
             coordsToCheck.addAll(neighbours);
             coordsToCheckKeys.addAll(neighbours.stream().map(this::getCoordKey).collect(Collectors.toList()));
             iteration++;
-            if (iteration % 10000 == 0) {
-                this.paintMap("holey-moley-partial-" + iteration + ".png");
-            }
+//            if (iteration % 10000 == 0) {
+//                this.paintMap("holey-moley-partial-" + iteration + ".png");
+//            }
         }
     }
 
@@ -300,6 +311,13 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
                 .build();
     }
 
+    private Coord reverseTranslateCoord(final Coord coord) {
+        return Coord.builder()
+                .x(coord.getX() + this.minX)
+                .y(coord.getY() + this.minY)
+                .build();
+    }
+
     private String replaceCharacter(final String original, final Integer index, final String replacement) {
 
         return original.substring(0, index) + replacement + original.substring(index + 1);
@@ -354,6 +372,7 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
                 .color(color)
                 .build();
         this.diggings.add(hole);
+        this.diggingsMap.put(this.getCoordKey(coord), hole);
         this.x = hole.getCoord().getX();
         this.y = hole.getCoord().getY();
     }
