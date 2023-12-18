@@ -187,7 +187,7 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     }
 
     private Integer cost(final Cell current, final Cell neighbor) {
-        return neighbor.getCost();
+        return neighbor.getCost() - current.getCost();
     }
 
     private List<Cell> reconstructPath(final Map<Cell, Cell> cameFrom, final Cell end) {

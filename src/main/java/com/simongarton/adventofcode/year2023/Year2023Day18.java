@@ -63,11 +63,6 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
         this.paintMap("holey-moley-before.png");
 
         // sample
-//        this.floodFillRecursively(1, 1);
-        // real - does not work
-//        this.floodFillRecursively(188, 1);
-
-        // sample - does not work ?
 //        this.floodFill(Coord.builder().x(2).y(1).build());
         // real
         this.floodFill(Coord.builder().x(1).y(-100).build());
@@ -100,7 +95,6 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
                     if (hole == null) {
                         graphics2D.setPaint(Color.GREEN);
                     } else {
-//                        graphics2D.setPaint(Color.BLUE);
                         graphics2D.setPaint(Color.decode(hole.getColor()));
                     }
                     graphics2D.fillRect(col, row, 1, 1);
@@ -167,7 +161,6 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
         while (!coordsToCheck.isEmpty()) {
             final Coord coordToCheck = coordsToCheck.get(0);
             coordsToCheck.remove(0);
-            final String key = this.getCoordKey(coordToCheck);
             this.map = this.replaceCharacter(this.map, coordToCheck, "#");
             final List<Coord> neighbours = this.untouchedNeighbours(coordToCheck, coordsToCheckKeys);
             coordsToCheck.addAll(neighbours);
@@ -189,27 +182,19 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
         final Coord down = this.neighbour(coord.getX(), coord.getY() + 1);
         final Coord left = this.neighbour(coord.getX() - 1, coord.getY());
         final Coord right = this.neighbour(coord.getX() + 1, coord.getY());
+        this.maybeAdd(up, coordsToCheckKeys, neighbours);
+        this.maybeAdd(left, coordsToCheckKeys, neighbours);
+        this.maybeAdd(right, coordsToCheckKeys, neighbours);
+        this.maybeAdd(down, coordsToCheckKeys, neighbours);
+        return neighbours;
+    }
+
+    private void maybeAdd(final Coord up, final Set<String> coordsToCheckKeys, final List<Coord> neighbours) {
         if (!Objects.isNull(up)) {
             if (!coordsToCheckKeys.contains(this.getCoordKey(up))) {
                 neighbours.add(up);
             }
         }
-        if (!Objects.isNull(down)) {
-            if (!coordsToCheckKeys.contains(this.getCoordKey(down))) {
-                neighbours.add(down);
-            }
-        }
-        if (!Objects.isNull(left)) {
-            if (!coordsToCheckKeys.contains(this.getCoordKey(left))) {
-                neighbours.add(left);
-            }
-        }
-        if (!Objects.isNull(right)) {
-            if (!coordsToCheckKeys.contains(this.getCoordKey(right))) {
-                neighbours.add(right);
-            }
-        }
-        return neighbours;
     }
 
     private Coord neighbour(final int x, final int y) {
@@ -227,6 +212,7 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
     }
 
     private void digOutMiddle() {
+        // ray-casting, but fooled by horizontal tunnels
         for (int row = 0; row < this.depth; row++) {
             boolean inside = false;
             for (int col = 0; col < this.width; col++) {
@@ -404,16 +390,19 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
 
         // I need to find a start coordinate based on my map ... not sure how to.
 
+        /*
+        minX = -2902613
+        maxX = 11304609
+        minY = -8817887
+        maxY = 11393329
+         */
+
         this.diggings = new ArrayList<>();
+        this.diggingsMap = new HashMap<>();
         this.digHolesPart2(input);
         this.buildMap();
         this.paintMap("holey-moley-before.png");
-
-        // sample
-//        this.floodFillRecursively(1, 1);
-        // real
-//        this.floodFillRecursively(188, 1);
-
+        
         this.floodFill(Coord.builder().x(1).y(-100).build());
         this.paintMap("holey-moley-filled.png");
 
