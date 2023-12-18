@@ -107,7 +107,9 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         while (!openSet.isEmpty()) {
             final Cell current = this.bestOpenSetWithFScoreValue(openSet, fScore);
             if (current == end) {
-                return this.reconstructPath(cameFrom, current);
+                final List<Cell> cells = this.reconstructPath(cameFrom, current);
+                this.drawPath(cells);
+                return cells;
             }
             this.debugPrint(debug, "working on / removing current " + current.toString() + " with openSet.size()=" + openSet.size());
             openSet.remove(current);
@@ -133,6 +135,36 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
 
         // Open set is empty but goal was never reached
         throw new RuntimeException("AStar failed.");
+    }
+
+    private void drawPath(final List<Cell> cells) {
+        final StringBuilder mapBuilder = new StringBuilder("");
+        for (int i = 0; i < this.height; i++) {
+            final String line = ".".repeat(this.width);
+            mapBuilder.append(line);
+        }
+
+        String map = mapBuilder.toString();
+
+        for (final Cell cell : cells) {
+            map = this.replaceCharacter(map, cell.getX(), cell.getY(), "#");
+        }
+
+        for (int i = 0; i < this.height; i++) {
+            final String line = map.substring(i * this.width, (i + 1) * this.width);
+            System.out.println(line);
+        }
+    }
+
+    private String replaceCharacter(final String map, final int x, final int y, final String replacement) {
+
+        final int index = (y * this.width) + x;
+        return this.replaceCharacter(map, index, replacement);
+    }
+
+    private String replaceCharacter(final String original, final Integer index, final String replacement) {
+
+        return original.substring(0, index) + replacement + original.substring(index + 1);
     }
 
     private void debugPrint(final boolean debug, final String s) {
