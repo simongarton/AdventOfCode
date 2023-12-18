@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
@@ -51,10 +52,13 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
         this.digHoles(input);
         this.buildMap();
         this.paintMap("holey-moley-before.png");
+
         // sample
-        this.floodFillRecursively(1, 1);
+//        this.floodFillRecursively(1, 1);
         // real
 //        this.floodFillRecursively(188, 1);
+
+        this.floodFill(Coord.builder().x(1).y(-100).build());
         this.paintMap("holey-moley-filled.png");
 
         return String.valueOf(this.countRoom());
@@ -101,7 +105,6 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
         graphics2D.fillRect(0, 0, this.width, this.depth);
     }
 
-
     private int countRoom() {
         int total = 0;
         for (int row = 0; row < this.depth; row++) {
@@ -142,40 +145,60 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
         final List<Coord> coordsToCheck = new ArrayList<>();
         coordsToCheck.add(coord);
         int iteration = 0;
+        final Set<String> coordsToCheckKeys = new HashSet<>();
         while (!coordsToCheck.isEmpty()) {
             final Coord coordToCheck = coordsToCheck.get(0);
             coordsToCheck.remove(0);
-            final Hole hole = Hole.builder()
-                    .coord(coordToCheck)
-                    .build();
-//            this.diggings.add(hole);
-            this.map = this.replaceCharacter(this.map, hole.getCoord(), "#");
-            coordsToCheck.addAll(this.untouchedNeighbours(coordToCheck));
+            final String key = this.getCoordKey(coordToCheck);
+//            System.out.println("doing " + key);
+            // this works on a real coord, not translated
+            this.map = this.replaceCharacter(this.map, coordToCheck, "#");
+            // so does this, I think
+            final List<Coord> neighbours = this.untouchedNeighbours(coordToCheck, coordsToCheckKeys);
+            coordsToCheck.addAll(neighbours);
+            coordsToCheckKeys.addAll(neighbours.stream().map(this::getCoordKey).collect(Collectors.toList()));
             iteration++;
-            if (iteration % 100000 == 0) {
-                System.out.println(coordsToCheck.size() + " " + this.diggings.size());
-                this.paintMap("holey-moley-partial.png");
+            if (iteration % 10000 == 0) {
+//                System.out.println(coordsToCheck.size() + " " + this.diggings.size() + " (" + coordsToCheckKeys.size() + ")");
+                this.paintMap("holey-moley-partial-" + iteration + ".png");
             }
         }
     }
 
-    private Collection<Coord> untouchedNeighbours(final Coord coord) {
+    private String getCoordKey(final Coord coordToCheck) {
+        return coordToCheck.getX() + "," + coordToCheck.getY();
+    }
+
+    private List<Coord> untouchedNeighbours(final Coord coord, final Set<String> coordsToCheckKeys) {
+//        System.out.println("  checking " + coord);
         final List<Coord> neighbours = new ArrayList<>();
         final Coord up = this.neighbour(coord.getX(), coord.getY() - 1);
         final Coord down = this.neighbour(coord.getX(), coord.getY() + 1);
         final Coord left = this.neighbour(coord.getX() - 1, coord.getY());
         final Coord right = this.neighbour(coord.getX() + 1, coord.getY());
         if (!Objects.isNull(up)) {
-            neighbours.add(up);
+            if (!coordsToCheckKeys.contains(this.getCoordKey(up))) {
+//                System.out.println("    adding " + up);
+                neighbours.add(up);
+            }
         }
         if (!Objects.isNull(down)) {
-            neighbours.add(down);
+            if (!coordsToCheckKeys.contains(this.getCoordKey(down))) {
+//                System.out.println("    adding " + down);
+                neighbours.add(down);
+            }
         }
         if (!Objects.isNull(left)) {
-            neighbours.add(left);
+            if (!coordsToCheckKeys.contains(this.getCoordKey(left))) {
+//                System.out.println("    adding " + left);
+                neighbours.add(left);
+            }
         }
         if (!Objects.isNull(right)) {
-            neighbours.add(right);
+            if (!coordsToCheckKeys.contains(this.getCoordKey(right))) {
+//                System.out.println("    adding " + right);
+                neighbours.add(right);
+            }
         }
         return neighbours;
     }
