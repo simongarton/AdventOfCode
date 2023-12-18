@@ -22,7 +22,10 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 ## Day 18: Lavaduct Lagoon
 
 Part 1 reasonable enough, another grid problem and follow instructions to carve out a tunnel; then flood-fill it to
-work out how much space is enclosed.
+work out how much space is enclosed. Curiously the instructions include wall colors, which I implemented fearing it
+would be needed later - but wasn't.
+
+![Part 1](holey-moley-filled.png)
 
 Part 2 extends the grid to 14,207,222 x 20,211,216 and I am at a loss to work out how to even start this without running
 out of memory.
