@@ -12,12 +12,28 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓
+2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
+
+## Day 18: Lavaduct Lagoon
+
+Part 1 reasonable enough, another grid problem and follow instructions to carve out a tunnel; then flood-fill it to
+work out how much space is enclosed.
+
+Part 2 extends the grid to 14,207,222 x 20,211,216 and I am at a loss to work out how to even start this without running
+out of memory.
+
+## Day 17: Clumsy Crucible
+
+Defeated completely. Superficially it's a route-finding algorithm, but it's a minimal cost from start to end _while
+never taking more than 3 steps in one direction_ (and also only turning, never backtracking : I don't think this is an
+issue though.)
+
+No idea how to tackle it.
 
 ## Day 16: The Floor Will Be Lava
 

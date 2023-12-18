@@ -108,7 +108,9 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
             final Cell current = this.bestOpenSetWithFScoreValue(openSet, fScore);
             if (current == end) {
                 final List<Cell> cells = this.reconstructPath(cameFrom, current);
-                this.drawPath(cells);
+                if (DEBUG) {
+                    this.drawPath(cells);
+                }
                 return cells;
             }
             this.debugPrint(debug, "working on / removing current " + current.toString() + " with openSet.size()=" + openSet.size());

@@ -399,10 +399,16 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
 
         this.diggings = new ArrayList<>();
         this.diggingsMap = new HashMap<>();
+
+        if (true) {
+            // Will die with java.lang.OutOfMemoryError: Java heap space
+            return null;
+        }
+
         this.digHolesPart2(input);
         this.buildMap();
         this.paintMap("holey-moley-before.png");
-        
+
         this.floodFill(Coord.builder().x(1).y(-100).build());
         this.paintMap("holey-moley-filled.png");
 
