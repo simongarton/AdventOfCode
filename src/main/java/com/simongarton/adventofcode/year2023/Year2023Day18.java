@@ -45,8 +45,6 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
 
         // I need to find a start coordinate based on my map ... not sure how to.
-        // I've tried scanning from side to side, that didn't work on the sample.
-        // I've tried floodfill, that's bogging down with too much to do on the real.
 
         this.diggings = new ArrayList<>();
         this.digHoles(input);
@@ -150,16 +148,12 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
             final Coord coordToCheck = coordsToCheck.get(0);
             coordsToCheck.remove(0);
             final String key = this.getCoordKey(coordToCheck);
-//            System.out.println("doing " + key);
-            // this works on a real coord, not translated
             this.map = this.replaceCharacter(this.map, coordToCheck, "#");
-            // so does this, I think
             final List<Coord> neighbours = this.untouchedNeighbours(coordToCheck, coordsToCheckKeys);
             coordsToCheck.addAll(neighbours);
             coordsToCheckKeys.addAll(neighbours.stream().map(this::getCoordKey).collect(Collectors.toList()));
             iteration++;
             if (iteration % 10000 == 0) {
-//                System.out.println(coordsToCheck.size() + " " + this.diggings.size() + " (" + coordsToCheckKeys.size() + ")");
                 this.paintMap("holey-moley-partial-" + iteration + ".png");
             }
         }
@@ -170,7 +164,6 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
     }
 
     private List<Coord> untouchedNeighbours(final Coord coord, final Set<String> coordsToCheckKeys) {
-//        System.out.println("  checking " + coord);
         final List<Coord> neighbours = new ArrayList<>();
         final Coord up = this.neighbour(coord.getX(), coord.getY() - 1);
         final Coord down = this.neighbour(coord.getX(), coord.getY() + 1);
@@ -178,25 +171,21 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
         final Coord right = this.neighbour(coord.getX() + 1, coord.getY());
         if (!Objects.isNull(up)) {
             if (!coordsToCheckKeys.contains(this.getCoordKey(up))) {
-//                System.out.println("    adding " + up);
                 neighbours.add(up);
             }
         }
         if (!Objects.isNull(down)) {
             if (!coordsToCheckKeys.contains(this.getCoordKey(down))) {
-//                System.out.println("    adding " + down);
                 neighbours.add(down);
             }
         }
         if (!Objects.isNull(left)) {
             if (!coordsToCheckKeys.contains(this.getCoordKey(left))) {
-//                System.out.println("    adding " + left);
                 neighbours.add(left);
             }
         }
         if (!Objects.isNull(right)) {
             if (!coordsToCheckKeys.contains(this.getCoordKey(right))) {
-//                System.out.println("    adding " + right);
                 neighbours.add(right);
             }
         }
@@ -323,7 +312,7 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
     private void digHole(final String h) {
         final String[] parts = h.split(" ");
         final String direction = parts[0];
-        final Integer distance = Integer.parseInt(parts[1]);
+        final int distance = Integer.parseInt(parts[1]);
         final String color = parts[2].replace("(", "").replace(")", "");
         for (int i = 0; i < distance; i++) {
             this.digOneHole(direction, color);
