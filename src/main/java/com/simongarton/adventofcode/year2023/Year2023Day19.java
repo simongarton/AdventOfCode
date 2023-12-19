@@ -12,6 +12,8 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
     List<Workflow> workflows;
     List<Part> parts;
     Map<String, Workflow> workflowMap;
+    Path root;
+    Map<String, Long> endpoints;
 
     @Override
     public String title() {
@@ -120,7 +122,6 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
         return false;
     }
 
-
     private void loadWorkflowsAndParts(final String[] input) {
 
         boolean doingParts = false;
@@ -147,8 +148,189 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.loadWorkflowsAndParts(input);
+        this.endpoints = new HashMap<>();
+        this.root = Path.builder()
+                .parent(null)
+                .source("in")
+                .destinations(new ArrayList<>())
+                .xLow(1)
+                .xHigh(4000)
+                .mLow(1)
+                .mHigh(4000)
+                .aLow(1)
+                .aHigh(4000)
+                .sLow(1)
+                .sHigh(4000)
+                .build();
+        this.buildPathMap(this.root);
+        this.debugPathMap(this.root, 0);
+        System.out.println();
+        for (final Map.Entry<String, Long> entry : this.endpoints.entrySet()) {
+            System.out.println(entry.getKey() + "=" + entry.getValue());
+        }
+        final long total = 0;
+        return String.valueOf(total);
     }
+
+    private void debugPathMap(final Path node, final int i) {
+        System.out.println(" ".repeat(i) + node.getSource() + " " + this.getRange(node));
+        for (final Path destination : node.destinations) {
+            this.debugPathMap(destination, i + 1);
+        }
+    }
+
+    private String getRange(final Path node) {
+        return node.getXLow() + ":" + node.getXHigh() + " " +
+                node.getMLow() + ":" + node.getMHigh() + " " +
+                node.getALow() + ":" + node.getAHigh() + " " +
+                node.getSLow() + ":" + node.getSHigh() + " ";
+    }
+
+    private void buildPathMap(final Path node) {
+        // I have arrived at this node, which will be in initially, and I have these many options
+        // Work out from my rules where I can go
+        final Workflow workflow = this.workflowMap.get(node.getSource());
+        for (final Rule rule : workflow.getRules()) {
+            final Path next = Path.builder()
+                    .parent(node)
+                    .source(rule.getWorkflowName())
+                    .destinations(new ArrayList<>())
+                    .xLow(this.figureOutLow("x", node, rule))
+                    .xHigh(this.figureOutHigh("x", node, rule))
+                    .mLow(this.figureOutLow("m", node, rule))
+                    .mHigh(this.figureOutHigh("m", node, rule))
+                    .aLow(this.figureOutLow("a", node, rule))
+                    .aHigh(this.figureOutHigh("a", node, rule))
+                    .sLow(this.figureOutLow("s", node, rule))
+                    .sHigh(this.figureOutHigh("s", node, rule))
+                    .build();
+            node.destinations.add(next);
+        }
+        for (final Path destination : node.getDestinations()) {
+            if (List.of("A", "R").contains(destination.getSource())) {
+                continue;
+            }
+            this.buildPathMap(destination);
+        }
+    }
+
+    private int figureOutLow(final String field, final Path start, final Rule rule) {
+        if (List.of("A", "R").contains(rule.getWorkflowName())) {
+            this.handleEndOfLine(start, rule);
+            return 0;
+        }
+        if (rule.getField() == null) {
+            return this.getLow(start, field);
+        }
+        if (!rule.getField().equalsIgnoreCase(field)) {
+            return this.getLow(start, field);
+        }
+        final String criteria = rule.getCriteria();
+        final int value = this.getLow(start, field);
+        if (criteria.equalsIgnoreCase("<")) {
+            if (rule.getValue() < value) {
+                return value;
+            } else {
+                return rule.getValue();
+            }
+        }
+        if (criteria.equalsIgnoreCase(">")) {
+            if (rule.getValue() < value) {
+                return rule.getValue();
+            } else {
+                return value;
+            }
+        }
+        throw new RuntimeException("gargh!");
+    }
+
+    private int figureOutHigh(final String field, final Path start, final Rule rule) {
+        if (List.of("A", "R").contains(rule.getWorkflowName())) {
+            this.handleEndOfLine(start, rule);
+            return 0;
+        }
+        if (rule.getField() == null) {
+            return this.getHigh(start, field);
+        }
+        if (!rule.getField().equalsIgnoreCase(field)) {
+            return this.getHigh(start, field);
+        }
+        final String criteria = rule.getCriteria();
+        final int value = this.getHigh(start, field);
+        if (criteria.equalsIgnoreCase(">")) {
+            if (rule.getValue() < value) {
+                return value;
+            } else {
+                return rule.getValue();
+            }
+        }
+        if (criteria.equalsIgnoreCase("<")) {
+            if (rule.getValue() < value) {
+                return rule.getValue();
+            } else {
+                return value;
+            }
+        }
+        throw new RuntimeException("gargh!");
+    }
+
+    private void handleEndOfLine(final Path node, final Rule rule) {
+        final long result = this.recursiveTotal(node);
+        // some kind of recursive thing going up from node to each parent, until parent is null.
+        // where each level multiplies each of the four ranges by each other.
+        this.endpoints.put(rule.workflowName, this.endpoints.getOrDefault(rule.workflowName, 0L) + result);
+    }
+
+    private long recursiveTotal(final Path node) {
+        long total = this.totalForNode(node);
+        if (node.parent != null) {
+            total = total + this.recursiveTotal(node.parent);
+        }
+        return total;
+    }
+
+    private long totalForNode(final Path node) {
+        final long xRange = node.getXHigh() + node.getXLow();
+        final long mRange = node.getMHigh() + node.getMLow();
+        final long aRange = node.getAHigh() + node.getALow();
+        final long sRange = node.getSHigh() + node.getSLow();
+        return xRange * mRange * aRange * sRange;
+    }
+
+    private int getLow(final Path start, final String field) {
+        if (field.equalsIgnoreCase("x")) {
+            return start.getXLow();
+        }
+        if (field.equalsIgnoreCase("m")) {
+            return start.getMLow();
+        }
+        if (field.equalsIgnoreCase("a")) {
+            return start.getALow();
+        }
+        if (field.equalsIgnoreCase("s")) {
+            return start.getSLow();
+        }
+        throw new RuntimeException("urk " + field);
+    }
+
+    private int getHigh(final Path start, final String field) {
+        if (field.equalsIgnoreCase("x")) {
+            return start.getXHigh();
+        }
+        if (field.equalsIgnoreCase("m")) {
+            return start.getMHigh();
+        }
+        if (field.equalsIgnoreCase("a")) {
+            return start.getAHigh();
+        }
+        if (field.equalsIgnoreCase("s")) {
+            return start.getSHigh();
+        }
+        throw new RuntimeException("urkk ! " + field);
+    }
+
 
     @Data
     private static final class Workflow {
@@ -213,6 +395,23 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
         private String criteria;
         private int value;
         private String workflowName;
+    }
+
+    @Data
+    @Builder
+    private static final class Path {
+
+        private Path parent;
+        private String source;
+        private List<Path> destinations;
+        private int xLow;
+        private int xHigh;
+        private int mLow;
+        private int mHigh;
+        private int aLow;
+        private int aHigh;
+        private int sLow;
+        private int sHigh;
     }
 
     @Data
