@@ -212,6 +212,47 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
         }
     }
 
+    /*
+
+    Example : in{s<5:A,R} and a max of 10
+
+    I arrive with 1:10 1:10 1:10 1:10
+    I evaluate the first rule
+    I go to A with 1:10 1:10 1:10 1:4
+    This means that I now have 1:10 1:10 1:10 5:10 for the next rule
+    I go to R with 1:10 1:10 1:10 5:10
+
+    Example : in{s<5:A,a>8:p,R} p{s>6:R,m<5:A,R} and a max of 10
+
+    I arrive with 1:10 1:10 1:10 1:10
+    I evaluate the first rule
+    I go to A with 1:10 1:10 1:10 1:4
+    This means that I now have 1:10 1:10 1:10 5:10 for the next rule
+    I evaluate the second rule
+    I go to p with 1:10 1:10 9:10 1:4
+    This means that I now have 1:10 1:10 1:8 1:4 for the next rule
+    I go to R with 1:10 1:10 1:8 1:4
+
+    I arrive at p with 1:10 1:10 9:10 1:4
+    I evaluate the first rule
+    It makes no sense, s must be greater than 6 but I only have up to 4, so ... something dies.
+    I evaluate the second rule
+    I go to A with 1:10 1:4 9:10 1:4
+    This means that I now have 1:10 5:10 9:10 1:4 for the next rule
+    I go to R with 1:10 5:10 9:10 1:4
+
+    I think.
+
+    So I need the concept of a set of ranges;
+    and I need an operation to apply a rule and get the two outcomes, pass and fail
+    pass gets handed down to the next destination
+    fail gets handed across to the next rule
+    the operation will affect the low and may just invalidate the rule
+
+    write some scenarios and tests.
+
+     */
+
     private void buildPathMap(final Path node) {
         final Workflow workflow = this.workflowMap.get(node.getSource());
         for (final Rule rule : workflow.getRules()) {
