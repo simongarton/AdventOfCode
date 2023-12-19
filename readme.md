@@ -12,7 +12,7 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .
+2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ..
        1234567890123456789012345
                 1111111111222222
 ```
@@ -21,8 +21,8 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## Day 19 : Aplenty
 
-A decision tree : a list of workflows, involving rules and criteria pointing you to different workflows.
-Part 1 was easy.
+A decision tree : a list of workflows, involving rules and criteria pointing you to different workflows.  
+Part 1 was easy.  
 Part 2 mentions a number `167409079868000` which just screams "brute force will not work !"
 
 ## Day 18: Lavaduct Lagoon
