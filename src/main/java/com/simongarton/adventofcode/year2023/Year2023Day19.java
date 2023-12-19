@@ -9,11 +9,13 @@ import java.util.stream.Collectors;
 
 public class Year2023Day19 extends AdventOfCodeChallenge {
 
-    List<Workflow> workflows;
-    List<Part> parts;
-    Map<String, Workflow> workflowMap;
-    Path root;
-    Map<String, Long> endpoints;
+    private static final int MAX = 10;
+
+    private List<Workflow> workflows;
+    private List<Part> parts;
+    private Map<String, Workflow> workflowMap;
+    private Path root;
+    private Map<String, Long> endpoints;
 
     @Override
     public String title() {
@@ -155,14 +157,7 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
                 .parent(null)
                 .source("in")
                 .destinations(new ArrayList<>())
-                .xLow(1)
-                .xHigh(4000)
-                .mLow(1)
-                .mHigh(4000)
-                .aLow(1)
-                .aHigh(4000)
-                .sLow(1)
-                .sHigh(4000)
+                .ranges(this.rootRanges())
                 .build();
         this.buildPathMap(this.root);
         this.debugPathMap(this.root, 0);
@@ -170,119 +165,85 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
         for (final Map.Entry<String, Long> entry : this.endpoints.entrySet()) {
             System.out.println(entry.getKey() + "=" + entry.getValue());
         }
-        final long total = 0;
+        final long total = this.endpoints.get("A");
         return String.valueOf(total);
     }
 
+    private Map<String, Range> rootRanges() {
+        final Map<String, Range> rangeMap = new HashMap<>();
+        rangeMap.put("x", Range.builder().low(1).high(MAX).valid(true).build());
+        rangeMap.put("m", Range.builder().low(1).high(MAX).valid(true).build());
+        rangeMap.put("a", Range.builder().low(1).high(MAX).valid(true).build());
+        rangeMap.put("s", Range.builder().low(1).high(MAX).valid(true).build());
+        return rangeMap;
+    }
+
     private void debugPathMap(final Path node, final int i) {
-        System.out.println(" ".repeat(i) + node.getSource() + " " + this.getRange(node));
+        System.out.println(" ".repeat(i) + node.getSource() + " " + this.displayRange(node));
         for (final Path destination : node.destinations) {
             this.debugPathMap(destination, i + 1);
         }
     }
 
-    private String getRange(final Path node) {
-        return node.getXLow() + ":" + node.getXHigh() + " " +
-                node.getMLow() + ":" + node.getMHigh() + " " +
-                node.getALow() + ":" + node.getAHigh() + " " +
-                node.getSLow() + ":" + node.getSHigh() + " ";
+    private String displayRange(final Path node) {
+        final StringBuilder display = new StringBuilder();
+        for (final String field : List.of("x", "m", "a", "s")) {
+            final Optional<Range> optionalRange = this.getRange(node, field);
+            if (optionalRange.isEmpty()) {
+                display.append("-:-" + " ");
+            } else {
+                final Range range = optionalRange.get();
+                display.append(range.getLow()).append(":").append(range.getHigh());
+            }
+            display.append(" ");
+        }
+        return display.toString().trim();
+    }
+
+    private Optional<Range> getRange(final Path node, final String field) {
+        if (!node.getRanges().containsKey(field)) {
+            return Optional.empty();
+        }
+        final Range range = node.getRanges().get(field);
+        if (range.isValid()) {
+            return Optional.of(range);
+        } else {
+            return Optional.empty();
+        }
     }
 
     private void buildPathMap(final Path node) {
-        // I have arrived at this node, which will be in initially, and I have these many options
-        // Work out from my rules where I can go
         final Workflow workflow = this.workflowMap.get(node.getSource());
         for (final Rule rule : workflow.getRules()) {
+            // this isn't valid. if I've arrived at this rule I will have
+            // x * m * a * s possibilities. For each rule, I need to work out
+            // how many go down that path - but then I need to subtract that from the total available.
+            // the rules are sequential so I need to apply them in order.
             final Path next = Path.builder()
                     .parent(node)
                     .source(rule.getWorkflowName())
                     .destinations(new ArrayList<>())
-                    .xLow(this.figureOutLow("x", node, rule))
-                    .xHigh(this.figureOutHigh("x", node, rule))
-                    .mLow(this.figureOutLow("m", node, rule))
-                    .mHigh(this.figureOutHigh("m", node, rule))
-                    .aLow(this.figureOutLow("a", node, rule))
-                    .aHigh(this.figureOutHigh("a", node, rule))
-                    .sLow(this.figureOutLow("s", node, rule))
-                    .sHigh(this.figureOutHigh("s", node, rule))
+                    .ranges(new HashMap<>()) // this isn't done
                     .build();
             node.destinations.add(next);
         }
         for (final Path destination : node.getDestinations()) {
             if (List.of("A", "R").contains(destination.getSource())) {
+                this.handleEndOfLine(destination);
                 continue;
             }
             this.buildPathMap(destination);
         }
     }
 
-    private int figureOutLow(final String field, final Path start, final Rule rule) {
-        if (List.of("A", "R").contains(rule.getWorkflowName())) {
-            this.handleEndOfLine(start, rule);
-            return 0;
-        }
-        if (rule.getField() == null) {
-            return this.getLow(start, field);
-        }
-        if (!rule.getField().equalsIgnoreCase(field)) {
-            return this.getLow(start, field);
-        }
-        final String criteria = rule.getCriteria();
-        final int value = this.getLow(start, field);
-        if (criteria.equalsIgnoreCase("<")) {
-            if (rule.getValue() < value) {
-                return value;
-            } else {
-                return rule.getValue();
-            }
-        }
-        if (criteria.equalsIgnoreCase(">")) {
-            if (rule.getValue() < value) {
-                return rule.getValue();
-            } else {
-                return value;
-            }
-        }
-        throw new RuntimeException("gargh!");
-    }
-
-    private int figureOutHigh(final String field, final Path start, final Rule rule) {
-        if (List.of("A", "R").contains(rule.getWorkflowName())) {
-            this.handleEndOfLine(start, rule);
-            return 0;
-        }
-        if (rule.getField() == null) {
-            return this.getHigh(start, field);
-        }
-        if (!rule.getField().equalsIgnoreCase(field)) {
-            return this.getHigh(start, field);
-        }
-        final String criteria = rule.getCriteria();
-        final int value = this.getHigh(start, field);
-        if (criteria.equalsIgnoreCase(">")) {
-            if (rule.getValue() < value) {
-                return value;
-            } else {
-                return rule.getValue();
-            }
-        }
-        if (criteria.equalsIgnoreCase("<")) {
-            if (rule.getValue() < value) {
-                return rule.getValue();
-            } else {
-                return value;
-            }
-        }
-        throw new RuntimeException("gargh!");
-    }
-
-    private void handleEndOfLine(final Path node, final Rule rule) {
-        final long result = this.recursiveTotal(node);
+    private void handleEndOfLine(final Path node) {
+        final long result = this.totalForNode(node);
         // some kind of recursive thing going up from node to each parent, until parent is null.
         // where each level multiplies each of the four ranges by each other.
-        this.endpoints.put(rule.workflowName, this.endpoints.getOrDefault(rule.workflowName, 0L) + result);
+        this.endpoints.put(node.getSource(), this.endpoints.getOrDefault(node.getSource(), 0L) + result);
     }
 
+    // I can't remember why I thought I needed to do this
     private long recursiveTotal(final Path node) {
         long total = this.totalForNode(node);
         if (node.parent != null) {
@@ -292,45 +253,22 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
     }
 
     private long totalForNode(final Path node) {
-        final long xRange = node.getXHigh() + node.getXLow();
-        final long mRange = node.getMHigh() + node.getMLow();
-        final long aRange = node.getAHigh() + node.getALow();
-        final long sRange = node.getSHigh() + node.getSLow();
-        return xRange * mRange * aRange * sRange;
-    }
 
-    private int getLow(final Path start, final String field) {
-        if (field.equalsIgnoreCase("x")) {
-            return start.getXLow();
-        }
-        if (field.equalsIgnoreCase("m")) {
-            return start.getMLow();
-        }
-        if (field.equalsIgnoreCase("a")) {
-            return start.getALow();
-        }
-        if (field.equalsIgnoreCase("s")) {
-            return start.getSLow();
-        }
-        throw new RuntimeException("urk " + field);
-    }
+        // +1 because range is inclusive.
+        long total = 1;
 
-    private int getHigh(final Path start, final String field) {
-        if (field.equalsIgnoreCase("x")) {
-            return start.getXHigh();
+        for (final String field : List.of("x", "m", "a", "s")) {
+            final Optional<Range> optionalRange = this.getRange(node, field);
+            if (optionalRange.isEmpty()) {
+                return 0;
+            } else {
+                final Range range = optionalRange.get();
+                final long thisRange = 1 + range.getHigh() - range.getLow();
+                total = total * thisRange;
+            }
         }
-        if (field.equalsIgnoreCase("m")) {
-            return start.getMHigh();
-        }
-        if (field.equalsIgnoreCase("a")) {
-            return start.getAHigh();
-        }
-        if (field.equalsIgnoreCase("s")) {
-            return start.getSHigh();
-        }
-        throw new RuntimeException("urkk ! " + field);
+        return total;
     }
-
 
     @Data
     private static final class Workflow {
@@ -399,19 +337,21 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
 
     @Data
     @Builder
+    private static final class Range {
+
+        private int low;
+        private int high;
+        private boolean valid;
+    }
+
+    @Data
+    @Builder
     private static final class Path {
 
         private Path parent;
         private String source;
         private List<Path> destinations;
-        private int xLow;
-        private int xHigh;
-        private int mLow;
-        private int mHigh;
-        private int aLow;
-        private int aHigh;
-        private int sLow;
-        private int sHigh;
+        private Map<String, Range> ranges = new HashMap<>();
     }
 
     @Data
