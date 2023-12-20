@@ -1,3 +1,5 @@
-in{s<5:A,R}
-
-{x=0,m=0,a=0,s=0}
+broadcaster -> a, b, c
+%a -> b
+%b -> c
+%c -> inv
+&inv -> a
