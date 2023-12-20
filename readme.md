@@ -12,7 +12,7 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ..
+2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ...
        1234567890123456789012345
                 1111111111222222
 ```
@@ -22,7 +22,10 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 ## Day 20: Pulse Propagation
 
 Nice ! A set of modules that receive input signals, modify them and send them on, into a network. I initially got
-bogged down in worries about timings before eventually re-reading the question very carefully.
+bogged down in worries about timings before eventually re-reading the question very carefully, rebuilding it all
+and then it worked nicely.
+
+Well, part 1 did. I have no idea on how to do part 2.
 
 ![Part 1](src/graphs/modules.png)
 
