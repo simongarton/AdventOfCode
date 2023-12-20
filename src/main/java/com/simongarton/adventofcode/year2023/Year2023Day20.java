@@ -9,14 +9,28 @@ import java.util.stream.Collectors;
 
 public class Year2023Day20 extends AdventOfCodeChallenge {
 
-    // I think I need to stack the inputs. I can see b being put on the list twice, but the first one removes the input
+    /*
+
+    Flip-flop modules (prefix %) are either on or off; they are initially off. If a flip-flop module receives a high
+    pulse, it is ignored and nothing happens. However, if a flip-flop module receives a low pulse, it flips between
+    on and off. If it was off, it turns on and sends a high pulse. If it was on, it turns off and sends a low pulse.
+
+    Conjunction modules (prefix &) remember the type of the most recent pulse received from each of their connected
+    input modules; they initially default to remembering a low pulse for each input. When a pulse is received, the
+    conjunction module first updates its memory for that input. Then, if it remembers high pulses for all inputs,
+    it sends a low pulse; otherwise, it sends a high pulse.
+
+    How can the second one build up a set of inputs, but the first one is changing on each pulse ? Can flip flops only
+    have one input ?
+
+     */
 
     private Map<String, AoCModule> modules;
     private AoCModule button;
 
     @Override
     public String title() {
-        return "Day 20: Template code";
+        return "Day 20: Pulse Propagation";
     }
 
     @Override
@@ -64,10 +78,7 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
                 .name("button")
                 .type(ModuleType.BUTTON)
                 .targets(List.of(this.modules.get("broadcaster")))
-                .inputs(new ArrayList<>())
-                .sources(new ArrayList<>())
                 .build();
-        this.button.inputs.add(false);
     }
 
     private void fixUpDependencies(final String line) {
@@ -89,8 +100,6 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
                     .name(nameAndType)
                     .type(ModuleType.BROADCAST)
                     .targets(new ArrayList<>())
-                    .inputs(new ArrayList<>())
-                    .sources(new ArrayList<>())
                     .build();
             return module;
         }
@@ -130,94 +139,77 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
         BUTTON, BROADCAST, CONJUNCTION, FLIPFLOP
     }
 
+    private enum SignalType {
+        HIGH, LOW, NONE
+    }
+
+
+    @Data
+    @Builder
+    private static final class Cable {
+
+        private AoCModule from;
+        private AoCModule to;
+        private SignalType signal;
+    }
+
     @Data
     @Builder
     private static final class AoCModule {
 
         private String name;
         private ModuleType type;
-        private List<Boolean> inputs;
-        private List<String> sources;
+        private List<Cable> incomingCables;
+        private List<Cable> outgoingCables;
         private Boolean state;
-        private Map<String, Boolean> inputMap;
         private List<AoCModule> targets;
 
-        public List<AoCModule> pulse(final boolean highPulse) {
-            System.out.println(this.name + " (" + this.type + ") got " + highPulse);
-            for (final AoCModule target : this.targets) {
-                target.setInputAndSource(highPulse, this);
-                System.out.println("  " + target.name + " (" + target.type + ") was sent " + highPulse);
+        public void pulse(final SignalType signal) {
+            System.out.println(this.name + " (" + this.type + ") pulse with " + signal);
+            for (final Cable outgoing : this.outgoingCables) {
+                outgoing.setSignal(signal);
             }
-            this.inputs.remove(0);
-            return this.targets;
         }
 
-        public List<AoCModule> pulse() {
+        public void doBroadcast() {
+            System.out.println(this.name + " (" + this.type + ") + doBroadcast()");
+            if (this.getIncomingCables().size() != 1) {
+                throw new RuntimeException("broadcast has " + this.getIncomingCables().size() + " incoming cables.");
+            }
+            final SignalType signal = this.incomingCables.get(0).getSignal();
+            for (final Cable outgoing : this.outgoingCables) {
+                outgoing.setSignal(signal);
+            }
+        }
+
+        public void doFlipFlop() {
+            System.out.println(this.name + " (" + this.type + ") flipFlop()");
+            for (final Cable outgoing : this.outgoingCables) {
+            }
+        }
+
+        public void doConjunction() {
+            System.out.println(this.name + " (" + this.type + ") flipFlop()");
+            for (final Cable outgoing : this.outgoingCables) {
+            }
+        }
+
+        public void pulse() {
             switch (this.type) {
                 case BUTTON:
                     throw new RuntimeException("shouldn't get here.");
                 case BROADCAST:
-                    return this.doBroadcast();
+                    this.doBroadcast();
+                    break;
                 case CONJUNCTION:
-                    return this.doConjunction();
+                    this.doConjunction();
+                    break;
                 case FLIPFLOP:
-                    return this.doFlipFlop();
+                    this.doFlipFlop();
+                    break;
                 default:
                     throw new RuntimeException("no option");
             }
-        }
-
-        private List<AoCModule> doBroadcast() {
-            System.out.println(this.name + " (" + this.type + ") got " + this.inputs);
-            for (final AoCModule target : this.targets) {
-                target.setInputAndSource(this.inputs.get(0), this);
-                System.out.println("  " + target.name + " (" + target.type + ") was sent " + this.inputs);
-            }
-            this.inputs.remove(0);
-            return this.targets;
-        }
-
-        private void setInputAndSource(final Boolean input, final AoCModule source) {
-            this.inputs.add(input);
-            this.sources.add(source.getName());
-        }
-
-        private List<AoCModule> doFlipFlop() {
-            System.out.println(this.name + " (" + this.type + ") got " + this.inputs);
-            if (this.inputs.get(0)) {
-                // do nothing on high pulse
-                this.inputs.remove(0);
-                return new ArrayList<>();
-            }
-            this.state = !this.state;
-            for (final AoCModule target : this.targets) {
-                target.setInputAndSource(this.state, this);
-                System.out.println("  " + target.name + " (" + target.type + ") was sent " + this.state);
-            }
-            this.inputs.remove(0);
-            return this.targets;
-        }
-
-        private List<AoCModule> doConjunction() {
-            // I'm worried there's a timing issue here
-            // they remember the type of the most recent pulse received from each of their connected input modules;
-            // but when I'm doing the pulse method, is that correct ?
-            System.out.println(this.name + " (" + this.type + ") got " + this.inputs);
-            this.inputMap.put(this.sources.get(0), this.inputs.get(0));
-            boolean output = true;
-            for (final boolean input : this.inputMap.values()) {
-                if (!input) {
-                    output = false;
-                    break;
-                }
-            }
-            for (final AoCModule target : this.targets) {
-                target.setInputAndSource(this.state, this);
-                System.out.println("  " + target.name + " (" + target.type + ") was sent " + output);
-            }
-            this.inputs.remove(0);
-            this.sources.remove(0);
-            return this.targets;
         }
 
         public String getDetails() {
