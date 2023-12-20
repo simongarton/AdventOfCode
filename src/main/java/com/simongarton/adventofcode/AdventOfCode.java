@@ -172,6 +172,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2023Day17());
         this.challenges.add(new Year2023Day18());
         this.challenges.add(new Year2023Day19());
+        this.challenges.add(new Year2023Day20());
     }
 
     public AdventOfCode() {

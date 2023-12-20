@@ -10,25 +10,13 @@ import java.util.stream.Collectors;
 
 public class Year2023Day20 extends AdventOfCodeChallenge {
 
-    /*
-
-    Flip-flop modules (prefix %) are either on or off; they are initially off. If a flip-flop module receives a high
-    pulse, it is ignored and nothing happens. However, if a flip-flop module receives a low pulse, it flips between
-    on and off. If it was off, it turns on and sends a high pulse. If it was on, it turns off and sends a low pulse.
-
-    Conjunction modules (prefix &) remember the type of the most recent pulse received from each of their connected
-    input modules; they initially default to remembering a low pulse for each input. When a pulse is received, the
-    conjunction module first updates its memory for that input. Then, if it remembers high pulses for all inputs,
-    it sends a low pulse; otherwise, it sends a high pulse.
-
-    How can the second one build up a set of inputs, but the first one is changing on each pulse ? Can flip flops only
-    have one input ?
-
-     */
+    private static final boolean DEBUG = false;
 
     private Map<String, AoCModule> modules;
     @Getter
     public List<Pulse> pulses;
+    private long lowPulses;
+    private long highPulses;
     private AoCModule button;
 
     @Override
@@ -45,9 +33,10 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
 
         this.loadModules(input);
-        this.pressButton();
-        this.handlePulses();
-        return String.valueOf(0);
+        for (int i = 0; i < 1000; i++) {
+            this.pressButton();
+        }
+        return String.valueOf(this.highPulses * this.lowPulses);
     }
 
     private void handlePulses() {
@@ -65,19 +54,35 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
         to.handlePulse(pulse);
     }
 
+    private void addPulse(final Pulse pulse) {
+        this.getPulses().add(pulse);
+        if (pulse.getLevel() == PulseType.HIGH) {
+            this.highPulses++;
+        } else {
+            this.lowPulses++;
+        }
+    }
+
     private void pressButton() {
 
         this.pulses = new ArrayList<>();
         final AoCModule from = this.button;
         final AoCModule to = this.getModule("broadcaster");
         final Pulse outgoing = Pulse.builder().from(from).to(to).level(PulseType.LOW).build();
-        this.pulses.add(outgoing);
+        this.addPulse(outgoing);
         from.announceTo(outgoing);
+
+        this.handlePulses();
+
+        if (DEBUG) {
+            System.out.println();
+        }
     }
 
     private AoCModule getModule(final String name) {
         return this.modules.get(name);
     }
+
 
     private void loadModules(final String[] input) {
 
@@ -105,13 +110,28 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
         final List<String> children = Arrays.stream(parts[1].split(",")).map(String::trim).collect(Collectors.toList());
         final AoCModule parent = this.modules.get(name);
         for (final String childName : children) {
-            final AoCModule child = this.modules.get(childName);
+            AoCModule child = this.modules.get(childName);
+            if (child == null) {
+                child = this.createDefaultModule(childName);
+            }
             parent.getTargets().add(child);
             if (child.getType() == ModuleType.CONJUNCTION) {
                 child.getInputs().put(parent.getName(), PulseType.LOW);
             }
         }
 
+    }
+
+    private AoCModule createDefaultModule(final String name) {
+
+        final AoCModule defaultModule = AoCModule.builder()
+                .name(name)
+                .network(this)
+                .type(ModuleType.DEFAULT)
+                .finishState(false)
+                .build();
+        this.modules.put(name, defaultModule);
+        return defaultModule;
     }
 
     private AoCModule createModule(final String line) {
@@ -153,11 +173,26 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.loadModules(input);
+        final AoCModule rx = this.getModule("rx");
+        long buttonPresses = 0;
+        while (true) {
+            this.pressButton();
+            buttonPresses++;
+            if (rx.getFinishState()) {
+                break;
+            }
+
+            // I am not going to get this
+            break;
+        }
+
+        return String.valueOf(buttonPresses);
     }
 
     private enum ModuleType {
-        BUTTON, BROADCAST, CONJUNCTION, FLIPFLOP
+        BUTTON, BROADCAST, CONJUNCTION, FLIPFLOP, DEFAULT
     }
 
     private enum PulseType {
@@ -183,6 +218,7 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
         protected List<AoCModule> targets;
 
         protected Boolean state; // for flipflops
+        protected Boolean finishState = false; // for rx
         protected Map<String, PulseType> inputs; // for conjunctions
 
         public void handlePulse(final Pulse pulse) {
@@ -199,6 +235,11 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
                 case FLIPFLOP:
                     this.handleFlipFlopPulse(pulse);
                     break;
+                case DEFAULT:
+                    this.handleDefaultPulse(pulse);
+                    break;
+                default:
+                    throw new RuntimeException(this.type.toString());
             }
         }
 
@@ -209,6 +250,15 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
 
         public String getDescription() {
             return this.name + " (" + this.type + ")";
+        }
+
+        public void handleDefaultPulse(final Pulse pulse) {
+
+            if (pulse.getLevel() == PulseType.LOW) {
+                this.setFinishState(true);
+            }
+
+            this.announceFrom(pulse);
         }
 
         public void handleButtonPulse(final Pulse pulse) {
@@ -222,7 +272,7 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
             for (final AoCModule target : this.getTargets()) {
                 final Pulse outgoing = Pulse.builder().from(this).to(target).level(pulse.getLevel()).build();
                 this.announceTo(pulse);
-                this.network.getPulses().add(outgoing);
+                this.network.addPulse(outgoing);
             }
         }
 
@@ -232,8 +282,10 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
         }
 
         private void announceTo(final Pulse pulse) {
-            System.out.println(this.getDescription() + " sends a " + pulse.getLevel() + " to "
-                    + pulse.getTo().getDescription());
+            if (DEBUG) {
+                System.out.println(this.getDescription() + " sends a " + pulse.getLevel() + " to "
+                        + pulse.getTo().getDescription());
+            }
         }
 
         public void handleFlipFlopPulse(final Pulse pulse) {
@@ -250,13 +302,13 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
                 for (final AoCModule target : this.getTargets()) {
                     final Pulse outgoing = Pulse.builder().from(this).to(target).level(PulseType.HIGH).build();
                     this.announceTo(outgoing);
-                    this.getNetwork().getPulses().add(outgoing);
+                    this.getNetwork().addPulse(outgoing);
                 }
             } else {
                 for (final AoCModule target : this.getTargets()) {
                     final Pulse outgoing = Pulse.builder().from(this).to(target).level(PulseType.LOW).build();
                     this.announceTo(outgoing);
-                    this.getNetwork().getPulses().add(outgoing);
+                    this.getNetwork().addPulse(outgoing);
                 }
             }
         }
@@ -279,7 +331,7 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
             for (final AoCModule target : this.getTargets()) {
                 final Pulse outgoing = Pulse.builder().from(this).to(target).level(output).build();
                 this.announceTo(outgoing);
-                this.getNetwork().getPulses().add(outgoing);
+                this.getNetwork().addPulse(outgoing);
             }
         }
     }

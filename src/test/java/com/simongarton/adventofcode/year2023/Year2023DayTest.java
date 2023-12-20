@@ -18,8 +18,8 @@ class Year2023DayTest {
     void part1() throws IOException {
 
         // given
-        final Path path = Paths.get("src/main/resources/2023/sample.txt");
-//        final Path path = Paths.get("src/main/resources/2023/2023-Day20-1.txt");
+//        final Path path = Paths.get("src/main/resources/2023/sample.txt");
+        final Path path = Paths.get("src/main/resources/2023/2023-Day20-1.txt");
         final List<String> lines = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.toList());
         final Year2023Day20 Year2023Day20 = new Year2023Day20();
 
@@ -36,8 +36,8 @@ class Year2023DayTest {
     void part2() throws IOException {
 
         // given
-        final Path path = Paths.get("src/main/resources/2023/sample.txt");
-//        final Path path = Paths.get("src/main/resources/2023/2023-Day20-2.txt");
+//        final Path path = Paths.get("src/main/resources/2023/sample.txt");
+        final Path path = Paths.get("src/main/resources/2023/2023-Day20-2.txt");
         final List<String> lines = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.toList());
         final Year2023Day20 Year2023Day20 = new Year2023Day20();
 
