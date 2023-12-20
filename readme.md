@@ -19,7 +19,14 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2023
 
-## Day 19 : Aplenty
+## Day 20: Pulse Propagation
+
+Nice ! A set of modules that receive input signals, modify them and send them on, into a network. I initially got
+bogged down in worries about timings before eventually re-reading the question very carefully.
+
+![Part 1](src/graphs/modules.png)
+
+## Day 19: Aplenty
 
 A decision tree : a list of workflows, involving rules and criteria pointing you to different workflows.  
 Part 1 was easy.  

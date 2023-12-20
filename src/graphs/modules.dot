@@ -1,0 +1,119 @@
+digraph {
+hs -> sl
+dg -> rx
+vp -> fd, dv
+kz -> jc, mc
+nv -> dv
+hx -> gf
+mm -> vh
+fd -> td
+dv -> hx, bl, rc, fd, xt
+hg -> xq
+td -> dv, hx
+bl -> jt
+br -> jq
+qh -> ln
+xq -> zl, cx, qh, hs, nt, sp
+sg -> vv, tr
+dm -> bl, dv
+gt -> xq, hg
+ln -> mq, xq
+mc -> xv, jc
+tx -> rv, jc
+lk -> dg
+mg -> hl, jc
+vv -> zv, br, kx, mm, tr
+nt -> xq, cx
+zv -> dg
+cd -> jc, ps
+rc -> rm, dv
+nj -> pt, xq
+broadcaster -> nt, kx, rc, mg
+gf -> dc, dv
+rm -> dm, dv
+xx -> vv, cz
+jt -> dv, vp
+zl -> nj
+sp -> dg
+xc -> jc, kz
+xt -> dg
+tp -> jc
+lc -> vv, vn
+vh -> xx, vv
+mq -> hs, xq
+cc -> vv
+vn -> vv, cc
+tr -> br
+hl -> qb, jc
+dc -> dv, nv
+jq -> mm, vv
+kx -> vv, sg
+cx -> qh
+sl -> zl, xq
+cz -> lc, vv
+qb -> jc, cd
+jc -> ps, xv, lk, mg
+xv -> tx
+pt -> xq, gt
+rv -> jc, tp
+ps -> xc
+
+hs [style="filled" fontcolor="white" fillcolor="#008800" ]
+dg [style="filled" fontcolor="white" fillcolor="#000088" ]
+vp [style="filled" fontcolor="white" fillcolor="#008800" ]
+kz [style="filled" fontcolor="white" fillcolor="#008800" ]
+nv [style="filled" fontcolor="white" fillcolor="#008800" ]
+hx [style="filled" fontcolor="white" fillcolor="#008800" ]
+mm [style="filled" fontcolor="white" fillcolor="#008800" ]
+fd [style="filled" fontcolor="white" fillcolor="#008800" ]
+dv [style="filled" fontcolor="white" fillcolor="#000088" ]
+hg [style="filled" fontcolor="white" fillcolor="#008800" ]
+td [style="filled" fontcolor="white" fillcolor="#008800" ]
+bl [style="filled" fontcolor="white" fillcolor="#008800" ]
+br [style="filled" fontcolor="white" fillcolor="#008800" ]
+qh [style="filled" fontcolor="white" fillcolor="#008800" ]
+xq [style="filled" fontcolor="white" fillcolor="#000088" ]
+sg [style="filled" fontcolor="white" fillcolor="#008800" ]
+dm [style="filled" fontcolor="white" fillcolor="#008800" ]
+gt [style="filled" fontcolor="white" fillcolor="#008800" ]
+ln [style="filled" fontcolor="white" fillcolor="#008800" ]
+mc [style="filled" fontcolor="white" fillcolor="#008800" ]
+tx [style="filled" fontcolor="white" fillcolor="#008800" ]
+lk [style="filled" fontcolor="white" fillcolor="#000088" ]
+mg [style="filled" fontcolor="white" fillcolor="#008800" ]
+vv [style="filled" fontcolor="white" fillcolor="#000088" ]
+nt [style="filled" fontcolor="white" fillcolor="#008800" ]
+zv [style="filled" fontcolor="white" fillcolor="#000088" ]
+cd [style="filled" fontcolor="white" fillcolor="#008800" ]
+rc [style="filled" fontcolor="white" fillcolor="#008800" ]
+nj [style="filled" fontcolor="white" fillcolor="#008800" ]
+#N/A
+gf [style="filled" fontcolor="white" fillcolor="#008800" ]
+rm [style="filled" fontcolor="white" fillcolor="#008800" ]
+xx [style="filled" fontcolor="white" fillcolor="#008800" ]
+jt [style="filled" fontcolor="white" fillcolor="#008800" ]
+zl [style="filled" fontcolor="white" fillcolor="#008800" ]
+sp [style="filled" fontcolor="white" fillcolor="#000088" ]
+xc [style="filled" fontcolor="white" fillcolor="#008800" ]
+xt [style="filled" fontcolor="white" fillcolor="#000088" ]
+tp [style="filled" fontcolor="white" fillcolor="#008800" ]
+lc [style="filled" fontcolor="white" fillcolor="#008800" ]
+vh [style="filled" fontcolor="white" fillcolor="#008800" ]
+mq [style="filled" fontcolor="white" fillcolor="#008800" ]
+cc [style="filled" fontcolor="white" fillcolor="#008800" ]
+vn [style="filled" fontcolor="white" fillcolor="#008800" ]
+tr [style="filled" fontcolor="white" fillcolor="#008800" ]
+hl [style="filled" fontcolor="white" fillcolor="#008800" ]
+dc [style="filled" fontcolor="white" fillcolor="#008800" ]
+jq [style="filled" fontcolor="white" fillcolor="#008800" ]
+kx [style="filled" fontcolor="white" fillcolor="#008800" ]
+cx [style="filled" fontcolor="white" fillcolor="#008800" ]
+sl [style="filled" fontcolor="white" fillcolor="#008800" ]
+cz [style="filled" fontcolor="white" fillcolor="#008800" ]
+qb [style="filled" fontcolor="white" fillcolor="#008800" ]
+jc [style="filled" fontcolor="white" fillcolor="#000088" ]
+xv [style="filled" fontcolor="white" fillcolor="#008800" ]
+pt [style="filled" fontcolor="white" fillcolor="#008800" ]
+rv [style="filled" fontcolor="white" fillcolor="#008800" ]
+ps [style="filled" fontcolor="white" fillcolor="#008800" ]
+}
