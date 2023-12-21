@@ -12,12 +12,18 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ...
+2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ....
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
+
+## Day 21: Step Counter
+
+Nice ! Immediately thought this looks like a cellular automaton, and indeed Part 1 fell very nicely.
+
+Started reading part 2 : "the inexplicably-infinite farm layout." Deep sigh.
 
 ## Day 20: Pulse Propagation
 
