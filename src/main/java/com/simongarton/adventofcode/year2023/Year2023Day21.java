@@ -1,30 +1,25 @@
 package com.simongarton.adventofcode.year2023;
 
-import com.googlecode.lanterna.TerminalPosition;
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.TextColor;
-import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.input.KeyType;
-import com.googlecode.lanterna.screen.TerminalScreen;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.Terminal;
-import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Year2023Day21 extends AdventOfCodeChallenge {
+
+    // must be odd
+    private static final int GRID_SIZE = 9;
 
     private String map;
     private int width;
     private int height;
-    private int start;
-    private TerminalScreen screen;
     List<List<Long>> gridCounts;
+    Map<Integer, Integer> gridSteady;
 
     @Override
     public String title() {
@@ -43,51 +38,28 @@ public class Year2023Day21 extends AdventOfCodeChallenge {
         this.width = input[0].length();
         this.height = input.length;
 
-        this.gridCounts = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            this.gridCounts.add(new ArrayList<>());
-        }
-
-        try {
-            this.setupScreen();
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-
         this.map = this.map.replace("S", "O");
         for (int step = 0; step < 64; step++) {
             this.walkies();
-            this.drawMap();
-            System.out.println(this.countGotSomewhere());
-            this.countGrids();
-            try {
-                Thread.sleep(100);
-            } catch (final InterruptedException e) {
-                throw new RuntimeException(e);
-            }
 //            this.debugMap();
         }
-
-        try {
-            this.pauseForTheJet();
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        this.dumpGridCounts();
 
         return String.valueOf(this.countGotSomewhere());
     }
 
     private void dumpGridCounts() {
         final List<String> lines = new ArrayList<>();
-        lines.add("index,1,2,3,4,5,6,7,8,9");
+        StringBuilder line = new StringBuilder("index" + ",");
+        for (int grid = 0; grid < GRID_SIZE * GRID_SIZE; grid++) {
+            line.append(grid).append(",");
+        }
+        lines.add(line.substring(0, line.length() - 1));
         for (int index = 0; index < 64; index++) {
-            String line = index + ",";
-            for (int grid = 0; grid < 9; grid++) {
-                line = line + this.gridCounts.get(grid).get(index) + ",";
+            line = new StringBuilder(index + ",");
+            for (int grid = 0; grid < GRID_SIZE * GRID_SIZE; grid++) {
+                line.append(this.gridCounts.get(grid).get(index)).append(",");
             }
-            lines.add(line);
+            lines.add(line.toString());
         }
         try {
             Files.write(Path.of("gridCounts.csv"), lines);
@@ -96,10 +68,29 @@ public class Year2023Day21 extends AdventOfCodeChallenge {
         }
     }
 
+    private void checkGrids(final int step) {
+        for (int grid = 0; grid < GRID_SIZE * GRID_SIZE; grid++) {
+            this.checkGrid(step, grid);
+        }
+    }
+
+    private void checkGrid(final int step, final int grid) {
+        if (this.gridSteady.get(grid) > 0L) {
+            return;
+        }
+        final long count1 = this.gridCounts.get(grid).get(step - 1);
+        final long count2 = this.gridCounts.get(grid).get(step);
+        if ((count1 == 39 && count2 == 42) || (count1 == 42 && count2 == 39)) {
+            final String cycle = count1 == 39 ? "even" : "odd";
+            System.out.println("grid " + grid + " steady at step " + step + " and is on " + cycle + " cycle.");
+            this.gridSteady.put(grid, step);
+        }
+    }
+
     private void countGrids() {
         int i = 0;
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
+        for (int row = 0; row < GRID_SIZE; row++) {
+            for (int col = 0; col < GRID_SIZE; col++) {
                 final long result = this.countGrid(i, row, col);
                 this.gridCounts.get(i).add(result);
                 i++;
@@ -117,50 +108,7 @@ public class Year2023Day21 extends AdventOfCodeChallenge {
             line = line + fragment;
         }
         final long result = line.chars().filter(ch -> ch == 'O').count() + line.chars().filter(ch -> ch == 'S').count();
-        System.out.println(result);
         return result;
-    }
-
-    private void pauseForTheJet() throws IOException {
-        while (true) {
-            final KeyStroke keyStroke = this.screen.pollInput();
-            if (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.EOF)) {
-                break;
-            }
-        }
-    }
-
-    private void drawMap() {
-        for (int row = 0; row < this.height; row++) {
-            final String line = this.map.substring(row * this.width, (row + 1) * this.width);
-            this.drawString(line, 0, row, TextColor.ANSI.WHITE, TextColor.ANSI.BLACK);
-        }
-        try {
-            this.screen.refresh();
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void drawChar(final char c, final int x, final int y, final TextColor foreground, final TextColor background) {
-        final TextCharacter textCharacter = new TextCharacter(c, foreground, background);
-        this.screen.setCharacter(new TerminalPosition(x, y), textCharacter);
-    }
-
-    private void drawString(final String s, final int x, final int y, final TextColor foreground, final TextColor background) {
-        for (int i = 0; i < s.length(); i++) {
-            this.drawChar(s.charAt(i), x + i, y, foreground, background);
-        }
-    }
-
-    private void setupScreen() throws IOException {
-        final Terminal terminal = new DefaultTerminalFactory().createTerminal();
-        ((SwingTerminalFrame) terminal).setTitle(this.title());
-        ((SwingTerminalFrame) terminal).setSize(800, 600);
-        this.screen = new TerminalScreen(terminal);
-        this.screen.setCursorPosition(null);
-
-        this.screen.startScreen();
     }
 
     private long countGotSomewhere() {
@@ -236,9 +184,52 @@ public class Year2023Day21 extends AdventOfCodeChallenge {
         this.map = String.join("", input);
     }
 
+    private void buildMap(final String[] input) {
+
+        final int halfGridSize = GRID_SIZE / 2;
+
+        String line = "";
+        for (int row = 0; row < GRID_SIZE; row++) {
+            for (int i = 0; i < 11; i++) {
+                for (int col = 0; col < GRID_SIZE; col++) {
+                    if (row == halfGridSize && col == halfGridSize) {
+                        line = line + input[i].replace("S", "O");
+                    } else {
+                        line = line + input[i].replace("S", ".");
+                    }
+                }
+            }
+        }
+        this.map = line;
+    }
+
     @Override
     public String part2(final String[] input) {
 
-        return null;
+        this.buildMap(input);
+        this.width = GRID_SIZE * input[0].length();
+        this.height = GRID_SIZE * input.length;
+
+        this.debugMap();
+
+        this.gridCounts = new ArrayList<>();
+        this.gridSteady = new HashMap<>();
+        for (int i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+            this.gridCounts.add(new ArrayList<>());
+            this.gridSteady.put(i, 0);
+        }
+
+        for (int step = 0; step < 64; step++) {
+            this.walkies();
+            this.countGrids();
+            if (step > 0) {
+                this.checkGrids(step);
+            }
+        }
+
+        this.debugMap();
+        this.dumpGridCounts();
+
+        return String.valueOf(this.countGotSomewhere());
     }
 }
