@@ -25,8 +25,10 @@ Nice ! Immediately thought this looks like a cellular automaton, and indeed Part
 
 Started reading part 2 : "the inexplicably-infinite farm layout." Deep sigh. I think this should be a feature of the
 fact that it's a regular layout, so I expect the CA pattern to start repeating, and I just need to find some way of
-figuring out the period, and how much it is expanding by. But my initial implementation - my standard approach of a
-string and using row and col to generate an index.
+figuring out the period, and how much it is expanding by. I found with the sample (11 x 11) that it repeated every
+11 (!) cycles, and that I could predict on each of those 11-step boundaries, how many "complete" - once filled, they
+just oscillate between two states - subgrids (11x11) I would have and and how many plots they each would contain; but
+(a) I don't know how many incomplete subgrids I have and (b) it doesn't work with the real 131x131 grid.
 
 ## Day 20: Pulse Propagation
 
