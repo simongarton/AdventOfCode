@@ -44,13 +44,13 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     }
 
     private void loadMap(final String[] input) {
-        this.map = new HashMap<>();
+        this.map = new TreeMap<>();
         int row = 0;
         for (final String line : input) {
             for (int col = 0; col < line.length(); col++) {
                 final String square = line.substring(col, col + 1);
                 final Cell cell = this.buildCoord(square, row, col);
-                this.map.put(cell.getAddress(), new HashMap<>());
+                this.map.put(cell.getAddress(), new TreeMap<>());
                 this.map.get(cell.getAddress()).put("-", cell);
             }
             row++;
@@ -179,12 +179,13 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         if (howIGotHereNow.length() == 4) {
             howIGotHereNow = howIGotHereNow.substring(1);
         }
+        final Cell any = this.map.get(key).get(this.map.get(key).keySet().stream().findFirst().get());
         final Cell cell = Cell.builder()
                 .value(current.getValue())
                 .x(x)
                 .y(y)
-                .cost(current.getCost())
-                .totalCost(current.getTotalCost() + current.getCost())
+                .cost(any.getCost())
+                .totalCost(current.getTotalCost() + any.getCost())
                 .howIGotHere(howIGotHereNow)
                 .build();
         // have I got here before like this ? I didn't think I was going to need this check
