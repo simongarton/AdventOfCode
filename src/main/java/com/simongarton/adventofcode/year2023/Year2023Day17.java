@@ -1,19 +1,33 @@
 package com.simongarton.adventofcode.year2023;
 
+import com.googlecode.lanterna.TerminalPosition;
+import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
+import com.googlecode.lanterna.screen.TerminalScreen;
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.terminal.Terminal;
+import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.IOException;
 import java.util.*;
 
 public class Year2023Day17 extends AdventOfCodeChallenge {
 
     private static final boolean DEBUG = true;
+    private static final int CHAR_WIDTH = 12;
+    private static final int CHAR_HEIGHT = 24;
 
     private Map<String, Map<String, Cell>> map;
     private Map<String, String> backtracks;
     private int height;
     private int width;
+
+    private TerminalScreen screen;
 
     @Override
     public String title() {
@@ -28,7 +42,13 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
+
         this.loadMap(input);
+        try {
+            this.setUpLanterna();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
         final List<Cell> path = this.aStar();
         if (DEBUG) {
             for (final Cell cell : path) {
@@ -36,6 +56,16 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
             }
         }
         return String.valueOf(path.size() - 1);
+    }
+
+    private void setUpLanterna() throws IOException {
+        final Terminal terminal = new DefaultTerminalFactory().createTerminal();
+        ((SwingTerminalFrame) terminal).setTitle(this.title());
+        ((SwingTerminalFrame) terminal).setSize(this.width * CHAR_WIDTH, 50 + this.width * CHAR_HEIGHT);
+        this.screen = new TerminalScreen(terminal);
+        this.screen.setCursorPosition(null);
+
+        this.screen.startScreen();
     }
 
     @Override
@@ -87,6 +117,17 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         return this.getCell(this.height - 1, this.width - 1, "-");
     }
 
+    private Cell getCell(final int row, final int col) {
+        if (row < 0 || row >= this.height) {
+            return null;
+        }
+        if (col < 0 || col >= this.width) {
+            return null;
+        }
+        final String key = col + "," + row;
+        return this.map.get(key).get(this.map.get(key).keySet().stream().findFirst().get());
+    }
+
     private Cell getCell(final int row, final int col, final String last3Moves) {
         if (row < 0 || row >= this.height) {
             return null;
@@ -113,39 +154,119 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         while (!openSet.isEmpty()) {
             final Cell current = this.bestOpenSetWithFScoreValue(openSet, fScore);
             if (current.getAddress().equalsIgnoreCase(end.getAddress())) {
+                this.drawCurrentMap(current, cameFrom);
                 return this.endFrom(current, cameFrom);
             }
             this.debugPrint("working on / removing current " + current.toString() + " with openSet.size()=" + openSet.size());
             openSet.remove(current);
             final List<Cell> neighbours = this.getImmediateNeighbours(current);
             for (final Cell neighbor : neighbours) {
-                // d(current,neighbor) is the weight of the edge from current to neighbor
-                // tentative_gScore is the distance from start to the neighbor through current
                 final int tentative_gScore = gScore.get(current) + neighbor.getTotalCost();
                 this.debugPrint("  checking neighbour " + neighbor + " tentative_gScore=" + tentative_gScore);
                 if (tentative_gScore < gScore.getOrDefault(neighbor, Integer.MAX_VALUE)) {
-                    // This path to neighbor is better than any previous one. Record it!
                     this.debugPrint("     using neighbour " + neighbor);
                     cameFrom.put(neighbor, current);
                     gScore.put(neighbor, tentative_gScore);
                     fScore.put(neighbor, tentative_gScore + this.h(start, neighbor));
                     openSet.add(neighbor);
-                    this.endFrom(current, cameFrom);
+                    this.drawCurrentMap(current, cameFrom);
                 } else {
                     this.debugPrint("     ignoring neighbour " + neighbor);
-                    openSet.add(neighbor);
                 }
             }
         }
 
-        // Open set is empty but goal was never reached
         throw new RuntimeException("AStar failed.");
+    }
+
+    private void drawCurrentMap(final Cell current, final Map<Cell, Cell> cameFrom) {
+        final List<Cell> cells = this.reconstructPath(cameFrom, current);
+        final String map = this.createMapWithValues(cells);
+        for (int i = 0; i < this.height; i++) {
+            final String line = map.substring(i * this.width, (i + 1) * this.width);
+            this.drawString(line, 0, i, TextColor.ANSI.BLACK);
+        }
+
+        this.drawString("total:" + current.getTotalCost() + "  ", 1, 13, TextColor.ANSI.WHITE, TextColor.ANSI.BLACK);
+
+        try {
+            this.screen.refresh();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            Thread.sleep(0);
+        } catch (final InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void drawString(final String s, final int x, final int y, final TextColor background) {
+        for (int i = 0; i < s.length(); i++) {
+            this.drawChar(s.charAt(i), x + i, y, background);
+        }
+    }
+
+    private void drawString(final String s, final int x, final int y, final TextColor foreground, final TextColor background) {
+        for (int i = 0; i < s.length(); i++) {
+            this.drawChar(s.charAt(i), x + i, y, foreground, background);
+        }
+    }
+
+    private void drawChar(final char c, final int x, final int y, final TextColor background) {
+        final TextColor coloredForeground = this.getCharColor(c);
+        this.drawChar(c, x, y, coloredForeground, background);
+    }
+
+    private void drawChar(final char c, final int x, final int y, final TextColor foreground, final TextColor background) {
+        final TextCharacter textCharacter = new TextCharacter(c, foreground, background);
+        this.screen.setCharacter(new TerminalPosition(x, y), textCharacter);
+    }
+
+    private TextColor getCharColor(final char c) {
+        switch (c) {
+            case '#':
+                return TextColor.ANSI.WHITE;
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                return this.scaledColor(c);
+            default:
+                return TextColor.ANSI.WHITE;
+//                throw new RuntimeException("Bad char");
+        }
+    }
+
+    private TextColor scaledColor(final char c) {
+        final int value = Integer.parseInt("" + c);
+        final int red = (255 * value / 9);
+        final int green = 0;
+        final int blue = 255 - (255 * value / 9);
+        return new TextColor.RGB(red, green, blue);
     }
 
     private List<Cell> endFrom(final Cell current, final Map<Cell, Cell> cameFrom) {
         final List<Cell> cells = this.reconstructPath(cameFrom, current);
         if (DEBUG) {
             this.drawPath(cells);
+        }
+
+        while (true) {
+            final KeyStroke keyStroke;
+            try {
+                keyStroke = this.screen.pollInput();
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.EOF)) {
+                break;
+            }
         }
         return cells;
     }
@@ -160,6 +281,9 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     }
 
     private void maybeAddNeighbour(final String direction, final Cell current, final int xDelta, final int yDelta, final List<Cell> neighbours) {
+        // I suspect this isn't working with the A* / Djikstra
+        // I think it's backtracking against different cells but then picking the closest one, ignoring how it got here.
+        // I suspect my key approach is broken and I should put the
         final int x = current.getX() + xDelta;
         final int y = current.getY() + yDelta;
         final String key = x + "," + y;
@@ -231,7 +355,37 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     }
 
     private void drawPath(final List<Cell> cells) {
-        final StringBuilder mapBuilder = new StringBuilder("");
+
+        final String map = this.createMap(cells);
+        for (int i = 0; i < this.height; i++) {
+            final String line = map.substring(i * this.width, (i + 1) * this.width);
+            System.out.println(line);
+        }
+    }
+
+    private String createMapWithValues(final List<Cell> cells) {
+
+        final StringBuilder mapBuilder = new StringBuilder();
+        for (int i = 0; i < this.height; i++) {
+            final StringBuilder line = new StringBuilder();
+            for (int j = 0; j < this.width; j++) {
+                line.append(this.getCell(i, j).getValue());
+            }
+            mapBuilder.append(line);
+        }
+
+        String map = mapBuilder.toString();
+
+        for (final Cell cell : cells) {
+            map = this.replaceCharacter(map, cell.getX(), cell.getY(), "#");
+        }
+
+        return map;
+    }
+
+    private String createMap(final List<Cell> cells) {
+
+        final StringBuilder mapBuilder = new StringBuilder();
         for (int i = 0; i < this.height; i++) {
             final String line = ".".repeat(this.width);
             mapBuilder.append(line);
@@ -243,10 +397,7 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
             map = this.replaceCharacter(map, cell.getX(), cell.getY(), "#");
         }
 
-        for (int i = 0; i < this.height; i++) {
-            final String line = map.substring(i * this.width, (i + 1) * this.width);
-            System.out.println(line);
-        }
+        return map;
     }
 
     private String replaceCharacter(final String map, final int x, final int y, final String replacement) {
@@ -283,10 +434,14 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         Cell current = end;
         final List<Cell> path = new ArrayList<>();
         path.add(current);
+        String line = current.getAddress();
         while (cameFrom.containsKey(current)) {
             current = cameFrom.get(current);
             path.add(0, current);
+            line = line + current.getAddress() + "-";
+            System.out.println(line);
         }
+        System.out.println("Out at " + current.getAddress());
         return path;
     }
 

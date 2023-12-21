@@ -23,6 +23,8 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     private static final String DOWN = "v";
     private static final String PLAYER = "P";
 
+    private static final boolean DEBUG = false;
+
     private int width;
     private int height;
     private List<String> maps;
@@ -42,20 +44,26 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
         this.loadMaps(input);
-//        this.drawMap(this.maps.get(0));
+        if (DEBUG) {
+            this.drawMap(this.maps.get(0));
+        }
         final State start = new State(0, new Coord(1, 0), this);
         start.buildNeighbours();
         final State end = new State(-1, new Coord(this.width - 2, this.height - 1), this);
         final List<State> states = this.aStar(start, end);
-//        this.safelyAnimateStates(states);
-//        this.analyseStates(states);
+        if (DEBUG) {
+            this.safelyAnimateStates(states);
+            this.analyseStates(states);
+        }
         return String.valueOf(states.size() - 1); // -1 as includes start
     }
 
     @Override
     public String part2(final String[] input) {
         this.loadMaps(input);
-//        this.drawMap(this.maps.get(0));
+        if (DEBUG) {
+            this.drawMap(this.maps.get(0));
+        }
         final State top = new State(0, new Coord(1, 0), this);
         top.buildNeighbours();
         final State bottom = new State(-1, new Coord(this.width - 2, this.height - 1), this);
@@ -67,7 +75,9 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
         allStates.addAll(statesOne);
         allStates.addAll(statesTwo);
         allStates.addAll(statesThree);
-//        this.safelyAnimateStates(allStates);
+        if (DEBUG) {
+            this.safelyAnimateStates(allStates);
+        }
         return String.valueOf(allStates.size() - 3); // -1 for each as includes start
     }
 
@@ -76,7 +86,9 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
         this.maps.add(String.join("", Arrays.asList(input)));
         this.width = input[0].length();
         this.height = input.length;
-//        System.out.printf("Map is %s x %s area %s\n", this.width, this.height, this.width * this.height);
+        if (DEBUG) {
+            System.out.printf("Map is %s x %s area %s\n", this.width, this.height, this.width * this.height);
+        }
         this.loadBlizzards(this.maps.get(0));
     }
 
@@ -380,13 +392,6 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
         }
 
         Thread.sleep(3000);
-
-//        while (true) {
-//            final KeyStroke keyStroke = this.screen.pollInput();
-//            if (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.EOF)) {
-//                break;
-//            }
-//        }
     }
 
     private void drawScreen(final State state) throws IOException {
