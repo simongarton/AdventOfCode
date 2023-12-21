@@ -130,8 +130,10 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
                     gScore.put(neighbor, tentative_gScore);
                     fScore.put(neighbor, tentative_gScore + this.h(start, neighbor));
                     openSet.add(neighbor);
+                    this.endFrom(current, cameFrom);
                 } else {
                     this.debugPrint("     ignoring neighbour " + neighbor);
+                    openSet.add(neighbor);
                 }
             }
         }
