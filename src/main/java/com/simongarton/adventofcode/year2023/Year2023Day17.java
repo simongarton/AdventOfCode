@@ -18,12 +18,13 @@ import java.util.*;
 
 public class Year2023Day17 extends AdventOfCodeChallenge {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final int CHAR_WIDTH = 12;
     private static final int CHAR_HEIGHT = 24;
 
     private Map<String, Cell> map;
     private Map<String, String> backtracks;
+    private List<Cell> reconstructedPath;
     private int height;
     private int width;
     private String[] originalInput;
@@ -46,10 +47,12 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         this.originalInput = input;
 
         this.loadMap(input);
-        try {
-            this.setUpLanterna();
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
+        if (DEBUG) {
+            try {
+                this.setUpLanterna();
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         final List<Cell> path = this.aStar();
         if (DEBUG) {
@@ -145,10 +148,12 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         while (!openSet.isEmpty()) {
             final Cell current = this.bestOpenSetWithFScoreValue(openSet, fScore);
             if (current.getAddress().equalsIgnoreCase(end.getAddress())) {
-                this.drawCurrentMap(current, cameFrom);
+                if (DEBUG) {
+                    this.drawCurrentMap(current, cameFrom);
+                }
                 return this.endFrom(current, cameFrom);
             }
-            this.debugPrint("working on / removing current " + current.toString() + " with openSet.size()=" + openSet.size());
+            this.debugPrint("working on / removing current " + current + " with openSet.size()=" + openSet.size());
             openSet.remove(current);
             final List<Cell> neighbours = this.getImmediateNeighbours(current);
             for (final Cell neighbor : neighbours) {
@@ -160,7 +165,9 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
                     gScore.put(neighbor, tentative_gScore);
                     fScore.put(neighbor, tentative_gScore + this.heuristicCostEstimate(start, neighbor));
                     openSet.add(neighbor);
-                    this.drawCurrentMap(current, cameFrom);
+                    if (DEBUG) {
+                        this.drawCurrentMap(current, cameFrom);
+                    }
                 } else {
                     this.debugPrint("     ignoring neighbour " + neighbor);
                 }
@@ -171,8 +178,8 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     }
 
     private void drawCurrentMap(final Cell current, final Map<Cell, Cell> cameFrom) {
-        final List<Cell> cells = this.reconstructPath(cameFrom, current);
-        final String map = this.createMapWithValues(cells);
+        this.reconstructedPath = this.reconstructPath(cameFrom, current);
+        final String map = this.createMapWithValues(this.reconstructedPath);
         for (int i = 0; i < this.height; i++) {
             final String line = map.substring(i * this.width, (i + 1) * this.width);
             this.drawString(line, 0, i, TextColor.ANSI.BLACK);
@@ -205,13 +212,24 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     }
 
     private void drawChar(final char c, final int x, final int y, final TextColor background) {
-        final TextColor coloredForeground = this.getCharColor(c);
+        final TextColor coloredForeground = this.getCharColor(c, x, y);
         this.drawChar(c, x, y, coloredForeground, background);
     }
 
     private void drawChar(final char c, final int x, final int y, final TextColor foreground, final TextColor background) {
         final TextCharacter textCharacter = new TextCharacter(c, foreground, background);
         this.screen.setCharacter(new TerminalPosition(x, y), textCharacter);
+    }
+
+    private TextColor getCharColor(final char c, final int x, final int y) {
+        for (final Cell cell : this.reconstructedPath) {
+            if (cell.getX() == x) {
+                if (cell.getY() == y) {
+                    return TextColor.ANSI.WHITE_BRIGHT;
+                }
+            }
+        }
+        return this.getCharColor(c);
     }
 
     private TextColor getCharColor(final char c) {
@@ -244,23 +262,25 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
 
     private List<Cell> endFrom(final Cell current, final Map<Cell, Cell> cameFrom) {
 
-        final List<Cell> cells = this.reconstructPath(cameFrom, current);
+        this.reconstructedPath = this.reconstructPath(cameFrom, current);
         if (DEBUG) {
-            this.drawPath(cells);
+            this.drawPath(this.reconstructedPath);
         }
 
-        while (true) {
-            final KeyStroke keyStroke;
-            try {
-                keyStroke = this.screen.pollInput();
-            } catch (final IOException e) {
-                throw new RuntimeException(e);
-            }
-            if (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.EOF)) {
-                break;
+        if (DEBUG) {
+            while (true) {
+                final KeyStroke keyStroke;
+                try {
+                    keyStroke = this.screen.pollInput();
+                } catch (final IOException e) {
+                    throw new RuntimeException(e);
+                }
+                if (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.EOF)) {
+                    break;
+                }
             }
         }
-        return cells;
+        return this.reconstructedPath;
     }
 
     private List<Cell> getImmediateNeighbours(final Cell current) {
@@ -340,15 +360,15 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         for (int i = 0; i < this.height; i++) {
             final StringBuilder line = new StringBuilder();
             for (int j = 0; j < this.width; j++) {
-                line.append(String.valueOf(this.getCost(i, j)));
+                line.append(this.getCost(i, j));
             }
             mapBuilder.append(line);
         }
 
-        String map = mapBuilder.toString();
-        for (final Cell cell : cells) {
-            map = this.replaceCharacter(map, cell.getX(), cell.getY(), "#");
-        }
+        final String map = mapBuilder.toString();
+//        for (final Cell cell : cells) {
+//            map = this.replaceCharacter(map, cell.getX(), cell.getY(), "#");
+//        }
         return map;
     }
 
