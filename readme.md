@@ -12,12 +12,23 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
 2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
 2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ...
+2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ....
        1234567890123456789012345
                 1111111111222222
 ```
 
 ## 2023
+
+## Day 21: Step Counter
+
+Nice ! Immediately thought this looks like a cellular automaton, and indeed Part 1 fell very nicely.
+
+Started reading part 2 : "the inexplicably-infinite farm layout." Deep sigh. I think this should be a feature of the
+fact that it's a regular layout, so I expect the CA pattern to start repeating, and I just need to find some way of
+figuring out the period, and how much it is expanding by. I found with the sample (11 x 11) that it repeated every
+11 (!) cycles, and that I could predict on each of those 11-step boundaries, how many "complete" - once filled, they
+just oscillate between two states - subgrids (11x11) I would have and and how many plots they each would contain; but
+(a) I don't know how many incomplete subgrids I have and (b) it doesn't work with the real 131x131 grid.
 
 ## Day 20: Pulse Propagation
 
@@ -31,8 +42,10 @@ Well, part 1 did. I have no idea on how to do part 2.
 
 ## Day 19: Aplenty
 
-A decision tree : a list of workflows, involving rules and criteria pointing you to different workflows.  
-Part 1 was easy.  
+A decision tree : a list of workflows, involving rules and criteria pointing you to different workflows.
+
+Part 1 was easy.
+
 Part 2 mentions a number `167409079868000` which just screams "brute force will not work !". I think I have a plan in
 mind : I'm building up a graph of routes through the rules; each node has ranges of values for x,m,a,s, and each time
 I arrive at a node, I need to subdivide those ranges among the possible destinations. But this is complicated and I'm
@@ -55,7 +68,7 @@ Defeated completely. Superficially it's a route-finding algorithm, but it's a mi
 never taking more than 3 steps in one direction_ (and also only turning, never backtracking : I don't think this is an
 issue though.)
 
-No idea how to tackle it.
+I've got a complex idea, which is giving me a result - the wrong one - and I will continue to grind away at it.
 
 ## Day 16: The Floor Will Be Lava
 

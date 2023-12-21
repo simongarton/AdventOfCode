@@ -5,10 +5,8 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 public class Year2023Day14 extends AdventOfCodeChallenge {
@@ -47,7 +45,7 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
     }
 
     private void loadMap(final String[] input) {
-        this.map = Arrays.stream(input).collect(Collectors.joining());
+        this.map = String.join("", input);
     }
 
     private void blankLine() {
@@ -257,7 +255,7 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
         final long remainder = destination - lastOccurrence;
         final long cycles = remainder / period;
         final long leftOver = remainder - (cycles * period);
-        
+
         if (DEBUG) {
             this.debugMap();
         }
