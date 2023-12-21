@@ -22,10 +22,11 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     private static final int CHAR_WIDTH = 12;
     private static final int CHAR_HEIGHT = 24;
 
-    private Map<String, Map<String, Cell>> map;
+    private Map<String, Cell> map;
     private Map<String, String> backtracks;
     private int height;
     private int width;
+    private String[] originalInput;
 
     private TerminalScreen screen;
 
@@ -42,6 +43,7 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
+        this.originalInput = input;
 
         this.loadMap(input);
         try {
@@ -80,8 +82,7 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
             for (int col = 0; col < line.length(); col++) {
                 final String square = line.substring(col, col + 1);
                 final Cell cell = this.buildCoord(square, row, col);
-                this.map.put(cell.getAddress(), new TreeMap<>());
-                this.map.get(cell.getAddress()).put("-", cell);
+                this.map.put(cell.getPathAddress(), cell);
             }
             row++;
         }
@@ -95,7 +96,7 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         this.backtracks.put("E", "W");
     }
 
-    private Integer h(final Cell start, final Cell end) {
+    private Integer heuristicCostEstimate(final Cell start, final Cell end) {
         return this.manhattan(start, end);
     }
 
@@ -110,22 +111,11 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     }
 
     private Cell getStart() {
-        return this.getCell(0, 0, "-");
+        return this.getCell(0, 0, "");
     }
 
     private Cell getEnd() {
-        return this.getCell(this.height - 1, this.width - 1, "-");
-    }
-
-    private Cell getCell(final int row, final int col) {
-        if (row < 0 || row >= this.height) {
-            return null;
-        }
-        if (col < 0 || col >= this.width) {
-            return null;
-        }
-        final String key = col + "," + row;
-        return this.map.get(key).get(this.map.get(key).keySet().stream().findFirst().get());
+        return this.getCell(this.height - 1, this.width - 1, "");
     }
 
     private Cell getCell(final int row, final int col, final String last3Moves) {
@@ -135,8 +125,8 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         if (col < 0 || col >= this.width) {
             return null;
         }
-        final String address = col + "," + row;
-        return this.map.get(address).get(last3Moves);
+        final String address = col + "," + row + "|" + last3Moves;
+        return this.map.get(address);
     }
 
     private List<Cell> aStar(final Cell start) {
@@ -146,10 +136,11 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         final Set<Cell> openSet = new HashSet<>(Collections.singleton(start));
         final Map<Cell, Cell> cameFrom = new HashMap<>();
         final Map<Cell, Integer> gScore = new HashMap<>();
-        gScore.put(start, 0);
+        gScore.put(start, start.getCost());
 
         final Map<Cell, Integer> fScore = new HashMap<>();
-        fScore.put(start, this.h(start, start));
+        //fScore.put(start, this.heuristicCostEstimate(start, start));
+        fScore.put(start, start.getCost());
 
         while (!openSet.isEmpty()) {
             final Cell current = this.bestOpenSetWithFScoreValue(openSet, fScore);
@@ -161,13 +152,13 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
             openSet.remove(current);
             final List<Cell> neighbours = this.getImmediateNeighbours(current);
             for (final Cell neighbor : neighbours) {
-                final int tentative_gScore = gScore.get(current) + neighbor.getTotalCost();
+                final int tentative_gScore = gScore.get(current) + neighbor.getCost();
                 this.debugPrint("  checking neighbour " + neighbor + " tentative_gScore=" + tentative_gScore);
                 if (tentative_gScore < gScore.getOrDefault(neighbor, Integer.MAX_VALUE)) {
                     this.debugPrint("     using neighbour " + neighbor);
                     cameFrom.put(neighbor, current);
                     gScore.put(neighbor, tentative_gScore);
-                    fScore.put(neighbor, tentative_gScore + this.h(start, neighbor));
+                    fScore.put(neighbor, tentative_gScore + this.heuristicCostEstimate(start, neighbor));
                     openSet.add(neighbor);
                     this.drawCurrentMap(current, cameFrom);
                 } else {
@@ -238,12 +229,12 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
             case '9':
                 return this.scaledColor(c);
             default:
-                return TextColor.ANSI.WHITE;
-//                throw new RuntimeException("Bad char");
+                throw new RuntimeException("Bad char");
         }
     }
 
     private TextColor scaledColor(final char c) {
+
         final int value = Integer.parseInt("" + c);
         final int red = (255 * value / 9);
         final int green = 0;
@@ -252,6 +243,7 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     }
 
     private List<Cell> endFrom(final Cell current, final Map<Cell, Cell> cameFrom) {
+
         final List<Cell> cells = this.reconstructPath(cameFrom, current);
         if (DEBUG) {
             this.drawPath(cells);
@@ -281,14 +273,10 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     }
 
     private void maybeAddNeighbour(final String direction, final Cell current, final int xDelta, final int yDelta, final List<Cell> neighbours) {
-        // I suspect this isn't working with the A* / Djikstra
-        // I think it's backtracking against different cells but then picking the closest one, ignoring how it got here.
-        // I suspect my key approach is broken and I should put the
         final int x = current.getX() + xDelta;
         final int y = current.getY() + yDelta;
-        final String key = x + "," + y;
         // am I off the map
-        if (!this.map.containsKey(key)) {
+        if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
             return;
         }
         // am I backtracking
@@ -299,48 +287,31 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         if (this.straightLining(direction, current)) {
             return;
         }
-        String howIGotHereNow = current.getHowIGotHere() + direction;
 
-//        System.out.println(key + " dir " + direction + " from " + current.getAddress() + " via " + howIGotHereNow);
-        if (howIGotHereNow.length() == 4) {
-            howIGotHereNow = howIGotHereNow.substring(1);
-        }
-        final Cell any = this.map.get(key).get(this.map.get(key).keySet().stream().findFirst().get());
+        final String howIGotHereNow = current.getHowIGotHere() + direction;
+        final int cost = this.getCost(y, x);
         final Cell cell = Cell.builder()
                 .value(current.getValue())
                 .x(x)
                 .y(y)
-                .cost(any.getCost())
-                .totalCost(current.getTotalCost() + any.getCost())
+                .cost(cost)
+                .totalCost(current.getTotalCost() + cost)
                 .howIGotHere(howIGotHereNow)
                 .build();
-        // have I got here before like this ? I didn't think I was going to need this check
-        if (this.map.get(key).containsKey(howIGotHereNow)) {
-            return;
-        }
-        this.map.get(key).put(howIGotHereNow, cell);
+        this.map.put(cell.getPathAddress(), cell);
         neighbours.add(cell);
     }
 
-    private void debugMap() {
-        for (final Map.Entry<String, Map<String, Cell>> entry : this.map.entrySet()) {
-            this.debugCell(entry.getKey());
-        }
-    }
-
-    private void debugCell(final String key) {
-        System.out.println(key);
-        final Map<String, Cell> cells = this.map.get(key);
-        for (final Map.Entry<String, Cell> mapEntry : cells.entrySet()) {
-            System.out.println("  " + mapEntry.getKey() + ":" + mapEntry.getValue());
-        }
+    private int getCost(final int y, final int x) {
+        return Integer.parseInt(this.originalInput[y].substring(x, x + 1));
     }
 
     private boolean straightLining(final String direction, final Cell current) {
         if (current.getHowIGotHere().length() < 3) {
             return false;
         }
-        if (direction.repeat(3).equalsIgnoreCase(current.getHowIGotHere())) {
+        final String last3 = current.getHowIGotHere().substring(current.getHowIGotHere().length() - 3);
+        if (direction.repeat(3).equalsIgnoreCase(last3)) {
             return true;
         }
         return false;
@@ -369,17 +340,15 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         for (int i = 0; i < this.height; i++) {
             final StringBuilder line = new StringBuilder();
             for (int j = 0; j < this.width; j++) {
-                line.append(this.getCell(i, j).getValue());
+                line.append(String.valueOf(this.getCost(i, j)));
             }
             mapBuilder.append(line);
         }
 
         String map = mapBuilder.toString();
-
         for (final Cell cell : cells) {
             map = this.replaceCharacter(map, cell.getX(), cell.getY(), "#");
         }
-
         return map;
     }
 
@@ -439,9 +408,7 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
             current = cameFrom.get(current);
             path.add(0, current);
             line = line + current.getAddress() + "-";
-            System.out.println(line);
         }
-        System.out.println("Out at " + current.getAddress());
         return path;
     }
 
@@ -492,6 +459,10 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
 
         public String getAddress() {
             return this.x + "," + this.y;
+        }
+
+        public String getPathAddress() {
+            return this.x + "," + this.y + "|" + this.getHowIGotHere();
         }
     }
 }
