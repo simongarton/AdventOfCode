@@ -21,10 +21,10 @@ class Year2023DayTest {
         final Path path = Paths.get("src/main/resources/2023/sample.txt");
 //        final Path path = Paths.get("src/main/resources/2023/2023-Day17-1.txt");
         final List<String> lines = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.toList());
-        final Year2023Day17a year2023Day17a = new Year2023Day17a();
+        final Year2023Day17 year2023Day17 = new Year2023Day17();
 
         // when
-        final String result = year2023Day17a.part1(lines.toArray(new String[0]));
+        final String result = year2023Day17.part1(lines.toArray(new String[0]));
 
         // then
         assertNotNull(result);

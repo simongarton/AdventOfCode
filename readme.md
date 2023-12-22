@@ -70,9 +70,10 @@ issue though.)
 
 I've got a complex idea, which is giving me a result - the wrong one - and I will continue to grind away at it.
 
-![Part 1](2023-17-1-small.png)
+![Part 1](2023-17-1-sample.png)
 
-Looks OK on the sample, but is slightly different; on part 1 it looks OK-ish, but it's wrong.
+Looks OK on the sample, but overstates by 3 (the last step, curiously; but it's wrong earlier, right at the top.)
+On part 1 it looks OK-ish, but it's wrong.
 
 ![Part 1](2023-17-1-large.png)
 
