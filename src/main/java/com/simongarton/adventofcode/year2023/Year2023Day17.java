@@ -26,7 +26,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 public class Year2023Day17 extends AdventOfCodeChallenge {
 
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static final int CHAR_WIDTH = 12;
     private static final int CHAR_HEIGHT = 24;
@@ -392,12 +392,12 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
                 return false;
             }
             final State state = (State) o;
-            return this.x == state.x && this.y == state.y && this.dx == state.dx && this.dy == state.dy;
+            return this.x == state.x && this.y == state.y && this.dx == state.dx && this.dy == state.dy && this.distance == state.distance;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(this.x, this.y, this.dx, this.dy);
+            return Objects.hash(this.x, this.y, this.dx, this.dy, this.distance);
         }
     }
 }
