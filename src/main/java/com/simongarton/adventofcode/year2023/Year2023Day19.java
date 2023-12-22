@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class Year2023Day19 extends AdventOfCodeChallenge {
 
+    private static final boolean DEBUG = false;
     private static final int MAX = 10;
 
     private List<Workflow> workflows;
@@ -160,13 +161,16 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
                 .ranges(this.rootRanges())
                 .build();
         this.buildPathMap(this.root);
-        this.debugPathMap(this.root, 0);
-        System.out.println();
-        for (final Map.Entry<String, Long> entry : this.endpoints.entrySet()) {
-            System.out.println(entry.getKey() + "=" + entry.getValue());
+        if (DEBUG) {
+            this.debugPathMap(this.root, 0);
+            System.out.println();
+            for (final Map.Entry<String, Long> entry : this.endpoints.entrySet()) {
+                System.out.println(entry.getKey() + "=" + entry.getValue());
+            }
         }
         final long total = this.endpoints.get("A");
-        return String.valueOf(total);
+        // isn't right
+        return String.valueOf(-1);
     }
 
     private Map<String, Range> rootRanges() {

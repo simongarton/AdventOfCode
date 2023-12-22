@@ -188,7 +188,7 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
             break;
         }
 
-        return String.valueOf(buttonPresses);
+        return String.valueOf(-1);
     }
 
     private enum ModuleType {

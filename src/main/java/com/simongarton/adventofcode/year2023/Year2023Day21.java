@@ -295,7 +295,6 @@ public class Year2023Day21 extends AdventOfCodeChallenge {
         }
 
         for (int step = 0; step < 10; step++) {
-            System.out.println(step + " : " + this.countGotSomewhere());
             this.walkies();
             this.countGrids();
             if (step > 0) {
@@ -304,9 +303,9 @@ public class Year2023Day21 extends AdventOfCodeChallenge {
         }
 
 //        this.dumpGridCounts();
-        this.dumpWarmUpDefinitions();
+//        this.dumpWarmUpDefinitions();
 
-        return String.valueOf(this.countGotSomewhere());
+        return String.valueOf(-1);
     }
 
     private void dumpWarmUpDefinitions() {

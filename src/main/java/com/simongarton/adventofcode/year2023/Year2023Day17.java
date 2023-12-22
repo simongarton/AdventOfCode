@@ -18,6 +18,15 @@ import java.util.*;
 
 public class Year2023Day17 extends AdventOfCodeChallenge {
 
+    /*
+
+    Where I'm getting stuck here is trying to add the extra rules in. Because you can revisit the same cell (on a map)
+    multiple times FROM DIFFERENT APPROACHES they are different things - yet I think I'm treating ...
+
+    .. hmm, changed hashcode and equals and it's made a difference but it stuck in deep recursion.
+
+     */
+
     private static final boolean DEBUG = false;
     private static final int CHAR_WIDTH = 12;
     private static final int CHAR_HEIGHT = 24;
@@ -46,6 +55,9 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
 
         this.originalInput = input;
 
+        if (true) {
+            return String.valueOf(-1);
+        }
         this.loadMap(input);
         if (DEBUG) {
             try {
@@ -75,7 +87,8 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        return String.valueOf(-1);
     }
 
     private void loadMap(final String[] input) {
@@ -138,15 +151,14 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
 
         final Set<Cell> openSet = new HashSet<>(Collections.singleton(start));
         final Map<Cell, Cell> cameFrom = new HashMap<>();
-        final Map<Cell, Integer> gScore = new HashMap<>();
-        gScore.put(start, start.getCost());
+        final Map<Cell, Integer> lowestCostToThisPoint = new HashMap<>();
+        lowestCostToThisPoint.put(start, start.getCost());
 
-        final Map<Cell, Integer> fScore = new HashMap<>();
-        //fScore.put(start, this.heuristicCostEstimate(start, start));
-        fScore.put(start, start.getCost());
+        final Map<Cell, Integer> estimatedCostsToNextCell = new HashMap<>();
+        estimatedCostsToNextCell.put(start, this.heuristicCostEstimate(start, end));
 
         while (!openSet.isEmpty()) {
-            final Cell current = this.bestOpenSetWithFScoreValue(openSet, fScore);
+            final Cell current = this.lowestEstimateCellAvailable(openSet, estimatedCostsToNextCell);
             if (current.getAddress().equalsIgnoreCase(end.getAddress())) {
                 if (DEBUG) {
                     this.drawCurrentMap(current, cameFrom);
@@ -157,13 +169,13 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
             openSet.remove(current);
             final List<Cell> neighbours = this.getImmediateNeighbours(current);
             for (final Cell neighbor : neighbours) {
-                final int tentative_gScore = gScore.get(current) + neighbor.getCost();
-                this.debugPrint("  checking neighbour " + neighbor + " tentative_gScore=" + tentative_gScore);
-                if (tentative_gScore < gScore.getOrDefault(neighbor, Integer.MAX_VALUE)) {
+                final int estimatedScoreForNeighbour = lowestCostToThisPoint.get(current) + neighbor.getCost();
+                this.debugPrint("  checking neighbour " + neighbor + " tentative_gScore=" + estimatedScoreForNeighbour);
+                if (estimatedScoreForNeighbour < lowestCostToThisPoint.getOrDefault(neighbor, Integer.MAX_VALUE)) {
                     this.debugPrint("     using neighbour " + neighbor);
                     cameFrom.put(neighbor, current);
-                    gScore.put(neighbor, tentative_gScore);
-                    fScore.put(neighbor, tentative_gScore + this.heuristicCostEstimate(start, neighbor));
+                    lowestCostToThisPoint.put(neighbor, estimatedScoreForNeighbour);
+                    estimatedCostsToNextCell.put(neighbor, estimatedScoreForNeighbour + this.heuristicCostEstimate(start, neighbor));
                     openSet.add(neighbor);
                     if (DEBUG) {
                         this.drawCurrentMap(current, cameFrom);
@@ -193,7 +205,7 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
             throw new RuntimeException(e);
         }
         try {
-            Thread.sleep(0);
+            Thread.sleep(1000);
         } catch (final InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -308,7 +320,11 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
             return;
         }
 
-        final String howIGotHereNow = current.getHowIGotHere() + direction;
+        String howIGotHereNow = current.getHowIGotHere() + direction;
+        if (howIGotHereNow.length() == 4) {
+            howIGotHereNow = howIGotHereNow.substring(1);
+        }
+
         final int cost = this.getCost(y, x);
         final Cell cell = Cell.builder()
                 .value(current.getValue())
@@ -406,17 +422,17 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         }
     }
 
-    private Cell bestOpenSetWithFScoreValue(final Set<Cell> openSet, final Map<Cell, Integer> fScore) {
-        Cell best = null;
-        int bestValue = 0;
+    private Cell lowestEstimateCellAvailable(final Set<Cell> openSet, final Map<Cell, Integer> estimatedCostsToNextCell) {
+        Cell bestCell = null;
+        int lowestCost = 0;
         for (final Cell cell : openSet) {
-            final int cost = fScore.get(cell); // may not be there ?
-            if (best == null || bestValue > cost) {
-                best = cell;
-                bestValue = cost;
+            final int cost = estimatedCostsToNextCell.get(cell);
+            if (bestCell == null || lowestCost > cost) {
+                bestCell = cell;
+                lowestCost = cost;
             }
         }
-        return best;
+        return bestCell;
     }
 
     private List<Cell> reconstructPath(final Map<Cell, Cell> cameFrom, final Cell end) {
@@ -469,12 +485,12 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
                 return false;
             }
             final Cell cell = (Cell) o;
-            return this.x == cell.x && this.y == cell.y;
+            return this.x == cell.x && this.y == cell.y & this.howIGotHere == cell.howIGotHere;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(this.x, this.y);
+            return Objects.hash(this.x, this.y, this.howIGotHere);
         }
 
         public String getAddress() {

@@ -402,7 +402,7 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
 
         if (true) {
             // Will die with java.lang.OutOfMemoryError: Java heap space
-            return null;
+            return String.valueOf(-1);
         }
 
         this.digHolesPart2(input);
