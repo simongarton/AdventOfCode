@@ -26,7 +26,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 public class Year2023Day17 extends AdventOfCodeChallenge {
 
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final int CHAR_WIDTH = 12;
     private static final int CHAR_HEIGHT = 24;
@@ -35,8 +35,8 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
     private String map;
     private int width;
     private int height;
-    private Map<Integer, List<State>> statesByCost;
-    private Map<State, Integer> seenStateByCost;
+    private Map<Integer, List<State>> stateQueuesByCost;
+    private Map<State, Integer> seenCostByState;
     private Map<State, State> cameFrom;
     private List<State> path;
 
@@ -61,8 +61,8 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
             this.setUpLanternaQuietly();
         }
 
-        this.statesByCost = new HashMap<>();
-        this.seenStateByCost = new HashMap<>();
+        this.stateQueuesByCost = new HashMap<>();
+        this.seenCostByState = new HashMap<>();
         this.cameFrom = new HashMap<>();
 
         final State firstState = State.builder()
@@ -79,8 +79,8 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
 
         int currentCost;
         while (true) {
-            currentCost = this.statesByCost.keySet().stream().min(Integer::compareTo).get();
-            final List<State> nextStates = this.statesByCost.remove(currentCost);
+            currentCost = this.stateQueuesByCost.keySet().stream().min(Integer::compareTo).get();
+            final List<State> nextStates = this.stateQueuesByCost.remove(currentCost);
 
             boolean foundEnd = false;
             for (final State nextState : nextStates) {
@@ -92,7 +92,6 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
                         currentCost,
                         nextState.getX(),
                         nextState.getY(),
-                        // rotations
                         nextState.getDy(),
                         -nextState.getDx(),
                         1,
@@ -105,7 +104,6 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
                         currentCost,
                         nextState.getX(),
                         nextState.getY(),
-                        // rotations
                         -nextState.getDy(),
                         nextState.getDx(),
                         1,
@@ -117,7 +115,6 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
                     if (this.addNeighbour(currentCost,
                             nextState.getX(),
                             nextState.getY(),
-                            // rotations
                             nextState.getDx(),
                             nextState.getDy(),
                             nextState.getDistance() + 1,
@@ -135,13 +132,51 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         if (DEBUG) {
             this.drawCurrentMap();
             this.waitForKeys();
+            this.paintMap("crucible.png");
+            for (final State step : this.path) {
+                System.out.println(step + " " + this.getCost(step.getX(), step.getY()));
+            }
         }
-        this.paintMap("crucible.png");
-//        for (final State step : this.path) {
-//            System.out.println(step + " " + this.getCost(step.getX(), step.getY()));
-//        }
 
         return String.valueOf(this.path.get(this.path.size() - 1).getCost());
+    }
+
+    private boolean addNeighbour(int cost, int x, int y, final int dx, final int dy, final int distance, final State currentState) {
+
+        // https://www.reddit.com/r/adventofcode/comments/18luw6q/2023_day_17_a_longform_tutorial_on_day_17/
+
+        x = x + dx;
+        y = y + dy;
+        if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
+            return false;
+        }
+
+        cost = cost + this.getCost(x, y);
+        final State newState = State.builder()
+                .x(x)
+                .y(y)
+                .dx(dx)
+                .dy(dy)
+                .cost(cost)
+                .distance(distance) // weird
+                .build();
+
+        if (x == this.width - 1 && y == this.height - 1) {
+            this.cameFrom.put(newState, currentState);
+            this.reconstructPath(newState);
+            return true;
+        }
+
+        if (!this.seenCostByState.containsKey(newState)) {
+            final List<State> costStates = this.stateQueuesByCost.getOrDefault(cost, new ArrayList<>());
+            costStates.add(newState);
+            this.stateQueuesByCost.put(cost, costStates);
+            this.seenCostByState.put(newState, cost);
+            this.cameFrom.put(newState, currentState);
+            this.reconstructPath(newState);
+        }
+
+        return false;
     }
 
     private void paintMap(final String filename) {
@@ -213,44 +248,6 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         }
         // don't include the first, you're already there
         this.path.remove(0);
-    }
-
-    private boolean addNeighbour(int cost, int x, int y, final int dx, final int dy, final int distance, final State currentState) {
-
-        // https://www.reddit.com/r/adventofcode/comments/18luw6q/2023_day_17_a_longform_tutorial_on_day_17/
-
-        x = x + dx;
-        y = y + dy;
-        if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
-            return false;
-        }
-
-        cost = cost + this.getCost(x, y);
-        final State newState = State.builder()
-                .x(x)
-                .y(y)
-                .dx(dx)
-                .dy(dy)
-                .cost(cost)
-                .distance(distance) // weird
-                .build();
-
-        if (x == this.width - 1 && y == this.height - 1) {
-            this.cameFrom.put(newState, currentState);
-            this.reconstructPath(newState);
-            return true;
-        }
-
-        if (!this.seenStateByCost.containsKey(newState)) {
-            final List<State> costStates = this.statesByCost.getOrDefault(cost, new ArrayList<>());
-            costStates.add(newState);
-            this.statesByCost.put(cost, costStates);
-            this.seenStateByCost.put(newState, cost);
-            this.cameFrom.put(newState, currentState);
-            this.reconstructPath(newState);
-        }
-
-        return false;
     }
 
     private void loadMap(final String[] input) {
