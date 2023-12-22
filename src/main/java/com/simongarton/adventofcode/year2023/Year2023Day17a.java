@@ -13,14 +13,23 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.*;
+
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class Year2023Day17a extends AdventOfCodeChallenge {
 
-    private static final boolean DEBUG = true;
+
+    private static final boolean DEBUG = false;
     private static final int CHAR_WIDTH = 12;
     private static final int CHAR_HEIGHT = 24;
+    private static final int BITMAP_SCALE = 4;
 
     private String map;
     private int width;
@@ -48,11 +57,7 @@ public class Year2023Day17a extends AdventOfCodeChallenge {
         this.loadMap(input);
 
         if (DEBUG) {
-            try {
-                this.setUpLanterna();
-            } catch (final IOException e) {
-                throw new RuntimeException(e);
-            }
+            this.setUpLanternaQuietly();
         }
 
         this.statesByCost = new HashMap<>();
@@ -68,7 +73,6 @@ public class Year2023Day17a extends AdventOfCodeChallenge {
                 .distance(0)
                 .build();
 
-
         this.addNeighbour(0, 0, 0, 1, 0, 1, firstState);
         this.addNeighbour(0, 0, 0, 0, 1, 1, firstState);
 
@@ -80,7 +84,9 @@ public class Year2023Day17a extends AdventOfCodeChallenge {
             boolean foundEnd = false;
             for (final State nextState : nextStates) {
                 this.reconstructPath(nextState);
-                this.drawCurrentMap();
+                if (DEBUG) {
+                    this.drawCurrentMap();
+                }
                 if (this.addNeighbour(
                         currentCost,
                         nextState.getX(),
@@ -125,24 +131,70 @@ public class Year2023Day17a extends AdventOfCodeChallenge {
             }
         }
 
-        this.drawCurrentMap();
-        this.waitForKeys();
+        if (DEBUG) {
+            this.drawCurrentMap();
+            this.waitForKeys();
+        }
+        this.paintMap("crucible.png");
+        for (final State step : this.path) {
+            System.out.println(step + " " + this.getCost(step.getX(), step.getY()));
+        }
 
         return String.valueOf(currentCost);
     }
 
+    private void paintMap(final String filename) {
+
+        final BufferedImage bufferedImage = new BufferedImage(this.width * BITMAP_SCALE, this.height * BITMAP_SCALE, TYPE_INT_RGB);
+        final Graphics2D graphics2D = bufferedImage.createGraphics();
+        this.clearBackground(graphics2D);
+        this.paintFloor(graphics2D);
+        try {
+            ImageIO.write(bufferedImage, "PNG", new File(filename));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        graphics2D.dispose();
+    }
+
+    private void clearBackground(final Graphics2D graphics2D) {
+
+        graphics2D.setPaint(Color.BLACK);
+        graphics2D.fillRect(0, 0, this.width, this.height);
+    }
+
+    private void paintFloor(final Graphics2D graphics2D) {
+        for (int row = 0; row < this.height; row++) {
+            for (int col = 0; col < this.width; col++) {
+                graphics2D.setPaint(new Color(25 * this.getCost(col, row), 0, 0));
+                graphics2D.fillRect(col * BITMAP_SCALE, row * BITMAP_SCALE, BITMAP_SCALE, BITMAP_SCALE);
+            }
+        }
+
+        graphics2D.setPaint(Color.WHITE);
+        for (final State state : this.path) {
+            graphics2D.fillRect(state.getX() * BITMAP_SCALE, state.getY() * BITMAP_SCALE, BITMAP_SCALE, BITMAP_SCALE);
+        }
+    }
+
+    private void setUpLanternaQuietly() {
+        try {
+            this.setUpLanterna();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void waitForKeys() {
-        if (DEBUG) {
-            while (true) {
-                final KeyStroke keyStroke;
-                try {
-                    keyStroke = this.screen.pollInput();
-                } catch (final IOException e) {
-                    throw new RuntimeException(e);
-                }
-                if (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.EOF)) {
-                    break;
-                }
+        while (true) {
+            final KeyStroke keyStroke;
+            try {
+                keyStroke = this.screen.pollInput();
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.EOF)) {
+                break;
             }
         }
     }
@@ -158,6 +210,8 @@ public class Year2023Day17a extends AdventOfCodeChallenge {
             current = this.cameFrom.get(current);
             this.path.add(0, current);
         }
+        // don't include the first
+        this.path.remove(0);
     }
 
     private boolean addNeighbour(int cost, int x, int y, final int dx, final int dy, final int distance, final State currentState) {
@@ -205,12 +259,14 @@ public class Year2023Day17a extends AdventOfCodeChallenge {
     }
 
     private void loadMap(final String[] input) {
+
         this.map = String.join("", input);
         this.width = input[0].length();
         this.height = input.length;
     }
 
     private int getCost(final int x, final int y) {
+
         final int index = (y * this.width) + x;
         return Integer.parseInt(this.map.substring(index, index + 1));
     }
@@ -239,18 +295,21 @@ public class Year2023Day17a extends AdventOfCodeChallenge {
     }
 
     private void drawString(final String s, final int x, final int y, final TextColor background) {
+
         for (int i = 0; i < s.length(); i++) {
             this.drawChar(s.charAt(i), x + i, y, background);
         }
     }
 
     private void drawString(final String s, final int x, final int y, final TextColor foreground, final TextColor background) {
+
         for (int i = 0; i < s.length(); i++) {
             this.drawChar(s.charAt(i), x + i, y, foreground, background);
         }
     }
 
     private void drawChar(final char c, final int x, final int y, final TextColor background) {
+
         final TextColor coloredForeground = this.getCharColor(c, x, y);
         this.drawChar(c, x, y, coloredForeground, background);
     }
@@ -261,6 +320,7 @@ public class Year2023Day17a extends AdventOfCodeChallenge {
     }
 
     private TextColor getCharColor(final char c, final int x, final int y) {
+
         for (final State state : this.path) {
             if (state.getX() == x) {
                 if (state.getY() == y) {
@@ -272,6 +332,7 @@ public class Year2023Day17a extends AdventOfCodeChallenge {
     }
 
     private TextColor getCharColor(final char c) {
+
         switch (c) {
             case '#':
                 return TextColor.ANSI.WHITE;
@@ -300,6 +361,7 @@ public class Year2023Day17a extends AdventOfCodeChallenge {
     }
 
     private void setUpLanterna() throws IOException {
+
         final Terminal terminal = new DefaultTerminalFactory().createTerminal();
         ((SwingTerminalFrame) terminal).setTitle(this.title());
         ((SwingTerminalFrame) terminal).setSize(this.width * CHAR_WIDTH, 50 + this.width * CHAR_HEIGHT);
