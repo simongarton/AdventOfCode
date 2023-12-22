@@ -132,11 +132,11 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         if (DEBUG) {
             this.drawCurrentMap();
             this.waitForKeys();
-            this.paintMap("crucible.png");
             for (final State step : this.path) {
                 System.out.println(step + " " + this.getCost(step.getX(), step.getY()));
             }
         }
+        this.paintMap("2023-17.1.png");
 
         return String.valueOf(this.path.get(this.path.size() - 1).getCost());
     }
@@ -369,7 +369,96 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.loadMap(input);
+
+        if (DEBUG) {
+            this.setUpLanternaQuietly();
+        }
+
+        this.stateQueuesByCost = new HashMap<>();
+        this.seenCostByState = new HashMap<>();
+        this.cameFrom = new HashMap<>();
+
+        final State firstState = State.builder()
+                .x(0)
+                .y(0)
+                .dx(0)
+                .dy(0)
+                .cost(0)
+                .distance(0)
+                .build();
+
+        this.addNeighbour(0, 0, 0, 1, 0, 1, firstState);
+        this.addNeighbour(0, 0, 0, 0, 1, 1, firstState);
+
+        // I am surprised this works : the min of 4 before stopping rule didn't need to be implemented.
+
+        int currentCost;
+        while (true) {
+            currentCost = this.stateQueuesByCost.keySet().stream().min(Integer::compareTo).get();
+            final List<State> nextStates = this.stateQueuesByCost.remove(currentCost);
+
+            boolean foundEnd = false;
+            for (final State nextState : nextStates) {
+                this.reconstructPath(nextState);
+                if (DEBUG) {
+                    this.drawCurrentMap();
+                }
+                if (nextState.getDistance() > 3) {
+                    if (this.addNeighbour(
+                            currentCost,
+                            nextState.getX(),
+                            nextState.getY(),
+                            nextState.getDy(),
+                            -nextState.getDx(),
+                            1,
+                            nextState
+                    )) {
+                        foundEnd = true;
+                        break;
+                    }
+                    if (this.addNeighbour(
+                            currentCost,
+                            nextState.getX(),
+                            nextState.getY(),
+                            -nextState.getDy(),
+                            nextState.getDx(),
+                            1,
+                            nextState)) {
+                        foundEnd = true;
+                        break;
+                    }
+                }
+                if (nextState.getDistance() < 10) {
+                    if (this.addNeighbour(currentCost,
+                            nextState.getX(),
+                            nextState.getY(),
+                            nextState.getDx(),
+                            nextState.getDy(),
+                            nextState.getDistance() + 1,
+                            nextState)) {
+                        foundEnd = true;
+                        break;
+                    }
+                }
+            }
+            if (foundEnd) {
+                break;
+            }
+        }
+
+        if (DEBUG) {
+            this.drawCurrentMap();
+            this.waitForKeys();
+            for (final State step : this.path) {
+                System.out.println(step + " " + this.getCost(step.getX(), step.getY()));
+            }
+        }
+
+        this.paintMap("2023-17.2.png");
+
+        return String.valueOf(this.path.get(this.path.size() - 1).getCost());
     }
 
     @Data

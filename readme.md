@@ -68,14 +68,14 @@ Defeated completely. Superficially it's a route-finding algorithm, but it's a mi
 never taking more than 3 steps in one direction_ (and also only turning, never backtracking : I don't think this is an
 issue though.)
 
-I've got a complex idea, which is giving me a result - the wrong one - and I will continue to grind away at it.
+I've got a complex idea, which is giving me a result - the wrong one - and I eventually gave up. Read some more stuff
+on reddit, adapted a new algorithm and initially it was wrong ...
 
 ![Part 1](2023-17-1-sample.png)
 
-Looks OK on the sample, but overstates by 3 (the last step, curiously; but it's wrong earlier, right at the top.)
-On part 1 it looks OK-ish, but it's wrong.
+... but I finally figured out it was an equals/hashcode problem !
 
-![Part 1](2023-17-1-large.png)
+![Part 1](2023-17.1.png)
 
 ## Day 16: The Floor Will Be Lava
 
