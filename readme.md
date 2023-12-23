@@ -11,13 +11,22 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
     2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
     2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
     2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-    2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓....
+    2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓....✓
            1234567890123456789012345
                     1111111111222222
 
 ## 2023
 
-## Day 21: Step Counter
+## Day 22: Sand Slabs
+
+Very nice. 3d Tetris / Jenga : a few shapes, made up of cubes, floating in positive integer space, let them all fall and
+then count the ones you can remove without affecting anything else. Hopefully someone has done this in Minecraft.
+
+The second part is going to be some kind of recursive trick : if I disintegrate A, which causes B and C to fall, what
+then also falls ? As long as you (spoilers) keep track of which ones have been removed, it's easy. Just takes about
+4 minutes.
+
+## Day 21: Step Counter (1/2)
 
 Nice ! Immediately thought this looks like a cellular automaton, and indeed Part 1 fell very nicely.
 
@@ -28,7 +37,7 @@ figuring out the period, and how much it is expanding by. I found with the sampl
 just oscillate between two states - subgrids (11x11) I would have and and how many plots they each would contain; but
 (a) I don't know how many incomplete subgrids I have and (b) it doesn't work with the real 131x131 grid.
 
-## Day 20: Pulse Propagation
+## Day 20: Pulse Propagation (1/2)
 
 Nice ! A set of modules that receive input signals, modify them and send them on, into a network. I initially got
 bogged down in worries about timings before eventually re-reading the question very carefully, rebuilding it all
@@ -38,7 +47,7 @@ Well, part 1 did. I have no idea on how to do part 2.
 
 ![Part 1](src/graphs/modules.png)
 
-## Day 19: Aplenty
+## Day 19: Aplenty (1/2)
 
 A decision tree : a list of workflows, involving rules and criteria pointing you to different workflows.
 
@@ -49,7 +58,7 @@ mind : I'm building up a graph of routes through the rules; each node has ranges
 I arrive at a node, I need to subdivide those ranges among the possible destinations. But this is complicated and I'm
 tired.
 
-## Day 18: Lavaduct Lagoon
+## Day 18: Lavaduct Lagoon (1/2)
 
 Part 1 reasonable enough, another grid problem and follow instructions to carve out a tunnel; then flood-fill it to
 work out how much space is enclosed. Curiously the instructions include wall colors, which I implemented fearing it
@@ -58,7 +67,7 @@ would be needed later - but wasn't.
 ![Part 1](holey-moley-filled.png)
 
 Part 2 extends the grid to 14,207,222 x 20,211,216 and I am at a loss to work out how to even start this without running
-out of memory.
+out of memory. I suspect it will be something like ray-marching, but to be continued.
 
 ## Day 17: Clumsy Crucible
 
