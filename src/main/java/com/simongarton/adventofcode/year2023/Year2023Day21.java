@@ -234,11 +234,6 @@ public class Year2023Day21 extends AdventOfCodeChallenge {
         return result;
     }
 
-    private void blankLine() {
-
-        System.out.println();
-    }
-
     private void debugMap() {
 
         this.debug(this.map);

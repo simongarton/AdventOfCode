@@ -1,14 +1,7 @@
 package com.simongarton.adventofcode.year2023;
 
-import com.googlecode.lanterna.TerminalPosition;
-import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
-import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.TerminalScreen;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.Terminal;
-import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import lombok.Builder;
 import lombok.Data;
@@ -58,7 +51,7 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         this.loadMap(input);
 
         if (DEBUG) {
-            this.setUpLanternaQuietly();
+            this.setUpLanterna(this.width, this.height);
         }
 
         this.stateQueuesByCost = new HashMap<>();
@@ -213,28 +206,6 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         }
     }
 
-    private void setUpLanternaQuietly() {
-        try {
-            this.setUpLanterna();
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void waitForKeys() {
-        while (true) {
-            final KeyStroke keyStroke;
-            try {
-                keyStroke = this.screen.pollInput();
-            } catch (final IOException e) {
-                throw new RuntimeException(e);
-            }
-            if (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.EOF)) {
-                break;
-            }
-        }
-    }
-
     private void reconstructPath(final State endState) {
         State current = endState;
         this.path = new ArrayList<>();
@@ -290,29 +261,19 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         }
     }
 
-    private void drawString(final String s, final int x, final int y, final TextColor background) {
+    protected void drawString(final String s, final int x, final int y, final TextColor background) {
 
         for (int i = 0; i < s.length(); i++) {
-            this.drawChar(s.charAt(i), x + i, y, background);
-        }
-    }
-
-    private void drawString(final String s, final int x, final int y, final TextColor foreground, final TextColor background) {
-
-        for (int i = 0; i < s.length(); i++) {
+            final TextColor foreground = this.getCharColor(s.charAt(i));
             this.drawChar(s.charAt(i), x + i, y, foreground, background);
         }
     }
+
 
     private void drawChar(final char c, final int x, final int y, final TextColor background) {
 
         final TextColor coloredForeground = this.getCharColor(c, x, y);
         this.drawChar(c, x, y, coloredForeground, background);
-    }
-
-    private void drawChar(final char c, final int x, final int y, final TextColor foreground, final TextColor background) {
-        final TextCharacter textCharacter = new TextCharacter(c, foreground, background);
-        this.screen.setCharacter(new TerminalPosition(x, y), textCharacter);
     }
 
     private TextColor getCharColor(final char c, final int x, final int y) {
@@ -356,24 +317,13 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         return new TextColor.RGB(red, green, blue);
     }
 
-    private void setUpLanterna() throws IOException {
-
-        final Terminal terminal = new DefaultTerminalFactory().createTerminal();
-        ((SwingTerminalFrame) terminal).setTitle(this.title());
-        ((SwingTerminalFrame) terminal).setSize(this.width * CHAR_WIDTH, 50 + this.width * CHAR_HEIGHT);
-        this.screen = new TerminalScreen(terminal);
-        this.screen.setCursorPosition(null);
-
-        this.screen.startScreen();
-    }
-
     @Override
     public String part2(final String[] input) {
 
         this.loadMap(input);
 
         if (DEBUG) {
-            this.setUpLanternaQuietly();
+            this.setUpLanterna(this.width, this.height);
         }
 
         this.stateQueuesByCost = new HashMap<>();

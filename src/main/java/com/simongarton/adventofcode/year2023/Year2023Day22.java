@@ -146,19 +146,7 @@ public class Year2023Day22 extends AdventOfCodeChallenge {
         }
         this.blankLine();
     }
-
-    private void blankLine() {
-
-        System.out.println();
-    }
-
-    private String replaceCharacter(final String original, final int x, final int y, final int width,
-                                    final String replacement) {
-
-        final int index = (y * width) + x;
-        return original.substring(0, index) + replacement + original.substring(index + 1);
-    }
-
+    
     private void fallBricks() {
 
         int falls = 2;

@@ -1,6 +1,16 @@
 package com.simongarton.adventofcode;
 
+import com.googlecode.lanterna.TerminalPosition;
+import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
+import com.googlecode.lanterna.screen.TerminalScreen;
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.terminal.Terminal;
+import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import com.simongarton.adventofcode.exceptions.InvalidSetupException;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,18 +26,17 @@ public abstract class AdventOfCodeChallenge {
         return null;
     }
 
+    private static final int CHAR_WIDTH = 12;
+    private static final int CHAR_HEIGHT = 24;
+
     public abstract Outcome run();
 
-    public int getYear() {
-        return this.year;
-    }
-
-    public int getDay() {
-        return this.day;
-    }
-
+    @Getter
     protected int year;
+    @Getter
     protected int day;
+
+    protected TerminalScreen screen;
 
     public abstract String part1(final String[] input);
 
@@ -140,4 +149,77 @@ public abstract class AdventOfCodeChallenge {
             return this.part1 && this.part2;
         }
     }
+
+    protected void setUpLanterna(final int width, final int height) {
+
+        try {
+            final Terminal terminal = new DefaultTerminalFactory().createTerminal();
+            ((SwingTerminalFrame) terminal).setTitle(this.title());
+            // 2023.23 needed 1,0 ...
+            ((SwingTerminalFrame) terminal).setSize((width - 1) * CHAR_WIDTH, (height - 0) * CHAR_HEIGHT);
+            this.screen = new TerminalScreen(terminal);
+            this.screen.setCursorPosition(null);
+            this.screen.startScreen();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void drawString(final String s, final int x, final int y, final TextColor background) {
+
+        for (int i = 0; i < s.length(); i++) {
+            this.drawChar(s.charAt(i), x + i, y, TextColor.ANSI.WHITE_BRIGHT, background);
+        }
+    }
+
+    protected void drawString(final String s, final int x, final int y, final TextColor foreground, final TextColor background) {
+
+        for (int i = 0; i < s.length(); i++) {
+            this.drawChar(s.charAt(i), x + i, y, foreground, background);
+        }
+    }
+
+    protected void drawChar(final char c, final int x, final int y, final TextColor foreground, final TextColor background) {
+        final TextCharacter textCharacter = new TextCharacter(c, foreground, background);
+        this.screen.setCharacter(new TerminalPosition(x, y), textCharacter);
+    }
+
+    protected void waitForKeys() {
+        while (true) {
+            final KeyStroke keyStroke;
+            try {
+                keyStroke = this.screen.pollInput();
+                if (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.EOF)) {
+                    break;
+                }
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    protected void refreshAndSleep(final int millis) {
+        try {
+            this.screen.refresh();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            Thread.sleep(millis);
+        } catch (final InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void blankLine() {
+        System.out.println();
+    }
+
+    protected String replaceCharacter(final String map, final int x, final int y, final int width, final String replacement) {
+
+        final int index = (y * width) + x;
+        return map.substring(0, index) + replacement + map.substring(index + 1);
+    }
+
+
 }

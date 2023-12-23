@@ -79,10 +79,6 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
         this.blankLine();
     }
 
-    private void blankLine() {
-        System.out.println();
-    }
-
     private void shineBeams() {
 
         while (!this.beams.isEmpty()) {
@@ -236,7 +232,7 @@ public class Year2023Day16 extends AdventOfCodeChallenge {
     }
 
     private void move(final Beam beam) {
-        
+
         final Coord c = beam.getCoord();
         switch (beam.getDirection()) {
             case NORTH:

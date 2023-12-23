@@ -1,7 +1,5 @@
 package com.simongarton.adventofcode.year2022;
 
-import com.googlecode.lanterna.TerminalPosition;
-import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
@@ -426,17 +424,6 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
                 return TextColor.ANSI.BLACK_BRIGHT;
             default:
                 throw new RuntimeException(mapSymbol);
-        }
-    }
-
-    private void drawChar(final char c, final int x, final int y, final TextColor foreground, final TextColor background) {
-        final TextCharacter textCharacter = new TextCharacter(c, foreground, background);
-        this.screen.setCharacter(new TerminalPosition(x, y), textCharacter);
-    }
-
-    private void drawString(final String s, final int x, final int y, final TextColor foreground, final TextColor background) {
-        for (int i = 0; i < s.length(); i++) {
-            this.drawChar(s.charAt(i), x + i, y, foreground, background);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.simongarton.adventofcode.year2023;
 
+import com.googlecode.lanterna.TextColor;
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Year2023Day23 extends AdventOfCodeChallenge {
+
+    private static final boolean DEBUG = true;
 
     final Map<Integer, List<Tile>> openSet = new HashMap<>();
     private String map;
@@ -34,7 +37,10 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
 
         this.loadMap(input);
-        this.debugMap();
+        if (DEBUG) {
+            this.debugMap();
+            this.setUpLanterna(this.width, this.height);
+        }
         this.cameFrom = new HashMap<>();
 
         this.start = Tile.builder()
@@ -52,6 +58,8 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
         final List<Tile> path = this.reconstructPath(this.end);
         this.debugMap();
 
+        this.waitForKeys();
+
         // -1 as I have start AND end
         return String.valueOf(path.size() - 1);
     }
@@ -67,12 +75,47 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
             for (final Tile tile : tiles) {
                 this.neighbours(tile);
             }
+            if (DEBUG) {
+                this.drawCurrentMap();
+            }
         }
     }
 
-    private void blankLine() {
-        System.out.println();
+    private void drawCurrentMap() {
+
+        String newMap = this.map;
+        final List<Tile> path = this.reconstructPath(this.end);
+        for (final Tile tile : path) {
+            newMap = this.replaceCharacter(newMap, tile.getX(), tile.getY(), this.width, "o");
+        }
+
+        for (int i = 0; i < this.height; i++) {
+            final String line = newMap.substring(i * this.width, (i + 1) * this.width);
+            this.drawColoredString(line, 0, i, TextColor.ANSI.BLACK);
+        }
+
+        this.refreshAndSleep(10);
     }
+
+    private void drawColoredString(final String s, final int x, final int y, final TextColor background) {
+
+        for (int i = 0; i < s.length(); i++) {
+            final TextColor foreground = this.textColor(s.charAt(i));
+            this.drawChar(s.charAt(i), x + i, y, foreground, background);
+        }
+    }
+
+    private TextColor textColor(final char c) {
+        switch (c) {
+            case '#':
+                return TextColor.ANSI.GREEN;
+            case 'o':
+                return TextColor.ANSI.RED_BRIGHT;
+            default:
+                return TextColor.ANSI.WHITE;
+        }
+    }
+
 
     private void debugMap() {
         for (int row = 0; row < this.height; row++) {
@@ -128,7 +171,7 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
 
         final List<Tile> tiles = this.openSet.getOrDefault(cost, new ArrayList<>());
         tiles.add(newTile);
-        this.map = this.replaceCharacter(this.map, x, y, " ");
+        this.map = this.replaceCharacter(this.map, x, y, this.width, " ");
         this.cameFrom.put(newTile, tile);
         this.openSet.put(cost, tiles);
     }
@@ -153,7 +196,7 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
         Tile current = end;
         while (true) {
             path.add(0, current);
-            this.map = this.replaceCharacter(this.map, current.getX(), current.getY(), "o");
+            this.map = this.replaceCharacter(this.map, current.getX(), current.getY(), this.width, "o");
             if (!this.cameFrom.containsKey(current)) {
                 break;
             }
@@ -168,12 +211,6 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
         this.map = String.join("", input);
         this.width = input[0].length();
         this.height = input.length;
-    }
-
-    private String replaceCharacter(final String map, final int x, final int y, final String replacement) {
-
-        final int index = (y * this.width) + x;
-        return map.substring(0, index) + replacement + map.substring(index + 1);
     }
 
     @Override

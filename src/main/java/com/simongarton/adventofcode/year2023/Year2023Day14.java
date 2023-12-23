@@ -48,10 +48,6 @@ public class Year2023Day14 extends AdventOfCodeChallenge {
         this.map = String.join("", input);
     }
 
-    private void blankLine() {
-        System.out.println();
-    }
-
     private void debugMap() {
         for (int row = 0; row < this.height; row++) {
             final String line = this.map.substring(row * this.width, (row + 1) * this.width);

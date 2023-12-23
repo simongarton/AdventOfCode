@@ -274,10 +274,6 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
         this.blankLine();
     }
 
-    private void blankLine() {
-        System.out.println();
-    }
-
     private String replaceCharacter(final String map, final Coord coord, final String replacement) {
 
         final Coord translatedCoord = this.translateCoord(coord);
