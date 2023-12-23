@@ -189,11 +189,11 @@ public abstract class AdventOfCodeChallenge {
             final KeyStroke keyStroke;
             try {
                 keyStroke = this.screen.pollInput();
-                if (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.EOF)) {
-                    break;
-                }
             } catch (final IOException e) {
                 throw new RuntimeException(e);
+            }
+            if (keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.EOF)) {
+                break;
             }
         }
     }

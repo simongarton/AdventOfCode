@@ -5,10 +5,7 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Year2023Day23 extends AdventOfCodeChallenge {
 
@@ -54,7 +51,8 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
                 .cost(0)
                 .build();
 
-        this.aStar();
+        //this.aStar();
+        this.dfs();
         final List<Tile> path = this.reconstructPath(this.end);
         this.debugMap();
 
@@ -62,6 +60,83 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
 
         // -1 as I have start AND end
         return String.valueOf(path.size() - 1);
+    }
+
+    private void dfs() {
+
+        final Set<Tile> visited = new HashSet<>();
+        final Stack<Tile> stack = new Stack<>();
+
+        stack.push(this.start);
+        visited.add(this.start);
+
+        while (!stack.isEmpty()) {
+            final Tile current = stack.pop();
+            for (final Tile neighbour : this.getNeighbours(current, visited)) {
+                if (!visited.contains(neighbour)) {
+                    visited.add(neighbour);
+                    stack.push(neighbour);
+                }
+            }
+            this.drawCurrentMap(visited);
+        }
+    }
+
+    private List<Tile> getNeighbours(final Tile tile, final Set<Tile> visited) {
+        final List<Tile> neighbours = new ArrayList<>();
+        Optional<Tile> optionalTile = this.getNeighbour(tile, 1, 0, visited);
+        optionalTile.ifPresent(neighbours::add);
+        optionalTile = this.getNeighbour(tile, -1, 0, visited);
+        optionalTile.ifPresent(neighbours::add);
+        optionalTile = this.getNeighbour(tile, 0, 1, visited);
+        optionalTile.ifPresent(neighbours::add);
+        optionalTile = this.getNeighbour(tile, 0, -1, visited);
+        optionalTile.ifPresent(neighbours::add);
+        return neighbours;
+    }
+
+    private Optional<Tile> getNeighbour(final Tile tile, final int deltaX, final int deltaY, final Set<Tile> visited) {
+        final int x = tile.getX() + deltaX;
+        final int y = tile.getY() + deltaY;
+        final int cost = tile.getCost() + 1;
+
+        if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
+            return Optional.empty();
+        }
+        final String floor = this.getFloor(x, y);
+        if (floor.equalsIgnoreCase("#")) {
+            return Optional.empty();
+        }
+
+        if (floor.equalsIgnoreCase(">") && deltaX != 1) {
+            return Optional.empty();
+        }
+        if (floor.equalsIgnoreCase("<") && deltaX != -1) {
+            return Optional.empty();
+        }
+        if (floor.equalsIgnoreCase("v") && deltaY != 1) {
+            return Optional.empty();
+        }
+        if (floor.equalsIgnoreCase("^") && deltaY != -1) {
+            return Optional.empty();
+        }
+
+        final Tile newTile = Tile.builder()
+                .x(x)
+                .y(y)
+                .cost(cost)
+                .build();
+
+        if (newTile.getX() == this.end.getX() && newTile.getY() == this.end.getY()) {
+            System.out.println("Found end with cost " + cost);
+            return Optional.of(newTile);
+        }
+
+        if (visited.contains(newTile)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(newTile);
     }
 
     private void aStar() {
@@ -76,16 +151,16 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
                 this.neighbours(tile);
             }
             if (DEBUG) {
-                this.drawCurrentMap();
+                final List<Tile> path = this.reconstructPath(this.end);
+                this.drawCurrentMap(path);
             }
         }
     }
 
-    private void drawCurrentMap() {
+    private void drawCurrentMap(final Collection<Tile> tiles) {
 
         String newMap = this.map;
-        final List<Tile> path = this.reconstructPath(this.end);
-        for (final Tile tile : path) {
+        for (final Tile tile : tiles) {
             newMap = this.replaceCharacter(newMap, tile.getX(), tile.getY(), this.width, "o");
         }
 
@@ -115,7 +190,6 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
                 return TextColor.ANSI.WHITE;
         }
     }
-
 
     private void debugMap() {
         for (int row = 0; row < this.height; row++) {
@@ -225,5 +299,22 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
         private int x;
         private int y;
         private int cost;
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || this.getClass() != o.getClass()) {
+                return false;
+            }
+            final Tile tile = (Tile) o;
+            return this.x == tile.x && this.y == tile.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.x, this.y);
+        }
     }
 }
