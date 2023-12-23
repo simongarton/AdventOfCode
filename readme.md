@@ -11,15 +11,22 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
     2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
     2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
     2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-    2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓....✓
+    2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓....✓.
            1234567890123456789012345
                     1111111111222222
 
 ## 2023
 
-## Day 23: A long walk.
+## Day 23: A long walk. (1/2)
 
 Route finding, A*, priority queue, yeah, yeah, done this before ... wait, you want the longest distance ?
+
+Turns out to be one of the best bits of logic / coding I think I've ever done. Use DFS to split the map into a graph
+of nodes and edges, where the nodes are intersections. Then use A* to find the shortest path between each pair of
+nodes - only some are valid, given slopes. Then finally use that to build a new graph and use DFS to find all the
+(valid) routes between the start, intersections and nodes.
+
+I might just leave part 2 for another day.
 
 ## Day 22: Sand Slabs
 
