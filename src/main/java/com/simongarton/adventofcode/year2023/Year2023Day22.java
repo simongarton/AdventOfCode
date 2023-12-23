@@ -8,6 +8,8 @@ import java.util.*;
 
 public class Year2023Day22 extends AdventOfCodeChallenge {
 
+    private static final boolean DEBUG = false;
+
     private List<Brick> bricks;
     private int maxX;
     private int maxY;
@@ -34,9 +36,9 @@ public class Year2023Day22 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
 
         this.loadBricks(input);
-//        this.drawXY();
+        this.drawXY();
         this.fallBricks();
-//        this.drawXY();
+        this.drawXY();
         this.figureOutSupportedBy();
         return String.valueOf(this.countDisintegratable());
     }
@@ -45,9 +47,11 @@ public class Year2023Day22 extends AdventOfCodeChallenge {
 
         int d = 0;
         for (final Brick brick : this.bricks) {
-//            System.out.println(brick.getId());
-//            System.out.println("  supports " + this.supports.get(brick.getId()));
-//            System.out.println("  supportedBy " + this.isSupportedBy.get(brick.getId()));
+            if (DEBUG) {
+                System.out.println(brick.getId());
+                System.out.println("  supports " + this.supports.get(brick.getId()));
+                System.out.println("  supportedBy " + this.isSupportedBy.get(brick.getId()));
+            }
             boolean allGood = true;
             if (this.supports.containsKey(brick.getId())) {
                 for (final String needsSupport : this.supports.get(brick.getId())) {
@@ -56,7 +60,6 @@ public class Year2023Day22 extends AdventOfCodeChallenge {
                     }
                 }
             }
-//            System.out.println(allGood);
             if (allGood) {
                 d++;
             }
@@ -89,19 +92,23 @@ public class Year2023Day22 extends AdventOfCodeChallenge {
             }
         }
 
-        System.out.println("digraph {");
-        for (final Map.Entry<String, Set<String>> entry : this.isSupportedBy.entrySet()) {
-            for (final String under : entry.getValue()) {
-                System.out.println("  " + entry.getKey() + " -> " + under);
+        if (DEBUG) {
+            System.out.println("digraph {");
+            for (final Map.Entry<String, Set<String>> entry : this.isSupportedBy.entrySet()) {
+                for (final String under : entry.getValue()) {
+                    System.out.println("  " + entry.getKey() + " -> " + under);
+                }
             }
+            System.out.println("}");
         }
-        System.out.println("}");
     }
 
     private void drawXY() {
 
-        this.drawX();
-        this.drawY();
+        if (DEBUG) {
+            this.drawX();
+            this.drawY();
+        }
     }
 
     private void drawY() {
@@ -303,7 +310,59 @@ public class Year2023Day22 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
-        return null;
+
+        this.loadBricks(input);
+        this.fallBricks();
+
+        return String.valueOf(this.jengaTime());
+    }
+
+    private int jengaTime() {
+
+        int jenga = 0;
+
+        // I am going to have to load this in each time, because
+        // if I remove something, other things later can't rely on it.
+
+        for (final Brick brick : this.bricks) {
+            this.figureOutSupportedBy();
+            final List<Brick> bricksToFall = new ArrayList<>();
+            bricksToFall.add(brick);
+            int dependents = 0;
+            while (true) {
+                final Brick current = bricksToFall.remove(0);
+                this.removeAsSupport(current.getId());
+
+                final Set<String> supports = this.supports.getOrDefault(current.getId(), new HashSet<>());
+                for (final String supported : supports) {
+                    final Set<String> isSupportedBy = this.isSupportedBy.getOrDefault(supported, new HashSet<>());
+                    if (isSupportedBy.isEmpty()) {
+                        bricksToFall.add(this.getBrick(supported));
+                        dependents++;
+                    }
+                }
+
+                if (bricksToFall.isEmpty()) {
+                    break;
+                }
+            }
+            jenga += dependents;
+        }
+        return jenga;
+    }
+
+    private void removeAsSupport(final String id) {
+        for (final Map.Entry<String, Set<String>> entry : this.isSupportedBy.entrySet()) {
+            entry.getValue().remove(id);
+        }
+    }
+
+    private Brick getBrick(final String id) {
+        return this.bricks
+                .stream()
+                .filter(s -> s.getId().equalsIgnoreCase(id))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Didn't find " + id));
     }
 
     @Data
@@ -312,7 +371,6 @@ public class Year2023Day22 extends AdventOfCodeChallenge {
 
         private String id;
         private List<Coord3d> coords;
-
     }
 
     @Data
