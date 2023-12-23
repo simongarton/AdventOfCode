@@ -26,6 +26,10 @@ of nodes and edges, where the nodes are intersections. Then use A* to find the s
 nodes - only some are valid, given slopes. Then finally use that to build a new graph and use DFS to find all the
 (valid) routes between the start, intersections and nodes.
 
+This was key - mapping out by hand in Excel where the sub-routes could go.
+
+![Part 1](2023-23.1.png)
+
 I might just leave part 2 for another day.
 
 ## Day 22: Sand Slabs
