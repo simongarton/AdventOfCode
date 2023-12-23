@@ -17,6 +17,10 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2023
 
+## Day 23: A long walk.
+
+Route finding, A*, priority queue, yeah, yeah, done this before ... wait, you want the longest distance ?
+
 ## Day 22: Sand Slabs
 
 Very nice. 3d Tetris / Jenga : a few shapes, made up of cubes, floating in positive integer space, let them all fall and
