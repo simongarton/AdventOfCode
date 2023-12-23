@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Year2023Day23 extends AdventOfCodeChallenge {
 
@@ -16,6 +17,7 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
     private int height;
 
     private Map<Tile, Tile> cameFrom;
+    private List<Tile> stops;
 
     @Override
     public String title() {
@@ -32,7 +34,6 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
 
         this.loadMap(input);
         if (DEBUG) {
-            this.debugMap();
             this.setUpLanterna(this.width, this.height);
         }
         this.cameFrom = new HashMap<>();
@@ -49,14 +50,147 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
                 .build();
 
         final Set<Tile> intersections = this.dfsToFindIntersections(start, end);
-        this.buildShortestPathMap(intersections);
-        this.drawCurrentMap(Collections.emptyList(), " ");
+        intersections.add(start);
+        intersections.add(end);
+        this.stops = new ArrayList<>(intersections);
+        // "shortest" but there can be only 1 ... won't go through other intersections
+        final Map<String, Integer> shortestPaths = this.buildShortestPathMap(intersections);
+        // you can get to all of them from the start ... I could change this to skip intersections
+        // but yeah, nah
+        final Map<String, Integer> pruned = this.pruneOthers(shortestPaths, start);
+        this.drawCurrentMap(intersections, "!");
+        final List<Integer> journeys = this.buildJourneys(pruned, start, end);
         if (DEBUG) {
             this.waitForKeys();
         }
 
-        // -1 as I have start AND end
-        return String.valueOf(0);
+        return String.valueOf(journeys.stream().mapToInt(Integer::valueOf).max());
+    }
+
+    private List<Integer> buildJourneys(final Map<String, Integer> pruned, final Tile start, final Tile end) {
+
+        if (false) {
+            this.digraph(pruned);
+        }
+
+        final List<List<Tile>> journeys = new ArrayList<>();
+        final List<Tile> firstList = new ArrayList<>();
+        firstList.add(start);
+        journeys.add(firstList);
+        final Set<List<Tile>> journeysDone = new HashSet<>();
+        while (true) {
+            boolean didSomething = false;
+            final List<List<Tile>> journeysToAdd = new ArrayList<>();
+            for (final List<Tile> workingJourney : journeys) {
+                if (journeysDone.contains(workingJourney)) {
+                    continue;
+                }
+                journeysDone.add(workingJourney);
+                final Tile last = workingJourney.get(workingJourney.size() - 1);
+                for (final Map.Entry<String, Integer> entry : pruned.entrySet()) {
+                    final String[] parts = entry.getKey().split(" -> ");
+                    final Tile from = this.getTileFromAddress(parts[0]);
+                    final Tile to = this.getTileFromAddress(parts[1]);
+                    if (from == last) {
+                        final List<Tile> newJourney = new ArrayList<>();
+                        newJourney.addAll(workingJourney);
+                        newJourney.add(to);
+                        journeysToAdd.add(newJourney);
+                        didSomething = true;
+                    }
+                }
+            }
+            journeys.addAll(journeysToAdd);
+            if (!didSomething) {
+                break;
+            }
+        }
+        final List<List<Tile>> completeJourneys = new ArrayList<>();
+        for (final List<Tile> journey : journeys) {
+            final Tile last = journey.get(journey.size() - 1);
+            if (last.getAddress().equalsIgnoreCase(end.getAddress())) {
+                completeJourneys.add(journey);
+            }
+        }
+
+        final List<Integer> costs = new ArrayList<>();
+        for (final List<Tile> journey : completeJourneys) {
+            int cost = 0;
+            final String line = journey.stream().map(Tile::getAddress).collect(Collectors.joining(" -> "));
+            Tile from = null;
+            Tile to = null;
+            for (final Tile tile : journey) {
+                to = tile;
+                if (from != null) {
+                    final String key = from.getAddress() + " -> " + to.getAddress();
+                    cost = cost + pruned.get(key);
+                }
+                from = to;
+            }
+            System.out.println(line + " : " + cost);
+            costs.add(cost);
+        }
+
+        return costs;
+    }
+
+    private void digraph(final Map<String, Integer> pruned) {
+        System.out.println("digraph {");
+        for (final Map.Entry<String, Integer> entry : pruned.entrySet()) {
+            final String[] parts = entry.getKey().split(" -> ");
+            System.out.println("\"" + parts[0] + "\" -> \"" + parts[1] + "\"");
+        }
+        System.out.println("}");
+    }
+
+    private Tile findFirstStop(final Tile start, final Map<String, Integer> pruned) {
+
+        final String pattern = start.getAddress();
+        for (final String key : pruned.keySet()) {
+            if (key.startsWith(pattern)) {
+                final String[] parts = key.split(" -> ");
+                return this.getTileFromAddress(parts[1]);
+            }
+        }
+        throw new RuntimeException("not found ");
+    }
+
+    private Tile getTileFromAddress(final String address) {
+
+        return this.stops.stream()
+                .filter(s -> s.getAddress().equalsIgnoreCase(address))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("awkward"));
+    }
+
+    private Map<String, Integer> pruneOthers(final Map<String, Integer> shortestPaths, final Tile start) {
+
+        final Map<String, Integer> pruned = new HashMap<>();
+
+        int lowest = Integer.MAX_VALUE;
+        String lowEdge = null;
+        final String pattern = start.getAddress();
+
+        for (final Map.Entry<String, Integer> entry : shortestPaths.entrySet()) {
+            if (!entry.getKey().startsWith(pattern)) {
+                continue;
+            }
+            final int value = entry.getValue();
+            if (value < lowest) {
+                lowest = value;
+                lowEdge = entry.getKey();
+            }
+        }
+        for (final Map.Entry<String, Integer> entry : shortestPaths.entrySet()) {
+            if (!entry.getKey().startsWith(pattern)) {
+                pruned.put(entry.getKey(), entry.getValue());
+                continue;
+            }
+            if (entry.getKey().equalsIgnoreCase(lowEdge)) {
+                pruned.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return pruned;
     }
 
     private Map<String, Integer> buildShortestPathMap(final Set<Tile> intersections) {
@@ -68,14 +202,29 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
                     continue;
                 }
                 final String key = from.getAddress() + " -> " + to.getAddress();
-                System.out.println(key);
-                distances.put(key, this.aStar(from, to, intersections));
+                final Integer distance = this.aStar(from, to, intersections);
+
+                if (distance != null) {
+                    distances.put(key, distance);
+                }
+                /*
+
+                Something funny here. I think my costs are overestimated, and ...
+
+                1,0 -> 21,22:74
+                13,13 -> 21,22:74
+
+                ... they should not be the same. The shortest path from start to end is 74. But I
+                could be doubling back ?
+
+                I'm getting 6 paths, the answer has 6 paths. But only 1 of my answers is even in the range of
+                possibilities, and it' not one of the actual answers.
+
+                 */
             }
         }
         for (final Map.Entry<String, Integer> entry : distances.entrySet()) {
-            if (entry.getValue() != null) {
-                System.out.println(entry.getKey() + ":" + entry.getValue());
-            }
+            System.out.println(entry.getKey() + ":" + entry.getValue());
         }
         return distances;
     }
@@ -191,14 +340,6 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
         this.cameFrom.clear();
         openSet.put(0, List.of(start));
 
-        // not sure this is right, but we are getting stuck going from 3,5 -> 11,3
-//        for (final Tile tile : intersections) {
-//            if (tile == start || tile == end) {
-//                continue;
-//            }
-//            visited.add(tile);
-//        }
-
         while (!openSet.isEmpty()) {
             final int minCost = openSet.keySet().stream().min(Integer::compareTo).get();
             final List<Tile> tiles = openSet.remove(minCost);
@@ -210,8 +351,9 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
                         final List<Tile> path = this.reconstructPath(end);
                         this.drawCurrentMap(intersections, "!");
                         this.sleep(1000);
+                        System.out.println("traced from " + start + " to " + end + " distance " + distance);
                         this.drawCurrentMap(path, "x");
-                        this.sleep(1000);
+                        this.sleep(10000);
                     }
                     return distance;
                 }
@@ -231,7 +373,7 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
     private Integer findEnd(final List<Tile> neighbours, final Tile end) {
         for (final Tile neighbour : neighbours) {
             if (neighbour.getX() == end.getX() && neighbour.getY() == end.getY()) {
-                return neighbour.getCost();
+                return end.getCost() - neighbour.getCost();
             }
         }
         return null;
@@ -249,7 +391,7 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
             this.drawColoredString(line, 0, i, TextColor.ANSI.BLACK);
         }
 
-        this.refreshAndSleep(10);
+        this.refreshAndSleep(0);
     }
 
     private void drawColoredString(final String s, final int x, final int y, final TextColor background) {
@@ -269,9 +411,9 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
             case 'x':
                 return TextColor.ANSI.BLUE_BRIGHT;
             case '!':
-                return TextColor.ANSI.GREEN_BRIGHT;
+                return TextColor.ANSI.WHITE_BRIGHT;
             default:
-                return TextColor.ANSI.WHITE;
+                return TextColor.ANSI.BLACK_BRIGHT;
         }
     }
 
@@ -283,7 +425,8 @@ public class Year2023Day23 extends AdventOfCodeChallenge {
         this.blankLine();
     }
 
-    private List<Tile> neighbours(final Tile tile, final Tile end, final Map<Integer, List<Tile>> openSet, final Set<Tile> visited) {
+    private List<Tile> neighbours(final Tile tile, final Tile end, final Map<Integer, List<Tile>> openSet,
+                                  final Set<Tile> visited) {
         final List<Tile> neighbours = new ArrayList<>();
         Optional<Tile> optionalTile = this.neighbour(tile, 1, 0, end, openSet, visited);
         optionalTile.ifPresent(neighbours::add);
