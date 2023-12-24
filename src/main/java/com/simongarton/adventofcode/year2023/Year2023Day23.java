@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 
 public class Year2023Day23 extends AdventOfCodeChallenge {
 
+    // this isn't perfect - it hangs on the reconstruct path when running on the large
+    // data. but it gives the right answer.
+
     private static final boolean DEBUG = false;
 
     private String map;

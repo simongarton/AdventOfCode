@@ -19,14 +19,14 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## Day 23: A long walk. (1/2)
 
-Route finding, A*, priority queue, yeah, yeah, done this before ... wait, you want the longest distance ?
+Route finding, A*, priority queue, yeah, yeah, done this before ... wait, you want the _longest_ distance ?
 
 Turns out to be one of the best bits of logic / coding I think I've ever done. Use DFS to split the map into a graph
 of nodes and edges, where the nodes are intersections. Then use A* to find the shortest path between each pair of
 nodes - only some are valid, given slopes. Then finally use that to build a new graph and use DFS to find all the
 (valid) routes between the start, intersections and nodes.
 
-This was key - mapping out by hand in Excel where the sub-routes could go.
+This was very important - mapping out by hand in Sheets where the sub-routes could go.
 
 ![Part 1](2023-23.1.png)
 
