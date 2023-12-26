@@ -6,7 +6,7 @@ public class Year2023Day24 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 24: Template code";
+        return "Day 24: Never Tell Me The Odds";
     }
 
     @Override

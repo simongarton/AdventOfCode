@@ -23,8 +23,17 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
     Not getting anywhere. I can SEE the result on graphviz, but can't read it - too pixelly - and don't have any
     ideas on detecting it.
 
-    I have a nice solution for the sample; I iterate over all permutations of removing three edges and build the
+    I had a nice solution for the sample; I iterate over all permutations of removing three edges and build the
     nodes into sets by tracing through ... but it completely fails to scale.
+
+    I now have a nicer solution which I think should scale : for each edge, calculated shared neighbours, and if you
+    find an edge where the two ends have no shared neighbours, it's a bridge, and should be dropped. Works fine with
+    the sample, doesn't find the right answer with the real.
+
+    Well, that's weird : nodes 1484 edges 3311 bridges 3281
+    ALl but 30 of the edges have no shared nodes.
+
+    Do I need to DFS out EXCLUDING the other side of the bridge ? I think so.
 
      */
 
@@ -45,16 +54,45 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        final boolean sample = false;
+        final boolean sample = true;
 
         if (!sample) {
             return String.valueOf(-1);
         }
 
         this.loadGraph(input);
-        final List<Integer> permutation = this.findPermutationFor2SetsIterative(input, this.edges.size());
+        this.drawGraph("test");
+        final List<Integer> bridges = this.calculateSharedNeighbours(input);
+        this.loadGraph(input);
+        System.out.println("nodes " + this.nodes.size() + " edges " + this.edges.size() + " bridges " + bridges.size() + " ..");
+        this.removeEdgesAsIds(bridges);
+        System.out.println("nodes " + this.nodes.size() + " edges " + this.edges.size() + " bridges " + bridges.size() + " ..");
+        this.drawGraph("test-build-sets");
+        System.out.println("\nbuilding sets\n");
+        this.buildSets();
+        System.out.println("  and sets " + this.sets.size());
         final List<Set> finalSets = new ArrayList<>(this.sets);
+        if (this.sets.size() != 2) {
+            throw new RuntimeException("didn't work");
+        }
         return String.valueOf(finalSets.get(0).size() * finalSets.get(1).size());
+    }
+
+    private void removeEdgesAsIds(final List<Integer> bridgeIds) {
+        for (final Integer bridgeId : bridgeIds) {
+            final Edge edge = this.edges.get(bridgeId);
+            edge.getFrom().getEdges().remove(edge);
+            edge.getTo().getEdges().remove(edge);
+            this.edges.remove(edge);
+        }
+    }
+
+    private void removeEdges(final List<Edge> bridges) {
+        for (final Edge edge : bridges) {
+            edge.getFrom().getEdges().remove(edge);
+            edge.getTo().getEdges().remove(edge);
+            this.edges.remove(edge);
+        }
     }
 
     private List<Integer> findPermutationFor2SetsIterative(final String[] input, final int edgeCount) {
@@ -80,7 +118,38 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
         throw new RuntimeException("Nope.");
     }
 
+    private List<Node> findNeighboursRecursivelyNotUsingBridge(final Node node, final Node exclude) {
+
+        final List<Node> nodesToCheck = new ArrayList<>();
+        final Set<Node> visited = new HashSet<>();
+        final List<Node> neighbours = new ArrayList<>();
+        visited.add(exclude);
+
+        final int iteration = 0;
+        nodesToCheck.add(node);
+        while (!nodesToCheck.isEmpty()) {
+            final Node checkNode = nodesToCheck.remove(0);
+            // don't include self
+            if (node != checkNode) {
+                neighbours.add(checkNode);
+            }
+            visited.add(checkNode);
+//            System.out.println(++iteration + ": testing " + checkNode + " still got " + nodesToCheck.size()
+//                    + " to check, visited = " + visited.size());
+            for (final Node neighbour : this.getNeighbours(checkNode)) {
+//                System.out.println("  neighbour " + neighbour);
+                if (!visited.contains(neighbour) && !nodesToCheck.contains(neighbour)) {
+//                    System.out.println("    adding " + neighbour);
+                    nodesToCheck.add(neighbour);
+                }
+            }
+        }
+        System.out.println("node " + node + " has " + neighbours.size() + " neighbours.");
+        return neighbours;
+    }
+
     private boolean buildSets() {
+
         this.sets = new HashSet<>();
 
         final List<Node> nodesToCheck = new ArrayList<>();
@@ -91,6 +160,7 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
         nodesToCheck.add(this.nodes.get(0));
         while (!nodesToCheck.isEmpty()) {
             final Node checkNode = nodesToCheck.remove(0);
+//            System.out.println("Checking " + checkNode);
             allNodes.remove(checkNode);
             visited.add(checkNode);
             final Set<Node> targetSet = this.setForNode(checkNode);
@@ -98,8 +168,11 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
 //            System.out.println(++iteration + ": " + this.nodes.size() + " nodes, " + nodesToCheck.size()
 //                    + " to check, and " + this.sets.size() + " sets ... " + this.setSizes());
             for (final Node neighbour : this.getNeighbours(checkNode)) {
+//                System.out.println("  found neighbour " + neighbour);
                 if (!visited.contains(neighbour)) {
                     nodesToCheck.add(neighbour);
+//                    System.out.println("    added neighbour " + neighbour);
+
                 }
             }
             if (nodesToCheck.isEmpty()) {
@@ -107,6 +180,11 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
                     nodesToCheck.add(allNodes.get(0));
                 }
             }
+        }
+        System.out.println("edges");
+        this.edges.stream().forEach(System.out::println);
+        for (final Set<Node> set : this.sets) {
+            System.out.println("buildSets() got " + set.stream().map(Node::getId).collect(Collectors.joining(",")));
         }
         return this.sets.size() == 2;
     }
@@ -156,13 +234,70 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
         final List<Node> neighbours = new ArrayList<>();
         for (final Edge edge : node.getEdges()) {
             if (edge.getFrom() != node) {
+//                System.out.println("    adding " + edge.getFrom() + " using edge " + edge);
                 neighbours.add(edge.getFrom());
             }
             if (edge.getTo() != node) {
+//                System.out.println("    adding " + edge.getTo() + " using edge " + edge);
                 neighbours.add(edge.getTo());
             }
         }
         return neighbours;
+    }
+
+    private List<Integer> calculateSharedNeighbours(final String[] input) {
+
+        this.loadGraph(input);
+        final int edgeCount = this.edges.size();
+
+        final List<Integer> edges = new ArrayList<>();
+        for (int i = 0; i < edgeCount; i++) {
+            this.loadGraph(input);
+            final Edge edge = this.edges.get(i);
+            final Node from = edge.getFrom();
+            final Node to = edge.getTo();
+            this.removeEdges(List.of(edge));
+            this.drawGraph("test-tidied-" + i);
+            // TODO I don't think I need to exclude any more.
+            final List<Node> fromNeighbours = this.findNeighboursRecursivelyNotUsingBridge(from, to);
+            final List<Node> toNeighbours = this.findNeighboursRecursivelyNotUsingBridge(to, from);
+            final int score = this.countSharedNeighbours(fromNeighbours, toNeighbours);
+            System.out.println("test-tidied-" + i + " with " + from + "-" + to + " got " + score);
+            System.out.println(from + " : " + fromNeighbours.stream().map(Node::getId).collect(Collectors.joining(",")));
+            System.out.println(to + " : " + toNeighbours.stream().map(Node::getId).collect(Collectors.joining(",")));
+            if (score == 0) {
+                edges.add(i);
+            }
+            System.out.println(edge.getId() + " : " + score);
+        }
+        return edges;
+    }
+
+    private List<Edge> calculateSharedNeighboursSimple() {
+
+        final List<Edge> edges = new ArrayList<>();
+        for (final Edge edge : this.edges) {
+            final Node from = edge.getFrom();
+            final Node to = edge.getTo();
+            final List<Node> fromNeighbours = this.getNeighbours(from);
+            final List<Node> toNeighbours = this.getNeighbours(to);
+            final int score = this.countSharedNeighbours(fromNeighbours, toNeighbours);
+            if (score == 0) {
+                edges.add(edge);
+            }
+            System.out.println(edge.getId() + " : " + score);
+        }
+        return edges;
+    }
+
+    private int countSharedNeighbours(final List<Node> fromNeighbours, final List<Node> toNeighbours) {
+        int score = 0;
+        for (final Node from : fromNeighbours) {
+            if (toNeighbours.contains(from)) {
+                score++;
+            }
+        }
+        return score;
     }
 
     private void calculateScores() {
