@@ -24,7 +24,7 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
     ideas on detecting it.
 
     I have a nice solution for the sample; I iterate over all permutations of removing three edges and build the
-    nodes into sets by tracing through ...
+    nodes into sets by tracing through ... but it completely fails to scale.
 
      */
 
@@ -45,41 +45,16 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        this.loadGraph(input);
-//        this.debugGraph();
-//        this.calculateScores();
-//        this.buildSets();
+        final boolean sample = false;
 
-//        final List<Integer> numbers = new ArrayList<>();
-//        for (int i = 0; i < this.edges.size(); i++) {
-//            numbers.add(i);
-//        }
-//        final List<List<Integer>> permutations = this.generatePermutations(numbers, 3);
-//        System.out.println(permutations.size());
-//        final List<Integer> permutation = this.findPermutationFor2Sets(input, permutations);
-        final List<Integer> permutation = this.findPermutationFor2SetsIterative(input, this.edges.size());
-        return String.valueOf(0);
-    }
-
-    private List<Integer> findPermutationFor2Sets(final String[] input, final List<List<Integer>> permutations) {
-        final int iteration = 0;
-        for (final List<Integer> permutation : permutations) {
-            this.loadGraph(input);
-            for (int index = 2; index >= 0; index--) {
-                final Edge edge = this.edges.get(permutation.get(index));
-                edge.getFrom().getEdges().remove(edge);
-                edge.getTo().getEdges().remove(edge);
-                this.edges.remove(edge);
-            }
-            if (this.buildSets()) {
-//            this.drawGraph(permutation.stream().map(String::valueOf).collect(Collectors.joining("-")));
-//            System.out.println(++iteration + "/" + permutations.size() + " : " + permutation + " gave " + this.sets.size());
-//            if (this.sets.size() == 2) {
-                this.drawGraph(permutation.stream().map(String::valueOf).collect(Collectors.joining("-")));
-                return permutation;
-            }
+        if (!sample) {
+            return String.valueOf(-1);
         }
-        throw new RuntimeException("Nope.");
+
+        this.loadGraph(input);
+        final List<Integer> permutation = this.findPermutationFor2SetsIterative(input, this.edges.size());
+        final List<Set> finalSets = new ArrayList<>(this.sets);
+        return String.valueOf(finalSets.get(0).size() * finalSets.get(1).size());
     }
 
     private List<Integer> findPermutationFor2SetsIterative(final String[] input, final int edgeCount) {
@@ -105,47 +80,18 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
         throw new RuntimeException("Nope.");
     }
 
-    private List<List<Integer>> generatePermutations(final List<Integer> numbers, final int r) {
-        final List<List<Integer>> permutations = new ArrayList<>();
-        this.generatePermutationsHelper(numbers, r, 0, new ArrayList<>(), permutations);
-        return permutations;
-    }
-
-    private void generatePermutationsHelper(
-            final List<Integer> numbers, final int r, final int index, final List<Integer> currentPermutation,
-            final List<List<Integer>> permutations) {
-
-        if (currentPermutation.size() == r) {
-            permutations.add(new ArrayList<>(currentPermutation));
-            return;
-        }
-
-        for (int i = index; i < numbers.size(); i++) {
-            currentPermutation.add(numbers.get(i));
-            this.generatePermutationsHelper(numbers, r, i + 1, currentPermutation, permutations);
-            currentPermutation.remove(currentPermutation.size() - 1);
-        }
-    }
-
-    private void buildSetsSlowAndSafe() {
-        this.sets = new HashSet<>();
-
-        for (final Node checkNode : this.nodes) {
-            final Set<Node> targetSet = this.setForNode(checkNode);
-            targetSet.add(checkNode);
-        }
-    }
-
     private boolean buildSets() {
         this.sets = new HashSet<>();
 
         final List<Node> nodesToCheck = new ArrayList<>();
         final Set<Node> visited = new HashSet<>();
+        final List<Node> allNodes = new ArrayList<>(this.nodes);
 
         final int iteration = 0;
         nodesToCheck.add(this.nodes.get(0));
         while (!nodesToCheck.isEmpty()) {
             final Node checkNode = nodesToCheck.remove(0);
+            allNodes.remove(checkNode);
             visited.add(checkNode);
             final Set<Node> targetSet = this.setForNode(checkNode);
             targetSet.add(checkNode);
@@ -156,12 +102,13 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
                     nodesToCheck.add(neighbour);
                 }
             }
+            if (nodesToCheck.isEmpty()) {
+                if (!allNodes.isEmpty()) {
+                    nodesToCheck.add(allNodes.get(0));
+                }
+            }
         }
-
-        if (visited.size() != this.nodes.size()) {
-            return true;
-        }
-        return false;
+        return this.sets.size() == 2;
     }
 
     private String setSizes() {

@@ -17,6 +17,14 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2023
 
+## Day 25: Snowverload. (0/2)
+
+Lovely challenge. I can dump a graph into GraphViz and _almost_ see the solution - I can see 3 edges that link the two
+clusters, just can't read their nodes - but can't figure out how to do it. I have a fast solution for the sample. For
+part 1, of course.
+
+## Day 24:
+
 ## Day 23: A long walk. (1/2)
 
 Route finding, A*, priority queue, yeah, yeah, done this before ... wait, you want the _longest_ distance ?
