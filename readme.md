@@ -21,7 +21,7 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 Lovely challenge. I can dump a graph into GraphViz and _almost_ see the solution - I can see 3 edges that link the two
 clusters, just can't read their nodes - but can't figure out how to do it. I have a fast solution for the sample. For
-part 1, of course.
+part 1, of course. Part 2 is going to take a further 27330.794 seconds ...
 
 ## Day 24:
 

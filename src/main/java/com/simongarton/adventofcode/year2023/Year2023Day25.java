@@ -18,28 +18,10 @@ import java.util.stream.Collectors;
 
 public class Year2023Day25 extends AdventOfCodeChallenge {
 
-    /*
-
-    Not getting anywhere. I can SEE the result on graphviz, but can't read it - too pixelly - and don't have any
-    ideas on detecting it.
-
-    I had a nice solution for the sample; I iterate over all permutations of removing three edges and build the
-    nodes into sets by tracing through ... but it completely fails to scale.
-
-    I now have a nicer solution which I think should scale : for each edge, calculated shared neighbours, and if you
-    find an edge where the two ends have no shared neighbours, it's a bridge, and should be dropped. Works fine with
-    the sample, doesn't find the right answer with the real.
-
-    Well, that's weird : nodes 1484 edges 3311 bridges 3281
-    ALl but 30 of the edges have no shared nodes.
-
-    Do I need to DFS out EXCLUDING the other side of the bridge ? I think so.
-
-     */
-
     private List<Node> nodes;
     private List<Edge> edges;
     private Set<Set<Node>> sets;
+    private Map<Edge, Integer> edgeWeights = new HashMap<>();
 
     @Override
     public String title() {
@@ -54,6 +36,8 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
+        // code works sort of OK on the sample - right answer, but I have to do something twice I don't expect to
+        // but real file is ... 1000/2202256 remaining 27330.794 seconds
         final boolean sample = true;
 
         if (!sample) {
@@ -62,20 +46,145 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
 
         this.loadGraph(input);
         this.drawGraph("test");
-        final List<Integer> bridges = this.calculateSharedNeighbours(input);
-        this.loadGraph(input);
-        System.out.println("nodes " + this.nodes.size() + " edges " + this.edges.size() + " bridges " + bridges.size() + " ..");
-        this.removeEdgesAsIds(bridges);
-        System.out.println("nodes " + this.nodes.size() + " edges " + this.edges.size() + " bridges " + bridges.size() + " ..");
-        this.drawGraph("test-build-sets");
-        System.out.println("\nbuilding sets\n");
-        this.buildSets();
-        System.out.println("  and sets " + this.sets.size());
-        final List<Set> finalSets = new ArrayList<>(this.sets);
-        if (this.sets.size() != 2) {
-            throw new RuntimeException("didn't work");
+        final long start = System.currentTimeMillis();
+
+        final Set<String> combinationsTried = new HashSet<>();
+        this.edgeWeights = new HashMap<>();
+        int iteration = 0;
+        final int total = this.nodes.size() * this.nodes.size();
+        for (final Node from : this.nodes) {
+            for (final Node to : this.nodes) {
+                if (++iteration % 1000 == 0) {
+                    final long now = System.currentTimeMillis();
+                    final long elapsedMillis = now - start;
+                    final long millisToGo = Math.round(elapsedMillis / (iteration * 1.0 / total));
+                    final long end = start + millisToGo;
+                    final long remaining = end - now;
+                    System.out.println(iteration + "/" + total + " remaining " + remaining / 1000.0 + " seconds");
+                }
+                if (from == to) {
+                    // I shouldn't need this - but the sample fails without it ...
+                    continue;
+                }
+                final String key = from.getId().compareTo(to.getId()) < 0 ? from.getId() + "-" + to.getId() : to.getId() + "-" + from.getId();
+                if (combinationsTried.contains(key)) {
+//                    continue;
+                }
+                combinationsTried.add(key);
+                this.traceShortestPathAndUpdateWeights(from, to);
+            }
         }
-        return String.valueOf(finalSets.get(0).size() * finalSets.get(1).size());
+
+//        for (final Map.Entry<Edge, Integer> entry : this.edgeWeights.entrySet()) {
+//            System.out.println(entry.getKey() + ":" + entry.getValue());
+//        }
+
+        final List<Edge> bridges = this.getTopThreeEdges();
+        this.removeEdges(bridges);
+        this.buildSets();
+        final List<Set> setList = new ArrayList<>(this.sets);
+
+        return String.valueOf(setList.get(0).size() * setList.get(1).size());
+    }
+
+    private List<Edge> getTopThreeEdges() {
+
+        final List<Integer> keys = new ArrayList<>(this.edgeWeights.values());
+        keys.sort(Comparator.comparing(Integer::intValue).reversed());
+        final List<Edge> bridges = new ArrayList<>();
+        bridges.add(this.findEdgeWeight(keys.get(0)));
+        bridges.add(this.findEdgeWeight(keys.get(1)));
+        bridges.add(this.findEdgeWeight(keys.get(2)));
+        return bridges;
+    }
+
+    private Edge findEdgeWeight(final Integer integer) {
+        for (final Map.Entry<Edge, Integer> entry : this.edgeWeights.entrySet()) {
+            if (entry.getValue() == integer) {
+                return entry.getKey();
+            }
+        }
+        throw new RuntimeException("nope.");
+    }
+
+    private void traceShortestPathAndUpdateWeights(final Node from, final Node to) {
+
+//        System.out.println("\nGoing from " + from + " to " + to + "\n");
+
+        final Map<Integer, List<Node>> nodeListsToCheck = new HashMap<>();
+        final Set<Node> visited = new HashSet<>();
+        final Map<Node, Node> cameFrom = new HashMap<>();
+
+        int currentCost = 0;
+        nodeListsToCheck.put(0, List.of(from));
+        visited.add(from);
+
+        while (true) {
+            final List<Node> nextSet = nodeListsToCheck.remove(currentCost);
+//            System.out.println("for cost " + currentCost + " I have " + nextSet.stream().map(Node::getId).collect(Collectors.joining(",")));
+            currentCost++;
+            for (final Node nextNode : nextSet) {
+//                System.out.println("  working on " + nextNode);
+                if (nextNode == to) {
+//                    System.out.println("   got path : " + this.showShortestPath(cameFrom, from, to));
+                    this.updateWeights(cameFrom, from, to);
+                    // don't know about this.
+                    return;
+                }
+                for (final Node neighbour : this.getNeighbours(nextNode)) {
+                    if (!visited.contains(neighbour)) {
+//                        System.out.println("    adding in neighbour " + neighbour);
+                        final List<Node> more = nodeListsToCheck.getOrDefault(currentCost, new ArrayList<>());
+                        more.add(neighbour);
+                        nodeListsToCheck.put(currentCost, more);
+                        cameFrom.put(neighbour, nextNode);
+                        visited.add(neighbour);
+                    } else {
+//                        System.out.println("    skipping neighbour " + neighbour);
+                    }
+                }
+            }
+        }
+    }
+
+    private String showShortestPath(final Map<Node, Node> cameFrom, final Node from, final Node to) {
+        for (final Map.Entry<Node, Node> entry : cameFrom.entrySet()) {
+            System.out.println(entry.getKey() + " came from " + entry.getValue());
+        }
+        Node current = to;
+        Node previous = cameFrom.get(to);
+        String line = current.getId();
+        int cost = 1;
+        while (previous != null) {
+            line = previous.getId() + "-" + line;
+            current = previous;
+            previous = cameFrom.get(current);
+            cost++;
+        }
+        return line + " : " + cost;
+    }
+
+    private void updateWeights(final Map<Node, Node> cameFrom, final Node from, final Node to) {
+        Node current = to;
+        Node previous = cameFrom.get(to);
+        while (previous != null) {
+            final Edge edge = this.findEdgeBothWays(current, previous);
+            this.edgeWeights.put(edge, this.edgeWeights.getOrDefault(edge, 0) + 1);
+            current = previous;
+            previous = cameFrom.get(current);
+        }
+    }
+
+    private Edge findEdgeBothWays(final Node current, final Node previous) {
+        for (final Edge edge : this.edges) {
+            if (edge.getFrom() == current && edge.getTo() == previous) {
+                return edge;
+            }
+            if (edge.getFrom() == previous && edge.getTo() == current) {
+                return edge;
+            }
+        }
+        throw new RuntimeException("Not found edge");
     }
 
     private void removeEdgesAsIds(final List<Integer> bridgeIds) {
@@ -181,11 +290,11 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
                 }
             }
         }
-        System.out.println("edges");
-        this.edges.stream().forEach(System.out::println);
-        for (final Set<Node> set : this.sets) {
-            System.out.println("buildSets() got " + set.stream().map(Node::getId).collect(Collectors.joining(",")));
-        }
+//        System.out.println("edges");
+//        this.edges.stream().forEach(System.out::println);
+//        for (final Set<Node> set : this.sets) {
+//            System.out.println("buildSets() got " + set.stream().map(Node::getId).collect(Collectors.joining(",")));
+//        }
         return this.sets.size() == 2;
     }
 
@@ -298,34 +407,6 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
             }
         }
         return score;
-    }
-
-    private void calculateScores() {
-
-        for (final Edge edge : this.edges) {
-            final Node from = edge.getFrom();
-            final Node to = edge.getTo();
-
-            int score = 0;
-            for (final Edge fromEdge : from.getEdges()) {
-                if (this.edgeHasNode(fromEdge, to)) {
-                    continue;
-                }
-                score++;
-            }
-            for (final Edge toEdge : to.getEdges()) {
-                if (this.edgeHasNode(toEdge, from)) {
-                    continue;
-                }
-                score++;
-            }
-            edge.setScore(score);
-            System.out.println(edge.getId() + " : " + edge.getScore());
-        }
-    }
-
-    private boolean edgeHasNode(final Edge edge, final Node node) {
-        return edge.getFrom() == node || edge.getTo() == node;
     }
 
     private void drawGraph(final String filename) {
@@ -486,8 +567,6 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
         private String id;
         private Node from;
         private Node to;
-
-        private int score;
     }
 
     private static class StreamGobbler implements Runnable {
