@@ -169,9 +169,7 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
             }
         }
         final long total = this.endpoints.get("A");
-        // isn't right
-        // isn't right
-        return String.valueOf(-1);
+        return String.valueOf(total);
     }
 
     private Map<String, Range> rootRanges() {
@@ -217,69 +215,134 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
         }
     }
 
-    /*
-
-    Example : in{s<5:A,R} and a max of 10
-
-    I arrive with 1:10 1:10 1:10 1:10
-    I evaluate the first rule
-    I go to A with 1:10 1:10 1:10 1:4
-    This means that I now have 1:10 1:10 1:10 5:10 for the next rule
-    I go to R with 1:10 1:10 1:10 5:10
-
-    Example : in{s<5:A,a>8:p,R} p{s>6:R,m<5:A,R} and a max of 10
-
-    I arrive with 1:10 1:10 1:10 1:10
-    I evaluate the first rule
-    I go to A with 1:10 1:10 1:10 1:4
-    This means that I now have 1:10 1:10 1:10 5:10 for the next rule
-    I evaluate the second rule
-    I go to p with 1:10 1:10 9:10 1:4
-    This means that I now have 1:10 1:10 1:8 1:4 for the next rule
-    I go to R with 1:10 1:10 1:8 1:4
-
-    I arrive at p with 1:10 1:10 9:10 1:4
-    I evaluate the first rule
-    It makes no sense, s must be greater than 6 but I only have up to 4, so ... something dies.
-    I evaluate the second rule
-    I go to A with 1:10 1:4 9:10 1:4
-    This means that I now have 1:10 5:10 9:10 1:4 for the next rule
-    I go to R with 1:10 5:10 9:10 1:4
-
-    I think.
-
-    So I need the concept of a set of ranges;
-    and I need an operation to apply a rule and get the two outcomes, pass and fail
-    pass gets handed down to the next destination
-    fail gets handed across to the next rule
-    the operation will affect the low and may just invalidate the rule
-
-    write some scenarios and tests.
-
-     */
-
     private void buildPathMap(final Path node) {
+
         final Workflow workflow = this.workflowMap.get(node.getSource());
-        for (final Rule rule : workflow.getRules()) {
-            // this isn't valid. if I've arrived at this rule I will have
-            // x * m * a * s possibilities. For each rule, I need to work out
-            // how many go down that path - but then I need to subtract that from the total available.
-            // the rules are sequential so I need to apply them in order.
+        final List<Rule> rules = workflow.getRules();
+        this.recursivelyAllocateStuff(rules, node, node.getRanges());
+    }
+
+    private void recursivelyAllocateStuff(final List<Rule> rules, final Path node, final Map<String, Range> ranges) {
+        if (rules.isEmpty()) {
+            return;
+        }
+        final Rule rule = rules.remove(0);
+//        System.out.println("recursing on " + node.getSource() + " with rule " + rule.getWorkflowName() + " and have " + rules.size() + " rules left.");
+        if (rules.isEmpty()) {
             final Path next = Path.builder()
                     .parent(node)
                     .source(rule.getWorkflowName())
                     .destinations(new ArrayList<>())
-                    .ranges(new HashMap<>()) // this isn't done
+                    .ranges(ranges)
                     .build();
+//            System.out.println("Built " + next.getSource() + " added to " + node.getSource() + " and leaving.");
             node.destinations.add(next);
+            return;
         }
+        final Map<String, Range> pass = this.figureOutPassFail(rule, node, true);
+        final Map<String, Range> fail = this.figureOutPassFail(rule, node, false);
+        final Path next = Path.builder()
+                .parent(node)
+                .source(rule.getWorkflowName())
+                .destinations(new ArrayList<>())
+                .ranges(pass)
+                .build();
+//        System.out.println("Built " + next.getSource() + " added to " + node.getSource() + " and continuing.");
+        node.destinations.add(next);
+        this.recursivelyAllocateStuff(rules, node, fail);
+
         for (final Path destination : node.getDestinations()) {
-            if (List.of("A", "R").contains(destination.getSource())) {
+            if (destination.getSource().equalsIgnoreCase("A")) {
                 this.handleEndOfLine(destination);
-                continue;
+                return;
             }
-            this.buildPathMap(destination);
+            if (destination.getSource().equalsIgnoreCase("R")) {
+                this.handleEndOfLine(destination);
+                return;
+            }
+            final Workflow workflow = this.workflowMap.get(destination.getSource());
+            if (workflow == null) {
+                throw new RuntimeException("No workflow for " + destination.getSource());
+            }
+            if (workflow.getRules() == null) {
+                throw new RuntimeException("No rules for " + workflow.getName());
+            }
+            final List<Rule> moreRules = workflow.getRules();
+            this.recursivelyAllocateStuff(moreRules, destination, destination.getRanges());
         }
+    }
+
+    public Map<String, Range> figureOutPassFail(final Rule rule, final Path node, final boolean pass) {
+        final Map<String, Range> newRange = this.copyRangesFromNode(node);
+        newRange.put("x", this.passFailRule("x", rule, newRange.get("x"), pass));
+        newRange.put("m", this.passFailRule("m", rule, newRange.get("m"), pass));
+        newRange.put("a", this.passFailRule("a", rule, newRange.get("a"), pass));
+        newRange.put("s", this.passFailRule("s", rule, newRange.get("s"), pass));
+        return newRange;
+    }
+
+    private Map<String, Range> copyRangesFromNode(final Path node) {
+        final Map<String, Range> newRangeMap = new HashMap<>();
+        for (final Map.Entry<String, Range> entry : node.getRanges().entrySet()) {
+            final Range newRange = Range.builder()
+                    .low(entry.getValue().getLow())
+                    .high(entry.getValue().getHigh())
+                    .valid(entry.getValue().isValid())
+                    .build();
+            newRangeMap.put(entry.getKey(), newRange);
+        }
+        return newRangeMap;
+    }
+
+
+    private Range passFailRule(final String field, final Rule rule, final Range namedRange, final boolean pass) {
+        final String ruleField = rule.getField();
+        if (!field.equalsIgnoreCase(ruleField)) {
+            return namedRange;
+        }
+        if (pass) {
+            return this.passRule(rule, namedRange);
+        } else {
+            return this.failRule(rule, namedRange);
+        }
+    }
+
+    private Range passRule(final Rule rule, final Range namedRange) {
+        if (rule.getCriteria().equalsIgnoreCase("<")) {
+            if (namedRange.getLow() >= rule.getValue()) {
+                namedRange.setLow(rule.getValue() - 1);
+            }
+            if (namedRange.getHigh() >= rule.getValue()) {
+                namedRange.setHigh(rule.getValue() - 1);
+            }
+            return namedRange;
+        }
+        if (namedRange.getLow() <= rule.getValue()) {
+            namedRange.setLow(rule.getValue() + 1);
+        }
+        if (namedRange.getHigh() <= rule.getValue()) {
+            namedRange.setHigh(rule.getValue() + 1);
+        }
+        return namedRange;
+    }
+
+    private Range failRule(final Rule rule, final Range namedRange) {
+        if (rule.getCriteria().equalsIgnoreCase(">")) {
+            if (namedRange.getLow() <= rule.getValue()) {
+                namedRange.setLow(rule.getValue());
+            }
+            if (namedRange.getHigh() <= rule.getValue()) {
+                namedRange.setHigh(rule.getValue());
+            }
+            return namedRange;
+        }
+        if (namedRange.getLow() >= rule.getValue()) {
+            namedRange.setLow(rule.getValue());
+        }
+        if (namedRange.getHigh() >= rule.getValue()) {
+            namedRange.setHigh(rule.getValue());
+        }
+        return namedRange;
     }
 
     private void handleEndOfLine(final Path node) {
@@ -373,7 +436,7 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
 
     @Data
     @Builder
-    private static final class Rule {
+    public static final class Rule {
 
         private String field;
         private String criteria;
@@ -383,7 +446,7 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
 
     @Data
     @Builder
-    private static final class Range {
+    public static final class Range {
 
         private int low;
         private int high;
@@ -392,12 +455,22 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
 
     @Data
     @Builder
-    private static final class Path {
+    public static final class Path {
 
         private Path parent;
         private String source;
         private List<Path> destinations;
-        private Map<String, Range> ranges = new HashMap<>();
+        private Map<String, Range> ranges;
+
+        @Override
+        public String toString() {
+            return "Path {" +
+                    "parent=" + this.parent +
+                    ", source=" + this.source +
+                    ", destinations=" + this.destinations.size() +
+                    ", ranges=" + this.ranges.size() +
+                    "}";
+        }
     }
 
     @Data
@@ -416,6 +489,5 @@ public class Year2023Day19 extends AdventOfCodeChallenge {
             this.a = Integer.parseInt(parts[2].split("=")[1]);
             this.s = Integer.parseInt(parts[3].split("=")[1]);
         }
-
     }
 }
