@@ -527,7 +527,8 @@ public class Year2023Day25 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        return String.valueOf(-1);
     }
 
     @Data

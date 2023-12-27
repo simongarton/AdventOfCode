@@ -25,6 +25,12 @@ part 1, of course. Part 2 is going to take a further 27330.794 seconds ...
 
 ## Day 24:
 
+Part 1 was nice enough : hailstones flying around in 3 dimensions, will a given pair collide within a given volume ?
+To make it manageable, part 1 was only in 2 dimensions, so was about figuring out and solving pairs of linear equations.
+
+Part 2 introduces the 3rd dimension, and for the hell of it, adds a 4th dimension, time. Given all these hailstones,
+where do you have to start throwing a rock, and in which 3d dimension, to hit all of them ? Probably math.
+
 ## Day 23: A long walk. (1/2)
 
 Route finding, A*, priority queue, yeah, yeah, done this before ... wait, you want the _longest_ distance ?
