@@ -5,15 +5,7 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 2022 wasn't too shabby though.
 
-                    1111111111222222
-           1234567890123456789012345
-    2019 : ✓✓✓✓                     
-    2020 : ✓✓✓✓✓✓✓✓✓✓✓✓✓.                    
-    2021 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓ ✓✓   .
-    2022 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓ .✓.✓✓✓.✓✓.
-    2023 : ✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓....✓..
-           1234567890123456789012345
-                    1111111111222222
+![progress](images/progress.png)
 
 ## 2023
 
