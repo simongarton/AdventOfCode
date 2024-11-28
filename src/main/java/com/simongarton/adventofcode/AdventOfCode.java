@@ -8,6 +8,7 @@ import com.simongarton.adventofcode.year2020.*;
 import com.simongarton.adventofcode.year2021.*;
 import com.simongarton.adventofcode.year2022.*;
 import com.simongarton.adventofcode.year2023.*;
+import com.simongarton.adventofcode.year2024.Year2024Day1;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +26,8 @@ public class AdventOfCode {
 //        adventOfCode.load2020();
 //        adventOfCode.load2021();
 //        adventOfCode.load2022();
-        adventOfCode.load2023();
+//        adventOfCode.load2023();
+        adventOfCode.load2024();
         adventOfCode.run();
     }
 
@@ -41,12 +43,12 @@ public class AdventOfCode {
             this.complete.get(year).put(day, outcome);
         }
 
-//        this.displayResults();
+        this.displayResults();
     }
 
     private void displayResults() {
 
-        System.out.println("");
+        System.out.println();
         System.out.println("                1111111111222222");
         System.out.println("       1234567890123456789012345");
         for (int year = 2019; year <= 2022; year++) {
@@ -178,6 +180,10 @@ public class AdventOfCode {
         this.challenges.add(new Year2023Day23());
         this.challenges.add(new Year2023Day24());
         this.challenges.add(new Year2023Day25());
+    }
+
+    private void load2024() {
+        this.challenges.add(new Year2024Day1());
     }
 
     public AdventOfCode() {
