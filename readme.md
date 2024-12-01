@@ -7,6 +7,13 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ![progress](images/progress.png)
 
+## 2024
+
+## Day 1:  Historian Hysteria. (2/2)
+
+Spent more time trying to find the IntelliJ full line completion setting - I'd already turned off Copilot - than I
+intended. Straight forward read two lists, sort, compare.
+
 ## 2023
 
 ## Day 25: Snowverload. (0/2)
