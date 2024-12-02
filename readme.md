@@ -9,7 +9,13 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
-## Day 1:  Historian Hysteria. (2/2)
+## Day 2:  Red-Nosed Reports
+
+Server crashed several times while trying to get puzzle and submit answers :rofl  
+Straight forward - suspicious, not sure what's going on here - parse data into lists, and look
+at deltas.
+
+## Day 1:  Historian Hysteria.
 
 Spent more time trying to find the IntelliJ full line completion setting to turn it off - I'd already turned off
 Copilot - than I had hoped. Straight forward read two lists, sort, compare.

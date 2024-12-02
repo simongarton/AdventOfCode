@@ -13,7 +13,7 @@ public class Sample {
         // which part to do with sample ?
         final boolean part1 = false;
 
-        final Path path = Paths.get("src/main/resources/2024/2024-Day1-sample.txt");
+        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-sample.txt", Day.DAY));
         if (part1) {
             System.out.println(CurrentChallenge.getCurrentChallenge()
                     .part1(Files.lines(path, StandardCharsets.UTF_8)
