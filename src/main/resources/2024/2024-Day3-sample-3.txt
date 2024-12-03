@@ -1,0 +1,1 @@
+amul(1,1)don't()mul(2,2)do()(mul(3,3)don't()mul(4,4)do()mul(5,5)
