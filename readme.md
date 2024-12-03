@@ -9,6 +9,13 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 3:  Mull it over
+
+Parse a string - no, wait, six strings (:facepalm) - looking for valid calculations inside garbage text.  
+Severe bruising on leg following kicking myself for not having learned regex.  
+Then got stuck on part 2 until I realised I cannot treat the strings individually. That was evil for day 3, Eric. We
+were saying day 2 was disappointingly easy ...
+
 ## Day 2:  Red-Nosed Reports
 
 Server crashed several times while trying to get puzzle and submit answers :rofl  
