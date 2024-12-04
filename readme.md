@@ -9,6 +9,18 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 4:  Ceres search
+
+Given a grid of letters, do a word search. I started off with a nice clever algorithm using objects and recursion,
+which worked perfectly with the tiny sample data, but gave me one extra for the bigger sample. After some lengthy
+investigation, I worked out I was being too clever - and my words were changing direction, which wasn't allowed. Then
+adding a limit to changing direction, I then realised I had no efficient way of trying to start from the same X twice.
+
+So I threw that all away, and an hour in, started over with string manipulation. Took 30 minutes to get the first part
+and a further 10 for the second part. Kicking myself.
+
+Good puzzle, though.
+
 ## Day 3:  Mull it over
 
 Parse a string - no, wait, six strings (:facepalm) - looking for valid calculations inside garbage text.  
