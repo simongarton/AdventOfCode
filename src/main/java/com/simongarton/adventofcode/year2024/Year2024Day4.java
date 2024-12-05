@@ -28,7 +28,55 @@ public class Year2024Day4 extends AdventOfCodeChallenge {
         this.rows = input.length;
         this.cols = input[0].length();
 
-        return String.valueOf(this.countXmasPatterns());
+        return String.valueOf(this.countXmasPatternsBruteForce());
+
+        // return String.valueOf(this.countXmasPatterns());
+    }
+
+    private int countXmasPatternsBruteForce() {
+
+        int total = 0;
+        final List<int[]> directions = List.of(
+                new int[]{-1, -1},
+                new int[]{0, -1},
+                new int[]{1, -1},
+                new int[]{-1, 0},
+                new int[]{1, 0},
+                new int[]{-1, 1},
+                new int[]{0, 1},
+                new int[]{1, 1}
+        );
+
+        for (int y = 0; y < this.rows; y++) {
+            for (int x = 0; x < this.cols; x++) {
+                for (final int[] delta : directions) {
+                    final String word = this.buildWord(x, y, delta);
+                    if (word.equalsIgnoreCase("XMAS")) {
+                        total++;
+                    }
+                }
+            }
+        }
+        return total;
+    }
+
+    private String buildWord(final int x, final int y, final int[] delta) {
+        final StringBuilder word = new StringBuilder();
+        for (int i = 0; i < 4; i++) {
+            word.append(this.safeGetChar(x + (i * delta[0]), y + (i * delta[1])));
+        }
+        return word.toString();
+    }
+
+    private String safeGetChar(final int x, final int y) {
+
+        if (x < 0 || x >= this.cols) {
+            return "-";
+        }
+        if (y < 0 || y >= this.rows) {
+            return "-";
+        }
+        return this.input[y].charAt(x) + "";
     }
 
     private int countXmasPatterns() {
