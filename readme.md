@@ -9,7 +9,16 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
-## Day 4:  Ceres search
+## Day 5: Print Queue
+
+Excellent. A list of pairs of pages, where for A|B A must go before B in any combined list; and then a series of
+combined lists, so you have to make sure all the pairs are valid. So A,B,C is valid; C,A,B is valid, but not B,A,C.
+
+Part 2 : some of them weren't valid, but could be : sort them out. I tried brute force and ran out of memory; then I
+tried building up a new list one item at a time, and that worked. My friend Rudy tried a Comparator which sounds
+way more sophisticated.
+
+## Day 4: Ceres search
 
 Given a grid of letters, do a word search. I started off with a nice clever algorithm using objects and recursion,
 which worked perfectly with the tiny sample data, but gave me one extra for the bigger sample. After some lengthy

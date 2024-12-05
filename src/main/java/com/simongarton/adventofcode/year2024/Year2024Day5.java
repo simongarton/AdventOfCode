@@ -2,6 +2,9 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class Year2024Day5 extends AdventOfCodeChallenge {
@@ -53,10 +56,45 @@ public class Year2024Day5 extends AdventOfCodeChallenge {
             index++;
         }
 
+        this.pages.values().forEach(p -> System.out.printf("%s%n", p));
+
+        // this works just fine, but the resulting graph is HUGE - 5k x 30k pixels - and of little value.
+        if (false) {
+            this.buildGraph();
+        }
+
         return index;
     }
 
+    private void buildGraph() {
+
+        final List<String> lines = new ArrayList<>();
+        lines.add("digraph {");
+        lines.add("  rankdir=\"LR\" ");
+        for (final Map.Entry<String, Page> pageEntry : this.pages.entrySet()) {
+            final String from = pageEntry.getKey();
+            for (final String to : pageEntry.getValue().before) {
+                lines.add(String.format("  %s -> %s", from, to));
+            }
+        }
+        lines.add("}");
+
+        try {
+            final BufferedWriter br = new BufferedWriter(
+                    new FileWriter(
+                            String.format("src/graphs/%s.dot", this.getClass().getSimpleName())));
+            for (final String str : lines) {
+                br.write(str + System.lineSeparator());
+            }
+            br.close();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     private int score(final String update) {
+
         final String[] numbers = update.split(",");
         final int mid = numbers.length / 2;
         return Integer.parseInt(numbers[mid]);
@@ -75,8 +113,8 @@ public class Year2024Day5 extends AdventOfCodeChallenge {
                 final Page otherPage = this.pages.get(numbers[j]);
 //                System.out.printf("%s %s %s %s%n", update, i, j, otherPage);
                 if (otherPage.checkShouldBeBefore(thisPage.number)) {
-                    System.out.printf("  failed on %s:%s because %s must go before %s%n",
-                            i, j, otherPage.number, thisPage.number);
+//                    System.out.printf("  failed on %s:%s because %s must go before %s%n",
+//                            i, j, otherPage.number, thisPage.number);
                     validUpdate = false;
                 }
             }
@@ -123,24 +161,19 @@ public class Year2024Day5 extends AdventOfCodeChallenge {
                 continue;
             }
 
-            final String[] numbers = update.split(",");
-            final List<List<String>> permutations = new ArrayList<>();
-            this.generatePermutations(numbers, 0, permutations);
+            final List<String> numbers = Arrays.asList(update.split(","));
 
-            boolean found = false;
-            for (final List<String> permutationList : permutations) {
-                final String permutation = String.join(",", permutationList);
-                final boolean valid = this.isUpdateValid(permutation);
-                if (valid) {
-                    System.out.printf("update %s should be %s%n", update, permutation);
-                    found = true;
-                    changedUpdates.add(permutation);
-                    break;
+            final List<String> workingLine = new ArrayList<>();
+            for (final String number : numbers) {
+                if (workingLine.isEmpty()) {
+                    workingLine.add(number);
+                    continue;
                 }
+                final int position = this.findValidPosition(number, workingLine);
+                workingLine.add(position, number);
             }
-            if (!found) {
-                throw new RuntimeException("broken");
-            }
+
+            changedUpdates.add(String.join(",", workingLine));
             index++;
         }
 
@@ -152,48 +185,45 @@ public class Year2024Day5 extends AdventOfCodeChallenge {
         return String.valueOf(total);
     }
 
-    void generatePermutations(final String[] array, final int start, final List<List<String>> result) {
-        if (start == array.length) {
-            final List<String> permutation = new ArrayList<>(Arrays.asList(array));
-            result.add(permutation);
-        } else {
-            for (int i = start; i < array.length; i++) {
-                this.swap(array, start, i);
-                this.generatePermutations(array, start + 1, result);
-                this.swap(array, start, i);
+    private int findValidPosition(final String number, final List<String> workingLine) {
+
+        for (int position = 0; position <= workingLine.size(); position++) {
+            final List<String> testLine = new ArrayList<>(workingLine);
+            testLine.add(position, number);
+            final String testUpdate = String.join(",", testLine);
+            if (this.isUpdateValid(testUpdate)) {
+                return position;
             }
         }
+        throw new RuntimeException("Did not find a valid position.");
     }
-
-    void swap(final String[] array, final int i, final int j) {
-        final String temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-
 
     static class Page {
 
         String number;
         List<String> before;
-        List<String> after;
 
         Page(final String number) {
             this.number = number;
             this.before = new ArrayList<>();
-            this.after = new ArrayList<>();
         }
 
         void mustGoBefore(final String other) {
             this.before.add(other);
         }
 
-        void mustGoAfter(final String other) {
-            this.after.add(other);
-        }
-
         boolean checkShouldBeBefore(final String other) {
             return this.before.contains(other);
+        }
+
+        @Override
+        public String toString() {
+
+            if (this.before.isEmpty()) {
+                return this.number + " (can go anywhere)";
+            }
+
+            return this.number + " (must go before " + String.join(",", this.before) + ")";
         }
     }
 }
