@@ -110,7 +110,7 @@ public class Year2024Day6 extends AdventOfCodeChallenge {
 
             if (this.DEBUG) {
                 this.drawCurrentMap();
-                this.refreshAndSleep(100);
+                this.refreshAndSleep(00);
             }
 
             // this value is important. Dropping it to 1000 gave me a lot of false positives,

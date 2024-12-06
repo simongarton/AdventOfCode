@@ -17,6 +17,8 @@ solution for this which took some minutes : I need to play around with optimisat
 
 Added two : but they're buggy.
 
+![Part 1](2024-06.1.png)
+
 ## Day 5: Print Queue
 
 Excellent. A list of pairs of pages, where for A|B A must go before B in any combined list; and then a series of
@@ -484,7 +486,7 @@ The first fun one this year; build up a series of stacks of crates, and then mov
 following a script provided. Part 1 moved one crate at a time, part 2 moved 3 at a time (preserving the order, so not
 the same as moving 1, three times.)
 
-![Part 2](2022-5.1.png)
+![Part 2](2022-05.1.png)
 
 https://adventofcode.com/2022/day/5
 
