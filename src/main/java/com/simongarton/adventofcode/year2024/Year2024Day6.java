@@ -3,6 +3,9 @@ package com.simongarton.adventofcode.year2024;
 import com.googlecode.lanterna.TextColor;
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Year2024Day6 extends AdventOfCodeChallenge {
 
     private static final String BREADCRUMB = "X";
@@ -22,7 +25,13 @@ public class Year2024Day6 extends AdventOfCodeChallenge {
     private int width;
     private int height;
 
-    private final boolean DEBUG = true;
+    // I am not happy with this one, it's brittle. A couple of the optimisations I have added
+    // break it, but not consistently ... checking breadcrumbs so I only place an obstacle where
+    // the guard walked works fine for part 2 but not the sample; and keeping track of vectors
+    // (position and direction) and stopping if I'm retracing my steps works with the sample, but drops
+    // one on part 2. Without either, part 2 is several minutes.
+
+    private final boolean DEBUG = false;
 
     private String map;
 
@@ -76,18 +85,37 @@ public class Year2024Day6 extends AdventOfCodeChallenge {
 
     private int solveMap() {
 
+        final Set<String> vectors = new HashSet<>();
+
         int timestamp = 0;
 
         int xs = 1; // I start here
         while (true) {
             timestamp = timestamp + 1;
 
+            // this has a significant performance impact - but drops one
+            // solution, so I can't use it.
+            if (false) {
+                final String vector = String.format("%s,%s->%s", this.guardX, this.guardY, this.guardDir);
+                if (vectors.contains(vector)) {
+                    // I have been here before with this map ...
+                    if (this.DEBUG) {
+                        this.drawCurrentMap();
+                        this.refreshAndSleep(1000);
+                    }
+                    return -1;
+                }
+                vectors.add(vector);
+            }
+
             if (this.DEBUG) {
                 this.drawCurrentMap();
                 this.refreshAndSleep(100);
             }
 
-            if (timestamp > 1000) {
+            // this value is important. Dropping it to 1000 gave me a lot of false positives,
+            // which with a 130x130 map ... is perhaps not a surprise.
+            if (timestamp > 10000) {
                 if (this.DEBUG) {
                     this.drawCurrentMap();
                     this.refreshAndSleep(1000);
@@ -204,6 +232,8 @@ public class Year2024Day6 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
+        final long start = System.currentTimeMillis();
+
         this.setup(input);
 
         final int cols = this.width;
@@ -220,13 +250,34 @@ public class Year2024Day6 extends AdventOfCodeChallenge {
 
         int blocks = 0;
 
+        // let's see where the guard will go ...
+        this.setup(input);
+        this.solveMap();
+        final Set<String> breadcrumbs = new HashSet<>();
+        for (int x = 0; x < cols; x++) {
+            for (int y = 0; y < rows; y++) {
+                if (this.getMap(x, y).equalsIgnoreCase(BREADCRUMB)) {
+                    final String breadcrumb = String.format("%s,%s", x, y);
+                    breadcrumbs.add(breadcrumb);
+                }
+            }
+        }
+
+        // lol, it looks like the guard covers about 5,593 squares of the 16,900
+        // so covers about 1/3 of the map. Smart guard.
+        // bugger, this drops one of the small sample (but is OK on part 2 ?!)
         for (int y = 0; y < rows; y++) {
-            System.out.println(y);
             for (int x = 0; x < cols; x++) {
+                final String breadcrumb = String.format("%s,%s", x, y);
+                if (!breadcrumbs.contains(breadcrumb)) {
+                    continue;
+                }
                 blocks += this.testVariation(x, y, input);
             }
         }
 
+        final long end = System.currentTimeMillis();
+        System.out.println("Solution in " + Math.round(((end - start) / 1000.0)) + " seconds.");
         return String.valueOf(blocks);
     }
 
@@ -245,7 +296,7 @@ public class Year2024Day6 extends AdventOfCodeChallenge {
             // can't block starting position
             return blocks;
         }
-        this.setMap(x, y, "O");
+        this.setMap(x, y, NEW_OBSTRUCTION);
 
         final int steps = this.solveMap();
 

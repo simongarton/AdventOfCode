@@ -15,6 +15,8 @@ Excellent. A map with obstructions, and you have to map out where a guard walks,
 involved placing additional obstructions to try and get him to walk in an infinite loop. I came up with a brute force
 solution for this which took some minutes : I need to play around with optimisations.
 
+Added two : but they're buggy.
+
 ## Day 5: Print Queue
 
 Excellent. A list of pairs of pages, where for A|B A must go before B in any combined list; and then a series of
