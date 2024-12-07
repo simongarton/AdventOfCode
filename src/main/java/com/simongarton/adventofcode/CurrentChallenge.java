@@ -1,11 +1,11 @@
 package com.simongarton.adventofcode;
 
-import com.simongarton.adventofcode.year2024.Year2024Day6;
+import com.simongarton.adventofcode.year2024.Year2024Day7;
 
 public class CurrentChallenge {
 
     public static AdventOfCodeChallenge getCurrentChallenge() {
 
-        return new Year2024Day6();
+        return new Year2024Day7();
     }
 }
