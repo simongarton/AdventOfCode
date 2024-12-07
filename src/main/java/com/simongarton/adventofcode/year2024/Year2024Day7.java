@@ -78,7 +78,6 @@ public class Year2024Day7 extends AdventOfCodeChallenge {
 
     private boolean evaluateEquation(final Equation equation, final List<String> operatorCombinations) {
 
-        System.out.println("evaluating " + equation + " " + equation.numbers);
         for (final String combination : operatorCombinations) {
             if (this.evaluateEquationWithCombination(equation, combination)) {
                 return true;
@@ -114,6 +113,8 @@ public class Year2024Day7 extends AdventOfCodeChallenge {
                 return a * b;
             case '+':
                 return a + b;
+            case '|':
+                return Long.parseLong(a + "" + b);
             default:
                 throw new RuntimeException(c + "");
         }
@@ -187,17 +188,27 @@ public class Year2024Day7 extends AdventOfCodeChallenge {
         final List<Equation> equations = this.parseEquations(input);
 
         long score = 0;
-        final List<String> operatorTypes = List.of("*", "+");
+        final List<String> operatorTypes = List.of("*", "+", "|");
         for (final Equation equation : equations) {
-            if (this.evaluateEquationVariations(equation, operatorTypes)) {
-                System.out.println(equation + " worked so adding " + equation.answer);
+            final int operatorLength = equation.numbers.size() - 1;
+            final List<String> operatorCombinations = this.generateCombinations(operatorTypes, operatorLength);
+            if (this.evaluateEquationWithExtra(equation, operatorCombinations)) {
                 score += equation.answer;
-            } else {
-                System.out.println(equation + " failed");
             }
         }
 
         return String.valueOf(score);
+    }
+
+    private boolean evaluateEquationWithExtra(final Equation equation, final List<String> operatorCombinations) {
+
+        for (final String combination : operatorCombinations) {
+            if (this.evaluateEquationWithCombination(equation, combination)) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
     static class Equation {

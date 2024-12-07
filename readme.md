@@ -9,6 +9,13 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 7: Bridge Repair
+
+A good challenge, but grumpy with myself. Take an array of numbers and some operators, and see if you can combine them
+in a way to get to an answer. For part 1 I spent far too long trying to work out how to get combinations; for part 2
+I merrily spent half an hour solving a slightly different (and much harder) question - but reviewing the challenge,
+it did say what I should have done.
+
 ## Day 6: Guard Gallivant
 
 Excellent. A map with obstructions, and you have to map out where a guard walks, following certain rules. Part 2
