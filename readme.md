@@ -13,9 +13,9 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 Excellent. A map with obstructions, and you have to map out where a guard walks, following certain rules. Part 2
 involved placing additional obstructions to try and get him to walk in an infinite loop. I came up with a brute force
-solution for this which took some minutes : I need to play around with optimisations.
-
-Added two : but they're buggy.
+solution for this which took some minutes : so came up with two optimisations (only put obstructions where the guard
+would have walked anyway; keep track of where I have been each time _and in which direction I was going_ and if I
+repeat, then I must be in an infinite loop. Now finishing in about 86 seconds.
 
 ![Part 1](2024-06.1.png)
 
