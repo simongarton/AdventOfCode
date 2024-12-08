@@ -48,64 +48,56 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
     private void addAntiNodesForFrequency(final String frequency) {
 
         System.out.println("Looking for antinodes for frequency " + frequency);
-        final List<Antenna> antennaList = this.antennas.stream().filter(a -> a.frequency.equalsIgnoreCase(frequency)).collect(Collectors.toList());
+        final List<Antenna> antennaList = this.antennas.stream()
+                .filter(a -> a.frequency.equals(frequency)) // not case sensitive !
+                .collect(Collectors.toList());
 
         System.out.println(" I have " + antennaList.size() + " antennas to check.");
         for (final Antenna antenna : antennaList) {
             System.out.println("  " + antenna);
         }
 
-        for (int x = 0; x < this.mapWidth; x++) {
-            for (int y = 0; y < this.mapHeight; y++) {
-                // is there already an antinode here ?
-                if (this.getAntiNodeForXY(x, y, frequency).isPresent()) {
+        for (final Antenna antenna1 : antennaList) {
+            for (final Antenna antenna2 : antennaList) {
+                System.out.println(" looking " + antenna1 + " with " + antenna2);
+                if (antenna1.key().equalsIgnoreCase(antenna2.key())) {
                     continue;
                 }
-                // is there going to be a node here ?
-                final List<Double> distances = new ArrayList<>();
-                for (final Antenna antenna : antennaList) {
-                    distances.add(this.pythag(x, y, antenna.x, antenna.y));
+                System.out.println(" comparing " + antenna1 + " with " + antenna2);
+                final int deltaX = antenna2.x - antenna1.x;
+                final int deltaY = antenna2.y - antenna1.y;
+                final int x = antenna2.x + deltaX;
+                final int y = antenna2.y + deltaY;
+                System.out.println("  looking at " + this.getCoordKey(x, y));
+
+                if (this.getChallengeMapLetter(x, y) == null) {
+                    System.out.println("  off map");
+                    continue;
                 }
 
-                System.out.println("testing " + this.getCoordKey(x, y) + " with " + distances);
-                for (final double d1 : distances) {
-                    for (final double d2 : distances) {
-                        if (d1 == d2) {
-                            continue;
-                        }
-                        if (d1 == (d2 * 2)) {
-                            System.out.println("found at " + this.getCoordKey(x, y) + " using " + d1 + "," + d2);
-                            final AntiNode antiNode = new AntiNode(x, y, frequency);
-                            this.antiNodes.add(antiNode);
-                            this.antiNodeMap.put(this.getCoordKey(x, y), antiNode);
-                        }
-                    }
+                final String coordKey = this.getCoordKey(x, y);
+                if (this.getAntiNodeForXY(x, y).isPresent()) {
+                    System.out.println("  node there");
+                    continue;
                 }
+                final AntiNode antiNode = new AntiNode(x, y, frequency);
+                this.antiNodes.add(antiNode);
+                this.antiNodeMap.put(coordKey, antiNode);
+                System.out.println("  creating antinode " + antiNode);
             }
         }
-
-
-    }
-
-    private Double pythag(final int x, final int y, final int x1, final int y1) {
-
-        final double pythag = Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2));
-        return Math.round(pythag * 100.0) / 100.0;
     }
 
     private String getCoordKey(final int x, final int y) {
         return x + "," + y;
     }
 
-    private Optional<AntiNode> getAntiNodeForXY(final int x, final int y, final String frequency) {
+    private Optional<AntiNode> getAntiNodeForXY(final int x, final int y) {
 
         final String coordKey = this.getCoordKey(x, y);
         if (this.antiNodeMap.containsKey(coordKey)) {
             final AntiNode antiNode = this.antiNodeMap.get(coordKey);
-            // it should never NOT match
-            if (antiNode.frequency.equalsIgnoreCase(frequency)) {
-                return Optional.of(antiNode);
-            }
+            return Optional.of(antiNode);
         }
         return Optional.empty();
     }
@@ -116,7 +108,7 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
         if (this.antennaMap.containsKey(coordKey)) {
             final Antenna antenna = this.antennaMap.get(coordKey);
             // it should never NOT match
-            if (antenna.frequency.equalsIgnoreCase(frequency)) {
+            if (antenna.frequency.equals(frequency)) {
                 return Optional.of(antenna);
             }
         }
@@ -161,7 +153,7 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
     private Antenna getOrCreateAntenna(final String frequency, final int x, final int y) {
 
         final String key = this.getCoordKey(x, y) + ":" + frequency;
-        final Optional<Antenna> optionalAntenna = this.antennas.stream().filter(a -> a.key().equalsIgnoreCase(key))
+        final Optional<Antenna> optionalAntenna = this.antennas.stream().filter(a -> a.key().equals(key))
                 .findFirst();
         if (optionalAntenna.isPresent()) {
             return optionalAntenna.get();
