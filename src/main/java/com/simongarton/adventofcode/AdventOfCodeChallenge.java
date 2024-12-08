@@ -243,4 +243,17 @@ public abstract class AdventOfCodeChallenge {
         }
         System.out.println();
     }
+
+    protected String getChallengeMapLetter(final int x, final int y) {
+
+        if (x < 0 || x >= this.mapWidth) {
+            return null;
+        }
+        if (y < 0 || y >= this.mapHeight) {
+            return null;
+        }
+        return this.map.get(y).charAt(x) + "";
+    }
+
+
 }
