@@ -17,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +37,10 @@ public abstract class AdventOfCodeChallenge {
     protected int year;
     @Getter
     protected int day;
+
+    protected List<String> map;
+    protected int mapWidth;
+    protected int mapHeight;
 
     protected TerminalScreen screen;
 
@@ -221,5 +227,20 @@ public abstract class AdventOfCodeChallenge {
         return map.substring(0, index) + replacement + map.substring(index + 1);
     }
 
+    protected void loadChallengeMap(final String[] input) {
 
+        this.mapWidth = input[0].length();
+        this.mapHeight = input.length;
+
+        this.map = new ArrayList<>();
+        this.map.addAll(Arrays.asList(input));
+    }
+
+    protected void drawChallengeMap() {
+
+        for (final String line : this.map) {
+            System.out.println(line);
+        }
+        System.out.println();
+    }
 }

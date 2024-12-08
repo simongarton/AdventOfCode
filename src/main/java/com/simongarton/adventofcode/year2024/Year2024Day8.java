@@ -6,16 +6,19 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 0: Template code";
+        return "Day 8: Resonant Collinearity";
     }
 
     @Override
     public Outcome run() {
-        return this.runChallenge(2024, 0);
+        return this.runChallenge(2024, 8);
     }
 
     @Override
     public String part1(final String[] input) {
+
+        this.loadChallengeMap(input);
+        this.drawChallengeMap();
         return null;
     }
 

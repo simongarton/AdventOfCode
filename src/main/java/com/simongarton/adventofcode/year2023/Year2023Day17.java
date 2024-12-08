@@ -261,6 +261,7 @@ public class Year2023Day17 extends AdventOfCodeChallenge {
         }
     }
 
+    @Override
     protected void drawString(final String s, final int x, final int y, final TextColor background) {
 
         for (int i = 0; i < s.length(); i++) {
