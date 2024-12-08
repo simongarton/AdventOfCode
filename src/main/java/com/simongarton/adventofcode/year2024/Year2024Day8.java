@@ -7,9 +7,7 @@ import java.util.stream.Collectors;
 
 public class Year2024Day8 extends AdventOfCodeChallenge {
 
-    private ArrayList<Antenna> antennas;
     private Map<String, Antenna> antennaMap;
-    private ArrayList<AntiNode> antiNodes;
     private Map<String, AntiNode> antiNodeMap;
 
     @Override
@@ -31,13 +29,23 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
             this.addAntiNodesForFrequency(frequency);
         }
 
-        for (final AntiNode antiNode : this.antiNodes) {
+        for (final AntiNode antiNode : this.getAntiNodes()) {
             this.putChallengeMapLetter(antiNode.x, antiNode.y, "#");
         }
 
         this.drawChallengeMap();
 
-        return String.valueOf(this.antiNodes.size());
+        return String.valueOf(this.getAntiNodes().size());
+    }
+
+    private List<Antenna> getAntennas() {
+
+        return List.copyOf(this.antennaMap.values());
+    }
+
+    private List<AntiNode> getAntiNodes() {
+
+        return List.copyOf(this.antiNodeMap.values());
     }
 
     private List<String> setup(final String[] input) {
@@ -46,7 +54,6 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
         this.loadAntennas();
         final List<String> frequencies = this.findFrequencies();
 
-        this.antiNodes = new ArrayList<>();
         this.antiNodeMap = new HashMap<>();
 
         return frequencies;
@@ -54,7 +61,7 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
 
     private void addAntiNodesForFrequency(final String frequency) {
 
-        final List<Antenna> antennaList = this.antennas.stream()
+        final List<Antenna> antennaList = this.getAntennas().stream()
                 .filter(a -> a.frequency.equals(frequency)) // not case sensitive !
                 .collect(Collectors.toList());
 
@@ -86,7 +93,6 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
         final String coordKey = this.getCoordKey(x, y);
         if (this.getAntiNodeForXY(x, y).isEmpty()) {
             final AntiNode antiNode = new AntiNode(x, y, frequency);
-            this.antiNodes.add(antiNode);
             this.antiNodeMap.put(coordKey, antiNode);
         }
     }
@@ -98,7 +104,7 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
 
     private void addAntiNodesForResonantFrequency(final String frequency) {
 
-        final List<Antenna> antennaList = this.antennas.stream()
+        final List<Antenna> antennaList = this.getAntennas().stream()
                 .filter(a -> a.frequency.equals(frequency)) // not case sensitive !
                 .collect(Collectors.toList());
 
@@ -139,17 +145,15 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
 
     private List<String> findFrequencies() {
 
-        final List<String> frequencyList = this.antennas.stream()
+        return this.getAntennas().stream()
                 .map(a -> a.frequency)
                 .distinct()
                 .sorted(Comparator.naturalOrder())
                 .collect(Collectors.toList());
-        return frequencyList;
     }
 
     private void loadAntennas() {
 
-        this.antennas = new ArrayList<>();
         this.antennaMap = new HashMap<>();
 
         for (int y = 0; y < this.mapHeight; y++) {
@@ -158,24 +162,23 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
                 if (frequency.equalsIgnoreCase(".")) {
                     continue;
                 }
-                final Antenna antenna = this.getOrCreateAntenna(frequency, x, y);
+                this.getOrCreateAntenna(frequency, x, y);
             }
         }
 
-        System.out.printf("Found %s antennas.%n", this.antennas.size());
+        System.out.printf("Found %s antennas.%n", this.getAntennas().size());
     }
 
     private Antenna getOrCreateAntenna(final String frequency, final int x, final int y) {
 
         final String key = this.getCoordKey(x, y) + ":" + frequency;
-        final Optional<Antenna> optionalAntenna = this.antennas.stream().filter(a -> a.key().equals(key))
+        final Optional<Antenna> optionalAntenna = this.getAntennas().stream().filter(a -> a.key().equals(key))
                 .findFirst();
         if (optionalAntenna.isPresent()) {
             return optionalAntenna.get();
         }
 
         final Antenna antenna = new Antenna(x, y, frequency);
-        this.antennas.add(antenna);
         final String coordKey = this.getCoordKey(x, y);
         this.antennaMap.put(coordKey, antenna);
         return antenna;
@@ -190,13 +193,13 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
             this.addAntiNodesForResonantFrequency(frequency);
         }
 
-        for (final AntiNode antiNode : this.antiNodes) {
+        for (final AntiNode antiNode : this.getAntiNodes()) {
             this.putChallengeMapLetter(antiNode.x, antiNode.y, "#");
         }
 
         this.drawChallengeMap();
 
-        return String.valueOf(this.antiNodes.size());
+        return String.valueOf(this.getAntiNodes().size());
     }
 
     static class Antenna {
@@ -242,5 +245,4 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
             return this.key();
         }
     }
-
 }

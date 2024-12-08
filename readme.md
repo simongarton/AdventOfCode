@@ -9,6 +9,13 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 8: Resonant Collinearity
+
+A good challenge, but grumpy with myself. Again. 2024 is heading downhill at this point ... part 1 took 2:16, but part 2
+only took 2 minutes. It's another map, with antennas, and you have to figure out where they interact ... I managed to
+go down three different wrong paths before eventually figuring it all out, at which point part 1 was a simplified
+version of part 2.
+
 ## Day 7: Bridge Repair
 
 A good challenge, but grumpy with myself. Take an array of numbers and some operators, and see if you can combine them
