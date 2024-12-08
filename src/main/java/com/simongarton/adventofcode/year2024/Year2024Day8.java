@@ -92,6 +92,57 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
         return x + "," + y;
     }
 
+    private void addAntiNodesForResonantFrequency(final String frequency) {
+
+        System.out.println("Looking for antinodes for frequency " + frequency);
+        final List<Antenna> antennaList = this.antennas.stream()
+                .filter(a -> a.frequency.equals(frequency)) // not case sensitive !
+                .collect(Collectors.toList());
+
+        System.out.println(" I have " + antennaList.size() + " antennas to check.");
+        for (final Antenna antenna : antennaList) {
+            System.out.println("  " + antenna);
+        }
+
+        for (final Antenna antenna1 : antennaList) {
+            for (final Antenna antenna2 : antennaList) {
+                System.out.println(" looking " + antenna1 + " with " + antenna2);
+                if (antenna1.key().equalsIgnoreCase(antenna2.key())) {
+                    continue;
+                }
+                System.out.println(" comparing " + antenna1 + " with " + antenna2);
+                final int deltaX = antenna2.x - antenna1.x;
+                final int deltaY = antenna2.y - antenna1.y;
+                int x = antenna2.x;
+                int y = antenna2.y;
+
+                while (true) {
+                    System.out.println("  looking at " + this.getCoordKey(x, y));
+
+                    if (this.getChallengeMapLetter(x, y) == null) {
+                        System.out.println("  off map");
+                        break;
+                    }
+
+                    final String coordKey = this.getCoordKey(x, y);
+                    if (this.getAntiNodeForXY(x, y).isPresent()) {
+                        System.out.println("  node there");
+                        x = x + deltaX;
+                        y = y + deltaY;
+                        continue;
+                    }
+                    final AntiNode antiNode = new AntiNode(x, y, frequency);
+                    this.antiNodes.add(antiNode);
+                    this.antiNodeMap.put(coordKey, antiNode);
+                    System.out.println("  creating antinode " + antiNode);
+
+                    x = x + deltaX;
+                    y = y + deltaY;
+                }
+            }
+        }
+    }
+
     private Optional<AntiNode> getAntiNodeForXY(final int x, final int y) {
 
         final String coordKey = this.getCoordKey(x, y);
@@ -169,7 +220,25 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.loadChallengeMap(input);
+        this.drawChallengeMap();
+        this.loadAntennas();
+        final List<String> frequencies = this.findFrequencies();
+
+        this.antiNodes = new ArrayList<>();
+        this.antiNodeMap = new HashMap<>();
+        for (final String frequency : frequencies) {
+            this.addAntiNodesForResonantFrequency(frequency);
+        }
+
+        for (final AntiNode antiNode : this.antiNodes) {
+            this.putChallengeMapLetter(antiNode.x, antiNode.y, "#");
+        }
+
+        this.drawChallengeMap();
+
+        return String.valueOf(this.antiNodes.size());
     }
 
     static class Antenna {
