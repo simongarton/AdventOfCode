@@ -38,7 +38,7 @@ public abstract class AdventOfCodeChallenge {
     @Getter
     protected int day;
 
-    protected List<String> map;
+    protected List<String> challengeMap;
     protected int mapWidth;
     protected int mapHeight;
 
@@ -232,13 +232,13 @@ public abstract class AdventOfCodeChallenge {
         this.mapWidth = input[0].length();
         this.mapHeight = input.length;
 
-        this.map = new ArrayList<>();
-        this.map.addAll(Arrays.asList(input));
+        this.challengeMap = new ArrayList<>();
+        this.challengeMap.addAll(Arrays.asList(input));
     }
 
     protected void drawChallengeMap() {
 
-        for (final String line : this.map) {
+        for (final String line : this.challengeMap) {
             System.out.println(line);
         }
         System.out.println();
@@ -252,7 +252,22 @@ public abstract class AdventOfCodeChallenge {
         if (y < 0 || y >= this.mapHeight) {
             return null;
         }
-        return this.map.get(y).charAt(x) + "";
+        return this.challengeMap.get(y).charAt(x) + "";
+    }
+
+    protected void putChallengeMapLetter(final int x, final int y, final String letter) {
+
+        if (x < 0 || x >= this.mapWidth) {
+            throw new RuntimeException("Out of bounds for x=" + x);
+        }
+        if (y < 0 || y >= this.mapHeight) {
+            throw new RuntimeException("Out of bounds for y=" + y);
+
+        }
+        final String existingRow = this.challengeMap.get(y);
+        final String newRow = existingRow.substring(0, x) + letter + existingRow.substring(x + 1);
+        this.challengeMap.add(y, newRow);
+        this.challengeMap.remove(y + 1);
     }
 
 
