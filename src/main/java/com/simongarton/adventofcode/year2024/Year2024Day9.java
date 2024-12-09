@@ -7,14 +7,16 @@ import java.util.List;
 
 public class Year2024Day9 extends AdventOfCodeChallenge {
 
+    private int[] ids;
+
     @Override
     public String title() {
-        return "Day 0: Template code";
+        return "Day 9: Disk Fragmenter";
     }
 
     @Override
     public Outcome run() {
-        return this.runChallenge(2024, 0);
+        return this.runChallenge(2024, 9);
     }
 
     @Override
@@ -27,7 +29,9 @@ public class Year2024Day9 extends AdventOfCodeChallenge {
         // do I need to keep track of this ?
 
         final String disk = this.parseLine(input[0]);
-        //System.out.println();
+        System.out.println(disk.length());
+        this.ids = new int[disk.length()];
+        
         final String shuffledDisk = this.shuffleDisk(disk);
         //System.out.println(shuffledDisk);
         final long checkSum = this.checksum(shuffledDisk);
@@ -54,18 +58,11 @@ public class Year2024Day9 extends AdventOfCodeChallenge {
         int backPointer = disk.length() - 1;
 
         String shuffled = disk;
-        final String last = "";
 
         while (true) {
-            //System.out.println("\ntop ");
-            if (!last.equalsIgnoreCase(shuffled)) {
-//                System.out.println(shuffled);
-            }
-//            last = shuffled;
 
             final String front = disk.charAt(frontPointer) + "";
             if (!front.equalsIgnoreCase(".")) {
-                //System.out.println("nothing for front '" + front + "' at " + frontPointer);
                 frontPointer++;
                 // now I'm checking to see if I have hit the back pointer
                 // if I drop out when I hit it ... I get a too low answer
@@ -76,10 +73,7 @@ public class Year2024Day9 extends AdventOfCodeChallenge {
                 continue;
             }
             final String back = disk.charAt(backPointer) + "";
-//            System.out.println("got '" + front + "' for front at " + frontPointer + " and '" + back + "' at " + backPointer);
             shuffled = this.swapCharacter(shuffled, front, frontPointer, back, backPointer);
-            //System.out.println("swapped");
-            //System.out.println(shuffled);
             frontPointer++;
             backPointer--;
 

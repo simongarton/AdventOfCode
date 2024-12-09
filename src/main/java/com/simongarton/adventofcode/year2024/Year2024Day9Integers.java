@@ -1,0 +1,125 @@
+package com.simongarton.adventofcode.year2024;
+
+import com.simongarton.adventofcode.AdventOfCodeChallenge;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Year2024Day9Integers extends AdventOfCodeChallenge {
+
+    @Override
+    public String title() {
+        return "Day 9: Disk Fragmenter";
+    }
+
+    @Override
+    public Outcome run() {
+        return this.runChallenge(2024, 9);
+    }
+
+    @Override
+    public String part1(final String[] input) {
+
+        // 90779541117
+        // too low
+
+        // the first few examples didn't go into double digits.
+        // do I need to keep track of this ?
+
+        final List<Integer> disk = this.parseLine(input[0]);
+        System.out.println(disk.size());
+        this.displayDisk(disk);
+
+        final List<Integer> shuffledDisk = this.shuffleDisk(disk);
+        System.out.println(shuffledDisk.size());
+        this.displayDisk(shuffledDisk);
+
+        final long checkSum = this.checksum(shuffledDisk);
+        return String.valueOf(checkSum);
+    }
+
+    private void displayDisk(final List<Integer> shuffledDisk) {
+
+        final StringBuilder line = new StringBuilder();
+        for (final Integer i : shuffledDisk) {
+            if (i < 0) {
+                line.append(".");
+            } else {
+                line.append(i % 10);
+            }
+        }
+        System.out.println(line);
+    }
+
+    private long checksum(final List<Integer> shuffledDisk) {
+
+        long total = 0;
+        for (int i = 0; i < shuffledDisk.size(); i++) {
+
+            final Integer value = shuffledDisk.get(i);
+            if (value >= 0) {
+                total = total + ((long) i * shuffledDisk.get(i));
+            }
+
+        }
+        return total;
+    }
+
+    private List<Integer> shuffleDisk(final List<Integer> disk) {
+
+        int frontPointer = 0;
+        int backPointer = disk.size() - 1;
+        while (frontPointer <= backPointer) {
+            final Integer frontValue = disk.get(frontPointer);
+            if (frontValue >= 0) {
+                frontPointer++;
+                continue;
+            }
+            final int valueToMove = disk.get(backPointer);
+            disk.add(frontPointer, valueToMove);
+            disk.remove(frontPointer + 1);
+            disk.add(backPointer, -1);
+            disk.remove(backPointer + 1);
+            backPointer--;
+            while (disk.get(backPointer) < 0) {
+                backPointer--;
+            }
+        }
+        return disk;
+    }
+
+    private List<Integer> parseLine(final String diskMap) {
+
+        final List<Integer> disk = new ArrayList<>();
+
+        int fileId = 0;
+
+        for (int index = 0; index < diskMap.length(); index += 2) {
+            final String file = diskMap.charAt(index) + "";
+            final int fileUsage = Integer.parseInt(file);
+            for (int sub = 0; sub < fileUsage; sub++) {
+                disk.add(fileId);
+            }
+
+            fileId++;
+
+            // have I got to the end of the file ?
+            if (index == diskMap.length() - 1) {
+                break;
+            }
+            // how many emptys do  I have ?
+            final String empty = diskMap.charAt(index + 1) + "";
+            final int emptyUsage = Integer.parseInt(empty);
+            for (int sub = 0; sub < emptyUsage; sub++) {
+                disk.add(-1);
+            }
+
+        }
+        return disk;
+    }
+
+    @Override
+    public String part2(final String[] input) {
+        return null;
+    }
+}
