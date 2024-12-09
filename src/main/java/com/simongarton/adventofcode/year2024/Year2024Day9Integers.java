@@ -7,6 +7,8 @@ import java.util.List;
 
 public class Year2024Day9Integers extends AdventOfCodeChallenge {
 
+    private List<FileRecord> fileRecords;
+
     @Override
     public String title() {
         return "Day 9: Disk Fragmenter";
@@ -20,18 +22,12 @@ public class Year2024Day9Integers extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        // 90779541117
-        // too low
-
-        // the first few examples didn't go into double digits.
-        // do I need to keep track of this ?
-
         final List<Integer> disk = this.parseLine(input[0]);
-        System.out.println(disk.size());
+        //System.out.println(.out.println(disk.size());
         this.displayDisk(disk);
 
         final List<Integer> shuffledDisk = this.shuffleDisk(disk);
-        System.out.println(shuffledDisk.size());
+        //System.out.println(.out.println(shuffledDisk.size());
         this.displayDisk(shuffledDisk);
 
         final long checkSum = this.checksum(shuffledDisk);
@@ -48,7 +44,7 @@ public class Year2024Day9Integers extends AdventOfCodeChallenge {
                 line.append(i % 10);
             }
         }
-        System.out.println(line);
+        //System.out.println(.out.println(line);
     }
 
     private long checksum(final List<Integer> shuffledDisk) {
@@ -91,20 +87,24 @@ public class Year2024Day9Integers extends AdventOfCodeChallenge {
     private List<Integer> parseLine(final String diskMap) {
 
         final List<Integer> disk = new ArrayList<>();
+        this.fileRecords = new ArrayList<>();
 
         int fileId = 0;
+        int actualIndex = 0;
 
         for (int index = 0; index < diskMap.length(); index += 2) {
             final String file = diskMap.charAt(index) + "";
             final int fileUsage = Integer.parseInt(file);
+            final int thisFileStartIndex = actualIndex;
             for (int sub = 0; sub < fileUsage; sub++) {
                 disk.add(fileId);
+                actualIndex++;
             }
-
-            fileId++;
 
             // have I got to the end of the file ?
             if (index == diskMap.length() - 1) {
+                final FileRecord fileRecord = new FileRecord(fileId, thisFileStartIndex, fileUsage, 0);
+                this.fileRecords.add(fileRecord);
                 break;
             }
             // how many emptys do  I have ?
@@ -112,14 +112,107 @@ public class Year2024Day9Integers extends AdventOfCodeChallenge {
             final int emptyUsage = Integer.parseInt(empty);
             for (int sub = 0; sub < emptyUsage; sub++) {
                 disk.add(-1);
+                actualIndex++;
             }
 
+            final FileRecord fileRecord = new FileRecord(fileId, thisFileStartIndex, fileUsage, emptyUsage);
+            this.fileRecords.add(fileRecord);
+            fileId++;
         }
         return disk;
     }
 
+    private List<Integer> shuffleDiskAsFiles(final List<Integer> disk) {
+
+        // don't move the first file, because it will already be there
+        for (int fileRecordIndex = this.fileRecords.size() - 1; fileRecordIndex > 0; fileRecordIndex--) {
+            //System.out.println(.out.println();
+            this.displayDisk(disk);
+            final FileRecord fileRecord = this.fileRecords.get(fileRecordIndex);
+
+            //System.out.println(.out.println(fileRecordIndex + " : looking for a place to put " + fileRecord);
+
+            final Integer position = this.findBlankPosition(fileRecord.fileLength, disk);
+            if (position == null) {
+                //System.out.println(.out.println("  nothing");
+                continue;
+            }
+
+            if (position > fileRecord.startIndex) {
+                //System.out.println(.out.println("  better to stay");
+                continue;
+            }
+
+            //System.out.println(.out.println("  moving to " + position);
+
+            for (int charToMove = 0; charToMove < fileRecord.fileLength; charToMove++) {
+                disk.add(position + charToMove, fileRecord.fileId);
+                disk.remove(position + 1 + charToMove);
+                disk.add(fileRecord.startIndex + charToMove, -1);
+                disk.remove(fileRecord.startIndex + 1 + charToMove);
+            }
+
+            this.displayDisk(disk);
+        }
+
+        return disk;
+    }
+
+    private Integer findBlankPosition(final int fileLength, final List<Integer> disk) {
+
+        int startIndex = 0;
+        int blankCount = 0;
+        for (int index = 0; index < disk.size(); index++) {
+            if (disk.get(index) >= 0) {
+                startIndex = index + 1;
+                blankCount = 0;
+                continue;
+            }
+            blankCount++;
+            if (blankCount == fileLength) {
+                return startIndex;
+            }
+        }
+        return null;
+    }
+
+
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        final List<Integer> disk = this.parseLine(input[0]);
+        //System.out.println(.out.println(disk.size());
+        this.displayDisk(disk);
+
+        for (final FileRecord fileRecord : this.fileRecords) {
+            //System.out.println(.out.println(fileRecord);
+        }
+
+        final List<Integer> shuffledDisk = this.shuffleDiskAsFiles(disk);
+        //System.out.println(.out.println(shuffledDisk.size());
+        this.displayDisk(shuffledDisk);
+
+        final long checkSum = this.checksum(shuffledDisk);
+        return String.valueOf(checkSum);
+    }
+
+    static class FileRecord {
+
+        int fileId;
+        int startIndex;
+        int fileLength;
+        int spaceLength;
+
+        public FileRecord(final int fileId, final int startIndex, final int fileLength, final int spaceLength) {
+            this.fileId = fileId;
+            this.startIndex = startIndex;
+            this.fileLength = fileLength;
+            this.spaceLength = spaceLength;
+        }
+
+        @Override
+        public String toString() {
+            return this.fileId + " " + this.startIndex + "+" + this.fileLength + "[" + this.spaceLength + "]";
+        }
     }
 }
