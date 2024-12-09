@@ -1,6 +1,6 @@
 package com.simongarton.adventofcode.year2024;
 
-import com.simongarton.adventofcode.Day;
+import com.simongarton.adventofcode.CurrentChallenge;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -17,7 +17,7 @@ class Year2024Day3RegexTest {
     void sample_1() throws IOException {
 
         // given
-        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-sample-1.txt", Day.DAY));
+        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-sample-1.txt", CurrentChallenge.DAY));
         final String[] input = (Files.lines(path, StandardCharsets.UTF_8).toArray(String[]::new));
         final Year2024Day3Regex year2024Day3Regex = new Year2024Day3Regex();
 
@@ -32,7 +32,7 @@ class Year2024Day3RegexTest {
     void part1() throws IOException {
 
         // given
-        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-1.txt", Day.DAY));
+        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-1.txt", CurrentChallenge.DAY));
         final String[] input = (Files.lines(path, StandardCharsets.UTF_8).toArray(String[]::new));
         final Year2024Day3Regex year2024Day3Regex = new Year2024Day3Regex();
 
@@ -47,7 +47,7 @@ class Year2024Day3RegexTest {
     void sample_2() throws IOException {
 
         // given
-        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-sample-2.txt", Day.DAY));
+        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-sample-2.txt", CurrentChallenge.DAY));
         final String[] input = (Files.lines(path, StandardCharsets.UTF_8).toArray(String[]::new));
         final Year2024Day3Regex year2024Day3Regex = new Year2024Day3Regex();
 
@@ -62,7 +62,7 @@ class Year2024Day3RegexTest {
     void sample_3() throws IOException {
 
         // given
-        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-sample-3.txt", Day.DAY));
+        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-sample-3.txt", CurrentChallenge.DAY));
         final String[] input = (Files.lines(path, StandardCharsets.UTF_8).toArray(String[]::new));
         final Year2024Day3Regex year2024Day3Regex = new Year2024Day3Regex();
 
@@ -77,7 +77,7 @@ class Year2024Day3RegexTest {
     void part2() throws IOException {
 
         // given
-        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-1.txt", Day.DAY));
+        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-1.txt", CurrentChallenge.DAY));
         final String[] input = (Files.lines(path, StandardCharsets.UTF_8).toArray(String[]::new));
         final Year2024Day3Regex year2024Day3Regex = new Year2024Day3Regex();
 
