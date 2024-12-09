@@ -41,8 +41,10 @@ public class Year2024Day1 extends AdventOfCodeChallenge {
 
     private void readData(final String[] input) {
 
+        this.one.clear();
+        this.two.clear();
+
         for (final String line : input) {
-            System.out.println(line);
             final String cleanedLine = this.cleanLine(line);
             final String[] tokens = cleanedLine.split(" ");
             this.one.add(Integer.parseInt(tokens[0]));

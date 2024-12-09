@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 public class Year2024Day8 extends AdventOfCodeChallenge {
 
+    private static final boolean DEBUG = false;
+
     private Map<String, Antenna> antennaMap;
     private Map<String, AntiNode> antiNodeMap;
 
@@ -33,7 +35,9 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
             this.putChallengeMapLetter(antiNode.x, antiNode.y, "#");
         }
 
-        this.drawChallengeMap();
+        if (DEBUG) {
+            this.drawChallengeMap();
+        }
 
         return String.valueOf(this.getAntiNodes().size());
     }
@@ -50,7 +54,9 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
 
     private List<String> setup(final String[] input) {
         this.loadChallengeMap(input);
-        this.drawChallengeMap();
+        if (DEBUG) {
+            this.drawChallengeMap();
+        }
         this.loadAntennas();
         final List<String> frequencies = this.findFrequencies();
 
@@ -64,10 +70,6 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
         final List<Antenna> antennaList = this.getAntennas().stream()
                 .filter(a -> a.frequency.equals(frequency)) // not case sensitive !
                 .collect(Collectors.toList());
-
-        for (final Antenna antenna : antennaList) {
-            System.out.println("  " + antenna);
-        }
 
         for (final Antenna antenna1 : antennaList) {
             for (final Antenna antenna2 : antennaList) {
@@ -119,8 +121,8 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
                 int y = antenna2.y;
 
                 while (true) {
+                    // off map
                     if (this.getChallengeMapLetter(x, y) == null) {
-                        System.out.println("  off map");
                         break;
                     }
 
@@ -165,8 +167,6 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
                 this.getOrCreateAntenna(frequency, x, y);
             }
         }
-
-        System.out.printf("Found %s antennas.%n", this.getAntennas().size());
     }
 
     private Antenna getOrCreateAntenna(final String frequency, final int x, final int y) {
@@ -197,7 +197,9 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
             this.putChallengeMapLetter(antiNode.x, antiNode.y, "#");
         }
 
-        this.drawChallengeMap();
+        if (DEBUG) {
+            this.drawChallengeMap();
+        }
 
         return String.valueOf(this.getAntiNodes().size());
     }

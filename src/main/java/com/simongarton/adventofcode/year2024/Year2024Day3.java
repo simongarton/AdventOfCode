@@ -42,8 +42,6 @@ public class Year2024Day3 extends AdventOfCodeChallenge {
 
         // I should be able to do this with a regex. If I could do it with a regex.
 
-        System.out.println("\nnew line\n");
-
         final List<String> valid = List.of("m", "u", "l", "(", ")", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ",");
 
         final List<String> calculations = new ArrayList<>();
@@ -53,13 +51,11 @@ public class Year2024Day3 extends AdventOfCodeChallenge {
             if (specialRules) {
                 if (i < (s.length() - 4) && s.substring(i, i + 4).equalsIgnoreCase("do()")) {
                     this.currentlyEnabled = true;
-                    System.out.println("enabled");
                     i += 3;
                     continue;
                 }
                 if (i < (s.length() - 7) && s.substring(i, i + 7).equalsIgnoreCase("don't()")) {
                     this.currentlyEnabled = false;
-                    System.out.println("disabled");
                     i += 6;
                     continue;
                 }
@@ -69,8 +65,6 @@ public class Year2024Day3 extends AdventOfCodeChallenge {
             final String lastLetter = currentCalculation.length() > 0 ?
                     "" + currentCalculation.charAt(currentCalculation.length() - 1) :
                     "";
-//            System.out.printf("%s: letter %s lastLetter %s currentCalculation %s calculations %s %n",
-//                    i, letter, lastLetter, currentCalculation.toString(), calculations.size());
 
             if (!valid.contains(letter)) {
                 currentCalculation = new StringBuilder();
@@ -127,10 +121,7 @@ public class Year2024Day3 extends AdventOfCodeChallenge {
                 if (this.isNumeric(lastLetter)) {
                     currentCalculation.append(letter);
                     if (this.currentlyEnabled) {
-                        System.out.println(i + ": " + currentCalculation);
                         calculations.add(currentCalculation.toString());
-                    } else {
-                        System.out.println(i + ": " + "-- " + currentCalculation);
                     }
 
                 }

@@ -274,11 +274,9 @@ public class Year2024Day6 extends AdventOfCodeChallenge {
                 }
                 blocks += this.testVariation(x, y, input);
             }
-            System.out.printf("completed %s of %s, found %s%n", y, rows, blocks);
         }
 
         final long end = System.currentTimeMillis();
-        System.out.println("Solution in " + Math.round(((end - start) / 1000.0)) + " seconds.");
         return String.valueOf(blocks);
     }
 

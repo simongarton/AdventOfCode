@@ -145,8 +145,6 @@ public class Year2024Day9 extends AdventOfCodeChallenge {
                 continue;
             }
 
-            //System.out.println(.out.println("  moving to " + position);
-
             for (int charToMove = 0; charToMove < fileRecord.fileLength; charToMove++) {
                 disk.add(position + charToMove, fileRecord.fileId);
                 disk.remove(position + 1 + charToMove);

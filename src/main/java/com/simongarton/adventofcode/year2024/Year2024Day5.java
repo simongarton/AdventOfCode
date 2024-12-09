@@ -28,11 +28,9 @@ public class Year2024Day5 extends AdventOfCodeChallenge {
 
         index++;
         int total = 0;
-        System.out.printf("found %s pages%n%n", this.pages.size());
         while (index < input.length) {
             final String update = input[index];
             final boolean valid = this.isUpdateValid(update);
-            System.out.printf("update %s valid ? %s%n", update, valid);
             index++;
             if (valid) {
                 total += this.score(update);
@@ -55,8 +53,6 @@ public class Year2024Day5 extends AdventOfCodeChallenge {
             this.processRule(line);
             index++;
         }
-
-        this.pages.values().forEach(p -> System.out.printf("%s%n", p));
 
         // this works just fine, but the resulting graph is HUGE - 5k x 30k pixels - and of little value.
         if (false) {
@@ -151,12 +147,10 @@ public class Year2024Day5 extends AdventOfCodeChallenge {
         final List<String> changedUpdates = new ArrayList<>();
 
         index++;
-        System.out.printf("found %s pages%n%n", this.pages.size());
         while (index < input.length) {
             final String update = input[index];
 
             if (this.isUpdateValid(update)) {
-                System.out.printf("update %s is already valid%n", update);
                 index++;
                 continue;
             }
