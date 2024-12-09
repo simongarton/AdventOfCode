@@ -9,6 +9,26 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 9: Disk Fragmenter
+
+... mutter mutter, grumble grumble ... whose idea was this, anyway ?
+
+In reflection, a really good puzzle. With probably the most devious "omission" I have seen from an AdventOfCode :
+the examples carefully dealt with ids going no further than 9, packing them into a string, where the ID takes up
+one character. So what happens when you get 10 ?
+
+First attempt worked fine (hah !) on the small and big samples, but fell over with a nasty range check error on
+the real data. Looking at it, I did notice that I had overlaps ... I'm tracking two pointers, one moving up a string
+and one moving down, and they had overlapped. Handling it explicitly gave me an answer, but it was too low.
+
+In frustration I turned to Python which is far better for string manipulation. But same problem.
+
+So I went and had dinner. And came back and thought ... I haven't really handled those file IDs properly. Instead
+of treating it as a string, let's treat it as an array of integers. And low and behold (a) the right answer in (b)
+about 25% of the code I had previously used.
+
+Harrumph.
+
 ## Day 8: Resonant Collinearity
 
 A good challenge, but grumpy with myself. Again. 2024 is heading downhill at this point ... part 1 took 2:16, but part 2

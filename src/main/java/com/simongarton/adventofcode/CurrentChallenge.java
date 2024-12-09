@@ -1,6 +1,6 @@
 package com.simongarton.adventofcode;
 
-import com.simongarton.adventofcode.year2024.Year2024Day9Integers;
+import com.simongarton.adventofcode.year2024.Year2024Day9;
 
 public class CurrentChallenge {
 
@@ -8,6 +8,6 @@ public class CurrentChallenge {
 
     public static AdventOfCodeChallenge getCurrentChallenge() {
 
-        return new Year2024Day9Integers();
+        return new Year2024Day9();
     }
 }

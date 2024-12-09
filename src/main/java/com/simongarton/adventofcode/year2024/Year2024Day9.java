@@ -7,7 +7,9 @@ import java.util.List;
 
 public class Year2024Day9 extends AdventOfCodeChallenge {
 
-    private int[] ids;
+    private static final boolean DEBUG = false;
+
+    private List<FileRecord> fileRecords;
 
     @Override
     public String title() {
@@ -22,142 +24,197 @@ public class Year2024Day9 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        // 90779541117
-        // too low
+        final List<Integer> disk = this.parseLine(input[0]);
+        this.displayDisk(disk);
 
-        // the first few examples didn't go into double digits.
-        // do I need to keep track of this ?
+        final List<Integer> shuffledDisk = this.shuffleDisk(disk);
+        this.displayDisk(shuffledDisk);
 
-        final String disk = this.parseLine(input[0]);
-        System.out.println(disk.length());
-        this.ids = new int[disk.length()];
-        
-        final String shuffledDisk = this.shuffleDisk(disk);
-        //System.out.println(shuffledDisk);
         final long checkSum = this.checksum(shuffledDisk);
         return String.valueOf(checkSum);
     }
 
-    private long checksum(final String shuffledDisk) {
+    private void displayDisk(final List<Integer> shuffledDisk) {
+
+        if (!DEBUG) {
+            return;
+        }
+
+        final StringBuilder line = new StringBuilder();
+        for (final Integer i : shuffledDisk) {
+            if (i < 0) {
+                line.append(".");
+            } else {
+                line.append(i % 10);
+            }
+        }
+
+        System.out.println(line);
+    }
+
+    private long checksum(final List<Integer> shuffledDisk) {
 
         long total = 0;
-        for (int i = 0; i < shuffledDisk.length(); i++) {
+        for (int i = 0; i < shuffledDisk.size(); i++) {
 
-            if ((shuffledDisk.charAt(i) + "").equalsIgnoreCase(".")) {
-                break;
+            final Integer value = shuffledDisk.get(i);
+            if (value >= 0) {
+                total = total + ((long) i * shuffledDisk.get(i));
             }
-            total = total + (i * Long.parseLong(shuffledDisk.charAt(i) + ""));
 
         }
         return total;
     }
 
-    private String shuffleDisk(final String disk) {
+    private List<Integer> shuffleDisk(final List<Integer> disk) {
 
         int frontPointer = 0;
-        int backPointer = disk.length() - 1;
-
-        String shuffled = disk;
-
-        while (true) {
-
-            final String front = disk.charAt(frontPointer) + "";
-            if (!front.equalsIgnoreCase(".")) {
+        int backPointer = disk.size() - 1;
+        while (frontPointer <= backPointer) {
+            final Integer frontValue = disk.get(frontPointer);
+            if (frontValue >= 0) {
                 frontPointer++;
-                // now I'm checking to see if I have hit the back pointer
-                // if I drop out when I hit it ... I get a too low answer
-                // if I don't check it, I overlap
-                if (frontPointer == backPointer) {
-                    break;
-                }
                 continue;
             }
-            final String back = disk.charAt(backPointer) + "";
-            shuffled = this.swapCharacter(shuffled, front, frontPointer, back, backPointer);
-            frontPointer++;
+            final int valueToMove = disk.get(backPointer);
+            disk.add(frontPointer, valueToMove);
+            disk.remove(frontPointer + 1);
+            disk.add(backPointer, -1);
+            disk.remove(backPointer + 1);
             backPointer--;
-
-            if (backPointer == frontPointer) {
-                break;
-            }
-            while (true) {
-                final String scan = disk.charAt(backPointer) + "";
-                if (!scan.equalsIgnoreCase(".")) {
-                    break;
-                }
+            while (disk.get(backPointer) < 0) {
                 backPointer--;
             }
         }
-
-        return shuffled;
+        return disk;
     }
 
-    public String swapCharacter(final String shuffled,
-                                final String front,
-                                final int frontPointer,
-                                final String back,
-                                final int backPointer) {
+    private List<Integer> parseLine(final String diskMap) {
 
-        final int length = shuffled.length();
+        final List<Integer> disk = new ArrayList<>();
+        this.fileRecords = new ArrayList<>();
 
-        final StringBuilder builder = new StringBuilder();
-        // the good start
-        builder.append(shuffled, 0, frontPointer);
-        // now pull in the last character
-        builder.append(back);
-        // now skip the "." we're replacing, and bring in the rest
-        builder.append(shuffled, frontPointer + 1, backPointer);
-        // and a final "."
-        builder.append(".".repeat(length - backPointer));
-        return builder.toString();
-    }
-
-    private String parseLine(final String diskMap) {
-
-        final List<FileThing> fileThings = new ArrayList<>();
-
-        int fileThingIndex = 0;
-        final StringBuilder disk = new StringBuilder();
+        int fileId = 0;
+        int actualIndex = 0;
 
         for (int index = 0; index < diskMap.length(); index += 2) {
             final String file = diskMap.charAt(index) + "";
             final int fileUsage = Integer.parseInt(file);
-            disk.append(String.valueOf(fileThingIndex).repeat(fileUsage));
+            final int thisFileStartIndex = actualIndex;
+            for (int sub = 0; sub < fileUsage; sub++) {
+                disk.add(fileId);
+                actualIndex++;
+            }
 
-            fileThingIndex++;
-
+            // have I got to the end of the file ?
             if (index == diskMap.length() - 1) {
+                final FileRecord fileRecord = new FileRecord(fileId, thisFileStartIndex, fileUsage, 0);
+                this.fileRecords.add(fileRecord);
                 break;
             }
+            // how many emptys do  I have ?
             final String empty = diskMap.charAt(index + 1) + "";
             final int emptyUsage = Integer.parseInt(empty);
-            disk.append(".".repeat(emptyUsage));
+            for (int sub = 0; sub < emptyUsage; sub++) {
+                disk.add(-1);
+                actualIndex++;
+            }
 
-            final FileThing fileThing = new FileThing(fileThingIndex, fileUsage, emptyUsage);
-            fileThings.add(fileThing);
-
+            final FileRecord fileRecord = new FileRecord(fileId, thisFileStartIndex, fileUsage, emptyUsage);
+            this.fileRecords.add(fileRecord);
+            fileId++;
         }
-        //System.out.println(disk.toString());
-        return disk.toString();
+        return disk;
+    }
 
+    private List<Integer> shuffleDiskAsFiles(final List<Integer> disk) {
+
+        // don't move the first file, because it will already be there
+        for (int fileRecordIndex = this.fileRecords.size() - 1; fileRecordIndex > 0; fileRecordIndex--) {
+            this.displayDisk(disk);
+            final FileRecord fileRecord = this.fileRecords.get(fileRecordIndex);
+
+            final Integer position = this.findBlankPosition(fileRecord.fileLength, disk);
+            // can't find a position to put it
+            if (position == null) {
+                continue;
+            }
+
+            // oooh .. better to stay where I am !
+            if (position > fileRecord.startIndex) {
+                continue;
+            }
+
+            //System.out.println(.out.println("  moving to " + position);
+
+            for (int charToMove = 0; charToMove < fileRecord.fileLength; charToMove++) {
+                disk.add(position + charToMove, fileRecord.fileId);
+                disk.remove(position + 1 + charToMove);
+                disk.add(fileRecord.startIndex + charToMove, -1);
+                disk.remove(fileRecord.startIndex + 1 + charToMove);
+            }
+
+            this.displayDisk(disk);
+        }
+
+        return disk;
+    }
+
+    private Integer findBlankPosition(final int fileLength, final List<Integer> disk) {
+
+        int startIndex = 0;
+        int blankCount = 0;
+        for (int index = 0; index < disk.size(); index++) {
+            if (disk.get(index) >= 0) {
+                startIndex = index + 1;
+                blankCount = 0;
+                continue;
+            }
+            blankCount++;
+            if (blankCount == fileLength) {
+                return startIndex;
+            }
+        }
+        return null;
     }
 
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        final List<Integer> disk = this.parseLine(input[0]);
+        this.displayDisk(disk);
+
+        if (DEBUG) {
+            for (final FileRecord fileRecord : this.fileRecords) {
+                System.out.println(fileRecord);
+            }
+        }
+
+        final List<Integer> shuffledDisk = this.shuffleDiskAsFiles(disk);
+        this.displayDisk(shuffledDisk);
+
+        final long checkSum = this.checksum(shuffledDisk);
+        return String.valueOf(checkSum);
     }
 
-    static class FileThing {
+    static class FileRecord {
 
-        int id;
-        int length;
-        int trailingSpaces;
+        int fileId;
+        int startIndex;
+        int fileLength;
+        int spaceLength;
 
-        public FileThing(final int id, final int length, final int empty) {
-            this.id = this.id;
-            this.length = this.length;
-            this.trailingSpaces = empty;
+        public FileRecord(final int fileId, final int startIndex, final int fileLength, final int spaceLength) {
+            this.fileId = fileId;
+            this.startIndex = startIndex;
+            this.fileLength = fileLength;
+            this.spaceLength = spaceLength;
+        }
+
+        @Override
+        public String toString() {
+            return this.fileId + " " + this.startIndex + "+" + this.fileLength + "[" + this.spaceLength + "]";
         }
     }
 }
