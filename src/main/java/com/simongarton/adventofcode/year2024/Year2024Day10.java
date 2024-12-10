@@ -50,7 +50,7 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
         }
 
         int score = 0;
-        for (Map.Entry<Coord, List<Coord>> entry : this.trailHeadScores.entrySet()) {
+        for (final Map.Entry<Coord, List<Coord>> entry : this.trailHeadScores.entrySet()) {
             score += entry.getValue().size();
         }
         return String.valueOf(score);
@@ -98,8 +98,8 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
             }
             if (!alreadyDone) {
                 nineCoords.add(trail.getLastCoord());
-                this.successfulTrails.add(trail);
             }
+            this.successfulTrails.add(trail);
             // not sure I need this
             this.trailHeadScores.put(trail.getFirstCoord(), nineCoords);
             trail.active = false;
@@ -205,7 +205,34 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.loadChallengeMap(input);
+        final List<Coord> trailHeads = this.findTrailHeads();
+
+        this.trails = new ArrayList<>();
+        this.trailHeadScores = new HashMap<>();
+        for (final Coord c : trailHeads) {
+            final Trail trail = new Trail(this.trails.size(), c);
+            this.trails.add(trail);
+            this.trailHeadScores.put(c, new ArrayList<>());
+        }
+
+        System.out.println("Trailheads = " + trailHeads.size());
+
+        this.successfulTrails = new ArrayList<>();
+        while (this.somethingHappened()) {
+            System.out.println("tick");
+        }
+
+        for (final Trail trail : this.successfulTrails) {
+            System.out.println(trail.breadCrumb());
+        }
+
+        int score = 0;
+        for (final Map.Entry<Coord, List<Coord>> entry : this.trailHeadScores.entrySet()) {
+            score += entry.getValue().size();
+        }
+        return String.valueOf(this.successfulTrails.size());
     }
 
     static class Coord {
