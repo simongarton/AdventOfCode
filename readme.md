@@ -9,6 +9,11 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 10: Hoof it
+
+OK, now I'm happier again. A map and all about gradients : find paths from low to high, that are orthogonal and always
+go up. Took about 1:15 for the first part and 30 seconds for the second part as I'd already got the info I wanted.
+
 ## Day 9: Disk Fragmenter
 
 ... mutter mutter, grumble grumble ... whose idea was this, anyway ?

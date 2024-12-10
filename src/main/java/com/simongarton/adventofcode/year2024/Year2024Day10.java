@@ -38,15 +38,8 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
             this.trailHeadScores.put(c, new ArrayList<>());
         }
 
-        System.out.println("Trailheads = " + trailHeads.size());
-
         this.successfulTrails = new ArrayList<>();
         while (this.somethingHappened()) {
-            System.out.println("tick");
-        }
-
-        for (final Trail trail : this.successfulTrails) {
-            System.out.println(trail.breadCrumb());
         }
 
         int score = 0;
@@ -62,19 +55,11 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
         while (somethingHappened) {
             somethingHappened = false;
             final List<Trail> trailsToTest = this.trails.stream().filter(t -> t.active).collect(Collectors.toList());
-            System.out.println("\ntesting " + trailsToTest.size() + " trails ...");
             for (final Trail trail : trailsToTest) {
-                System.out.println("  looking at " + trail);
-                if (!trail.active) {
-                    System.out.println("  not active.");
+                if (!trail.active || this.trailGotThere(trail)) {
                     continue;
                 }
-                if (this.trailGotThere(trail)) {
-                    continue;
-                }
-                if (!this.trailCanMove(trail)) {
-                    System.out.println("  could not move.");
-                }
+                this.moveHiker(trail);
                 somethingHappened = true;
             }
         }
@@ -85,9 +70,7 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
     private boolean trailGotThere(final Trail trail) {
 
         if (trail.height == 9) {
-            System.out.println("    " + trail + " got there !");
 
-            // do I have one yet ?
             final List<Coord> nineCoords = this.trailHeadScores.get(trail.getFirstCoord());
 
             boolean alreadyDone = false;
@@ -108,23 +91,17 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
         return false;
     }
 
-    private int countActiveTrails() {
-
-        return (int) this.trails.stream().filter(t -> t.active).count();
-    }
-
-    private boolean trailCanMove(final Trail trail) {
+    private void moveHiker(final Trail trail) {
 
         final Coord coord = trail.getLastCoord();
         final List<Coord> availableCoords = this.getAvailableCoords(trail.height, coord);
         if (availableCoords.isEmpty()) {
             trail.active = false;
-            return false;
+            return;
 
         }
         this.updateTrails(trail, availableCoords);
 
-        return true;
     }
 
     private void updateTrails(final Trail trail, final List<Coord> availableCoords) {
@@ -136,7 +113,6 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
         if (availableCoords.size() == 1) {
             trail.height = trail.height + 1;
             trail.coords.add(availableCoords.get(0));
-            System.out.println("    continuing on with trail " + trail);
             return;
         }
 
@@ -145,7 +121,6 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
             newTrail = this.cloneTrail(trail);
             newTrail.height = trail.height + 1;
             newTrail.coords.add(c);
-            System.out.println("    Cloned trail " + trail + " to " + newTrail);
         }
         trail.active = false;
     }
@@ -217,21 +192,10 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
             this.trailHeadScores.put(c, new ArrayList<>());
         }
 
-        System.out.println("Trailheads = " + trailHeads.size());
-
         this.successfulTrails = new ArrayList<>();
         while (this.somethingHappened()) {
-            System.out.println("tick");
         }
 
-        for (final Trail trail : this.successfulTrails) {
-            System.out.println(trail.breadCrumb());
-        }
-
-        int score = 0;
-        for (final Map.Entry<Coord, List<Coord>> entry : this.trailHeadScores.entrySet()) {
-            score += entry.getValue().size();
-        }
         return String.valueOf(this.successfulTrails.size());
     }
 
