@@ -86,7 +86,6 @@ public class Year2024Day5 extends AdventOfCodeChallenge {
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     private int score(final String update) {

@@ -2,17 +2,19 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Year2024Day10 extends AdventOfCodeChallenge {
 
     private List<Trail> trails;
     private List<Trail> successfulTrails;
-    private Map<Coord, List<Coord>> trailHeadScores; // from 0 -> [9]
+    private Map<Coord, List<Coord>> trailHeadScores;
+
+    private static final boolean DEBUG = false;
 
     @Override
     public String title() {
@@ -27,6 +29,21 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
+        this.buildMap(input);
+
+        if (DEBUG) {
+            this.dumpTrails(this.successfulTrails);
+        }
+
+        int score = 0;
+        for (final Map.Entry<Coord, List<Coord>> entry : this.trailHeadScores.entrySet()) {
+            score += entry.getValue().size();
+        }
+        return String.valueOf(score);
+    }
+
+    private void buildMap(final String[] input) {
+
         this.loadChallengeMap(input);
         final List<Coord> trailHeads = this.findTrailHeads();
 
@@ -39,17 +56,31 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
         }
 
         this.successfulTrails = new ArrayList<>();
-        while (this.somethingHappened()) {
-        }
-
-        int score = 0;
-        for (final Map.Entry<Coord, List<Coord>> entry : this.trailHeadScores.entrySet()) {
-            score += entry.getValue().size();
-        }
-        return String.valueOf(score);
+        this.hikeAround();
     }
 
-    private boolean somethingHappened() {
+    private void dumpTrails(final List<Trail> successfulTrails) {
+
+        successfulTrails.sort(Comparator.comparing(this::getSortOrder));
+
+        try {
+            final BufferedWriter br = new BufferedWriter(
+                    new FileWriter("temp/trails.txt"));
+            for (final Trail trail : successfulTrails) {
+                br.write(trail.breadCrumb() + System.lineSeparator());
+            }
+            br.close();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private String getSortOrder(final Trail trail) {
+        return trail.coords.get(0).y + "," + trail.coords.get(0).x;
+    }
+
+    private void hikeAround() {
 
         boolean somethingHappened = true;
         while (somethingHappened) {
@@ -63,8 +94,6 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
                 somethingHappened = true;
             }
         }
-
-        return false;
     }
 
     private boolean trailGotThere(final Trail trail) {
@@ -83,8 +112,6 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
                 nineCoords.add(trail.getLastCoord());
             }
             this.successfulTrails.add(trail);
-            // not sure I need this
-            this.trailHeadScores.put(trail.getFirstCoord(), nineCoords);
             trail.active = false;
             return true;
         }
@@ -181,20 +208,7 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
-        this.loadChallengeMap(input);
-        final List<Coord> trailHeads = this.findTrailHeads();
-
-        this.trails = new ArrayList<>();
-        this.trailHeadScores = new HashMap<>();
-        for (final Coord c : trailHeads) {
-            final Trail trail = new Trail(this.trails.size(), c);
-            this.trails.add(trail);
-            this.trailHeadScores.put(c, new ArrayList<>());
-        }
-
-        this.successfulTrails = new ArrayList<>();
-        while (this.somethingHappened()) {
-        }
+        this.buildMap(input);
 
         return String.valueOf(this.successfulTrails.size());
     }
