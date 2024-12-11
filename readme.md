@@ -19,7 +19,7 @@ the second approach - split the original list into individual numbers and take i
 fell over a step later ... and that was the clue, recursion would be my friend. And of course,
 having done this challenge for 6 years now, if you recurse, you're probably going to need to short
 cut with memoisation. Wrote the code, ran it, and it finished instantly. Oh bugger, it crashed, I
-thought. Nope, right answer in <smug_mode> 85 seconds </smug_mode>.
+thought. Nope, right answer in <smug_mode> 85 milliseconds </smug_mode>.
 
 ## Day 10: Hoof it
 
