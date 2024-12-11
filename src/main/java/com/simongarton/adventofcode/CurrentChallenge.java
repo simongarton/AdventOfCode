@@ -1,13 +1,13 @@
 package com.simongarton.adventofcode;
 
-import com.simongarton.adventofcode.year2024.Year2024Day10;
+import com.simongarton.adventofcode.year2024.Year2024Day11;
 
 public class CurrentChallenge {
 
-    public static String DAY = "Day10";
+    public static String DAY = "Day11";
 
     public static AdventOfCodeChallenge getCurrentChallenge() {
 
-        return new Year2024Day10();
+        return new Year2024Day11();
     }
 }
