@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 public class Year2024Day11 extends AdventOfCodeChallenge {
 
     private final Map<String, Long> memo = new HashMap<>();
+    private List<String> nodes;
+    private long tests = 0;
+    private long cacheHits = 0;
 
     private static final boolean DEBUG = false;
 
@@ -95,6 +98,8 @@ public class Year2024Day11 extends AdventOfCodeChallenge {
         // basically my key needs to be levelX-ValueY and my value should be the size of the list that would result from it.
         // I have to start top down ... but we'll do it recursively and memoize it for speed.
 
+        this.nodes = new ArrayList<>();
+
         final List<Long> stones = this.parseStones(input[0]);
         long total = 0;
         final int blinks = 75;
@@ -102,14 +107,52 @@ public class Year2024Day11 extends AdventOfCodeChallenge {
             total += this.recursiveDepth(stone, 0, blinks);
         }
 
+        if (DEBUG) {
+            this.dumpNodesAsGraph();
+            System.out.println("tested " + this.tests + " and cache hits " + this.cacheHits);
+        }
+
         return String.valueOf(total);
+    }
+
+    private void dumpNodesAsGraph() {
+
+        final List<String> lines = new ArrayList<>();
+        lines.add("digraph {");
+        lines.add("rankdir=\"LR\"");
+        lines.addAll(this.nodes);
+        lines.add("}");
+
+        this.dumpGraphToFile(String.format("src/graphs/%s.dot", this.getClass().getSimpleName()), lines);
+
     }
 
     private long recursiveDepth(final Long stone, final int level, final int blinks) {
 
+        this.tests++;
         final String key = level + ":" + stone;
+
         if (this.memo.containsKey(key)) {
+            this.cacheHits++;
             return this.memo.get(key);
+        }
+
+        if (DEBUG && (level < blinks)) {
+            for (final Long next : this.blinkStone(stone)) {
+                final String nextKey = (level + 1) + ":" + next;
+                if (!this.memo.containsKey("\"" + nextKey + "\"")) {
+                    this.nodes.add("\"" + key + "\"" + "->" + "\"" + nextKey + "\"");
+                }
+            }
+
+            final String simpleKey = "\"" + key + "\" [style=filled color=wheat label=\"\"]";
+            if (this.memo.containsKey(key)) {
+                final String extra = " [style=filled color=green label=\"\"] ";
+                this.nodes.add("\"" + key + "\"" + extra);
+                this.nodes.remove(simpleKey);
+            } else {
+                this.nodes.add(simpleKey);
+            }
         }
 
         if (level == blinks) {

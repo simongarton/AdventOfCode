@@ -12,6 +12,8 @@ import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import com.simongarton.adventofcode.exceptions.InvalidSetupException;
 import lombok.Getter;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -270,5 +272,16 @@ public abstract class AdventOfCodeChallenge {
         this.challengeMap.remove(y + 1);
     }
 
+    protected void dumpGraphToFile(final String filename, final List<String> lines) {
 
+        try {
+            final BufferedWriter br = new BufferedWriter(new FileWriter(filename));
+            for (final String str : lines) {
+                br.write(str + System.lineSeparator());
+            }
+            br.close();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

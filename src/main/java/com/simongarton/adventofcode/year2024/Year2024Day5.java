@@ -2,9 +2,6 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 public class Year2024Day5 extends AdventOfCodeChallenge {
@@ -75,17 +72,8 @@ public class Year2024Day5 extends AdventOfCodeChallenge {
         }
         lines.add("}");
 
-        try {
-            final BufferedWriter br = new BufferedWriter(
-                    new FileWriter(
-                            String.format("src/graphs/%s.dot", this.getClass().getSimpleName())));
-            for (final String str : lines) {
-                br.write(str + System.lineSeparator());
-            }
-            br.close();
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.dumpGraphToFile(String.format("src/graphs/%s.dot", this.getClass().getSimpleName()), lines);
+
     }
 
     private int score(final String update) {

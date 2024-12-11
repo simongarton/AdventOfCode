@@ -21,6 +21,10 @@ having done this challenge for 6 years now, if you recurse, you're probably goin
 cut with memoisation. Wrote the code, ran it, and it finished instantly. Oh bugger, it crashed, I
 thought. Nope, right answer in <smug_mode> 85 milliseconds </smug_mode>.
 
+This is an example at 10 levels - part two was 75 - showing the cache hits in green.
+
+![Part 2](2024-11.2-level-10.png)
+
 ## Day 10: Hoof it
 
 OK, now I'm happier again. A map and all about gradients : find paths from low to high, that are orthogonal and always
