@@ -9,6 +9,18 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 11: Plutonian pebbles.
+
+Loved it ! Take a list of numbers, and iterate with different rules : only 3 rules, but
+crucially one of them will split the number into two. Which means exponential growth.
+
+Part 1 was quick, part 2 I knew was going to be painful ... the first approach worked,
+the second approach - split the original list into individual numbers and take it from there -
+fell over a step later ... and that was the clue, recursion would be my friend. And of course,
+having done this challenge for 6 years now, if you recurse, you're probably going to need to short
+cut with memoisation. Wrote the code, ran it, and it finished instantly. Oh bugger, it crashed, I
+thought. Nope, right answer in <smug_mode> 85 seconds </smug_mode>.
+
 ## Day 10: Hoof it
 
 OK, now I'm happier again. A map and all about gradients : find paths from low to high, that are orthogonal and always

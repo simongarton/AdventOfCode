@@ -8,7 +8,8 @@ import com.simongarton.adventofcode.year2020.*;
 import com.simongarton.adventofcode.year2021.*;
 import com.simongarton.adventofcode.year2022.*;
 import com.simongarton.adventofcode.year2023.*;
-import com.simongarton.adventofcode.year2024.*;
+import com.simongarton.adventofcode.year2024.Year2024Day10;
+import com.simongarton.adventofcode.year2024.Year2024Day11;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -183,16 +184,17 @@ public class AdventOfCode {
     }
 
     private void load2024() {
-        this.challenges.add(new Year2024Day1());
-        this.challenges.add(new Year2024Day2());
-        this.challenges.add(new Year2024Day3());
-        this.challenges.add(new Year2024Day4());
-        this.challenges.add(new Year2024Day5());
-        this.challenges.add(new Year2024Day6());
-        this.challenges.add(new Year2024Day7());
-        this.challenges.add(new Year2024Day8());
-        this.challenges.add(new Year2024Day9());
+//        this.challenges.add(new Year2024Day1());
+//        this.challenges.add(new Year2024Day2());
+//        this.challenges.add(new Year2024Day3());
+//        this.challenges.add(new Year2024Day4());
+//        this.challenges.add(new Year2024Day5());
+//        this.challenges.add(new Year2024Day6());
+//        this.challenges.add(new Year2024Day7());
+//        this.challenges.add(new Year2024Day8());
+//        this.challenges.add(new Year2024Day9());
         this.challenges.add(new Year2024Day10());
+        this.challenges.add(new Year2024Day11());
     }
 
     public AdventOfCode() {
