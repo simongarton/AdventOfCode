@@ -10,6 +10,7 @@ import com.simongarton.adventofcode.year2022.*;
 import com.simongarton.adventofcode.year2023.*;
 import com.simongarton.adventofcode.year2024.Year2024Day10;
 import com.simongarton.adventofcode.year2024.Year2024Day11;
+import com.simongarton.adventofcode.year2024.Year2024Day12;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -195,6 +196,7 @@ public class AdventOfCode {
 //        this.challenges.add(new Year2024Day9());
         this.challenges.add(new Year2024Day10());
         this.challenges.add(new Year2024Day11());
+        this.challenges.add(new Year2024Day12());
     }
 
     public AdventOfCode() {
