@@ -9,7 +9,21 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
-## Day 11: Plutonian pebbles.
+## Day 12: Garden Groups
+
+Really enjoying this now. This was a 2d map of gardens identified by letters, and you have
+to work out the contiguous area of each patch - including worrying about ponds inside islands
+inside lakes etc. Came up with a nice little flood-fill approach ... which when tidying this up
+I think it's not actually as efficient as it could be - but it worked.
+
+Part 2 - the next 1 1/2 hours - is calculating the perimeter of the shapes BUT straight sides
+are always length one. This had some nasty gotchas - inside the smallest letter C you can build
+is an empty space that has 3 sides, in 3 different directions - and I had to write code
+to print it out to see what was going on. 5 sample files.
+
+![Part 2](2024-Day12-reverse-terrain.png)
+
+## Day 11: Plutonian pebbles
 
 Loved it ! Take a list of numbers, and iterate with different rules : only 3 rules, but
 crucially one of them will split the number into two. Which means exponential growth.

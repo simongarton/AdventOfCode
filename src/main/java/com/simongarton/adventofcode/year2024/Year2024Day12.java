@@ -2,15 +2,26 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class Year2024Day12 extends AdventOfCodeChallenge {
 
-    List<Region> regions;
+    private static final boolean DEBUG = true;
+
+    private List<Region> regions;
 
     @Override
     public String title() {
-        return "Day 12: Template code";
+        return "Day 12: Garden Groups";
     }
 
     @Override
@@ -24,7 +35,6 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
         this.buildRegions(input);
         this.regions.forEach(this::calculatePerimeter);
 
-        this.regions.forEach(System.out::println);
         return String.valueOf(this.regions.stream().mapToInt(Region::price).sum());
     }
 
@@ -32,24 +42,21 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
 
         int perimeter = 0;
         for (final Coord c : region.coords) {
-            String letter = this.getChallengeMapLetter(c.x - 1, c.y);
-            if (letter == null || !(letter.equalsIgnoreCase(region.plant))) {
-                perimeter++;
-            }
-            letter = this.getChallengeMapLetter(c.x + 1, c.y);
-            if (letter == null || !(letter.equalsIgnoreCase(region.plant))) {
-                perimeter++;
-            }
-            letter = this.getChallengeMapLetter(c.x, c.y - 1);
-            if (letter == null || !(letter.equalsIgnoreCase(region.plant))) {
-                perimeter++;
-            }
-            letter = this.getChallengeMapLetter(c.x, c.y + 1);
-            if (letter == null || !(letter.equalsIgnoreCase(region.plant))) {
-                perimeter++;
-            }
+            perimeter += this.checkPerimeter(c.x - 1, c.y, region);
+            perimeter += this.checkPerimeter(c.x + 1, c.y, region);
+            perimeter += this.checkPerimeter(c.x, c.y - 1, region);
+            perimeter += this.checkPerimeter(c.x, c.y + 1, region);
         }
         region.perimeter = perimeter;
+    }
+
+    private int checkPerimeter(final int x, final int y, final Region region) {
+
+        final String letter = this.getChallengeMapLetter(x, y);
+        if (letter == null || !(letter.equalsIgnoreCase(region.plant))) {
+            return 1;
+        }
+        return 0;
     }
 
     private void buildRegions(final String[] input) {
@@ -73,11 +80,11 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
     private void growRegion(final Coord c, final Region region) {
 
         this.recursivelyExpand(c, region);
-
     }
 
     private void recursivelyExpand(final Coord c, final Region region) {
 
+        // I now think this is buggy - well it could be better - but it gave me the right answer
         Coord next = new Coord(c.x - 1, c.y);
         while (this.expandRegion(next, region)) {
             this.recursivelyExpand(next, region);
@@ -113,6 +120,7 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
     }
 
     private boolean regionAt(final Coord c) {
+
         for (final Region region : this.regions) {
             if (region.containsCoord(c)) {
                 return true;
@@ -122,6 +130,7 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
     }
 
     private Region getOrCreateRegion(final String letter, final Coord coord) {
+
         for (final Region region : this.regions) {
             if (region.containsCoord(coord)) {
                 return region;
@@ -130,71 +139,166 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
         final Region region = new Region(letter, coord);
         this.regions.add(region);
         return region;
-
     }
 
     @Override
     public String part2(final String[] input) {
 
-        // 918577 too high
-
         this.buildRegions(input);
         this.regions.forEach(this::calculatePerimeter);
         this.regions.forEach(this::calculateSides);
 
-        this.regions.forEach(System.out::println);
+        if (DEBUG) {
+            this.paintMap("2024-Day12.png");
+        }
+
         return String.valueOf(this.regions.stream().mapToInt(Region::expensivePrice).sum());
 
     }
 
-    private void calculateSides(final Region region) {
+    private void paintMap(final String filename) {
 
-        // for every coord, calculate it's valid neighbours - not off the map, not the same letter
-        // record it with it's coord. We can have more than one with the same coord
-        // also record it's direction.
-        // then loop over them, counting each one. if I touch another on one side, only count the first
-        // i need to count the corner one twice.
+        final int delta = 8;
+
+        final BufferedImage bufferedImage = new BufferedImage(
+                this.mapWidth * delta,
+                this.mapHeight * delta,
+                TYPE_INT_RGB);
+        final Graphics2D graphics2D = bufferedImage.createGraphics();
+        this.clearBackground(graphics2D, delta);
+
+        final OptionalInt optMaxArea = this.regions.stream().mapToInt(Region::area).max();
+        if (optMaxArea.isEmpty()) {
+            throw new RuntimeException();
+        }
+        final int maxArea = optMaxArea.getAsInt();
+
+        final List<Double> normalisedHeights = new ArrayList<>();
+        for (final Region region : this.regions) {
+            normalisedHeights.add(1.0 * region.area() / maxArea);
+        }
+
+        int regionIndex = 0;
+        for (final Region region : this.regions) {
+            graphics2D.setPaint(this.getColorForHeight(normalisedHeights.get(regionIndex++)));
+            for (final Coord c : region.coords) {
+                graphics2D.fillRect(c.x * delta, c.y * delta, delta, delta);
+            }
+        }
+
+        graphics2D.setPaint(Color.BLACK);
+
+        for (final Region region : this.regions) {
+            for (final Coord c : region.coords) {
+                final int x1 = c.x * delta;
+                final int y1 = c.y * delta;
+                final int x2 = (c.x + 1) * delta;
+                final int y2 = (c.y + 1) * delta;
+                if (region.hasNeighbour(c.x, c.y - 1)) {
+                    graphics2D.drawLine(x1, y1, x2, y1);
+                }
+                if (region.hasNeighbour(c.x, c.y + 1)) {
+                    graphics2D.drawLine(x1, y2, x2, y2);
+                }
+                if (region.hasNeighbour(c.x + 1, c.y)) {
+                    graphics2D.drawLine(x2, y1, x2, y2);
+                }
+                if (region.hasNeighbour(c.x - 1, c.y)) {
+                    graphics2D.drawLine(x1, y1, x1, y2);
+                }
+            }
+        }
+
+        // draw the bottom * right borders, because integers.
+        final int x1 = 0;
+        final int y1 = 0;
+        final int x2 = -1 + (this.mapWidth) * delta;
+        final int y2 = -1 + (this.mapHeight) * delta;
+
+        graphics2D.drawLine(x2, y1, x2, y2);
+        graphics2D.drawLine(x1, y2, x2, y2);
+
+        try {
+            ImageIO.write(bufferedImage, "PNG", new File(filename));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        graphics2D.dispose();
+    }
+
+    private Paint getShadedGrayColorForHeight(final Double height) {
+
+        return this.interpolateColor(Color.BLACK, Color.WHITE, height);
+    }
+
+    private Paint getShadedBlueGreenColorForHeight(final Double height) {
+        return this.interpolateColor(new Color(0, 0, 50), new Color(0, 255, 0), height);
+    }
+
+    private Color getColorForHeight(final double originalHeight) {
+
+        final double height = 1.0 - originalHeight;
+
+        if (height < 0.3) {
+            // Low altitude (blue for water)
+            return this.interpolateColor(Color.BLUE, Color.GREEN, height / 0.3);
+        } else if (height < 0.6) {
+            // Plains (green)
+            return this.interpolateColor(Color.GREEN, new Color(139, 69, 19), (height - 0.3) / 0.3);
+        } else {
+            // Hills and mountains (brown to white)
+            return this.interpolateColor(new Color(139, 69, 19), Color.WHITE, (height - 0.6) / 0.4);
+        }
+    }
+
+    private Color interpolateColor(final Color c1, final Color c2, final double t) {
+
+        final int red = (int) (c1.getRed() * (1 - t) + c2.getRed() * t);
+        final int green = (int) (c1.getGreen() * (1 - t) + c2.getGreen() * t);
+        final int blue = (int) (c1.getBlue() * (1 - t) + c2.getBlue() * t);
+        return new Color(red, green, blue);
+    }
+
+    private Paint randomColor() {
+
+        final Random random = new Random();
+        return new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+    }
+
+    private void clearBackground(final Graphics2D graphics2D, final int delta) {
+
+        graphics2D.setPaint(Color.BLACK);
+        graphics2D.fillRect(0, 0, this.mapWidth * delta, this.mapHeight * delta);
+    }
+
+
+    private void calculateSides(final Region region) {
 
         for (final Coord c : region.coords) {
             this.addNeighbours(c, region);
         }
 
-        //System.out.println("Region " + region + " has " + region.neighbours.size() + " neighbours");
-        //region.neighbours.forEach(System.out::println);
-
-        // all the neighbours will start in group -1
-        // for each neighbour, check all the others.
-        // if it touches any of them, and they are not -1, join to that group
-        // if not, make another group
         boolean changedAny;
         int groupsSetOnRegion = 0;
         while (true) {
             changedAny = false;
-//            System.out.println();
             for (final Neighbour firstNeighbour : region.neighbours) {
-                // if I have a group, I've been done
                 if (firstNeighbour.group >= 0) {
-                    //System.out.println("  already done " + firstNeighbour);
                     continue;
                 }
 
-                //System.out.println("  checking " + firstNeighbour);
                 int touchedGroup = -1;
                 String touchedDirection = "";
                 for (final Neighbour secondNeighbour : region.neighbours) {
                     if (secondNeighbour.toString().equalsIgnoreCase(firstNeighbour.toString())) {
-                        //System.out.println("    self " + secondNeighbour);
                         continue;
                     }
                     if (!secondNeighbour.touches(firstNeighbour)) {
-                        //System.out.println("    no touch " + secondNeighbour);
                         continue;
                     }
-                    //System.out.println("    maybe " + secondNeighbour);
                     if (secondNeighbour.group == -1) {
                         continue;
                     }
-                    //System.out.println("    found sorted " + secondNeighbour);
                     touchedGroup = secondNeighbour.group;
                     touchedDirection = secondNeighbour.direction;
                     final boolean sameDirection = this.isSameDirection(firstNeighbour.direction, touchedDirection);
@@ -203,7 +307,6 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
                     }
                 }
                 if (touchedGroup > -1) {
-                    // I think it has to to be the same direction
                     final boolean sameDirection = this.isSameDirection(firstNeighbour.direction, touchedDirection);
                     if (sameDirection) {
                         firstNeighbour.group = touchedGroup;
@@ -212,26 +315,18 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
                 }
             }
 
-            // if I didnt change any, then I need to pick the first -1 and set it to
-            // the next group, and check to see if I have set them all
             if (!changedAny) {
-                //System.out.println("  looking for non sorted");
                 final Optional<Neighbour> firstNonSortedNeighbour = region.neighbours.stream().filter(n -> n.group == -1).findFirst();
                 if (firstNonSortedNeighbour.isEmpty()) {
-                    // I must have done them all ?
-                    //System.out.println("    done all ?!");
                     break;
                 }
                 firstNonSortedNeighbour.get().group = groupsSetOnRegion;
-                //System.out.println("    set " + firstNonSortedNeighbour.get());
                 groupsSetOnRegion += 1;
             }
         }
 
-        System.out.println("looking again at region " + region);
         final Set<Integer> sides = new HashSet<>();
         for (final Neighbour neighbour : region.neighbours) {
-            System.out.println("  " + neighbour);
             sides.add(neighbour.group);
         }
         this.drawRegionOnMap(region);
@@ -264,28 +359,11 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
             lines.set(c.y + 1, newLine);
         }
 
-        lines.forEach(System.out::println);
     }
 
     private boolean isSameDirection(final String a, final String b) {
-        if (a.equalsIgnoreCase(b)) {
-            return true;
-        }
-        /*
-        if (a.equalsIgnoreCase("N") && b.equalsIgnoreCase("S")) {
-            return true;
-        }
-        if (a.equalsIgnoreCase("S") && b.equalsIgnoreCase("N")) {
-            return true;
-        }
-        if (a.equalsIgnoreCase("E") && b.equalsIgnoreCase("W")) {
-            return true;
-        }
-        if (a.equalsIgnoreCase("W") && b.equalsIgnoreCase("E")) {
-            return true;
-        }
-        */
-        return false;
+
+        return a.equalsIgnoreCase(b);
     }
 
     private void addNeighbours(final Coord c, final Region region) {
@@ -322,10 +400,10 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
 
     static class Region {
 
-        String plant;
+        final String plant;
         List<Coord> coords;
         int perimeter;
-        List<Neighbour> neighbours;
+        final List<Neighbour> neighbours;
         int sides;
 
         public Region(final String planted, final Coord c) {
@@ -355,6 +433,7 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
 
         @Override
         public String toString() {
+
             return this.plant + " c ("
                     + this.coords.size()
                     + ") x p ["
@@ -365,12 +444,18 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
                     + this.sides
                     + "}";
         }
+
+        public boolean hasNeighbour(final int x, final int y) {
+
+            final List<Coord> neighbourCoords = this.neighbours.stream().map(n -> n.c).collect(Collectors.toList());
+            return neighbourCoords.stream().anyMatch(coord -> coord.onTop(x, y));
+        }
     }
 
     static class Neighbour {
 
         Coord c;
-        String direction;
+        final String direction;
         int group;
 
         public Neighbour(final Coord c, final String direction) {
@@ -381,32 +466,36 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
 
         @Override
         public String toString() {
+
             return this.c + " dir " + this.direction + " group " + this.group;
         }
 
         public boolean touches(final Neighbour otherNeighbour) {
+
             return this.c.touches(otherNeighbour.c);
         }
     }
 
-
     static class Coord {
 
-        int x;
-        int y;
+        public int x;
+        public final int y;
 
         public Coord(final int x, final int y) {
+
             this.x = x;
             this.y = y;
         }
 
         @Override
         public String toString() {
+
             return this.x + "," + this.y;
         }
 
         @Override
         public boolean equals(final Object o) {
+
             if (this == o) {
                 return true;
             }
@@ -419,10 +508,12 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
 
         @Override
         public int hashCode() {
+
             return Objects.hash(this.x, this.y);
         }
 
         public boolean touches(final Coord c) {
+
             if ((this.x == c.x - 1) && (this.y == c.y)) {
                 return true;
             }
@@ -432,10 +523,12 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
             if ((this.x == c.x) && (this.y == c.y - 1)) {
                 return true;
             }
-            if ((this.x == c.x) && (this.y == c.y + 1)) {
-                return true;
-            }
-            return false;
+            return (this.x == c.x) && (this.y == c.y + 1);
+        }
+
+        public boolean onTop(final int x, final int y) {
+
+            return (this.x == x) && (this.y == y);
         }
     }
 }
