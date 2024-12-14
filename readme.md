@@ -9,6 +9,30 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 13: Claw Contraption (1/2)
+
+One of the deceptively simple ones. Given two buttons, each with a different deltaX, deltaY and a cost
+try and hit a target with the number of minimum presses (and costs.)
+
+Spent some time getting A* and Djistra running and then realized that was total overkill.
+
+Came up with a nice little mathematical solution : pick one button, mash it until you're about
+to overshoot the prize on one axis, then back up one press at a time and hit the other button
+lots of times until you overshoot again OR hit the target.
+
+That worked fine for part1, but part2 has very big numbers. I have added a couple of optimisations
+to my logic, but it's taking 10s of seconds and there are 400+. I'm also not seeing any hits yet ...
+though it works for the part1 data.
+
+I'm almost there - I get an undershoot of e.g. `32,4929577463274` and my buttons will move me `X+94, Y+34` or
+`X+22, Y+67` .. and it's going to be something like is the tuple for the undershoot some multiple of the _two_ button
+tuples. One of them has to be negative - I've almost gone too far - and I need to drop out quickly.
+
+Hang on. 4929577463274 mod 67 (B.Y) = 63. We're going to need to back up at least one 34, which is
+now a mod of 29 (obviously). Divide 4929577463274 / 67 to see how many Bs I will need gives me 73 billion.
+
+Do I now treat this as recursive ? I'm trying to hit a point; with my undershoot I now have another point ...
+
 ## Day 12: Garden Groups
 
 Really enjoying this now. This was a 2d map of gardens identified by letters, and you have

@@ -21,7 +21,7 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        this.scenarios = this.readScenarios(input);
+        this.scenarios = this.readScenarios(input, false);
 
         long minimumTokenSpend = 0;
         for (final Scenario scenario : this.scenarios) {
@@ -36,51 +36,40 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
     private Long goDirectSmartly(final Scenario scenario) {
 
-        final double slopeForA = (double) -scenario.buttonA.deltaY / scenario.buttonA.deltaX;
-        final double slopeForB = (double) -scenario.buttonB.deltaY / scenario.buttonB.deltaX;
-
-        final double slopeForPrize = (double) -scenario.prize.y / scenario.prize.x;
-
-        // how do I rule out a miss ?
-
-        // Ideally I'd like to pick the better slope - which will always be the one closest to -1 because of those
-        // big additions
-
-        final double costedStepWithA = (3 * slopeForA);
-        final double costedStepWithB = (1 * slopeForB);
-
-        final double approxToPrizeA = Math.abs(slopeForPrize - costedStepWithA);
-        final double approxToPrizeB = Math.abs(slopeForPrize - costedStepWithB);
-
-        final double distanceToPrize = Math.sqrt(Math.pow(scenario.prize.x, 2) + Math.pow(scenario.prize.y, 2));
-
-        final boolean useA = approxToPrizeA <= approxToPrizeB;
+        final boolean useA = this.shouldUseAAttempt2(scenario);
         final Button useButton = useA ? scenario.buttonA : scenario.buttonB;
-        final double distanceCoveredOnePress = Math.sqrt(Math.pow(useButton.deltaX, 2) + Math.pow(useButton.deltaY, 2));
 
-        final long buttonPressesHorizontal = Math.round(1D * scenario.prize.x / useButton.deltaX) + 0;
-        final long buttonPressesVertical = Math.round(1D * scenario.prize.y / useButton.deltaY) + 0;
+        final long buttonPressesHorizontal = Math.round(Math.floor(1D * scenario.prize.x / useButton.deltaX));
+        final long buttonPressesVertical = Math.round(Math.floor(1D * scenario.prize.y / useButton.deltaY));
         final long buttonPresses = Math.min(buttonPressesHorizontal, buttonPressesVertical);
-
-        final Coord dropClaw = new Coord(buttonPresses * useButton.deltaX, buttonPresses * useButton.deltaY);
-        final Coord undershoot = new Coord(scenario.prize.x - dropClaw.x, scenario.prize.y - dropClaw.y);
-        System.out.println(buttonPresses + " " + undershoot);
-
+        
         // undershoot is 34,2374
         // I need to backtrack on the main button presses 1 by 1, and then add other button presses
         // until I hit the target
         // AND I need to figure out if I have to stop.
 
+        // I have backtracking working, I don't know how to stop
+        // it will be some combination of negative main buttons and positive other buttons - which is the back tracking.
+        // I'm trying to find some way of modding that but since I have different numbers, I don't know how
+
+        // I might have to do some pos/neg stuff if I get the wrong button
         final Button useOtherButton = useA ? scenario.buttonB : scenario.buttonA;
+        final Coord dropClaw = new Coord(buttonPresses * useButton.deltaX, buttonPresses * useButton.deltaY);
+        final Coord undershoot = new Coord(scenario.prize.x - dropClaw.x, scenario.prize.y - dropClaw.y);
+        System.out.println(" aiming for " + buttonPresses + " buttonA = " + useA + " gives undershoot " + undershoot);
+
         long mainButtonPresses = buttonPresses;
-        boolean gotcha = false;
-        // this is my outer loop, when I'm backing off the main button
+
+        int iterations = 0;
         while (true) {
             mainButtonPresses -= 1;
+            // this is a brute force stop ... but won't work with the big numbers
             if (mainButtonPresses < 0) {
-                throw new RuntimeException("oops");
+                return null;
             }
-            // this is my inner loop, when I'm adding to the other button
+            if (++iterations > 100000) {
+                return null;
+            }
             long otherButtonPresses = 0;
             while (true) {
                 final long x = mainButtonPresses * useButton.deltaX + otherButtonPresses * useOtherButton.deltaX;
@@ -89,26 +78,62 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
                 final Coord newUndershoot = new Coord(scenario.prize.x - newDropClaw.x, scenario.prize.y - newDropClaw.y);
                 if (newDropClaw.equals(scenario.prize)) {
                     System.out.println("gotcha with " + mainButtonPresses + " and " + otherButtonPresses + " when " + useA);
-                    gotcha = true;
-                    break;
+                    if (useA) {
+                        return 3 * mainButtonPresses + otherButtonPresses;
+                    } else {
+                        return mainButtonPresses + 3 * otherButtonPresses;
+                    }
                 }
-                System.out.println("inner loop " + mainButtonPresses + ":" + otherButtonPresses + " = " + newUndershoot);
                 otherButtonPresses += 1;
-                if (otherButtonPresses > 100) {
-                    System.out.println("more than 100 presses, think this should go");
-                    break;
-                }
                 if (newUndershoot.x < 0 || newUndershoot.y < 0) {
-                    System.out.println("gone too far ...");
                     break;
                 }
-            }
-            if (gotcha) {
-                System.out.println("gotcha 1, leaving inner loop");
-                break;
             }
         }
-        return null;
+    }
+
+    private Coord undershootFromButton(final Button useButton, final Scenario scenario) {
+
+        final long buttonPressesHorizontal = Math.round(Math.floor(1D * scenario.prize.x / useButton.deltaX));
+        final long buttonPressesVertical = Math.round(Math.floor(1D * scenario.prize.y / useButton.deltaY));
+        final long buttonPresses = Math.min(buttonPressesHorizontal, buttonPressesVertical);
+
+        final Coord dropClaw = new Coord(buttonPresses * useButton.deltaX, buttonPresses * useButton.deltaY);
+        return new Coord(scenario.prize.x - dropClaw.x, scenario.prize.y - dropClaw.y);
+    }
+
+    private boolean shouldUseAAttempt2(final Scenario scenario) {
+
+        final Coord undershootA = this.undershootFromButton(scenario.buttonA, scenario);
+        final Coord undershootB = this.undershootFromButton(scenario.buttonB, scenario);
+
+        if (undershootA.x >= 0 && undershootA.y >= 0) {
+            return true;
+        }
+        if (undershootB.x >= 0 && undershootB.y >= 0) {
+            return false;
+        }
+        System.out.println(undershootA);
+        System.out.println(undershootB);
+        throw new RuntimeException("oops-button");
+    }
+
+    private boolean shouldUseA(final Scenario scenario) {
+
+        final double slopeForA = (double) -scenario.buttonA.deltaY / scenario.buttonA.deltaX;
+        final double slopeForB = (double) -scenario.buttonB.deltaY / scenario.buttonB.deltaX;
+
+        final double slopeForPrize = (double) -scenario.prize.y / scenario.prize.x;
+
+        final double costedStepWithA = (3 * slopeForA);
+        final double costedStepWithB = (1 * slopeForB);
+
+        final double approxToPrizeA = Math.abs(slopeForPrize - costedStepWithA);
+        final double approxToPrizeB = Math.abs(slopeForPrize - costedStepWithB);
+
+        // this is a maths approach which ... doesn't always work. It gave me an overshoot occasionally
+
+        return approxToPrizeA <= approxToPrizeB;
     }
 
     private Long goDirect(final Scenario scenario) {
@@ -136,23 +161,20 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
                         aPresses * scenario.buttonA.deltaY + bPresses * scenario.buttonB.deltaY
                 );
                 if (endResult.equals(scenario.prize)) {
-                    System.out.println("Found prize at " + aPresses + "," + bPresses);
                     final long cost = (aPresses * 3) + bPresses;
                     if (cost < minCost) {
                         minCost = cost;
-                        System.out.println("    Changing cost to " + minCost);
                     }
                 }
             }
         }
         if (minCost == Long.MAX_VALUE) {
-            System.out.println("Did not find cost.");
             return null;
         }
         return minCost;
     }
 
-    private List<Scenario> readScenarios(final String[] input) {
+    private List<Scenario> readScenarios(final String[] input, final boolean part2) {
 
         final List<Scenario> scenarios = new ArrayList<>();
 
@@ -161,7 +183,7 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
         while (iterator.hasNext()) {
             final Button buttonA = this.readButton(iterator.next());
             final Button buttonB = this.readButton(iterator.next());
-            final Scenario scenario = this.readScenario(iterator.next(), buttonA, buttonB);
+            final Scenario scenario = this.readScenario(iterator.next(), buttonA, buttonB, part2);
             scenarios.add(scenario);
 
             if (iterator.hasNext()) {
@@ -171,17 +193,22 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
         return scenarios;
     }
 
-    private Scenario readScenario(final String line, final Button buttonA, final Button buttonB) {
+    private Scenario readScenario(final String line, final Button buttonA, final Button buttonB, final boolean part2) {
 
         final String[] parts = line.split(": ");
         final String[] coordDetails = parts[1].split(", ");
 
         final long x = Long.parseLong(coordDetails[0].replace("X=", ""));
         final long y = Long.parseLong(coordDetails[1].replace("Y=", ""));
-        final Coord coord = new Coord(x, y);
 
-        return new Scenario(buttonA, buttonB, coord);
+        final long extra = 10000000000000L;
+//        final long extra = 0;
 
+        if (part2) {
+            return new Scenario(buttonA, buttonB, new Coord(x + extra, y + extra));
+        } else {
+            return new Scenario(buttonA, buttonB, new Coord(x, y));
+        }
     }
 
     private Button readButton(final String line) {
@@ -198,7 +225,7 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
-        this.scenarios = this.readScenarios(input);
+        this.scenarios = this.readScenarios(input, true);
 
         long minimumTokenSpend = 0;
         for (final Scenario scenario : this.scenarios) {
