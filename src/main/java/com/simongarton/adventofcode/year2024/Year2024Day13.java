@@ -44,46 +44,6 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
         return new Coord(scenario.prize.x - dropClaw.x, scenario.prize.y - dropClaw.y);
     }
 
-    private boolean shouldUseAAttempt2(final Scenario scenario) {
-
-        final Coord undershootA = this.undershootFromButton(scenario.buttonA, scenario);
-        final Coord undershootB = this.undershootFromButton(scenario.buttonB, scenario);
-
-        if (undershootA.x >= 0 && undershootA.y >= 0) {
-            return true;
-        }
-        if (undershootB.x >= 0 && undershootB.y >= 0) {
-            return false;
-        }
-        System.out.println(undershootA);
-        System.out.println(undershootB);
-        throw new RuntimeException("oops-button");
-    }
-
-    private Map<Button, Long> shouldUseA(final Scenario scenario) {
-
-        final double slopeForA = (double) scenario.buttonA.deltaY / scenario.buttonA.deltaX;
-        final double slopeForB = (double) scenario.buttonB.deltaY / scenario.buttonB.deltaX;
-        final double averageSlope = (slopeForA + slopeForB) / 2.0;
-        final long averageSteps = 0L; //this.pythag(scenario.prize.x, scenario.prize.y);
-
-        // for part2, this will be very close to -1.0
-        final double slopeForPrize = (double) -scenario.prize.y / scenario.prize.x;
-
-        final double costedStepWithA = (3 * slopeForA);
-        final double costedStepWithB = (1 * slopeForB);
-
-        final double ratio = costedStepWithA / costedStepWithB;
-
-        // I could get an accurate one - but for costs, I'll still need 3 times as many
-
-        final Map<Button, Long> map = new HashMap<>();
-        map.put(scenario.buttonA, Math.round(averageSteps * ratio / costedStepWithA));
-        map.put(scenario.buttonB, Math.round(averageSteps * ratio / costedStepWithB));
-
-        return map;
-    }
-
     private Long goDirect(final Scenario scenario) {
 
         // The buttons are always the same, and always go down and right
@@ -231,47 +191,6 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
     }
 
-    private double goalSeek(final Scenario scenario,
-                            final double targetSlope) {
-        double mid;
-        double low = 0;
-        double high = 4;
-        final double target = 0;
-        final double tolerance = 1e-12;
-
-        // I don't think this is working. Negative numbers ? For my 3rd example,
-        /*
-        low to high 0 -> 10
-        testing 5.0 got slope 0.620137299771167 mapped -0.1994306798984644
-        testing 7.5 got slope 0.5625965996908809 mapped -0.2569713799787505
-        testing 8.75 got slope 0.5452127659574468 mapped -0.27435521371218463
-        so it starts going up because fMid is decreasing ...
-        but low to high 0 -> 2
-        testing 2.0 got slope 0.8648648648648649 mapped 0.04529688519523345
-        testing 1.0 got slope 1.2178217821782178 mapped 0.39825380250858633
-        testing 0.5 got slope 1.7796610169491525 mapped 0.960093037279521
-        so it starts going down because fMid is decreasing ...
-        I think I need to hill climb
-         */
-
-        while (high - low > tolerance) {
-            mid = (low + high) / 2;
-            final double combinedSlope = this.slopeForCombinedButton(scenario, mid);
-            final double fMid = combinedSlope - targetSlope;
-            System.out.println("testing " + mid + " got slope " + combinedSlope + " mapped " + fMid);
-
-            if (Math.abs(fMid - target) <= tolerance) {
-                return mid; // Close enough to the target
-            } else if (fMid < target) {
-                low = mid; // Target is in the upper half
-            } else {
-                high = mid; // Target is in the lower half
-            }
-        }
-        return (low + high) / 2; // Best approximation
-    }
-
-
     private double slopeForCombinedButton(final Scenario scenario,
                                           final double bRatio) {
 
@@ -279,66 +198,6 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
         final double deltaY = scenario.buttonA.deltaY + bRatio * scenario.buttonB.deltaY;
 
         return deltaY / deltaX;
-    }
-
-    private Long goDirectSmartly(final Scenario scenario) {
-
-        final Map<Button, Long> counts = this.shouldUseA(scenario);
-
-        final boolean useA = this.shouldUseAAttempt2(scenario);
-        final Button useButton = useA ? scenario.buttonA : scenario.buttonB;
-
-        final long buttonPressesHorizontal = Math.round(Math.floor(1D * scenario.prize.x / useButton.deltaX));
-        final long buttonPressesVertical = Math.round(Math.floor(1D * scenario.prize.y / useButton.deltaY));
-        final long buttonPresses = Math.min(buttonPressesHorizontal, buttonPressesVertical);
-
-        // undershoot is 34,2374
-        // I need to backtrack on the main button presses 1 by 1, and then add other button presses
-        // until I hit the target
-        // AND I need to figure out if I have to stop.
-
-        // I have backtracking working, I don't know how to stop
-        // it will be some combination of negative main buttons and positive other buttons - which is the back tracking.
-        // I'm trying to find some way of modding that but since I have different numbers, I don't know how
-
-        // I might have to do some pos/neg stuff if I get the wrong button
-        final Button useOtherButton = useA ? scenario.buttonB : scenario.buttonA;
-        final Coord dropClaw = new Coord(buttonPresses * useButton.deltaX, buttonPresses * useButton.deltaY);
-        final Coord undershoot = new Coord(scenario.prize.x - dropClaw.x, scenario.prize.y - dropClaw.y);
-        System.out.println(" aiming for " + buttonPresses + " buttonA = " + useA + " gives undershoot " + undershoot);
-
-        long mainButtonPresses = buttonPresses;
-
-        int iterations = 0;
-        while (true) {
-            mainButtonPresses -= 1;
-            // this is a brute force stop ... but won't work with the big numbers
-            if (mainButtonPresses < 0) {
-                return null;
-            }
-            if (++iterations > 100000) {
-                return null;
-            }
-            long otherButtonPresses = 0;
-            while (true) {
-                final long x = mainButtonPresses * useButton.deltaX + otherButtonPresses * useOtherButton.deltaX;
-                final long y = mainButtonPresses * useButton.deltaY + otherButtonPresses * useOtherButton.deltaY;
-                final Coord newDropClaw = new Coord(x, y);
-                final Coord newUndershoot = new Coord(scenario.prize.x - newDropClaw.x, scenario.prize.y - newDropClaw.y);
-                if (newDropClaw.equals(scenario.prize)) {
-                    System.out.println("gotcha with " + mainButtonPresses + " and " + otherButtonPresses + " when " + useA);
-                    if (useA) {
-                        return 3 * mainButtonPresses + otherButtonPresses;
-                    } else {
-                        return mainButtonPresses + 3 * otherButtonPresses;
-                    }
-                }
-                otherButtonPresses += 1;
-                if (newUndershoot.x < 0 || newUndershoot.y < 0) {
-                    break;
-                }
-            }
-        }
     }
 
     private List<Scenario> readScenarios(final String[] input, final boolean part2) {

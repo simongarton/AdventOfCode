@@ -24,14 +24,8 @@ That worked fine for part1, but part2 has very big numbers. I have added a coupl
 to my logic, but it's taking 10s of seconds and there are 400+. I'm also not seeing any hits yet ...
 though it works for the part1 data.
 
-I'm almost there - I get an undershoot of e.g. `32,4929577463274` and my buttons will move me `X+94, Y+34` or
-`X+22, Y+67` .. and it's going to be something like is the tuple for the undershoot some multiple of the _two_ button
-tuples. One of them has to be negative - I've almost gone too far - and I need to drop out quickly.
-
-Hang on. 4929577463274 mod 67 (B.Y) = 63. We're going to need to back up at least one 34, which is
-now a mod of 29 (obviously). Divide 4929577463274 / 67 to see how many Bs I will need gives me 73 billion.
-
-Do I now treat this as recursive ? I'm trying to hit a point; with my undershoot I now have another point ...
+I've tried some optimisations and I have smart algorithms working fine for the simple case, but overshooting -
+wildly - with the big numbers. So I think I have a rounding error somewhere.
 
 ## Day 12: Garden Groups
 
