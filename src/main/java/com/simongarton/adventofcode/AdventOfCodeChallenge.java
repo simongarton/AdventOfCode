@@ -284,4 +284,9 @@ public abstract class AdventOfCodeChallenge {
             throw new RuntimeException(e);
         }
     }
+
+    protected double pythagoras(final double a, final double b) {
+
+        return Math.round(Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)));
+    }
 }
