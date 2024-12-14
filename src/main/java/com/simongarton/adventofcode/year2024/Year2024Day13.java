@@ -3,7 +3,6 @@ package com.simongarton.adventofcode.year2024;
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Year2024Day13 extends AdventOfCodeChallenge {
 
@@ -24,9 +23,9 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
         this.scenarios = this.readScenarios(input);
 
-        int minimumTokenSpend = 0;
+        long minimumTokenSpend = 0;
         for (final Scenario scenario : this.scenarios) {
-            final Integer outcome = this.goDirect(scenario);
+            final Long outcome = this.goDirect(scenario);
             if (outcome != null) {
                 minimumTokenSpend += outcome;
             }
@@ -35,7 +34,84 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
         return String.valueOf(minimumTokenSpend);
     }
 
-    private Integer goDirect(final Scenario scenario) {
+    private Long goDirectSmartly(final Scenario scenario) {
+
+        final double slopeForA = (double) -scenario.buttonA.deltaY / scenario.buttonA.deltaX;
+        final double slopeForB = (double) -scenario.buttonB.deltaY / scenario.buttonB.deltaX;
+
+        final double slopeForPrize = (double) -scenario.prize.y / scenario.prize.x;
+
+        // how do I rule out a miss ?
+
+        // Ideally I'd like to pick the better slope - which will always be the one closest to -1 because of those
+        // big additions
+
+        final double costedStepWithA = (3 * slopeForA);
+        final double costedStepWithB = (1 * slopeForB);
+
+        final double approxToPrizeA = Math.abs(slopeForPrize - costedStepWithA);
+        final double approxToPrizeB = Math.abs(slopeForPrize - costedStepWithB);
+
+        final double distanceToPrize = Math.sqrt(Math.pow(scenario.prize.x, 2) + Math.pow(scenario.prize.y, 2));
+
+        final boolean useA = approxToPrizeA <= approxToPrizeB;
+        final Button useButton = useA ? scenario.buttonA : scenario.buttonB;
+        final double distanceCoveredOnePress = Math.sqrt(Math.pow(useButton.deltaX, 2) + Math.pow(useButton.deltaY, 2));
+
+        final long buttonPressesHorizontal = Math.round(1D * scenario.prize.x / useButton.deltaX) + 0;
+        final long buttonPressesVertical = Math.round(1D * scenario.prize.y / useButton.deltaY) + 0;
+        final long buttonPresses = Math.min(buttonPressesHorizontal, buttonPressesVertical);
+
+        final Coord dropClaw = new Coord(buttonPresses * useButton.deltaX, buttonPresses * useButton.deltaY);
+        final Coord undershoot = new Coord(scenario.prize.x - dropClaw.x, scenario.prize.y - dropClaw.y);
+        System.out.println(buttonPresses + " " + undershoot);
+
+        // undershoot is 34,2374
+        // I need to backtrack on the main button presses 1 by 1, and then add other button presses
+        // until I hit the target
+        // AND I need to figure out if I have to stop.
+
+        final Button useOtherButton = useA ? scenario.buttonB : scenario.buttonA;
+        long mainButtonPresses = buttonPresses;
+        boolean gotcha = false;
+        // this is my outer loop, when I'm backing off the main button
+        while (true) {
+            mainButtonPresses -= 1;
+            if (mainButtonPresses < 0) {
+                throw new RuntimeException("oops");
+            }
+            // this is my inner loop, when I'm adding to the other button
+            long otherButtonPresses = 0;
+            while (true) {
+                final long x = mainButtonPresses * useButton.deltaX + otherButtonPresses * useOtherButton.deltaX;
+                final long y = mainButtonPresses * useButton.deltaY + otherButtonPresses * useOtherButton.deltaY;
+                final Coord newDropClaw = new Coord(x, y);
+                final Coord newUndershoot = new Coord(scenario.prize.x - newDropClaw.x, scenario.prize.y - newDropClaw.y);
+                if (newDropClaw.equals(scenario.prize)) {
+                    System.out.println("gotcha with " + mainButtonPresses + " and " + otherButtonPresses + " when " + useA);
+                    gotcha = true;
+                    break;
+                }
+                System.out.println("inner loop " + mainButtonPresses + ":" + otherButtonPresses + " = " + newUndershoot);
+                otherButtonPresses += 1;
+                if (otherButtonPresses > 100) {
+                    System.out.println("more than 100 presses, think this should go");
+                    break;
+                }
+                if (newUndershoot.x < 0 || newUndershoot.y < 0) {
+                    System.out.println("gone too far ...");
+                    break;
+                }
+            }
+            if (gotcha) {
+                System.out.println("gotcha 1, leaving inner loop");
+                break;
+            }
+        }
+        return null;
+    }
+
+    private Long goDirect(final Scenario scenario) {
 
         // The buttons are always the same, and always go down and right
         // so if I can hit the target it will be N of one and M of the other
@@ -51,208 +127,29 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
         final long maxBDown = Math.round(1.0 * scenario.prize.y / scenario.buttonB.deltaY) + 1;
         final long maxB = Math.min(maxBRight, maxBDown);
 
-        int minCost = Integer.MAX_VALUE;
-        int minApresses;
-        int minBpresses;
+        long minCost = Long.MAX_VALUE;
 
-        for (int aPresses = 0; aPresses < maxA; aPresses++) {
-            for (int bPresses = 0; bPresses < maxB; bPresses++) {
+        for (long aPresses = 0; aPresses < maxA; aPresses++) {
+            for (long bPresses = 0; bPresses < maxB; bPresses++) {
                 final Coord endResult = new Coord(
                         aPresses * scenario.buttonA.deltaX + bPresses * scenario.buttonB.deltaX,
                         aPresses * scenario.buttonA.deltaY + bPresses * scenario.buttonB.deltaY
                 );
                 if (endResult.equals(scenario.prize)) {
                     System.out.println("Found prize at " + aPresses + "," + bPresses);
-                    final int cost = (aPresses * 3) + bPresses;
+                    final long cost = (aPresses * 3) + bPresses;
                     if (cost < minCost) {
                         minCost = cost;
-                        minApresses = aPresses;
-                        minBpresses = bPresses;
-                        System.out.println("  xChanging cost to " + minCost);
+                        System.out.println("    Changing cost to " + minCost);
                     }
                 }
             }
         }
-        if (minCost == Integer.MAX_VALUE) {
+        if (minCost == Long.MAX_VALUE) {
             System.out.println("Did not find cost.");
             return null;
         }
         return minCost;
-    }
-
-    private Integer findMinimumTokenSpend(final Scenario scenario) {
-
-        // Djikstra -> A*
-
-        final List<Node> availableNodes = new ArrayList<>();
-        final List<Node> visitedNodes = new ArrayList<>();
-
-        final Node startNode = new Node(new Coord(0, 0), 0, null, "");
-        availableNodes.add(startNode);
-
-        long iteration = 0;
-
-        while (!availableNodes.isEmpty()) {
-
-            final Node node = this.optimalAvailableNode(availableNodes);
-
-            // can I assume there is only one way ?
-            if (node.c.equals(scenario.prize)) {
-                System.out.println("Found at " + node);
-                this.maybeAddVisitedNode(visitedNodes, node);
-                break;
-            }
-            // System.out.println("Adding + looking at visited " + node);
-            this.maybeAddVisitedNode(visitedNodes, node);
-            final List<Node> neighbours = this.findNeighbours(node, scenario);
-            for (final Node neighbour : neighbours) {
-                // System.out.println("  Testing " + neighbour);
-                // check this new node in my list of visited nodes ... if I've found it before
-                // and it was better, I don't need to check this again.
-                final Optional<Node> previousVisit = this.findBetterPreviousVisit(
-                        neighbour,
-                        visitedNodes);
-                if (previousVisit.isPresent()) {
-                    // System.out.println("    previous better " + previousVisit.get());
-                    continue;
-                }
-                // now check to see if I've already planned to check this node.
-                // if its in the list, and it's worse, replace it
-                // this never gets called - I think because I can only move right and down, and each move does both ?
-                // so disabled
-                // if (this.handleWorseOrEqualPreviousVisit(neighbour, availableNodes)) {
-                //    continue;
-                // }
-                // what do I do about adding it in if it's already in the list ?
-                // it would be a different path, so I need to check it anyway.
-                // System.out.println("    Adding available " + neighbour);
-
-                // there must be something I can do here. I should be able to tell if this is a good idea or not
-                // as there are only two possible moves
-                availableNodes.add(neighbour);
-            }
-
-            iteration++;
-            if (iteration % 10000 == 0) {
-                System.out.println(iteration + ": a " +
-                        availableNodes.size() + " v " +
-                        visitedNodes.size() + " (" +
-                        availableNodes.get(availableNodes.size() - 1).c + ")");
-            }
-        }
-
-        String presses = "";
-        int buttonAPresses = 0;
-        int buttonBPresses = 0;
-
-        for (final Node node : visitedNodes) {
-            if (node.c.equals(scenario.prize)) {
-                System.out.println("Found prize at " + node);
-                Node working = node;
-                while (true) {
-                    System.out.println("  " + working);
-                    presses = working.buttonPress + presses;
-                    // first one has no button press
-                    if (working.buttonPress.equalsIgnoreCase("A")) {
-                        buttonAPresses++;
-                    }
-                    if (working.buttonPress.equalsIgnoreCase("B")) {
-                        buttonBPresses++;
-                    }
-                    working = working.cameFrom;
-                    if (working == null) {
-                        break;
-                    }
-                }
-                System.out.println(presses);
-                System.out.println("A=" + buttonAPresses);
-                System.out.println("B=" + buttonBPresses);
-            }
-        }
-        return (buttonAPresses * 3) + buttonBPresses;
-    }
-
-    private Node optimalAvailableNode(final List<Node> availableNodes) {
-
-        final Comparator<Node> comparator = Comparator.comparing(node -> node.cost);
-        final Comparator<Node> reverseComparator = comparator.reversed();
-        final List<Node> sortedNodes = availableNodes.stream().sorted(reverseComparator).collect(Collectors.toList());
-        final Node node = sortedNodes.get(0);
-        availableNodes.remove(node);
-        return node;
-    }
-
-    private void maybeAddVisitedNode(final List<Node> visitedNodes, final Node node) {
-
-        int index = 0;
-        for (final Node visitedNode : visitedNodes) {
-            if (visitedNode.c.equals(node.c)) {
-                if (visitedNode.cost < node.cost) {
-                    return;
-                }
-                visitedNodes.remove(index);
-                visitedNodes.add(index, node);
-                return;
-            }
-            index++;
-        }
-        visitedNodes.add(index, node);
-    }
-
-    private boolean handleWorseOrEqualPreviousVisit(final Node neighbour,
-                                                    final List<Node> availableNodes) {
-
-        boolean replaced = false;
-        int index = 0;
-        for (final Node availableNode : availableNodes) {
-            if (availableNode.c.equals(neighbour.c)) {
-                if (availableNode.cost <= neighbour.cost) {
-                    // visitor better, continue
-                    // System.out.println("    old " + availableNode + " better than " + neighbour);
-                    continue;
-                }
-                availableNodes.remove(index);
-                availableNodes.add(index, neighbour);
-                // this is never called ... bug, or should I just drop it ?
-                System.out.println("    replacing " + availableNode + " with " + neighbour);
-                replaced = true;
-            }
-            index++;
-        }
-        return replaced;
-    }
-
-    private Optional<Node> findBetterPreviousVisit(final Node neighbour,
-                                                   final List<Node> visitedNodes) {
-
-        for (final Node visitedNode : visitedNodes) {
-            if (visitedNode.c.equals(neighbour.c)) {
-                if (visitedNode.cost < neighbour.cost) {
-                    return Optional.of(visitedNode);
-                }
-            }
-        }
-        return Optional.empty();
-    }
-
-    private List<Node> findNeighbours(final Node node, final Scenario scenario) {
-
-        final List<Node> nodes = new ArrayList<>();
-        final Optional<Node> optionalNodeA = this.findNode(node, scenario.buttonA, scenario.prize);
-        optionalNodeA.ifPresent(nodes::add);
-        final Optional<Node> optionalNodeB = this.findNode(node, scenario.buttonB, scenario.prize);
-        optionalNodeB.ifPresent(nodes::add);
-        return nodes;
-    }
-
-    private Optional<Node> findNode(final Node node, final Button button, final Coord prize) {
-
-        final Coord c = new Coord(node.c.x + button.deltaX, node.c.y + button.deltaY);
-        if ((c.x > prize.x) || (c.y > prize.y)) {
-            return Optional.empty();
-        }
-        final int cost = button.name.equalsIgnoreCase("A") ? 3 : 1;
-        return Optional.of(new Node(c, node.cost + cost, node, button.name));
     }
 
     private List<Scenario> readScenarios(final String[] input) {
@@ -279,8 +176,8 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
         final String[] parts = line.split(": ");
         final String[] coordDetails = parts[1].split(", ");
 
-        final int x = Integer.parseInt(coordDetails[0].replace("X=", ""));
-        final int y = Integer.parseInt(coordDetails[1].replace("Y=", ""));
+        final long x = Long.parseLong(coordDetails[0].replace("X=", ""));
+        final long y = Long.parseLong(coordDetails[1].replace("Y=", ""));
         final Coord coord = new Coord(x, y);
 
         return new Scenario(buttonA, buttonB, coord);
@@ -300,15 +197,26 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.scenarios = this.readScenarios(input);
+
+        long minimumTokenSpend = 0;
+        for (final Scenario scenario : this.scenarios) {
+            final Long outcome = this.goDirectSmartly(scenario);
+            if (outcome != null) {
+                minimumTokenSpend += outcome;
+            }
+        }
+
+        return String.valueOf(minimumTokenSpend);
     }
 
     static class Coord {
 
-        public final int x;
-        public final int y;
+        public final long x;
+        public final long y;
 
-        public Coord(final int x, final int y) {
+        public Coord(final long x, final long y) {
 
             this.x = x;
             this.y = y;
@@ -343,8 +251,8 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
     static class Button {
 
         final String name;
-        final int deltaX;
-        final int deltaY;
+        final long deltaX;
+        final long deltaY;
 
         public Button(final String name, final int deltaX, final int deltaY) {
 
