@@ -26,13 +26,58 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
         int minimumTokenSpend = 0;
         for (final Scenario scenario : this.scenarios) {
-            final Integer outcome = this.findMinimumTokenSpend(scenario);
+            final Integer outcome = this.goDirect(scenario);
             if (outcome != null) {
                 minimumTokenSpend += outcome;
             }
         }
 
         return String.valueOf(minimumTokenSpend);
+    }
+
+    private Integer goDirect(final Scenario scenario) {
+
+        // The buttons are always the same, and always go down and right
+        // so if I can hit the target it will be N of one and M of the other
+
+        // further more I have calculatable maxes for each presses that would take me
+        // beyond the prize
+
+        final long maxARight = Math.round(1.0 * scenario.prize.x / scenario.buttonA.deltaX) + 1;
+        final long maxADown = Math.round(1.0 * scenario.prize.y / scenario.buttonA.deltaY) + 1;
+        final long maxA = Math.min(maxARight, maxADown);
+
+        final long maxBRight = Math.round(1.0 * scenario.prize.x / scenario.buttonB.deltaX) + 1;
+        final long maxBDown = Math.round(1.0 * scenario.prize.y / scenario.buttonB.deltaY) + 1;
+        final long maxB = Math.min(maxBRight, maxBDown);
+
+        int minCost = Integer.MAX_VALUE;
+        int minApresses;
+        int minBpresses;
+
+        for (int aPresses = 0; aPresses < maxA; aPresses++) {
+            for (int bPresses = 0; bPresses < maxB; bPresses++) {
+                final Coord endResult = new Coord(
+                        aPresses * scenario.buttonA.deltaX + bPresses * scenario.buttonB.deltaX,
+                        aPresses * scenario.buttonA.deltaY + bPresses * scenario.buttonB.deltaY
+                );
+                if (endResult.equals(scenario.prize)) {
+                    System.out.println("Found prize at " + aPresses + "," + bPresses);
+                    final int cost = (aPresses * 3) + bPresses;
+                    if (cost < minCost) {
+                        minCost = cost;
+                        minApresses = aPresses;
+                        minBpresses = bPresses;
+                        System.out.println("  xChanging cost to " + minCost);
+                    }
+                }
+            }
+        }
+        if (minCost == Integer.MAX_VALUE) {
+            System.out.println("Did not find cost.");
+            return null;
+        }
+        return minCost;
     }
 
     private Integer findMinimumTokenSpend(final Scenario scenario) {
@@ -61,7 +106,6 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
             this.maybeAddVisitedNode(visitedNodes, node);
             final List<Node> neighbours = this.findNeighbours(node, scenario);
             for (final Node neighbour : neighbours) {
-                // have I been here before ?
                 // System.out.println("  Testing " + neighbour);
                 // check this new node in my list of visited nodes ... if I've found it before
                 // and it was better, I don't need to check this again.
@@ -73,15 +117,18 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
                     continue;
                 }
                 // now check to see if I've already planned to check this node.
-                if (this.handleWorseOrEqualPreviousVisit(
-                        neighbour,
-                        availableNodes)) {
-                    continue;
-                }
+                // if its in the list, and it's worse, replace it
+                // this never gets called - I think because I can only move right and down, and each move does both ?
+                // so disabled
+                // if (this.handleWorseOrEqualPreviousVisit(neighbour, availableNodes)) {
+                //    continue;
+                // }
                 // what do I do about adding it in if it's already in the list ?
                 // it would be a different path, so I need to check it anyway.
                 // System.out.println("    Adding available " + neighbour);
 
+                // there must be something I can do here. I should be able to tell if this is a good idea or not
+                // as there are only two possible moves
                 availableNodes.add(neighbour);
             }
 
@@ -166,8 +213,8 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
                 }
                 availableNodes.remove(index);
                 availableNodes.add(index, neighbour);
-                // this is never called ..
-                // System.out.println("    replacing " + availableNode + " with " + neighbour);
+                // this is never called ... bug, or should I just drop it ?
+                System.out.println("    replacing " + availableNode + " with " + neighbour);
                 replaced = true;
             }
             index++;
@@ -204,7 +251,8 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
         if ((c.x > prize.x) || (c.y > prize.y)) {
             return Optional.empty();
         }
-        return Optional.of(new Node(c, node.cost + 1, node, button.name));
+        final int cost = button.name.equalsIgnoreCase("A") ? 3 : 1;
+        return Optional.of(new Node(c, node.cost + cost, node, button.name));
     }
 
     private List<Scenario> readScenarios(final String[] input) {
@@ -257,7 +305,7 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
     static class Coord {
 
-        public int x;
+        public final int x;
         public final int y;
 
         public Coord(final int x, final int y) {
@@ -294,9 +342,9 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
     static class Button {
 
-        String name;
-        int deltaX;
-        int deltaY;
+        final String name;
+        final int deltaX;
+        final int deltaY;
 
         public Button(final String name, final int deltaX, final int deltaY) {
 
@@ -308,9 +356,9 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
     static class Scenario {
 
-        Button buttonA;
-        Button buttonB;
-        Coord prize;
+        final Button buttonA;
+        final Button buttonB;
+        final Coord prize;
 
         public Scenario(final Button buttonA, final Button buttonB, final Coord prize) {
 
@@ -322,10 +370,10 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
     static class Node {
 
-        Coord c;
-        int cost;
-        Node cameFrom;
-        String buttonPress;
+        final Coord c;
+        final int cost;
+        final Node cameFrom;
+        final String buttonPress;
 
         public Node(final Coord c, final int cost, final Node cameFrom, final String buttonPress) {
             this.c = c;
