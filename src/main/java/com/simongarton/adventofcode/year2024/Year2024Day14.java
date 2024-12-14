@@ -2,11 +2,22 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
+
 public class Year2024Day14 extends AdventOfCodeChallenge {
+
+    private static final int BITMAP_SCALE = 4;
+
+    private static final boolean DEBUG = false;
 
     List<List<Integer>> map;
     List<Robot> robots;
@@ -38,12 +49,16 @@ public class Year2024Day14 extends AdventOfCodeChallenge {
         }
 
         this.loadRobots(input);
-        this.drawMap();
+        if (DEBUG) {
+            this.drawMap();
+        }
 
         final int maxSeconds = 100;
         for (int second = 0; second < maxSeconds; second++) {
             this.moveRobots();
-            this.drawMap();
+            if (DEBUG) {
+                this.drawMap();
+            }
         }
 
         return String.valueOf(this.countRobotsInQuadrant());
@@ -148,6 +163,14 @@ public class Year2024Day14 extends AdventOfCodeChallenge {
         }
     }
 
+    private int getSafeRobotCountOnMap(final Coord position) {
+        try {
+            return this.getRobotCountOnMap(position);
+        } catch (final IndexOutOfBoundsException e) {
+            return 0;
+        }
+    }
+
     private int getRobotCountOnMap(final Coord position) {
 
         final List<Integer> row = this.map.get(position.y);
@@ -163,7 +186,101 @@ public class Year2024Day14 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
+
+        this.map = new ArrayList<>();
+        for (int i = 0; i < this.height; i++) {
+            final List<Integer> row = new ArrayList<>();
+            for (int j = 0; j < this.width; j++) {
+                row.add(0);
+            }
+            this.map.add(row);
+        }
+
+        this.loadRobots(input);
+
+        int seconds = 0;
+        while (true) {
+            this.moveRobots();
+            seconds++;
+            if (this.mightBeThisOne()) {
+                if (DEBUG) {
+                    this.paintMap(seconds);
+                }
+                return String.valueOf(seconds);
+            }
+            if (seconds > 1000000) {
+                break;
+            }
+            if ((seconds % 100000) == 0) {
+                System.out.println(seconds);
+            }
+        }
+
         return null;
+    }
+
+    private boolean mightBeThisOne() {
+
+        // assume they are clustered together - so everyone has a neighbour.
+        final int robotTotal = this.robots.size();
+        int robotsWithNeighbours = 0;
+
+        for (final Robot robot : this.robots) {
+            final int neighbours = this.getSafeRobotCountOnMap(new Coord(robot.position.x + 1, robot.position.y))
+                    + this.getSafeRobotCountOnMap(new Coord(robot.position.x - 1, robot.position.y))
+                    + this.getSafeRobotCountOnMap(new Coord(robot.position.x, robot.position.y + 1))
+                    + this.getSafeRobotCountOnMap(new Coord(robot.position.x, robot.position.y - 1));
+            if (neighbours > 1) {
+                robotsWithNeighbours++;
+            }
+        }
+
+        return robotsWithNeighbours >= (robotTotal / 2);
+    }
+
+    private void paintMap(final int seconds) {
+
+        final String filename = "/Users/simongarton/projects/java/AdventOfCode/temp/robots-" + seconds + ".png";
+
+        final BufferedImage bufferedImage = new BufferedImage(this.width * BITMAP_SCALE, this.height * BITMAP_SCALE, TYPE_INT_RGB);
+        final Graphics2D graphics2D = bufferedImage.createGraphics();
+        this.clearBackground(graphics2D);
+        this.paintFloor(graphics2D);
+        try {
+            ImageIO.write(bufferedImage, "PNG", new File(filename));
+//            System.out.println(seconds + ":" + filename);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        graphics2D.dispose();
+    }
+
+    private void paintFloor(final Graphics2D graphics2D) {
+        for (int row = 0; row < this.height; row++) {
+            for (int col = 0; col < this.width; col++) {
+                final int robotCount = this.getRobotCountOnMap(new Coord(col, row));
+                if (robotCount > 0) {
+                    graphics2D.setPaint(this.getColorForRobotCount(robotCount));
+                    graphics2D.fillRect(col * BITMAP_SCALE, row * BITMAP_SCALE, BITMAP_SCALE, BITMAP_SCALE);
+                }
+            }
+        }
+    }
+
+    private Paint getColorForRobotCount(final int robotCount) {
+        if (robotCount == 0) {
+            return Color.BLACK;
+        }
+        if (robotCount == 1) {
+            return Color.GREEN;
+        }
+        return Color.RED;
+    }
+
+    private void clearBackground(final Graphics2D graphics2D) {
+
+        graphics2D.setPaint(Color.BLACK);
+        graphics2D.fillRect(0, 0, this.width * BITMAP_SCALE, this.height * BITMAP_SCALE);
     }
 
     static class Coord {

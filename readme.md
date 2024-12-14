@@ -9,12 +9,24 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 14: Restroom Redoubt
+
+Much nicer. A map, with robots moving around in different directions. Part 1 : at time N, count how many are in each
+quadrant. Easy. Part 2 : at time X, they draw a picture of an Xmas tree : what's X ?
+
+Wait, what ? How do I know what it should look like ? I spent some time thinking it was going to be a pointy empty
+shape - a triangle - but seemed to be getting into the millions of iterations. Tried again with a solid shape, assuming
+everyone would have a neighbour. Wasn't getting anywhere ... so I changed it to check to see if at least half of them
+had a neigbour ... and this popped out after about seven thousand cycles (and repeatedly afterwards.)
+
+![Part 2](2024-Day14-2.png)
+
 ## Day 13: Claw Contraption (1/2)
 
-One of the deceptively simple ones. Given two buttons, each with a different deltaX, deltaY and a cost
+One of the deceptively simple ones, which bit hard. Given two buttons, each with a different deltaX, deltaY and a cost
 try and hit a target with the number of minimum presses (and costs.)
 
-Spent some time getting A* and Djistra running and then realized that was total overkill.
+Spent some time getting A* and Djikstra running and then realized that was total overkill.
 
 Came up with a nice little mathematical solution : pick one button, mash it until you're about
 to overshoot the prize on one axis, then back up one press at a time and hit the other button
@@ -26,6 +38,8 @@ though it works for the part1 data.
 
 I've tried some optimisations and I have smart algorithms working fine for the simple case, but overshooting -
 wildly - with the big numbers. So I think I have a rounding error somewhere.
+
+Spent far too long on it.
 
 ## Day 12: Garden Groups
 
