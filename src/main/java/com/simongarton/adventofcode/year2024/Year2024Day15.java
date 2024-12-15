@@ -8,10 +8,18 @@ import java.util.UUID;
 
 public class Year2024Day15 extends AdventOfCodeChallenge {
 
+    private static final boolean DEBUG = false;
+
     private static final String WALL = "#";
     private static final String BOX = "O";
+    private static final String LEFT_BOX = "[";
+    private static final String RIGHT_BOX = "]";
     private static final String EMPTY = ".";
     private static final String ROBOT = "@";
+    public static final String RIGHT = ">";
+    public static final String LEFT = "<";
+    public static final String UP = "^";
+    public static final String DOWN = "v";
 
     private List<Box> boxes;
     private Robot robot;
@@ -22,12 +30,12 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 0: Template code";
+        return "Day 15: Warehouse Woes";
     }
 
     @Override
     public Outcome run() {
-        return this.runChallenge(2024, 0);
+        return this.runChallenge(2024, 15);
     }
 
     @Override
@@ -36,34 +44,47 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
         this.loadMap(input);
 
         this.findRobotAndBoxes();
-        this.drawChallengeMap();
+        if (DEBUG) {
+            this.drawChallengeMap();
+        }
 
         this.thingsToMove = new ArrayList<>();
 
         for (final String move : this.moves) {
             this.move(move);
-            this.drawChallengeMap();
+            if (DEBUG) {
+                this.drawChallengeMap();
+            }
         }
 
         return String.valueOf(this.sumBoxCoordinates());
     }
 
-    private boolean move(final String move) {
+    private void move(final String move) {
 
         this.thingsToMove.clear();
         this.moveDirection = move;
 
         final boolean outcome = this.recursiveMove(move, this.robot.position);
         if (!outcome) {
-            return outcome;
+            return;
         }
         this.moveStuff();
-        return outcome;
+    }
+
+    private void doubleMove(final String move) {
+
+        this.thingsToMove.clear();
+        this.moveDirection = move;
+
+        final boolean outcome = this.recursiveDoubleMove(move, this.robot.position);
+        if (!outcome) {
+            return;
+        }
+        this.moveDoubleStuff();
     }
 
     private void moveStuff() {
-
-        System.out.println("Moving stuff ...");
 
         for (final String uuidToMove : this.thingsToMove) {
             final ThingWithCoord thingToMove = this.findThingToMove(uuidToMove);
@@ -88,6 +109,37 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
         }
     }
 
+    private void moveDoubleStuff() {
+
+        for (final String uuidToMove : this.thingsToMove) {
+            final ThingWithCoord thingToMove = this.findThingToMove(uuidToMove);
+            final AoCCoord position = thingToMove.position;
+            this.setChallengeMapLetter(position, EMPTY);
+            if (thingToMove.getClass().getSimpleName().equalsIgnoreCase("Box")) {
+                final AoCCoord otherHalfOfBox = new AoCCoord(position.x + 1, position.y);
+                this.setChallengeMapLetter(otherHalfOfBox, EMPTY);
+            }
+        }
+
+        for (final String uuidToMove : this.thingsToMove) {
+            final ThingWithCoord thingToMove = this.findThingToMove(uuidToMove);
+            final AoCCoord position = thingToMove.position;
+            final AoCCoord newPosition = this.getNewPosition(position, this.moveDirection);
+
+            if (thingToMove.getClass().getSimpleName().equalsIgnoreCase("Robot")) {
+                this.robot.position = newPosition;
+                this.setChallengeMapLetter(newPosition, ROBOT);
+                continue;
+            }
+
+            final Box boxToMove = (Box) thingToMove;
+            boxToMove.position = newPosition;
+            this.setChallengeMapLetter(newPosition, LEFT_BOX);
+            final AoCCoord otherHalfOfBox = new AoCCoord(newPosition.x + 1, newPosition.y);
+            this.setChallengeMapLetter(otherHalfOfBox, RIGHT_BOX);
+        }
+    }
+
     private ThingWithCoord findThingToMove(final String uuidToMove) {
 
         if (this.robot.id.equalsIgnoreCase(uuidToMove)) {
@@ -103,16 +155,16 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
 
     private AoCCoord getNewPosition(final AoCCoord position, final String moveDirection) {
 
-        if (moveDirection.equalsIgnoreCase("<")) {
+        if (moveDirection.equalsIgnoreCase(LEFT)) {
             return new AoCCoord(position.x - 1, position.y);
         }
-        if (moveDirection.equalsIgnoreCase(">")) {
+        if (moveDirection.equalsIgnoreCase(RIGHT)) {
             return new AoCCoord(position.x + 1, position.y);
         }
-        if (moveDirection.equalsIgnoreCase("^")) {
+        if (moveDirection.equalsIgnoreCase(UP)) {
             return new AoCCoord(position.x, position.y - 1);
         }
-        if (moveDirection.equalsIgnoreCase("v")) {
+        if (moveDirection.equalsIgnoreCase(DOWN)) {
             return new AoCCoord(position.x, position.y + 1);
         }
         throw new RuntimeException("oops");
@@ -120,21 +172,42 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
 
     private boolean recursiveMove(final String move, final AoCCoord position) {
 
-        if (move.equalsIgnoreCase("<")) {
+        if (move.equalsIgnoreCase(LEFT)) {
             final AoCCoord nextPosition = new AoCCoord(position.x - 1, position.y);
             return this.checkMove(nextPosition, move);
         }
-        if (move.equalsIgnoreCase(">")) {
+        if (move.equalsIgnoreCase(RIGHT)) {
             final AoCCoord nextPosition = new AoCCoord(position.x + 1, position.y);
             return this.checkMove(nextPosition, move);
         }
-        if (move.equalsIgnoreCase("^")) {
+        if (move.equalsIgnoreCase(UP)) {
             final AoCCoord nextPosition = new AoCCoord(position.x, position.y - 1);
             return this.checkMove(nextPosition, move);
         }
-        if (move.equalsIgnoreCase("v")) {
+        if (move.equalsIgnoreCase(DOWN)) {
             final AoCCoord nextPosition = new AoCCoord(position.x, position.y + 1);
             return this.checkMove(nextPosition, move);
+        }
+        throw new RuntimeException("oops");
+    }
+
+    private boolean recursiveDoubleMove(final String move, final AoCCoord position) {
+
+        if (move.equalsIgnoreCase(LEFT)) {
+            final AoCCoord nextPosition = new AoCCoord(position.x - 1, position.y);
+            return this.checkDoubleMove(nextPosition, move);
+        }
+        if (move.equalsIgnoreCase(RIGHT)) {
+            final AoCCoord nextPosition = new AoCCoord(position.x + 1, position.y);
+            return this.checkDoubleMove(nextPosition, move);
+        }
+        if (move.equalsIgnoreCase(UP)) {
+            final AoCCoord nextPosition = new AoCCoord(position.x, position.y - 1);
+            return this.checkDoubleMove(nextPosition, move);
+        }
+        if (move.equalsIgnoreCase(DOWN)) {
+            final AoCCoord nextPosition = new AoCCoord(position.x, position.y + 1);
+            return this.checkDoubleMove(nextPosition, move);
         }
         throw new RuntimeException("oops");
     }
@@ -142,7 +215,6 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
     private boolean checkMove(final AoCCoord nextPosition, final String nextMove) {
 
         final String thing = this.getChallengeMapLetter(nextPosition);
-        System.out.println("Checking " + nextPosition + " for " + nextMove + " and got " + thing);
         if (thing.equalsIgnoreCase(WALL)) {
             return false;
         }
@@ -154,6 +226,89 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
             final Box box = this.getBoxAt(nextPosition);
             this.thingsToMove.add(box.id);
             return this.recursiveMove(nextMove, nextPosition);
+        }
+        throw new RuntimeException("oops");
+    }
+
+    private boolean checkDoubleMove(final AoCCoord nextPosition, final String nextMove) {
+
+        final String thing = this.getChallengeMapLetter(nextPosition);
+        if (thing.equalsIgnoreCase(WALL)) {
+            return false;
+        }
+        if (thing.equalsIgnoreCase(EMPTY)) {
+            if (!this.thingsToMove.contains(this.robot.id)) {
+                this.thingsToMove.add(this.robot.id);
+            }
+            return true;
+        }
+        if (thing.equalsIgnoreCase(LEFT_BOX)) {
+            // it all depends on my next move now.
+            return this.specialDoubleMoveLeft(nextPosition, nextMove);
+        }
+        if (thing.equalsIgnoreCase(RIGHT_BOX)) {
+            // it all depends on my next move now.
+            return this.specialDoubleMoveRight(nextPosition, nextMove);
+        }
+        throw new RuntimeException("oops");
+    }
+
+    private boolean specialDoubleMoveLeft(final AoCCoord nextPosition, final String nextMove) {
+
+        // I'm hitting the left side of a box
+        // if I'm going right it's normal
+        if (nextMove.equalsIgnoreCase(RIGHT)) {
+            final Box box = this.getBoxAt(nextPosition);
+            if (!this.thingsToMove.contains(box.id)) {
+                this.thingsToMove.add(box.id);
+            }
+            return this.recursiveDoubleMove(nextMove, nextPosition);
+        }
+        // if I'm going left - is this an error ? or should I just skip it and continue
+        if (nextMove.equalsIgnoreCase(LEFT)) {
+            return this.recursiveDoubleMove(nextMove, nextPosition);
+        }
+        // if I'm going up, I need to check both coord above and one to the right
+        if (nextMove.equalsIgnoreCase(UP) || nextMove.equalsIgnoreCase(DOWN)) {
+            final Box box = this.getBoxAt(nextPosition);
+            if (!this.thingsToMove.contains(box.id)) {
+                this.thingsToMove.add(box.id);
+            }
+            final boolean leftSide = this.recursiveDoubleMove(nextMove, nextPosition);
+            final AoCCoord otherHalfOfBox = new AoCCoord(nextPosition.x + 1, nextPosition.y);
+            final boolean rightSide = this.recursiveDoubleMove(nextMove, otherHalfOfBox);
+            return leftSide && rightSide;
+        }
+        throw new RuntimeException("oops");
+    }
+
+    private boolean specialDoubleMoveRight(final AoCCoord nextPosition, final String nextMove) {
+
+        // I'm hitting the right side of a box
+        // if I'm going left it's normal
+        if (nextMove.equalsIgnoreCase(LEFT)) {
+            final AoCCoord otherHalfOfBox = new AoCCoord(nextPosition.x - 1, nextPosition.y);
+            final Box box = this.getBoxAt(otherHalfOfBox);
+            // could have done this as a set or map ...
+            if (!this.thingsToMove.contains(box.id)) {
+                this.thingsToMove.add(box.id);
+            }
+            return this.recursiveDoubleMove(nextMove, nextPosition);
+        }
+        // if I'm going right - is this an error ? or should I just skip it and continue
+        if (nextMove.equalsIgnoreCase(RIGHT)) {
+            return this.recursiveDoubleMove(nextMove, nextPosition);
+        }
+        // if I'm going up, I need to check both coord above and one to the right
+        if (nextMove.equalsIgnoreCase(UP) || nextMove.equalsIgnoreCase(DOWN)) {
+            final AoCCoord otherHalfOfBox = new AoCCoord(nextPosition.x - 1, nextPosition.y);
+            final Box box = this.getBoxAt(otherHalfOfBox);
+            if (!this.thingsToMove.contains(box.id)) {
+                this.thingsToMove.add(box.id);
+            }
+            final boolean leftSide = this.recursiveDoubleMove(nextMove, nextPosition);
+            final boolean rightSide = this.recursiveDoubleMove(nextMove, otherHalfOfBox);
+            return leftSide && rightSide;
         }
         throw new RuntimeException("oops");
     }
@@ -232,7 +387,86 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.loadDoubleMap(input);
+
+        this.findRobotAndDoubleBoxes();
+        if (DEBUG) {
+            this.drawChallengeMap();
+        }
+
+        this.thingsToMove = new ArrayList<>();
+
+        for (final String move : this.moves) {
+            this.doubleMove(move);
+            if (DEBUG) {
+                this.drawChallengeMap();
+                this.listBoxes();
+                System.out.println();
+            }
+        }
+
+        return String.valueOf(this.sumBoxCoordinates());
+    }
+
+    private void listBoxes() {
+
+        this.boxes.forEach(System.out::println);
+    }
+
+    private void findRobotAndDoubleBoxes() {
+
+        this.boxes = new ArrayList<>();
+        for (int x = 0; x < this.mapWidth; x++) {
+            for (int y = 0; y < this.mapHeight; y++) {
+                final String thing = this.getChallengeMapLetter(x, y);
+                if (thing.equalsIgnoreCase("@")) {
+                    final AoCCoord c = new AoCCoord(x, y);
+                    this.robot = new Robot(c);
+                }
+                if (thing.equalsIgnoreCase("[")) {
+                    final AoCCoord c = new AoCCoord(x, y);
+                    this.boxes.add(new Box(c));
+                }
+                // don't worry about the second side of the box
+            }
+        }
+    }
+
+    private void loadDoubleMap(final String[] input) {
+
+        this.loadMap(input);
+
+        final List<String> doubleMap = new ArrayList<>();
+        for (final String line : this.challengeMap) {
+            final String mutatedLine = this.mutateLine(line);
+            doubleMap.add(mutatedLine);
+        }
+        this.challengeMap.clear();
+        this.challengeMap.addAll(doubleMap);
+        this.mapWidth = this.mapWidth * 2;
+    }
+
+    private String mutateLine(final String line) {
+
+        final StringBuilder mutatedLine = new StringBuilder();
+        for (int i = 0; i < line.length(); i++) {
+            final String letter = line.charAt(i) + "";
+            if (letter.equalsIgnoreCase("#")) {
+                mutatedLine.append("##");
+                continue;
+            }
+            if (letter.equalsIgnoreCase("O")) {
+                mutatedLine.append("[]");
+                continue;
+            }
+            if (letter.equalsIgnoreCase("@")) {
+                mutatedLine.append("@.");
+                continue;
+            }
+            mutatedLine.append("..");
+        }
+        return mutatedLine.toString();
     }
 
     static class ThingWithCoord {
@@ -250,7 +484,6 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
             this.position = position;
             this.symbol = ROBOT;
         }
-
     }
 
     static class Box extends ThingWithCoord {
@@ -260,6 +493,11 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
             this.id = UUID.randomUUID().toString();
             this.position = position;
             this.symbol = BOX;
+        }
+
+        @Override
+        public String toString() {
+            return this.id + " " + this.position;
         }
     }
 }

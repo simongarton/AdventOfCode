@@ -9,6 +9,16 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 15: Warehouse Woes
+
+Lovely. Those dang robots again, only this time they are pushing boxes around in a warehouse ...
+but if the boxes pile up against a wall, they stop.
+
+Part 1 was straight forward. Part 2 was wonderfully devious, the boxes got twice as wide, _and so
+would overlap_ if you pushed them in a certain way. Heaps of fun.
+
+Wrote far too much code, but got the answer.
+
 ## Day 14: Restroom Redoubt
 
 Much nicer. A map, with robots moving around in different directions. Part 1 : at time N, count how many are in each
