@@ -266,7 +266,7 @@ public abstract class AdventOfCodeChallenge {
             throw new RuntimeException(y + " is out of range");
         }
         final String line = this.challengeMap.get(y);
-        final String newLine = line.substring(0, x - 1) + letter + line.substring(x + 1);
+        final String newLine = line.substring(0, x) + letter + line.substring(x + 1);
         this.challengeMap.remove(y);
         this.challengeMap.add(y, newLine);
     }
@@ -379,7 +379,7 @@ public abstract class AdventOfCodeChallenge {
             if (o == null || this.getClass() != o.getClass()) {
                 return false;
             }
-            final LongCoord coord = (LongCoord) o;
+            final AoCLongCoord coord = (AoCLongCoord) o;
             return this.x == coord.x && this.y == coord.y;
         }
 
