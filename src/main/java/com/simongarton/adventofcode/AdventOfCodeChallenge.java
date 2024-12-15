@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class AdventOfCodeChallenge {
@@ -246,6 +247,31 @@ public abstract class AdventOfCodeChallenge {
         System.out.println();
     }
 
+    protected String getChallengeMapLetter(final AoCCoord c) {
+
+        return this.getChallengeMapLetter(c.x, c.y);
+    }
+
+    protected void setChallengeMapLetter(final AoCCoord c, final String letter) {
+
+        this.setChallengeMapLetter(c.x, c.y, letter);
+    }
+
+    protected void setChallengeMapLetter(final int x, final int y, final String letter) {
+
+        if (x < 0 || x >= this.mapWidth) {
+            throw new RuntimeException(x + " is out of range");
+        }
+        if (y < 0 || y >= this.mapHeight) {
+            throw new RuntimeException(y + " is out of range");
+        }
+        final String line = this.challengeMap.get(y);
+        final String newLine = line.substring(0, x - 1) + letter + line.substring(x + 1);
+        this.challengeMap.remove(y);
+        this.challengeMap.add(y, newLine);
+    }
+
+
     protected String getChallengeMapLetter(final int x, final int y) {
 
         if (x < 0 || x >= this.mapWidth) {
@@ -288,5 +314,79 @@ public abstract class AdventOfCodeChallenge {
     protected double pythagoras(final double a, final double b) {
 
         return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+    }
+
+    public static class AoCCoord {
+
+        public final int x;
+        public final int y;
+
+        public AoCCoord(final int x, final int y) {
+
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public String toString() {
+
+            return this.x + "," + this.y;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+
+            if (this == o) {
+                return true;
+            }
+            if (o == null || this.getClass() != o.getClass()) {
+                return false;
+            }
+            final AoCCoord aoCCoord = (AoCCoord) o;
+            return this.x == aoCCoord.x && this.y == aoCCoord.y;
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(this.x, this.y);
+        }
+    }
+
+    public static class AoCLongCoord {
+
+        public final long x;
+        public final long y;
+
+        public AoCLongCoord(final long x, final long y) {
+
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public String toString() {
+
+            return this.x + "," + this.y;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+
+            if (this == o) {
+                return true;
+            }
+            if (o == null || this.getClass() != o.getClass()) {
+                return false;
+            }
+            final LongCoord coord = (LongCoord) o;
+            return this.x == coord.x && this.y == coord.y;
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(this.x, this.y);
+        }
     }
 }

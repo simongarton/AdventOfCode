@@ -43,10 +43,10 @@ public class Year2021Day9 extends AdventOfCodeChallenge {
         for (int col = 0; col < this.width; col++) {
             for (int row = 0; row < this.height; row++) {
                 if (this.riskLevel(col, row) > 0) {
-                    final Coord coord = new Coord(col, row);
-                    final Basin basin = new Basin(coord);
+                    final Coord Coord = new Coord(col, row);
+                    final Basin basin = new Basin(Coord);
                     basins.add(basin);
-                    coordBasinMap.put(coord.toString(), basin);
+                    coordBasinMap.put(Coord.toString(), basin);
                 }
             }
         }
@@ -112,7 +112,7 @@ public class Year2021Day9 extends AdventOfCodeChallenge {
             return false;
         }
         final Basin basin = coordBasinMap.get(neighbour.toString());
-        basin.coords.add(spotCoord);
+        basin.Coords.add(spotCoord);
         coordBasinMap.put(spotCoord.toString(), basin);
         return true;
     }
@@ -162,16 +162,16 @@ public class Year2021Day9 extends AdventOfCodeChallenge {
 
     public static final class Basin {
         private final Coord center;
-        private final List<Coord> coords;
+        private final List<Coord> Coords;
 
         public Basin(final Coord center) {
             this.center = center;
-            this.coords = new ArrayList<>();
-            this.coords.add(center);
+            this.Coords = new ArrayList<>();
+            this.Coords.add(center);
         }
 
         public int size() {
-            return this.coords.size();
+            return this.Coords.size();
         }
     }
 }

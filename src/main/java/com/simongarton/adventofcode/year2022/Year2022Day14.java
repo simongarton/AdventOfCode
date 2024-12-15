@@ -58,9 +58,9 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
         final List<List<Coord>> coordLines = new ArrayList<>();
         for (final String line : input) {
             final String[] coords = line.split(" -> ");
-            final List<Coord> coordLine = Arrays.stream(coords).map(Coord::new).collect(Collectors.toList());
-            this.updateBounds(coordLine);
-            coordLines.add(coordLine);
+            final List<Coord> CoordLine = Arrays.stream(coords).map(Coord::new).collect(Collectors.toList());
+            this.updateBounds(CoordLine);
+            coordLines.add(CoordLine);
         }
         // silly hack for map
         this.bounds.setMinY(0);
@@ -81,8 +81,8 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
             }
         }
         // now draw the rocks
-        for (final List<Coord> coordLine : coordLines) {
-            this.addRocks(coordLine);
+        for (final List<Coord> CoordLine : coordLines) {
+            this.addRocks(CoordLine);
         }
     }
 
@@ -149,10 +149,10 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
         return this.map[index];
     }
 
-    private void addRocks(final List<Coord> coordLine) {
-        for (int index = 0; index < coordLine.size() - 1; index++) {
-            final Coord from = coordLine.get(index);
-            final Coord to = coordLine.get(index + 1);
+    private void addRocks(final List<Coord> CoordLine) {
+        for (int index = 0; index < CoordLine.size() - 1; index++) {
+            final Coord from = CoordLine.get(index);
+            final Coord to = CoordLine.get(index + 1);
             this.drawRocks(from, to);
         }
     }
@@ -262,19 +262,19 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
         }
     }
 
-    private void updateBounds(final List<Coord> coordLine) {
-        for (final Coord coord : coordLine) {
-            if (this.bounds.getMinX() == null || coord.getX() < this.bounds.getMinX()) {
-                this.bounds.setMinY(coord.getX());
+    private void updateBounds(final List<Coord> CoordLine) {
+        for (final Coord Coord : CoordLine) {
+            if (this.bounds.getMinX() == null || Coord.getX() < this.bounds.getMinX()) {
+                this.bounds.setMinY(Coord.getX());
             }
-            if (this.bounds.getMinX() == null || coord.getY() < this.bounds.getMinY()) {
-                this.bounds.setMinX(coord.getY());
+            if (this.bounds.getMinX() == null || Coord.getY() < this.bounds.getMinY()) {
+                this.bounds.setMinX(Coord.getY());
             }
-            if (this.bounds.getMaxX() == null || coord.getX() > this.bounds.getMaxX()) {
-                this.bounds.setMaxX(coord.getX());
+            if (this.bounds.getMaxX() == null || Coord.getX() > this.bounds.getMaxX()) {
+                this.bounds.setMaxX(Coord.getX());
             }
-            if (this.bounds.getMaxY() == null || coord.getY() > this.bounds.getMaxY()) {
-                this.bounds.setMaxY(coord.getY());
+            if (this.bounds.getMaxY() == null || Coord.getY() > this.bounds.getMaxY()) {
+                this.bounds.setMaxY(Coord.getY());
             }
         }
     }

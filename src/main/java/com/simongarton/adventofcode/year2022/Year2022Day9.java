@@ -61,17 +61,17 @@ public class Year2022Day9 extends AdventOfCodeChallenge {
         }
     }
 
-    private void updateCells(final Coord coord) {
-        final Cell cell = this.getOrCreateCell(coord);
+    private void updateCells(final Coord Coord) {
+        final Cell cell = this.getOrCreateCell(Coord);
         cell.tailHasVisited = true;
     }
 
-    private Cell getOrCreateCell(final Coord coord) {
-        final String key = coord.toString();
+    private Cell getOrCreateCell(final Coord Coord) {
+        final String key = Coord.toString();
         if (this.cells.containsKey(key)) {
             return this.cells.get(key);
         }
-        final Cell cell = new Cell(coord);
+        final Cell cell = new Cell(Coord);
         this.cells.put(key, cell);
         return cell;
     }
@@ -180,11 +180,11 @@ public class Year2022Day9 extends AdventOfCodeChallenge {
 
     public static class Cell {
 
-        private final Coord coord;
+        private final Coord Coord;
         private boolean tailHasVisited;
 
-        public Cell(final Coord coord) {
-            this.coord = coord;
+        public Cell(final Coord Coord) {
+            this.Coord = Coord;
             this.tailHasVisited = false;
         }
     }

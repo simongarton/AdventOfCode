@@ -141,6 +141,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     }
 
     private void addMap() {
+
         String newMap = this.maps.get(this.maps.size() - 1)
                 .replace(DOWN, DOT)
                 .replace(UP, DOT)
@@ -154,6 +155,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     }
 
     private String moveBlizzardAndUpdateMap(String newMap, final Blizzard blizzard) {
+
         switch (blizzard.symbol) {
             case RIGHT:
                 blizzard.position.setX(blizzard.position.getX() + 1);
@@ -199,6 +201,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     }
 
     public static final class Blizzard {
+
         private final Coord position;
         private final String symbol;
 
@@ -209,6 +212,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     }
 
     public static final class State {
+
         private final int iteration;
         private final Coord position;
         private final Year2022Day24 challenge;

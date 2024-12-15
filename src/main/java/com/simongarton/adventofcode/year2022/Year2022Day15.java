@@ -147,18 +147,18 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
         }
     }
 
-    private void updateBounds(final Coord coord) {
-        if (this.bounds.minX == null || coord.getX() < this.bounds.minX) {
-            this.bounds.minX = coord.getX();
+    private void updateBounds(final Coord Coord) {
+        if (this.bounds.minX == null || Coord.getX() < this.bounds.minX) {
+            this.bounds.minX = Coord.getX();
         }
-        if (this.bounds.minY == null || coord.getY() < this.bounds.minY) {
-            this.bounds.minY = coord.getY();
+        if (this.bounds.minY == null || Coord.getY() < this.bounds.minY) {
+            this.bounds.minY = Coord.getY();
         }
-        if (this.bounds.maxX == null || coord.getX() > this.bounds.maxX) {
-            this.bounds.maxX = coord.getX();
+        if (this.bounds.maxX == null || Coord.getX() > this.bounds.maxX) {
+            this.bounds.maxX = Coord.getX();
         }
-        if (this.bounds.maxY == null || coord.getY() > this.bounds.maxY) {
-            this.bounds.maxY = coord.getY();
+        if (this.bounds.maxY == null || Coord.getY() > this.bounds.maxY) {
+            this.bounds.maxY = Coord.getY();
         }
     }
 
@@ -188,9 +188,9 @@ public class Year2022Day15 extends AdventOfCodeChallenge {
         final String address = parts[1].replace("x=", "")
                 .replace("y=", "")
                 .replace(" ", "");
-        final Coord coord = new Coord(address);
-        this.sensors.add(coord);
-        return coord;
+        final Coord Coord = new Coord(address);
+        this.sensors.add(Coord);
+        return Coord;
     }
 
     public static final class Bounds {

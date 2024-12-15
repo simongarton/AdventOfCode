@@ -1,6 +1,7 @@
 package com.simongarton.adventofcode.common;
 
 public class Coord {
+
     private Integer x;
     private Integer y;
 
