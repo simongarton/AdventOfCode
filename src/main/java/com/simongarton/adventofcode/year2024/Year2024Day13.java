@@ -27,7 +27,10 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
         for (final Scenario scenario : this.scenarios) {
             final Long outcome = this.goDirect(scenario);
             if (outcome != null) {
+                System.out.println(scenario + " = " + outcome);
                 minimumTokenSpend += outcome;
+            } else {
+                System.out.println(scenario + " = failed.");
             }
         }
 
@@ -98,26 +101,10 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
         final double bRatio = this.hillClimb(scenario, prizeSlope);
 
-        /*
+        final double deltaX = scenario.buttonA.deltaX + bRatio * scenario.buttonB.deltaX;
+        final double deltaY = scenario.buttonA.deltaY + bRatio * scenario.buttonB.deltaY;
 
-        This is working (again !) for the simple set : but doesn't work
-        for the large numbers. It overshoots massively ending up e.g. for the 2nd one
-        at 10013682936824,10013685112896 but the target is 10000000012748,10000000012176
-
-        I get to total presses 118,841,475,978 and a b ratio of 0.8695648193359374
-        Google Sheets gives me 118,679,047,594.50 (!) and a b ratio of 0.8695652505
-        (approximately)
-
-        Have I got rounding errors ?
-
-         */
-
-        final Button combinedButton = new Button("Combined",
-                scenario.buttonA.deltaX + Math.round(bRatio * scenario.buttonB.deltaX),
-                scenario.buttonA.deltaY + Math.round(bRatio * scenario.buttonB.deltaY)
-        );
-
-        final double buttonDistance = this.pythagoras(combinedButton.deltaX, combinedButton.deltaY);
+        final double buttonDistance = this.pythagoras(deltaX, deltaY);
 
         final double totalPresses = prizeDistance / buttonDistance;
 
@@ -151,23 +138,25 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
         double stepSize = 0.1;
         final List<Double> visited = new ArrayList<>();
 
-        while (stepSize > 1e-6) {
+        final double limit = 1e-30;
+
+        while (stepSize > limit) {
 
             final double downRatio = workingRatio - stepSize;
             final double upRatio = workingRatio + stepSize;
 
             final double workingSlope = this.slopeForCombinedButton(scenario, workingRatio);
-            if (Math.abs(workingSlope - targetSlope) < 1e-6) {
+            if (Math.abs(workingSlope - targetSlope) < limit) {
                 return workingRatio;
             }
 
             final double downSlope = this.slopeForCombinedButton(scenario, downRatio);
             final double upSlope = this.slopeForCombinedButton(scenario, upRatio);
 
-            if (Math.abs(downSlope - targetSlope) < 1e-6) {
+            if (Math.abs(downSlope - targetSlope) < limit) {
                 return downRatio;
             }
-            if (Math.abs(upSlope - targetSlope) < 1e-6) {
+            if (Math.abs(upSlope - targetSlope) < limit) {
                 return upRatio;
             }
 
@@ -176,9 +165,9 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
             workingRatio = absoluteDifferenceDown < absoluteDifferenceUp ? downRatio : upRatio;
 
-            System.out.println(workingRatio + " @ " + stepSize + " target " + targetSlope + " down " + downSlope + " up " + upSlope + " working " + workingSlope);
+//            System.out.println(workingRatio + " @ " + stepSize + " target " + targetSlope + " down " + downSlope + " up " + upSlope + " working " + workingSlope);
             if (visited.contains(workingRatio)) {
-                stepSize /= 2.0;
+                stepSize /= 2.0D;
             }
             visited.add(workingRatio);
             if (visited.size() > 2) {
@@ -186,9 +175,7 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
             }
         }
 
-        System.out.println("returning " + workingRatio);
         return workingRatio;
-
     }
 
     private double slopeForCombinedButton(final Scenario scenario,
@@ -313,6 +300,12 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
             this.deltaX = deltaX;
             this.deltaY = deltaY;
         }
+
+        @Override
+        public String toString() {
+            return this.name + ": " + this.deltaX + "," + this.deltaY;
+        }
+
     }
 
     static class Scenario {
@@ -326,6 +319,11 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
             this.buttonA = buttonA;
             this.buttonB = buttonB;
             this.prize = prize;
+        }
+
+        @Override
+        public String toString() {
+            return "[" + this.buttonA + " " + this.buttonB + "] -> " + this.prize;
         }
     }
 }
