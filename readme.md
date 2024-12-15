@@ -21,7 +21,7 @@ had a neigbour ... and this popped out after about seven thousand cycles (and re
 
 ![Part 2](2024-Day14-2.png)
 
-## Day 13: Claw Contraption (1/2)
+## Day 13: Claw Contraption
 
 One of the deceptively simple ones, which bit hard. Given two buttons, each with a different deltaX, deltaY and a cost
 try and hit a target with the number of minimum presses (and costs.)
@@ -39,7 +39,18 @@ though it works for the part1 data.
 I've tried some optimisations and I have smart algorithms working fine for the simple case, but overshooting -
 wildly - with the big numbers. So I think I have a rounding error somewhere.
 
-Spent far too long on it.
+Spent far too long on it. Came back to it once all was quiet in the house ... and found not one but two places
+where I was rounding numbers with 15 digits of precision :facepalm.
+
+It now works. Oddly enough there are a couple of ones where it pauses for a good few seconds ...
+
+```
+[A: 16,70 B: 45,48] -> 10000000002546,10000000004886 failed in 33043ms
+[A: 14,87 B: 67,67] -> 10000000002338,10000000004747 failed in 21540ms
+[A: 19,99 B: 81,83] -> 10000000005945,10000000007921 failed in 8848ms
+```
+
+But it's time to move on.
 
 ## Day 12: Garden Groups
 

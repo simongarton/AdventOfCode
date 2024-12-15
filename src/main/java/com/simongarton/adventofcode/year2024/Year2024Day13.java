@@ -27,10 +27,7 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
         for (final Scenario scenario : this.scenarios) {
             final Long outcome = this.goDirect(scenario);
             if (outcome != null) {
-                System.out.println(scenario + " = " + outcome);
                 minimumTokenSpend += outcome;
-            } else {
-                System.out.println(scenario + " = failed.");
             }
         }
 
@@ -118,15 +115,9 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
                 aPresses * scenario.buttonA.deltaY + bPresses * scenario.buttonB.deltaY
         );
 
-        System.out.println(endPoint);
-        System.out.println(scenario.prize);
-
         if (endPoint.equals(scenario.prize)) {
-            System.out.println("gotcha");
-            System.out.println();
             return 3 * aPresses + bPresses;
         } else {
-            System.out.println();
             return null;
         }
     }
@@ -165,7 +156,6 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
             workingRatio = absoluteDifferenceDown < absoluteDifferenceUp ? downRatio : upRatio;
 
-//            System.out.println(workingRatio + " @ " + stepSize + " target " + targetSlope + " down " + downSlope + " up " + upSlope + " working " + workingSlope);
             if (visited.contains(workingRatio)) {
                 stepSize /= 2.0D;
             }
@@ -240,14 +230,22 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
         this.scenarios = this.readScenarios(input, true);
 
+        final long runStart = System.currentTimeMillis();
+
         long minimumTokenSpend = 0;
         for (final Scenario scenario : this.scenarios) {
+            final long scenarioStart = System.currentTimeMillis();
             final Long outcome = this.useMathsAndGoalSeek(scenario);
             if (outcome != null) {
                 minimumTokenSpend += outcome;
+                System.out.println(scenario + " solved in " + (System.currentTimeMillis() - scenarioStart));
+            } else {
+                System.out.println(scenario + " failed in " + (System.currentTimeMillis() - scenarioStart));
             }
+
         }
 
+        System.out.println("All done in n " + (System.currentTimeMillis() - runStart));
         return String.valueOf(minimumTokenSpend);
     }
 
