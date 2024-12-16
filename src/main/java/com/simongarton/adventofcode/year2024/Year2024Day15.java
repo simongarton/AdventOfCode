@@ -63,11 +63,8 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
         for (final String move : this.moves) {
             this.move(move);
             if (DEBUG) {
-                this.drawChallengeMap();
+//                this.drawChallengeMap();
                 this.paintMap(i++);
-            }
-            if (i > 100) {
-                break;
             }
         }
 
@@ -111,13 +108,11 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
         }
     }
 
-
     private void clearBackground(final Graphics2D graphics2D) {
 
         graphics2D.setPaint(Color.BLACK);
         graphics2D.fillRect(0, 0, this.mapWidth * BITMAP_SCALE, this.mapHeight * BITMAP_SCALE);
     }
-
 
     private void move(final String move) {
 
