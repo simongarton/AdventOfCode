@@ -151,6 +151,19 @@ public abstract class AdventOfCodeChallenge {
         }
     }
 
+    protected void writeStringsToFile(final List<String> lines, final File file) {
+
+        try {
+            final BufferedWriter br = new BufferedWriter(new FileWriter(file.getAbsolutePath()));
+            for (final String str : lines) {
+                br.write(str + System.lineSeparator());
+            }
+            br.close();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     public static final class Outcome {
         boolean part1 = true;
         boolean part2 = true;

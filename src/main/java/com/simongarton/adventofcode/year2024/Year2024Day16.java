@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,79 +54,95 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         // 119476 saved a few
         // 115484 not the right answer (no more clues)
         // 114480 if I face North - which (a) is cheating and (b) means I'm not evaluating all options
+        // back to 119476 now .. and still only one path
+        // 115480 but now I have lots of paths. I was taking the first of the available, not the best
+        //  -- why would this make a difference ?
 
         this.loadChallengeMap(input);
 
         final AoCCoord startCoord = this.findStart();
         final AoCCoord endCoord = this.findEnd();
-//        final AoCCoord endCoord = this.findStart();
-//        final AoCCoord startCoord = this.findEnd();
-
-//        System.out.println("Start " + startCoord);
-        System.out.println("End " + endCoord);
 
         final List<State> available = new ArrayList<>();
         final List<State> visited = new ArrayList<>();
 
         final List<State> hits = new ArrayList<>();
 
-        final State startState = new State(startCoord, 0, 0, null, "");
+        final State startState = new State(startCoord, 1, 0, null, ".");
         available.add(startState);
-        // I didn't need to do this for the samples
-        // this.addTurningState(startState, visited, available, (startState.direction + 1) % 4, "R");
-        // this.addTurningState(startState, visited, available, (startState.direction + 3) % 4, "L");
 
-        State workingState = null;
+        State workingState;
         int bestScore = Integer.MAX_VALUE;
-        double bestDistance = Double.MAX_VALUE;
+        final double bestDistance = Double.MAX_VALUE;
         int time = 0;
         /*
         I am seeing just one hit. I can see it exploring fully, but once it hits the
-        EndCoord it just gives up.
+        EndCoord it never finds any more. It finds 3 on the big sample. I don't believe there is only
+        one path - I can see others. But it never attempts them - because too many turns ?
          */
+        final List<String> tried = new ArrayList<>();
+        final List<String> graph = new ArrayList<>();
+        graph.add("digraph {");
+        graph.add("rankdir=\"LR\"");
         while (!available.isEmpty()) {
+            // with the big sample, if I grab the 0th, I get 3 answers
+            // but if I grab the best, I only get 2.
+            // this has to be a bug.
             final int index = this.bestOfAvailable(available, endCoord);
             workingState = available.remove(index);
+            tried.add(workingState.toString());
             time++;
             final double distance = this.pythag(workingState.coord, endCoord);
-            if (distance < bestDistance) {
-                bestDistance = distance;
-                System.out.println("Closest at " + workingState.coord +
-                        " going to " + endCoord +
-                        " distance " + Math.round(distance) +
-                        " with moves " + workingState.moves +
-                        " visited " + visited.size() +
-                        " available " + available.size() +
-                        " at time " + time);
-                this.paintChallengeMapWithState(workingState, time, available);
-            }
+//            if (distance < bestDistance) {
+//                bestDistance = distance;
+//                System.out.println("Closest at " + workingState.coord +
+//                        " going to " + endCoord +
+//                        " distance " + Math.round(distance) +
+//                        " with moves " + workingState.moves +
+//                        " visited " + visited.size() +
+//                        " available " + available.size() +
+//                        " at time " + time);
+//                this.paintChallengeMapWithState(workingState, time, available);
+//            }
             if (workingState.coord.equals(endCoord)) {
-//                this.drawChallengeMapWithState(workingState);
                 hits.add(workingState);
                 bestScore = workingState.moves;
-//                this.paintChallengeMapWithState(workingState, time, available);
-                // if I got there, I don't need to check neighbours ?
-//                continue;
                 System.out.println("Found endCoord at " + time + " with " + workingState + " and I have " + available.size() + " left.");
+                // if I got there, I don't need to check neighbours
+                continue;
             }
             if (workingState.moves >= bestScore) {
-                // no point, bro.
-//                continue;
+                // I can drop out here for performance
+                // I disabled this on part 1 and still only got one answer.
+                continue;
             }
-            visited.add(workingState);
+            // I must not be picking up an option here ?
             final List<State> neighbours = this.getAvailableStates(workingState, visited);
+            for (final State neighbour : neighbours) {
+                graph.add("\"" + workingState + "\" -> \"" + neighbour + "\"");
+            }
             available.addAll(neighbours);
+            visited.add(workingState);
         }
         int score = Integer.MAX_VALUE;
         State bestState = null;
         for (final State hit : hits) {
-//            this.paintChallengeMapWithState(workingState, ++time, available);
+//            this.paintChallengeMapWithState(hit, ++time, available);
+            System.out.println(
+                    "Hit at " + hit.coord +
+                            " came from " + hit.previousState.coord +
+                            " with moves " + hit.moves);
+            System.out.println("  " + this.getPath(hit));
             if (hit.moves < score) {
                 score = hit.moves;
                 bestState = hit;
             }
         }
         this.paintChallengeMapWithState(bestState, ++time, available);
+
+        this.writeStringsToFile(tried, Path.of("tried.txt").toFile());
+        graph.add("}");
+        this.writeStringsToFile(graph, Path.of("graph.dot").toFile());
         return String.valueOf(score);
     }
 
@@ -141,6 +158,24 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
     }
 
     private int bestOfAvailable(final List<State> available, final AoCCoord endCoord) {
+
+        double distance = Double.MAX_VALUE;
+        int best = -1;
+        int index = 0;
+        for (final State state : available) {
+            final AoCCoord coord = state.coord;
+//            final double thisDistance = this.pythag(coord, endCoord);
+            final double thisDistance = state.moves;
+            if (thisDistance < distance) {
+                best = index;
+                distance = thisDistance;
+            }
+            index++;
+        }
+        return best;
+    }
+
+    private int bestOfAvailableSlow(final List<State> available, final AoCCoord endCoord) {
 
         double distance = Double.MAX_VALUE;
         int best = -1;
@@ -231,6 +266,16 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         return line.toString();
     }
 
+    private String getPath(final State workingState) {
+        final StringBuilder line = new StringBuilder(workingState.action);
+        State nextState = workingState.previousState;
+        while (nextState != null) {
+            line.append(nextState.action);
+            nextState = nextState.previousState;
+        }
+        return line.reverse().toString();
+    }
+
     private void explainState(final State workingState) {
         final StringBuilder line = new StringBuilder("working " + workingState.id + " @ " + workingState.coord + " [" + workingState.direction + "] action " + workingState.action + "\n");
         State nextState = workingState.previousState;
@@ -310,7 +355,9 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
 
     private List<State> getAvailableStates(final State workingState, final List<State> visited) {
 
+        // this is my current working state - and I may not yet have moved at all.
         final List<State> neighbours = new ArrayList<>();
+        // pick up going forward as a default if it's empty
         this.maybeAddState(workingState, visited, neighbours, workingState.direction);
         if (this.looksInteresting(workingState, (workingState.direction + 1) % 4)) {
             this.addTurningState(workingState, visited, neighbours, (workingState.direction + 1) % 4, "R");
@@ -350,10 +397,8 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
                     workingState,
                     "F");
             // this saved 8 ?!
-            if (this.alreadyVisitedWithBetterCost(
+            if (this.alreadyVisited(
                     state,
-                    "F",
-                    direction,
                     visited)) {
                 return;
             }
@@ -368,10 +413,15 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
                                  final int direction,
                                  final String action) {
 
-        if (this.alreadyVisitedWithBetterCost(
+//        if (this.alreadyVisitedWithBetterCost(
+//                workingState,
+//                action,
+//                direction,
+//                visited)) {
+//            return;
+//        }
+        if (this.alreadyVisited(
                 workingState,
-                action,
-                direction,
                 visited)) {
             return;
         }
@@ -382,6 +432,17 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
                 workingState,
                 action);
         neighbours.add(state);
+    }
+
+    private boolean alreadyVisited(final State workingState,
+                                   final List<State> visited) {
+
+        for (final State state : visited) {
+            if (state.coord.equals(workingState.coord)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean alreadyVisitedWithBetterCost(final State workingState,
