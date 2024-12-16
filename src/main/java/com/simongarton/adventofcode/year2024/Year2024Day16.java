@@ -2,12 +2,21 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
+
 public class Year2024Day16 extends AdventOfCodeChallenge {
+
+    private static final int BITMAP_SCALE = 4;
 
     private static final String WALL = "#";
     private static final String START = "S";
@@ -32,6 +41,13 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
+        // 121476 too high
+        // 127488 also too high
+
+        // huh, new approach gave me 123480
+
+        // 119484 still too high - but way quicker
+
         this.loadChallengeMap(input);
 
         final AoCCoord startCoord = this.findStart();
@@ -49,48 +65,124 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         available.add(startState);
 
         State workingState = null;
-        final int steps = 0;
         int bestScore = Integer.MAX_VALUE;
-        int bestX = 0;
-        int bestY = 0;
+        double bestDistance = Double.MAX_VALUE;
+        int time = 0;
         while (!available.isEmpty()) {
-            workingState = available.remove(0);
-//            this.explainState(workingState);
-//            this.listStates(available);
-//            this.drawChallengeMapWithState(workingState);
+            final int index = this.bestOfAvailable(available, endCoord);
+            workingState = available.remove(index);
+            time++;
+            final double distance = this.pythag(workingState.coord, endCoord);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                System.out.println("Closest at " + workingState.coord +
+                        " going to " + endCoord +
+                        " distance " + Math.round(distance) +
+                        " with moves " + workingState.moves +
+                        " visited " + visited.size() +
+                        " available " + available.size() +
+                        " at time " + time);
+                this.paintChallengeMapWithState(workingState, time);
+            }
             if (workingState.coord.equals(endCoord)) {
                 this.drawChallengeMapWithState(workingState);
                 hits.add(workingState);
                 bestScore = workingState.moves;
-                continue;
+                // if I got there, I don't need to check neighbours ?
+                // continue;
             }
             if (workingState.moves >= bestScore) {
+                // no point, bro.
                 continue;
-            }
-            if (workingState.coord.x > bestX) {
-                bestX = workingState.coord.x;
-                System.out.println("best " + new AoCCoord(bestX, bestY));
-            }
-            if (workingState.coord.y > bestY) {
-                bestY = workingState.coord.y;
-                System.out.println("best " + new AoCCoord(bestX, bestY));
             }
             visited.add(workingState);
             final List<State> neighbours = this.getAvailableStates(workingState, visited);
             available.addAll(neighbours);
-//            System.out.println("steps " + steps++ + ": " + available.size() + " -> " + visited.size());
-
         }
-//        System.out.println("finished on " + steps + ": " + available.size() + " -> " + visited.size());
-        State bestState = null;
         int score = Integer.MAX_VALUE;
         for (final State hit : hits) {
             if (hit.moves < score) {
-                bestState = hit;
                 score = hit.moves;
             }
         }
         return String.valueOf(score);
+    }
+
+    private int bestOfAvailableWeird(final List<State> available, final AoCCoord endCoord) {
+
+        int index = 0;
+        int best = 0;
+        int i = 0;
+        for (final State state : available) {
+            final String path = this.buildPath(state);
+            final int fs = this.countFs(path);
+            if (fs > best) {
+                best = fs;
+                index = i;
+            }
+            i++;
+        }
+        return index;
+    }
+
+    private int countFs(final String path) {
+
+        int fs = 0;
+        for (int i = 0; i < path.length(); i++) {
+            if (path.substring(i, i + 1).equalsIgnoreCase("F")) {
+                fs++;
+            }
+        }
+        return fs;
+    }
+
+    // this looked promising, but seems to finish abruptly.
+    private int bestOfAvailable(final List<State> available, final AoCCoord endCoord) {
+
+        double distance = Double.MAX_VALUE;
+        int best = -1;
+        int index = 0;
+        for (final State state : available) {
+            final AoCCoord coord = state.coord;
+            // I know I'm available - but what about the next ? I should keep going where possible
+            final AoCCoord nextCoord = this.nextCoord(coord, state.direction);
+            final String thing = this.getChallengeMapLetter(nextCoord);
+            if (EMPTY.equalsIgnoreCase(thing)) {
+                continue;
+            }
+            final double thisDistance = this.pythag(coord, endCoord) + state.moves;
+            if (thisDistance < distance) {
+                best = index;
+                distance = thisDistance;
+            }
+            index++;
+        }
+        if (best > -1) {
+            return best;
+        }
+        best = -1;
+        index = 0;
+        distance = Double.MAX_VALUE;
+        for (final State state : available) {
+            final AoCCoord coord = state.coord;
+            final double thisDistance = this.pythag(coord, endCoord) + state.moves;
+            if (thisDistance < distance) {
+                best = index;
+                distance = thisDistance;
+            }
+            index++;
+        }
+        if (best == -1) {
+            throw new RuntimeException("nothing ?");
+        }
+        return best;
+    }
+
+    private double pythag(final AoCCoord coord, final AoCCoord endCoord) {
+        return Math.sqrt(
+                Math.pow(endCoord.x - coord.x, 2) +
+                        Math.pow(endCoord.y - coord.y, 2)
+        );
     }
 
     private void listStates(final List<State> stateList) {
@@ -125,6 +217,17 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         System.out.println("Rights " + rights);
     }
 
+    private String buildPath(final State workingState) {
+
+        final StringBuilder line = new StringBuilder(workingState.action);
+        State nextState = workingState.previousState;
+        while (nextState != null) {
+            line.append(nextState.action);
+            nextState = nextState.previousState;
+        }
+        return line.toString();
+    }
+
     private void explainState(final State workingState) {
         final StringBuilder line = new StringBuilder("working " + workingState.id + " @ " + workingState.coord + " [" + workingState.direction + "] action " + workingState.action + "\n");
         State nextState = workingState.previousState;
@@ -142,6 +245,20 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         }
         System.out.println(line);
     }
+
+
+    private void paintChallengeMapWithState(final State startState, final int time) {
+
+        final int moves = startState.moves;
+        final List<String> lines = new ArrayList<>(this.challengeMap);
+        State workingState = startState;
+        while (workingState != null) {
+            this.updateWithState(lines, workingState);
+            workingState = workingState.previousState;
+        }
+        this.paintMap(time, lines);
+    }
+
 
     private void drawChallengeMapWithState(final State startState) {
 
@@ -185,9 +302,28 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
 
         final List<State> neighbours = new ArrayList<>();
         this.maybeAddState(workingState, visited, neighbours, workingState.direction);
-        this.addState(workingState, visited, neighbours, (workingState.direction + 1) % 4, "R");
-        this.addState(workingState, visited, neighbours, (workingState.direction + 3) % 4, "L");
+        if (this.looksInteresting(workingState, (workingState.direction + 1) % 4)) {
+            this.addState(workingState, visited, neighbours, (workingState.direction + 1) % 4, "R");
+        }
+        if (this.looksInteresting(workingState, (workingState.direction + 3) % 4)) {
+            this.addState(workingState, visited, neighbours, (workingState.direction + 3) % 4, "L");
+        }
         return neighbours;
+    }
+
+    private boolean looksInteresting(final State workingState, final int newDirection) {
+        switch (newDirection) {
+            case 0:
+                return !this.getChallengeMapLetter(workingState.coord.x, workingState.coord.y - 1).equalsIgnoreCase(WALL);
+            case 1:
+                return !this.getChallengeMapLetter(workingState.coord.x + 1, workingState.coord.y).equalsIgnoreCase(WALL);
+            case 2:
+                return !this.getChallengeMapLetter(workingState.coord.x, workingState.coord.y + 1).equalsIgnoreCase(WALL);
+            case 3:
+                return !this.getChallengeMapLetter(workingState.coord.x - 1, workingState.coord.y).equalsIgnoreCase(WALL);
+            default:
+                throw new RuntimeException("oops");
+        }
     }
 
     private void maybeAddState(final State workingState,
@@ -214,11 +350,11 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
                           final int direction,
                           final String action) {
 
-        if (this.alreadyVisited(
-                workingState.coord,
+        if (this.alreadyVisitedWithBetterCost(
+                workingState,
                 action,
-                visited,
-                true)) {
+                direction,
+                visited)) {
             return;
         }
         final State state = new State(
@@ -230,15 +366,17 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         neighbours.add(state);
     }
 
-    private boolean alreadyVisited(final AoCCoord aoCCoord,
-                                   final String action,
-                                   final List<State> visited,
-                                   final boolean includeAction) {
+    private boolean alreadyVisitedWithBetterCost(final State workingState,
+                                                 final String action,
+                                                 final int direction,
+                                                 final List<State> visited) {
 
         for (final State state : visited) {
-            if (state.coord.equals(aoCCoord)) {
-                if (!includeAction || action.equalsIgnoreCase(state.action)) {
+            if (state.coord.equals(workingState.coord)) {
+                if (direction == state.direction && action.equalsIgnoreCase(state.action)) {
+//                    if (state.moves < workingState.moves) {
                     return true;
+//                    }
                 }
             }
         }
@@ -305,12 +443,12 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
 
     static class State {
 
-        String id;
-        AoCCoord coord;
-        int moves;
-        int direction; // N 0 E 1 S 2 W 3
-        State previousState;
-        String action; // "", "L", "R", "F"
+        final String id;
+        final AoCCoord coord;
+        final int moves;
+        final int direction; // N 0 E 1 S 2 W 3
+        final State previousState;
+        final String action; // "", "L", "R", "F"
 
         public State(final AoCCoord coord,
                      final int direction,
@@ -327,4 +465,45 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         }
     }
 
+    private void paintMap(final int steps, final List<String> lines) {
+
+        final String filename = "/Users/simongarton/projects/java/AdventOfCode/temp/maze-" + String.format("%06d", steps) + ".png";
+
+        final BufferedImage bufferedImage = new BufferedImage(this.mapWidth * BITMAP_SCALE, this.mapHeight * BITMAP_SCALE, TYPE_INT_RGB);
+        final Graphics2D graphics2D = bufferedImage.createGraphics();
+        this.clearBackground(graphics2D);
+        this.paintFloor(graphics2D, lines);
+        try {
+            ImageIO.write(bufferedImage, "PNG", new File(filename));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        graphics2D.dispose();
+    }
+
+    private void paintFloor(final Graphics2D graphics2D, final List<String> lines) {
+
+        for (int row = 0; row < this.mapWidth; row++) {
+            for (int col = 0; col < this.mapHeight; col++) {
+                final String thing = lines.get(row).charAt(col) + "";
+                if (thing.equalsIgnoreCase(EMPTY)) {
+                    continue;
+                }
+                graphics2D.setPaint(new Color(200, 0, 0)); // trail
+                if (thing.equalsIgnoreCase(WALL)) {
+                    graphics2D.setPaint(new Color(50, 50, 50)); // wall
+                }
+                if (thing.equalsIgnoreCase("E")) {
+                    graphics2D.setPaint(new Color(0, 250, 0)); // end
+                }
+                graphics2D.fillRect(col * BITMAP_SCALE, row * BITMAP_SCALE, BITMAP_SCALE, BITMAP_SCALE);
+            }
+        }
+    }
+
+    private void clearBackground(final Graphics2D graphics2D) {
+
+        graphics2D.setPaint(Color.BLACK);
+        graphics2D.fillRect(0, 0, this.mapWidth * BITMAP_SCALE, this.mapHeight * BITMAP_SCALE);
+    }
 }
