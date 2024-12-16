@@ -2,13 +2,22 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
+
 public class Year2024Day15 extends AdventOfCodeChallenge {
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
+
+    private static final int BITMAP_SCALE = 20;
 
     private static final String WALL = "#";
     private static final String BOX = "O";
@@ -50,15 +59,65 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
 
         this.thingsToMove = new ArrayList<>();
 
+        int i = 0;
         for (final String move : this.moves) {
             this.move(move);
             if (DEBUG) {
                 this.drawChallengeMap();
+                this.paintMap(i++);
+            }
+            if (i > 100) {
+                break;
             }
         }
 
         return String.valueOf(this.sumBoxCoordinates());
     }
+
+    private void paintMap(final int seconds) {
+
+        final String filename = "/Users/simongarton/projects/java/AdventOfCode/temp/warehouse-" + String.format("%05d", seconds) + ".png";
+
+        final BufferedImage bufferedImage = new BufferedImage(this.mapWidth * BITMAP_SCALE, this.mapHeight * BITMAP_SCALE, TYPE_INT_RGB);
+        final Graphics2D graphics2D = bufferedImage.createGraphics();
+        this.clearBackground(graphics2D);
+        this.paintFloor(graphics2D);
+        try {
+            ImageIO.write(bufferedImage, "PNG", new File(filename));
+//            System.out.println(seconds + ":" + filename);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        graphics2D.dispose();
+    }
+
+    private void paintFloor(final Graphics2D graphics2D) {
+
+        for (int row = 0; row < this.mapWidth; row++) {
+            for (int col = 0; col < this.mapHeight; col++) {
+                final String thing = this.getChallengeMapLetter(col, row);
+                if (thing.equalsIgnoreCase(EMPTY)) {
+                    continue;
+                }
+                graphics2D.setPaint(new Color(50, 50, 50));
+                if (thing.equalsIgnoreCase(BOX) || thing.equalsIgnoreCase(LEFT_BOX) || thing.equalsIgnoreCase(RIGHT_BOX)) {
+                    graphics2D.setPaint(new Color(0, 200, 0));
+                }
+                if (thing.equalsIgnoreCase(ROBOT)) {
+                    graphics2D.setPaint(new Color(200, 0, 0));
+                }
+                graphics2D.fillRect(col * BITMAP_SCALE, row * BITMAP_SCALE, BITMAP_SCALE, BITMAP_SCALE);
+            }
+        }
+    }
+
+
+    private void clearBackground(final Graphics2D graphics2D) {
+
+        graphics2D.setPaint(Color.BLACK);
+        graphics2D.fillRect(0, 0, this.mapWidth * BITMAP_SCALE, this.mapHeight * BITMAP_SCALE);
+    }
+
 
     private void move(final String move) {
 
