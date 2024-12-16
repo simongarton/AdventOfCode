@@ -13,6 +13,7 @@ import com.simongarton.adventofcode.exceptions.InvalidSetupException;
 import lombok.Getter;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -314,6 +315,26 @@ public abstract class AdventOfCodeChallenge {
     protected double pythagoras(final double a, final double b) {
 
         return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+    }
+
+    protected void emptyTemp() {
+        final File tempFile = Path.of("temp").toFile();
+        this.deleteFolder(tempFile);
+        tempFile.mkdir();
+    }
+
+    private void deleteFolder(final File folder) {
+        final File[] files = folder.listFiles();
+        if (files != null) { //some JVMs return null for empty dirs
+            for (final File f : files) {
+                if (f.isDirectory()) {
+                    this.deleteFolder(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        folder.delete();
     }
 
     public static class AoCCoord {
