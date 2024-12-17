@@ -9,6 +9,16 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 16: Reindeer Maze
+
+Sometimes you just get stuck. Today was a maze-navigating algorithm, straight forward enough, except that making a turn
+counts as a move, and is expensive ... meaning you have to be careful about pruning nodes. With hindsight, and looking
+at my final code, it was reasonably straight forward with A*.
+
+Part 2 just added a level - there are multiple equivalent paths, and by default A* only gets the first. A very bright
+friend really struggled with this - they've been beating me consistently all month - but because I'd spent so much time
+on part 1, I must have been in the zone.
+
 ## Day 15: Warehouse Woes
 
 Lovely. Those dang robots again, only this time they are pushing boxes around in a warehouse ...
