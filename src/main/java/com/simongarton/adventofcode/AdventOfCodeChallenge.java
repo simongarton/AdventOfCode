@@ -163,7 +163,7 @@ public abstract class AdventOfCodeChallenge {
             throw new RuntimeException(e);
         }
     }
-    
+
     public static final class Outcome {
         boolean part1 = true;
         boolean part2 = true;
@@ -330,7 +330,7 @@ public abstract class AdventOfCodeChallenge {
         return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
     }
 
-    protected void emptyTemp() {
+    protected void emptyTempFolder() {
         final File tempFile = Path.of("temp").toFile();
         this.deleteFolder(tempFile);
         tempFile.mkdir();

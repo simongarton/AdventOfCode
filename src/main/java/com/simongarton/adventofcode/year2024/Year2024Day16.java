@@ -7,17 +7,18 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class Year2024Day16 extends AdventOfCodeChallenge {
 
     private static final int BITMAP_SCALE = 4;
+
+    private static final boolean DEBUG = false;
 
     private static final String WALL = "#";
     private static final String START = "S";
@@ -42,21 +43,7 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        this.emptyTemp();
-
-        // 121476 too high
-        // 127488 also too high
-
-        // huh, new approach gave me 123480
-
-        // 119484 still too high - but way quicker
-        // going in reverse gets to 121480 not 119484. might be interesting, might not
-        // 119476 saved a few
-        // 115484 not the right answer (no more clues)
-        // 114480 if I face North - which (a) is cheating and (b) means I'm not evaluating all options
-        // back to 119476 now .. and still only one path
-        // 115480 but now I have lots of paths. I was taking the first of the available, not the best
-        //  -- why would this make a difference ?
+        this.emptyTempFolder();
 
         this.loadChallengeMap(input);
 
@@ -72,67 +59,56 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         available.add(startState);
 
         State workingState;
-        int bestScore = Integer.MAX_VALUE;
-        final double bestDistance = Double.MAX_VALUE;
         int time = 0;
-        /*
-        I am seeing just one hit. I can see it exploring fully, but once it hits the
-        EndCoord it never finds any more. It finds 3 on the big sample. I don't believe there is only
-        one path - I can see others. But it never attempts them - because too many turns ?
-         */
-        final List<String> tried = new ArrayList<>();
-        final List<String> graph = new ArrayList<>();
-        graph.add("digraph {");
-        graph.add("rankdir=\"LR\"");
+        double bestDistance = Double.MAX_VALUE;
         while (!available.isEmpty()) {
-            // with the big sample, if I grab the 0th, I get 3 answers
-            // but if I grab the best, I only get 2.
-            // this has to be a bug.
             final int index = this.bestOfAvailable(available, endCoord);
             workingState = available.remove(index);
-            tried.add(workingState.toString());
             time++;
-            final double distance = this.pythag(workingState.coord, endCoord);
-//            if (distance < bestDistance) {
-//                bestDistance = distance;
-//                System.out.println("Closest at " + workingState.coord +
-//                        " going to " + endCoord +
-//                        " distance " + Math.round(distance) +
-//                        " with moves " + workingState.moves +
-//                        " visited " + visited.size() +
-//                        " available " + available.size() +
-//                        " at time " + time);
-//                this.paintChallengeMapWithState(workingState, time, available);
-//            }
+
+            if (DEBUG) {
+                final double distance = this.pythag(workingState.coord, endCoord);
+                if (distance < bestDistance) {
+                    bestDistance = distance;
+                    System.out.println("Closest at " + workingState.coord +
+                            " going to " + endCoord +
+                            " distance " + Math.round(distance) +
+                            " with moves " + workingState.moves +
+                            " visited " + visited.size() +
+                            " available " + available.size() +
+                            " at time " + time);
+                    this.paintChallengeMapWithState(workingState, time, available);
+                } else {
+                    if (time % 100 == 0) {
+                        this.paintChallengeMapWithState(workingState, time, available);
+                    }
+                }
+            }
+
             if (workingState.coord.equals(endCoord)) {
                 hits.add(workingState);
-                bestScore = workingState.moves;
-                System.out.println("Found endCoord at " + time + " with " + workingState + " and I have " + available.size() + " left.");
+                if (DEBUG) {
+                    System.out.println("Found endCoord at " + time + " with " + workingState + " and I have " + available.size() + " left.");
+                }
                 // if I got there, I don't need to check neighbours
                 continue;
             }
-            if (workingState.moves >= bestScore) {
-                // I can drop out here for performance
-                // I disabled this on part 1 and still only got one answer.
-                continue;
-            }
-            // I must not be picking up an option here ?
             final List<State> neighbours = this.getAvailableStates(workingState, visited);
-            for (final State neighbour : neighbours) {
-                graph.add("\"" + workingState + "\" -> \"" + neighbour + "\"");
-            }
-            available.addAll(neighbours);
+            this.addOrUpdateNeighbours(available, neighbours);
             visited.add(workingState);
         }
+
         int score = Integer.MAX_VALUE;
         State bestState = null;
         for (final State hit : hits) {
-//            this.paintChallengeMapWithState(hit, ++time, available);
-            System.out.println(
-                    "Hit at " + hit.coord +
-                            " came from " + hit.previousState.coord +
-                            " with moves " + hit.moves);
-            System.out.println("  " + this.getPath(hit));
+            if (DEBUG) {
+                this.paintChallengeMapWithState(hit, ++time, available);
+                System.out.println(
+                        "Hit at " + hit.coord +
+                                " came from " + hit.previousState.coord +
+                                " with moves " + hit.moves);
+                System.out.println("  " + this.getPath(hit));
+            }
             if (hit.moves < score) {
                 score = hit.moves;
                 bestState = hit;
@@ -140,21 +116,23 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         }
         this.paintChallengeMapWithState(bestState, ++time, available);
 
-        this.writeStringsToFile(tried, Path.of("tried.txt").toFile());
-        graph.add("}");
-        this.writeStringsToFile(graph, Path.of("graph.dot").toFile());
         return String.valueOf(score);
     }
 
-    private int countFs(final String path) {
+    private void addOrUpdateNeighbours(final List<State> available, final List<State> neighbours) {
 
-        int fs = 0;
-        for (int i = 0; i < path.length(); i++) {
-            if (path.substring(i, i + 1).equalsIgnoreCase("F")) {
-                fs++;
+        for (final State neighbour : neighbours) {
+            if (!available.contains(neighbour)) {
+                available.add(neighbour);
+                continue;
             }
+            final State original = available.stream().filter(s -> s.key().equalsIgnoreCase(neighbour.key())).findFirst().orElseThrow();
+            if (original.moves < neighbour.moves) {
+                continue;
+            }
+            available.remove(original);
+            available.add(neighbour);
         }
-        return fs;
     }
 
     private int bestOfAvailable(final List<State> available, final AoCCoord endCoord) {
@@ -163,55 +141,12 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         int best = -1;
         int index = 0;
         for (final State state : available) {
-            final AoCCoord coord = state.coord;
-//            final double thisDistance = this.pythag(coord, endCoord);
             final double thisDistance = state.moves;
             if (thisDistance < distance) {
                 best = index;
                 distance = thisDistance;
             }
             index++;
-        }
-        return best;
-    }
-
-    private int bestOfAvailableSlow(final List<State> available, final AoCCoord endCoord) {
-
-        double distance = Double.MAX_VALUE;
-        int best = -1;
-        int index = 0;
-        for (final State state : available) {
-            final AoCCoord coord = state.coord;
-            // I know I'm available - but what about the next ? I should keep going where possible
-            final AoCCoord nextCoord = this.nextCoord(coord, state.direction);
-            final String thing = this.getChallengeMapLetter(nextCoord);
-            if (EMPTY.equalsIgnoreCase(thing)) {
-                continue;
-            }
-            final double thisDistance = this.pythag(coord, endCoord) + state.moves;
-            if (thisDistance < distance) {
-                best = index;
-                distance = thisDistance;
-            }
-            index++;
-        }
-        if (best > -1) {
-            return best;
-        }
-        best = -1;
-        index = 0;
-        distance = Double.MAX_VALUE;
-        for (final State state : available) {
-            final AoCCoord coord = state.coord;
-            final double thisDistance = this.pythag(coord, endCoord) + state.moves;
-            if (thisDistance < distance) {
-                best = index;
-                distance = thisDistance;
-            }
-            index++;
-        }
-        if (best == -1) {
-            throw new RuntimeException("nothing ?");
         }
         return best;
     }
@@ -223,49 +158,6 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         );
     }
 
-    private void listStates(final List<State> stateList) {
-
-        final StringBuilder line = new StringBuilder();
-        for (final State state : stateList) {
-            line.append(state.coord).append(" [").append(state.direction).append("] ");
-        }
-        System.out.println(line);
-
-    }
-
-    private void countStates(final State workingState) {
-        int forwards = 0;
-        int lefts = 0;
-        int rights = 0;
-        State currentState = workingState;
-        while (currentState != null) {
-            if (currentState.action.equalsIgnoreCase("F")) {
-                forwards++;
-            }
-            if (currentState.action.equalsIgnoreCase("L")) {
-                lefts++;
-            }
-            if (currentState.action.equalsIgnoreCase("R")) {
-                rights++;
-            }
-            currentState = currentState.previousState;
-        }
-        System.out.println("Forwards " + forwards);
-        System.out.println("Lefts " + lefts);
-        System.out.println("Rights " + rights);
-    }
-
-    private String buildPath(final State workingState) {
-
-        final StringBuilder line = new StringBuilder(workingState.action);
-        State nextState = workingState.previousState;
-        while (nextState != null) {
-            line.append(nextState.action);
-            nextState = nextState.previousState;
-        }
-        return line.toString();
-    }
-
     private String getPath(final State workingState) {
         final StringBuilder line = new StringBuilder(workingState.action);
         State nextState = workingState.previousState;
@@ -274,24 +166,6 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
             nextState = nextState.previousState;
         }
         return line.reverse().toString();
-    }
-
-    private void explainState(final State workingState) {
-        final StringBuilder line = new StringBuilder("working " + workingState.id + " @ " + workingState.coord + " [" + workingState.direction + "] action " + workingState.action + "\n");
-        State nextState = workingState.previousState;
-        while (nextState != null) {
-            line.append("  ")
-                    .append(nextState.id)
-                    .append(" @ ")
-                    .append(nextState.coord)
-                    .append(" [")
-                    .append(nextState.direction)
-                    .append("] ")
-                    .append(nextState.action)
-                    .append("\n");
-            nextState = nextState.previousState;
-        }
-        System.out.println(line);
     }
 
     private void paintChallengeMapWithState(final State startState, final int time, final List<State> available) {
@@ -306,20 +180,6 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
             this.updateWithState(lines, state, "?");
         }
         this.paintMap(time, lines);
-    }
-
-    private void drawChallengeMapWithState(final State startState) {
-
-        final List<String> lines = new ArrayList<>(this.challengeMap);
-        State workingState = startState;
-        while (workingState != null) {
-            this.updateWithState(lines, workingState, null);
-            workingState = workingState.previousState;
-        }
-        for (final String line : lines) {
-            System.out.println(line);
-        }
-        System.out.println();
     }
 
     private void updateWithState(final List<String> lines,
@@ -355,16 +215,19 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
 
     private List<State> getAvailableStates(final State workingState, final List<State> visited) {
 
-        // this is my current working state - and I may not yet have moved at all.
         final List<State> neighbours = new ArrayList<>();
+
         // pick up going forward as a default if it's empty
         this.maybeAddState(workingState, visited, neighbours, workingState.direction);
+
+        // now test the left and right
         if (this.looksInteresting(workingState, (workingState.direction + 1) % 4)) {
             this.addTurningState(workingState, visited, neighbours, (workingState.direction + 1) % 4, "R");
         }
         if (this.looksInteresting(workingState, (workingState.direction + 3) % 4)) {
             this.addTurningState(workingState, visited, neighbours, (workingState.direction + 3) % 4, "L");
         }
+
         return neighbours;
     }
 
@@ -396,14 +259,9 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
                     workingState.moves + 1,
                     workingState,
                     "F");
-            // this saved 8 ?!
-            if (this.alreadyVisited(
-                    state,
-                    visited)) {
-                return;
+            if (!visited.contains(state)) {
+                neighbours.add(state);
             }
-            neighbours.add(state);
-//            System.out.println("I have added state " + state.action + " which came from " + workingState.action);
         }
     }
 
@@ -413,53 +271,16 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
                                  final int direction,
                                  final String action) {
 
-//        if (this.alreadyVisitedWithBetterCost(
-//                workingState,
-//                action,
-//                direction,
-//                visited)) {
-//            return;
-//        }
-        if (this.alreadyVisited(
-                workingState,
-                visited)) {
-            return;
-        }
         final State state = new State(
                 workingState.coord,
                 direction,
                 workingState.moves + 1000,
                 workingState,
                 action);
-        neighbours.add(state);
-    }
 
-    private boolean alreadyVisited(final State workingState,
-                                   final List<State> visited) {
-
-        for (final State state : visited) {
-            if (state.coord.equals(workingState.coord)) {
-                return true;
-            }
+        if (!visited.contains(state)) {
+            neighbours.add(state);
         }
-        return false;
-    }
-
-    private boolean alreadyVisitedWithBetterCost(final State workingState,
-                                                 final String action,
-                                                 final int direction,
-                                                 final List<State> visited) {
-
-        for (final State state : visited) {
-            if (state.coord.equals(workingState.coord)) {
-                if (direction == state.direction && action.equalsIgnoreCase(state.action)) {
-//                    if (state.moves < workingState.moves) {
-                    return true;
-//                    }
-                }
-            }
-        }
-        return false;
     }
 
     private Optional<AoCCoord> possibleNextCoord(final AoCCoord coord, final int direction) {
@@ -517,6 +338,7 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
+
         return null;
     }
 
@@ -552,7 +374,7 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
                     graphics2D.setPaint(new Color(50, 50, 50)); // wall
                 }
                 if (thing.equalsIgnoreCase("?")) {
-                    graphics2D.setPaint(new Color(150, 150, 0)); // end
+                    graphics2D.setPaint(new Color(200, 200, 0)); // end
                 }
                 if (thing.equalsIgnoreCase("E")) {
                     graphics2D.setPaint(new Color(0, 250, 0)); // end
@@ -570,11 +392,11 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
 
     static class State {
 
-        final String id;
         final AoCCoord coord;
-        final int moves;
         final int direction; // N 0 E 1 S 2 W 3
+        final int moves;
         final State previousState;
+        // don't know if I need this
         final String action; // "", "L", "R", "F"
 
         public State(final AoCCoord coord,
@@ -583,18 +405,39 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
                      final State previousState,
                      final String action
         ) {
-            this.id = UUID.randomUUID().toString();
             this.coord = coord;
-            this.moves = moves;
             this.direction = direction;
+            this.moves = moves;
             this.previousState = previousState;
             this.action = action;
+        }
+
+        public String key() {
+
+            return this.coord + " " + this.direction;
         }
 
         @Override
         public String toString() {
 
             return this.coord + " " + this.direction + " [" + this.moves + "]";
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || this.getClass() != o.getClass()) {
+                return false;
+            }
+            final State state = (State) o;
+            return this.direction == state.direction && Objects.equals(this.coord, state.coord);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.coord, this.direction);
         }
     }
 }
