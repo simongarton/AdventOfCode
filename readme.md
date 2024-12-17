@@ -13,7 +13,11 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 Sometimes you just get stuck. Today was a maze-navigating algorithm, straight forward enough, except that making a turn
 counts as a move, and is expensive ... meaning you have to be careful about pruning nodes. With hindsight, and looking
-at my final code, it was reasonably straight forward with A*.
+at my final code, it was reasonably straight forward with A* ... but I got stuck with a solution that was so almost
+right ... both samples working, part 1 mapped out looks sane, animated as movies it looked sane ... but "That's not the
+right answer."
+
+![Part 1](2024-Day16-1.png)
 
 Part 2 just added a level - there are multiple equivalent paths, and by default A* only gets the first. A very bright
 friend really struggled with this - they've been beating me consistently all month - but because I'd spent so much time
