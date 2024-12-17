@@ -11,9 +11,9 @@ public class Sample {
     public static void main(final String[] args) throws IOException {
 
         // which part to do with sample ?
-        final boolean part1 = false;
+        final boolean part1 = true;
 
-        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-sample-1.txt", CurrentChallenge.DAY));
+        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-sample.txt", CurrentChallenge.DAY));
         if (part1) {
             System.out.println(CurrentChallenge.getCurrentChallenge()
                     .part1(Files.lines(path, StandardCharsets.UTF_8)
