@@ -18,16 +18,16 @@ public class ChronospatialComputer {
     private int instructionPointer;
     private final List<Integer> program;
     @Getter
-    private final List<Integer> output;
+    private final List<Long> output;
     @Getter
     @Setter
-    private int registerA;
+    private long registerA;
     @Getter
     @Setter
-    private int registerB;
+    private long registerB;
     @Getter
     @Setter
-    private int registerC;
+    private long registerC;
 
     private final List<String> instructions = List.of(
             "adv", // 0, division A/2**operand, store in A
@@ -57,6 +57,7 @@ public class ChronospatialComputer {
      */
 
     public ChronospatialComputer(final List<Integer> program) {
+
         this.instructionPointer = 0;
         this.program = new ArrayList<>();
         this.program.addAll(program);
@@ -72,9 +73,9 @@ public class ChronospatialComputer {
 
     public static ChronospatialComputer initializeFromLines(final String[] input) {
 
-        final int a = Integer.parseInt(input[0].replace("Register A: ", ""));
-        final int b = Integer.parseInt(input[1].replace("Register B: ", ""));
-        final int c = Integer.parseInt(input[2].replace("Register C: ", ""));
+        final long a = Integer.parseInt(input[0].replace("Register A: ", ""));
+        final long b = Integer.parseInt(input[1].replace("Register B: ", ""));
+        final long c = Integer.parseInt(input[2].replace("Register C: ", ""));
 
         final String program = input[4].replace("Program: ", "");
 
@@ -142,19 +143,20 @@ public class ChronospatialComputer {
         status.append(" A:").append(this.registerA);
         status.append(" B:").append(this.registerB);
         status.append(" C:").append(this.registerC);
-        final List<String> outputString = this.output.stream().map(String::valueOf).collect(Collectors.toList());
         status.append(" output:").append(this.getOutputString());
         return status.toString();
     }
 
     private void debugMessage(final String message) {
+
         if (!DEBUG) {
             return;
         }
         System.out.println(message);
     }
 
-    private int comboOperand(final int operand) {
+    private long comboOperand(final int operand) {
+
         switch (operand) {
             case 0:
                 return 0;
@@ -204,7 +206,7 @@ public class ChronospatialComputer {
         final double numerator = this.registerA;
         final double denominator = Math.pow(2, this.comboOperand(operand));
         final Double result = numerator / denominator;
-        this.registerC = result.intValue();
+        this.registerC = result.longValue();
 
         this.debugMessage(String.format("  set C to %s", this.registerC));
         return false;
@@ -215,7 +217,7 @@ public class ChronospatialComputer {
         final double numerator = this.registerA;
         final double denominator = Math.pow(2, this.comboOperand(operand));
         final Double result = numerator / denominator;
-        this.registerB = result.intValue();
+        this.registerB = result.longValue();
 
         this.debugMessage(String.format("  set B to %s", this.registerB));
         return false;
@@ -224,7 +226,7 @@ public class ChronospatialComputer {
 
     private boolean out(final int opcode, final int operand) {
 
-        final int result = this.comboOperand(operand) % 8;
+        final long result = this.comboOperand(operand) % 8;
         this.output.add(result);
 
         this.debugMessage(String.format("  added %s to output", result));
@@ -233,9 +235,9 @@ public class ChronospatialComputer {
 
     private boolean bxc(final int opcode, final int operand) {
 
-        final int b = this.registerB;
-        final int c = this.registerC;
-        final int result = b ^ c;
+        final long b = this.registerB;
+        final long c = this.registerC;
+        final long result = b ^ c;
         this.registerB = result;
 
         this.debugMessage(String.format("  set B to %s", this.registerB));
@@ -257,7 +259,7 @@ public class ChronospatialComputer {
 
     private boolean bst(final int opcode, final int operand) {
 
-        final int result = this.comboOperand(operand) % 8;
+        final long result = this.comboOperand(operand) % 8;
         this.registerB = result;
 
         this.debugMessage(String.format("  set B to %s", this.registerB));
@@ -266,9 +268,9 @@ public class ChronospatialComputer {
 
     private boolean bxl(final int opcode, final int operand) {
 
-        final int b = this.registerB;
-        final int o = operand; // literal, not combo
-        final int result = b ^ o;
+        final long b = this.registerB;
+        final long o = operand; // literal, not combo
+        final long result = b ^ o;
         this.registerB = result;
 
         this.debugMessage(String.format("  set B to %s", this.registerB));
@@ -280,7 +282,7 @@ public class ChronospatialComputer {
         final double numerator = this.registerA;
         final double denominator = Math.pow(2, this.comboOperand(operand));
         final Double result = numerator / denominator;
-        this.registerA = result.intValue();
+        this.registerA = result.longValue();
 
         this.debugMessage(String.format("  set A to %s", this.registerA));
 
