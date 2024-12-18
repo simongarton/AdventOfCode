@@ -18,7 +18,22 @@ public class ChronoMan {
 
      */
 
-        int a = 46337277;
+        /*
+
+        So for part 2 I want to generate the program. Which in turn means I need to generate a 2 first of all
+        How do I backtrack with my commands ?
+
+        b must be a multiple of 8 + 2 ... because if I mod it by 8, I get 2.
+        before that b was XORed against 4
+        before that b was XORed against c
+        c was set to be a divided by 2**b
+        before that b was XORed against 1
+        before that b was the remainder when a is modded by 8.
+
+         */
+
+//        int a = 46337277;
+        int a = 7;
         int b = 0;
         int c = 0;
 
