@@ -330,6 +330,11 @@ public abstract class AdventOfCodeChallenge {
         return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
     }
 
+    protected long manhattan(final AoCCoord a, final AoCCoord b) {
+
+        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    }
+
     protected void emptyTempFolder() {
         final File tempFile = Path.of("temp").toFile();
         this.deleteFolder(tempFile);
@@ -359,6 +364,14 @@ public abstract class AdventOfCodeChallenge {
 
             this.x = x;
             this.y = y;
+        }
+
+        public AoCCoord(final String data) {
+
+            this(
+                    Integer.parseInt(data.split(",")[0]),
+                    Integer.parseInt(data.split(",")[1])
+            );
         }
 
         @Override
