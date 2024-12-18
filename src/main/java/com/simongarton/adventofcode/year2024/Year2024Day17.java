@@ -48,15 +48,13 @@ public class Year2024Day17 extends AdventOfCodeChallenge {
         while (clicked < 16) {
             int best = 0;
             int bestShortScore = 0;
+            String ratchetLine = "";
+            for (int i = 0; i < 16; i++) {
+                ratchetLine = ratchetLine + ratchet[i];
+            }
+            final int reverseClicked = 16 - clicked;
             for (int i = 0; i < 8; i++) {
-                String dna = "";
-                for (int j = 0; j < clicked; j++) {
-                    dna = dna + ratchet[j];
-                }
-                dna = dna + i;
-                for (int j = clicked + 1; j < 16; j++) {
-                    dna = dna + "0";
-                }
+                final String dna = ratchetLine.substring(0, reverseClicked - 1) + i + ratchetLine.substring(reverseClicked);
                 final Genotype genotype = new Genotype(dna);
                 this.score(computer, genotype);
                 if (genotype.score > bestShortScore) {
@@ -65,7 +63,7 @@ public class Year2024Day17 extends AdventOfCodeChallenge {
                 }
 //                System.out.println(genotype);
             }
-            ratchet[clicked] = best;
+            ratchet[reverseClicked - 1] = best;
             String r = "";
             for (int i = 0; i < 16; i++) {
                 r = r + ratchet[i];
