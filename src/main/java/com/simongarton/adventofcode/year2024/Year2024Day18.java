@@ -15,7 +15,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 public class Year2024Day18 extends AdventOfCodeChallenge {
 
     private static final boolean DEBUG = false;
-    
+
     private static final int BITMAP_SCALE = 10;
     private static final String CORRUPT = "#";
     private static final String WALL = "#";
@@ -36,16 +36,9 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        this.emptyTempFolder();
+        this.setup(input);
 
-        this.mapHeight = 71;
-        this.mapWidth = 71;
         final int totalIterations = 1024;
-
-        this.challengeMap = new ArrayList<>();
-        for (int i = 0; i < this.mapHeight; i++) {
-            this.challengeMap.add(".".repeat(this.mapWidth));
-        }
 
         for (int iteration = 0; iteration < totalIterations; iteration++) {
             final String data = input[iteration];
@@ -54,7 +47,7 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
         }
 
         this.shortest = Integer.MAX_VALUE;
-        final List<Node> shortestPaths = this.shortestPaths();
+        final List<Node> shortestPaths = this.shortestPaths(true);
 
         int best = Integer.MAX_VALUE;
         this.paintChallengeMapWithAllNodes(shortestPaths);
@@ -66,6 +59,19 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
         }
 
         return String.valueOf(best);
+    }
+
+    private void setup(final String[] input) {
+
+        this.emptyTempFolder();
+
+        this.mapHeight = 71;
+        this.mapWidth = 71;
+
+        this.challengeMap = new ArrayList<>();
+        for (int i = 0; i < this.mapHeight; i++) {
+            this.challengeMap.add(".".repeat(this.mapWidth));
+        }
     }
 
     private void paintChallengeMapWithAllNodes(final List<Node> shortestPaths) {
@@ -110,7 +116,7 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
         lines.remove(coord.y + 1);
     }
 
-    private List<Node> shortestPaths() {
+    private List<Node> shortestPaths(final boolean findAll) {
 
         final Node startNode = new Node(new AoCCoord(0, 0), null, 0);
         final AoCCoord endCoord = new AoCCoord(this.mapWidth - 1, this.mapHeight - 1);
@@ -130,6 +136,9 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
                     System.out.println("got there at " + iteration + " length " + this.lengthOfTrail(current));
                 }
                 hits.add(current);
+                if (!findAll) {
+                    break;
+                }
                 continue;
             }
             final List<Node> neighbours = this.getNeighbours(current, visited, available);
@@ -286,7 +295,32 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.setup(input);
+
+        final int low = 2850;
+        final int high = 2860; // input.length;
+
+        String badCoord = null;
+        for (int totalIterations = high; totalIterations >= low; totalIterations--) {
+
+            this.setup(input);
+
+            for (int iteration = 0; iteration < totalIterations; iteration++) {
+                final String data = input[iteration];
+                final AoCCoord coord = new AoCCoord(data);
+                this.setChallengeMapLetter(coord.x, coord.y, "#");
+            }
+
+            this.shortest = Integer.MAX_VALUE;
+            final List<Node> shortestPaths = this.shortestPaths(false);
+            if (!shortestPaths.isEmpty()) {
+                badCoord = input[totalIterations];
+                break;
+            }
+        }
+
+        return badCoord;
     }
 
     static class Node {

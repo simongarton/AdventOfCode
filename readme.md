@@ -9,6 +9,24 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 18 : RAM Run
+
+And I thought the Day 16 map was evil. A* delivers a shortest path very quickly, but the really shortest one
+takes AGES to find.
+
+![Part 1](2024-Day18-1.png)
+
+But part 2 was disappointingly easy, just find when you've added too many walls to navigate the maze.
+
+## Day 16: Chronospatial Computer (1,2)
+
+A famous OpCode computer. I've really struggled with these in the past, but this time I persevered, and got
+part 1 working - I'd written the computer which reads the program, it was passing all the tests, but
+failing on the real data, so I handcoded the specific program into a 10 line Java file and spotted
+a bug.
+
+Still working on part 2, though.
+
 ## Day 16: Reindeer Maze
 
 Sometimes you just get stuck. Today was a maze-navigating algorithm, straight forward enough, except that making a turn
