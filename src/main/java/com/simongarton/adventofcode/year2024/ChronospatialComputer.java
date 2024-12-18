@@ -3,6 +3,9 @@ package com.simongarton.adventofcode.year2024;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class ChronospatialComputer {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private int instructionPointer;
     private final List<Integer> program;
@@ -27,26 +30,66 @@ public class ChronospatialComputer {
     private int registerC;
 
     private final List<String> instructions = List.of(
-            "adv",
-            "bxl",
-            "bst",
-            "jnz",
-            "bxc",
-            "out",
-            "bdv",
-            "adv"
+            "adv", // 0, division A/2**operand, store in A
+            "bxl", // 1, XOR B + operand, store in B
+            "bst", // 2, mod operand, store in B
+            "jnz", // 3, jump if A non zero
+            "bxc", // 4, XOR B + C, store in B
+            "out", // 5, out operand mod 8
+            "bdv", // 6, division A/2**operand, store in B
+            "cdv"  // 7, division A/2**operand, store in C
     );
+
+    // so the only way to write values to A or C, is to get the value into A and divide by 2**operand
+
+    /*
+
+    Part 1 program : 2,4,1,1,7,5,4,4,1,4,0,3,5,5,3,0
+    2,4 - mod A by 8, store in B.
+    1,1 - XOR B and 1, store in B (mod by 10, if even add 1 else sub 1)
+    7,5 - divide A by 2**B and store in C
+    4,4 - XOR B and C, store in B
+    1,4 - XOR B and 4, store in B
+    0,3 - divide A by 2**3 (8) and store in A
+    5,5 - output B
+    3,0 - if A > 0, jump to 0
+
+     */
 
     public ChronospatialComputer(final List<Integer> program) {
         this.instructionPointer = 0;
         this.program = new ArrayList<>();
         this.program.addAll(program);
         this.output = new ArrayList<>();
+
+        this.debugMessage(String.format("Initialized with %s", this.getProgramString()));
     }
 
     public ChronospatialComputer(final String program) {
 
         this(Arrays.stream(program.split(",")).map(Integer::parseInt).collect(Collectors.toList()));
+    }
+
+    public static ChronospatialComputer initializeFromLines(final String[] input) {
+
+        final int a = Integer.parseInt(input[0].replace("Register A: ", ""));
+        final int b = Integer.parseInt(input[1].replace("Register B: ", ""));
+        final int c = Integer.parseInt(input[2].replace("Register C: ", ""));
+
+        final String program = input[4].replace("Program: ", "");
+
+        final ChronospatialComputer computer = new ChronospatialComputer(program);
+        computer.setRegisterA(a);
+        computer.setRegisterB(b);
+        computer.setRegisterC(c);
+
+        return computer;
+    }
+
+    public static ChronospatialComputer initialiseFromFile(final String filename) throws IOException {
+
+        final List<String> data = Files.readAllLines(Path.of(filename));
+        return ChronospatialComputer.initializeFromLines(data.toArray(new String[0]));
     }
 
     public void run() {
@@ -83,6 +126,12 @@ public class ChronospatialComputer {
     public String getOutputString() {
 
         final List<String> outputString = this.output.stream().map(String::valueOf).collect(Collectors.toList());
+        return String.join(",", outputString);
+    }
+
+    public String getProgramString() {
+
+        final List<String> outputString = this.program.stream().map(String::valueOf).collect(Collectors.toList());
         return String.join(",", outputString);
     }
 
@@ -153,7 +202,7 @@ public class ChronospatialComputer {
     private boolean cdv(final int opcode, final int operand) {
 
         final double numerator = this.registerA;
-        final double denominator = Math.pow(2, operand);
+        final double denominator = Math.pow(2, this.comboOperand(operand));
         final Double result = numerator / denominator;
         this.registerC = result.intValue();
 
@@ -164,7 +213,7 @@ public class ChronospatialComputer {
     private boolean bdv(final int opcode, final int operand) {
 
         final double numerator = this.registerA;
-        final double denominator = Math.pow(2, operand);
+        final double denominator = Math.pow(2, this.comboOperand(operand));
         final Double result = numerator / denominator;
         this.registerB = result.intValue();
 
@@ -229,7 +278,7 @@ public class ChronospatialComputer {
     private boolean adv(final int opcode, final int operand) {
 
         final double numerator = this.registerA;
-        final double denominator = Math.pow(2, operand);
+        final double denominator = Math.pow(2, this.comboOperand(operand));
         final Double result = numerator / denominator;
         this.registerA = result.intValue();
 

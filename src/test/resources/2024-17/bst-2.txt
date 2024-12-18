@@ -1,0 +1,5 @@
+Register A: 20
+Register B: 9
+Register C: 60
+
+Program: 2,4,5,5

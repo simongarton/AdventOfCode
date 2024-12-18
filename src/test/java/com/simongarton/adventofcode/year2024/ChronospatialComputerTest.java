@@ -1,7 +1,11 @@
 package com.simongarton.adventofcode.year2024;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -104,4 +108,41 @@ class ChronospatialComputerTest {
         assertEquals("4,6,3,5,6,3,5,2,1,0", computer.getOutputString());
     }
 
+    @ParameterizedTest
+    @MethodSource(value = "readTestFiles")
+    void testFile(final String filename, final String expectedOutput) throws IOException {
+
+        // given
+        final ChronospatialComputer computer = ChronospatialComputer.initialiseFromFile(filename);
+
+        // when
+        computer.run();
+
+        // then
+        assertEquals(expectedOutput, computer.getOutputString());
+
+    }
+
+    @Test
+    void hacking() {
+        for (int i = 0; i <= 20; i++) {
+            System.out.println(i + ": " + (i ^ 1));
+        }
+    }
+
+    static List<Arguments> readTestFiles() {
+
+        return List.of(
+                Arguments.of("src/test/resources/2024-17/sample1.txt", "4,6,3,5,6,3,5,2,1,0"),
+                Arguments.of("src/test/resources/2024-17/adv-1.txt", "5"),
+                Arguments.of("src/test/resources/2024-17/bxl-1.txt", "6"),
+                Arguments.of("src/test/resources/2024-17/bst-1.txt", "3"),
+                Arguments.of("src/test/resources/2024-17/bst-2.txt", "4"),
+                Arguments.of("src/test/resources/2024-17/jnz-1.txt", "5"),
+                Arguments.of("src/test/resources/2024-17/bxc-1.txt", "6"),
+                Arguments.of("src/test/resources/2024-17/out-1.txt", "5"),
+                Arguments.of("src/test/resources/2024-17/bdv-1.txt", "5"),
+                Arguments.of("src/test/resources/2024-17/cdv-1.txt", "5")
+        );
+    }
 }
