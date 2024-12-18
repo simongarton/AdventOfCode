@@ -42,6 +42,43 @@ public class Year2024Day17 extends AdventOfCodeChallenge {
         this.start = System.currentTimeMillis();
         final ChronospatialComputer computer = ChronospatialComputer.initializeFromLines(input);
 
+        final int[] ratchet = new int[16];
+        int clicked = 0;
+
+        while (clicked < 16) {
+            int best = 0;
+            int bestShortScore = 0;
+            for (int i = 0; i < 8; i++) {
+                String dna = "";
+                for (int j = 0; j < clicked; j++) {
+                    dna = dna + ratchet[j];
+                }
+                dna = dna + i;
+                for (int j = clicked + 1; j < 16; j++) {
+                    dna = dna + "0";
+                }
+                final Genotype genotype = new Genotype(dna);
+                this.score(computer, genotype);
+                if (genotype.score > bestShortScore) {
+                    best = i;
+                    bestShortScore = genotype.score;
+                }
+//                System.out.println(genotype);
+            }
+            ratchet[clicked] = best;
+            String r = "";
+            for (int i = 0; i < 16; i++) {
+                r = r + ratchet[i];
+            }
+            final Genotype genotype = new Genotype(r);
+            this.score(computer, genotype);
+            System.out.println(r + " -> " + genotype);
+            clicked++;
+        }
+
+        if (true) {
+            return null;
+        }
         final List<Genotype> pool = new ArrayList<>();
         for (int i = 0; i < 16; i++) {
             pool.add(new Genotype(this.randomOctalString(16)));
