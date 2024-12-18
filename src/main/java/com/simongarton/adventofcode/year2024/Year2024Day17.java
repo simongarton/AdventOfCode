@@ -26,7 +26,23 @@ public class Year2024Day17 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        final ChronospatialComputer computer = ChronospatialComputer.initializeFromLines(input);
+        int a = 0;
+        while (true) {
+            computer.reset();
+            computer.setRegisterA(a);
+            computer.run();
+            if (computer.getOutputString().equalsIgnoreCase(computer.getProgramString())) {
+                break;
+            }
+            if (a % 10000 == 0) {
+                System.out.println(a + " p " + computer.getProgramString() + " -> " + computer.getOutputString());
+            }
+            a++;
+        }
+
+        return String.valueOf(a);
     }
 
 }

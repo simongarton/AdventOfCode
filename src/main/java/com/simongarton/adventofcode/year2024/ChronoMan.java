@@ -22,7 +22,7 @@ public class ChronoMan {
         int b = 0;
         int c = 0;
 
-        String output = "";
+        final StringBuilder output = new StringBuilder();
 
         while (true) {
             b = a % 8;
@@ -31,7 +31,7 @@ public class ChronoMan {
             b = b ^ c;
             b = b ^ 4;
             a = a / 8;
-            output = output + (b % 8) + ",";
+            output.append(b % 8).append(",");
             if (a > 0) {
                 continue;
             }

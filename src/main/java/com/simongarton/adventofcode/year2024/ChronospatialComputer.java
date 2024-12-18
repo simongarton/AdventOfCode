@@ -290,4 +290,14 @@ public class ChronospatialComputer {
     private String opcodeInstruction(final int opcode) {
         return this.instructions.get(opcode);
     }
+
+    public void reset() {
+
+        this.instructionPointer = 0;
+        this.registerA = 0;
+        this.registerB = 0;
+        this.registerC = 0;
+
+        this.output.clear();
+    }
 }
