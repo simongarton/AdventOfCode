@@ -5,15 +5,17 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.LongStream;
+import java.util.stream.Collectors;
 
 public class Year2024Day17 extends AdventOfCodeChallenge {
 
     private final List<Integer> part2Program = List.of(2, 4, 1, 1, 7, 5, 4, 4, 1, 4, 0, 3, 5, 5, 3, 0);
     private final AtomicInteger bestDepthFound = new AtomicInteger(0);
     private long start;
+    private final Random random = new Random();
+
 
     @Override
     public String title() {
@@ -39,56 +41,184 @@ public class Year2024Day17 extends AdventOfCodeChallenge {
 
         this.start = System.currentTimeMillis();
         final ChronospatialComputer computer = ChronospatialComputer.initializeFromLines(input);
-        long index = 1L;
-        long validA = 0;
-        this.bestDepthFound.set(0);
-        final int checked = 0;
-        while (true) {
-            final Long a = this.evaluatePossibleAForAll(index);
-            index++;
-//            if (index % 10000000 == 0) {
-//                System.out.println(index);
-//            }
-            if (a == null) {
-                continue;
-            }
-            computer.reset();
-            computer.setRegisterA(a);
-            computer.run();
-            if (computer.getOutputString().equalsIgnoreCase(computer.getProgramString())) {
-                validA = a;
-                break;
-            }
-            System.out.println(checked + " -> " + a + " p " + computer.getProgramString() + " -> " + computer.getOutputString());
+
+        final List<Genotype> pool = new ArrayList<>();
+        for (int i = 0; i < 16; i++) {
+            pool.add(new Genotype(this.randomOctalString(16)));
         }
 
-        return String.valueOf(validA);
+        final Comparator<Genotype> genotypeComparator = Comparator.comparing(g -> g.score);
+        final Comparator<Genotype> genotypeComparatorReversed = genotypeComparator.reversed();
+
+        int bestScore = 0;
+        Genotype bestGenotype = null;
+
+        int iteration = 0;
+        while (true) {
+
+            int totalScore = 0;
+            for (final Genotype genotype : pool) {
+                this.score(computer, genotype);
+                totalScore += genotype.score;
+                if (genotype.score > bestScore) {
+                    bestScore = genotype.score;
+                    bestGenotype = genotype;
+
+                    System.out.println(genotype.score + ":" +
+                            genotype.dna +
+                            " -> " +
+                            genotype.output +
+                            " =? " +
+                            genotype.comparison
+                    );
+                }
+            }
+
+            if (iteration % 1000 == 0 && bestGenotype != null) {
+                System.out.println(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS) + ": (" +
+                        bestGenotype.score + ") " +
+                        bestGenotype.output + " -> " +
+                        bestGenotype.comparison
+                );
+            }
+
+            if (bestScore == 16) {
+                break;
+            }
+
+            if (totalScore == 0) {
+                pool.clear();
+                for (int i = 0; i < 8; i++) {
+                    pool.add(new Genotype(this.randomOctalString(16)));
+                }
+                continue;
+            }
+
+//            if (iteration % 1000 == 0) {
+//                System.out.println("\n iteration " + iteration + "\n");
+//                for (final Genotype genotype : pool) {
+//                    System.out.println(genotype);
+//                }
+//                System.out.println();
+//            }
+
+            // get the best
+            final List<Genotype> sorted = pool.stream().sorted(genotypeComparatorReversed).collect(Collectors.toList());
+            pool.clear();
+            pool.add(sorted.get(0));
+
+            // breed up the next few
+            final List<Genotype> breeders = new ArrayList<>();
+            for (int i = 0; i < 27; i++) {
+                breeders.add(sorted.get(this.random.nextInt(sorted.size())));
+            }
+            pool.addAll(this.breed(breeders));
+
+            // and some random ones
+            while (pool.size() < 32) {
+                pool.add(new Genotype(this.randomOctalString(16)));
+            }
+
+            iteration++;
+        }
+
+        return String.valueOf(Long.parseLong(bestGenotype.dna, 8));
     }
 
-    public String part2Parallel(final String[] input) {
+    private String compareStrings(final String outputString, final String programString) {
 
-        // this was weird. Not thread safe ? Despite Atomics ?
-        /*
-        with index 1279022294173220864 bestDepthFound 0/16 =
-        with index 270215977642231536 bestDepthFound 3/16 = 2,4,1,
-        with index 1152921504606847024 bestDepthFound 1/16 = 2,
-        with index 10794 bestDepthFound 4/16 = 2,4,1,1,
-        ...
-         */
+        final StringBuilder comparison = new StringBuilder();
+        for (int i = 0; i < programString.length(); i++) {
+            if (outputString.length() < i) {
+                return comparison.toString();
+            }
+            try {
+                if (outputString.charAt(i) == programString.charAt(i)) {
+                    comparison.append(outputString.charAt(i));
+                } else {
+                    comparison.append("*");
+                }
+            } catch (final StringIndexOutOfBoundsException s) {
+                // don't know why the check above is not catching this
+//                System.out.println("o " + outputString + " " + outputString.length());
+//                System.out.println("p " + programString + " " + programString.length());
+                return comparison.toString();
+            }
+        }
+        return comparison.toString();
+    }
 
-        final ChronospatialComputer computer = ChronospatialComputer.initializeFromLines(input);
+    private String outcome(final ChronospatialComputer computer, final Genotype genotype) {
 
-        final java.util.function.LongPredicate testFunction = value -> {
-            return this.evaluatePossibleAForAll(value) != null;
-        };
+        final long a = Long.parseLong(genotype.dna, 8);
+        computer.reset();
+        computer.setRegisterA(a);
+        computer.run();
 
-        LongStream.range(0, Long.MAX_VALUE)
-                .parallel()
-                .filter(testFunction)
-                .forEach(value -> this.checkValue(computer, value)
-                );
+        return computer.getOutputString();
+    }
 
-        return String.valueOf(null);
+    private List<Genotype> breed(final List<Genotype> breeders) {
+
+        final List<Genotype> children = new ArrayList<>();
+        while (children.size() < breeders.size()) {
+            final StringBuilder dna = new StringBuilder();
+            for (int j = 0; j < 16; j++) {
+                final int index = this.random.nextInt(breeders.size());
+                dna.append(breeders.get(index).dna.charAt(j));
+            }
+            if (!this.alreadyGotChild(dna.toString(), children)) {
+                children.add(new Genotype(dna.toString()));
+            }
+        }
+        return children;
+    }
+
+    private boolean alreadyGotChild(final String dna, final List<Genotype> children) {
+
+        return children.stream().anyMatch(g -> g.dna.equalsIgnoreCase(dna));
+    }
+
+    private void score(final ChronospatialComputer computer, final Genotype genotype) {
+
+        final long a = Long.parseLong(genotype.dna, 8);
+        computer.reset();
+        computer.setRegisterA(a);
+        computer.run();
+
+        int score = 0;
+        final String outputString = computer.getOutputString();
+        final String programString = computer.getProgramString();
+        for (int i = 0; i < 31; i += 2) {
+            try {
+                if (outputString.charAt(i) == programString.charAt(i)) {
+                    score++;
+                }
+            } catch (final StringIndexOutOfBoundsException e) {
+            }
+        }
+//        System.out.println(genotype.dna + " " + outputString);
+        genotype.score = score;
+        genotype.output = computer.getOutputString();
+        genotype.comparison = this.compareStrings(genotype.output, computer.getProgramString());
+    }
+
+    private String randomOctalString(final int length) {
+
+        final Random random = new Random();
+        final StringBuilder octal = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            octal.append(random.nextInt(8));
+        }
+        return octal.toString();
+    }
+
+    private long a16DigitOctalNumber() {
+
+        final String value = "1234567071234567";
+        System.out.println(value);
+        System.out.println(Long.parseLong(value, 8));
+        return Long.parseLong(value);
     }
 
     private void checkValue(final ChronospatialComputer computer, final long a) {
@@ -148,5 +278,71 @@ public class Year2024Day17 extends AdventOfCodeChallenge {
             }
         }
         return index;
+    }
+
+    static class OctalGenerator {
+
+        private final int[] values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        private long value;
+
+        public OctalGenerator() {
+
+        }
+
+        public OctalGenerator(final String octalValue) {
+
+            if (!(octalValue.length() == 16)) {
+                throw new RuntimeException("must be 16 digits long.");
+            }
+            for (int i = 0; i < 16; i++) {
+                this.values[i] = Integer.parseInt(octalValue.substring(i, i + 1));
+            }
+        }
+
+        public String valueToString() {
+
+            return Arrays.stream(this.values).mapToObj(String::valueOf).collect(Collectors.joining(""));
+        }
+
+        public Long yield() {
+
+            this.next();
+            return this.value;
+        }
+
+        private void next() {
+
+            int index = 15;
+            while (true) {
+                final int current = this.values[index];
+                if (current < 7) {
+                    this.values[index] = current + 1;
+                    break;
+                }
+                this.values[index] = 0;
+                index--;
+            }
+
+            this.value = Long.parseLong(this.valueToString(), 8);
+        }
+    }
+
+    static class Genotype {
+
+        String dna;
+        int score;
+        String output;
+        String comparison;
+
+        public Genotype(final String dna) {
+
+            this.dna = dna;
+        }
+
+        @Override
+        public String toString() {
+
+            return this.dna + " (" + this.score + ") " + this.output + " -> " + this.comparison;
+        }
     }
 }
