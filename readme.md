@@ -22,10 +22,24 @@ But part 2 was disappointingly easy, just find when you've added too many walls 
 
 A famous OpCode computer. I've really struggled with these in the past, but this time I persevered, and got
 part 1 working - I'd written the computer which reads the program, it was passing all the tests, but
-failing on the real data, so I handcoded the specific program into a 10 line Java file and spotted
+failing on the real data, so I hand-coded the specific program into a 10 line Java file and spotted
 a bug.
 
-Still working on part 2, though.
+Part 2 gave me a lot of trouble. Tried brute-forcing it, obviously not going to work. Spent a lot of time staring at my
+compiled version, trying to work out what would do. Then reading some [Reddit](https://www.reddit.com/r/adventofcode/)
+articles, two facts slowly became obvious:
+
+- "3 bits" and all the mod 8, % 8 made it obvious we should be working in octal numbers
+- the loop in the code basically tests the last 3 bits of the a register, and shifts values on each loop, meaning I am
+  working with just 16 numbers - the 16 numbers of the program, being eight opcodes and eight operands.
+
+What I needed to do was find a number that would go through _a single iteration_ of the loop and emit the last number of
+the program; then I need to multiply it by eight, and find another number that when added, would go through _two loops_
+, emitting the last _two numbers_ of the program; and so on.
+
+I got a simple version working, which produced something almost right; detailed inspection revealed it wasn't finding a
+couple of numbers and was (ahem) defaulting to zero for those; I then noticed that a previous stage had more than one
+option, so I need Djikstra to find all the branches.
 
 ## Day 16: Reindeer Maze
 

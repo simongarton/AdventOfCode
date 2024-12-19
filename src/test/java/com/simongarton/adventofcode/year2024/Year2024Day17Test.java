@@ -1,84 +1,152 @@
 package com.simongarton.adventofcode.year2024;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Year2024Day17Test {
 
     @Test
-    void octalGeneratorTest0() {
+    void testFirstNumber() {
 
         // given
-        final Year2024Day17.OctalGenerator octalGenerator = new Year2024Day17.OctalGenerator();
+        final CompiledProgram compiledProgram = new CompiledProgram();
+        final long a = 5;
 
         // when
-        final String value = octalGenerator.valueToString();
+        final String output = compiledProgram.run(a);
 
         // then
-        assertEquals("0000000000000000", value);
+        assertEquals("0,", output);
     }
 
     @Test
-    void octalGeneratorTest1() {
+    void testSecondNumber() {
 
         // given
-        final Year2024Day17.OctalGenerator octalGenerator = new Year2024Day17.OctalGenerator();
+        final CompiledProgram compiledProgram = new CompiledProgram();
+        final long a = (5 << 3) + 6;
 
         // when
-        octalGenerator.yield();
-        final String value = octalGenerator.valueToString();
+        final String output = compiledProgram.run(a);
 
         // then
-        assertEquals("0000000000000001", value);
+        assertEquals("3,0,", output);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1})
+    void testThirdNumber(final int number) {
+
+        // given
+        final CompiledProgram compiledProgram = new CompiledProgram();
+        final long a = (46 << 3) + number;
+
+        // when
+        final String output = compiledProgram.run(a);
+
+        // then
+        assertEquals("5,3,0,", output);
+    }
+
+    @ParameterizedTest
+    @MethodSource("valuesForHigherNumbers")
+    void testHigherNumbers(final long previousNumber, final int number, final String expected) {
+
+        // given
+        final CompiledProgram compiledProgram = new CompiledProgram();
+        final long a = (previousNumber << 3) + number;
+
+        // when
+        final String output = compiledProgram.run(a);
+
+        // then
+        assertEquals(expected, output);
+    }
+
+    public static List<Arguments> valuesForHigherNumbers() {
+
+        return List.of(
+                Arguments.of(368, 0, "5,5,3,0,"),
+                Arguments.of(368, 1, "5,5,3,0,"),
+                Arguments.of(368, 4, "5,5,3,0,"),
+                Arguments.of(369, 1, "5,5,3,0,"),
+                Arguments.of(369, 4, "5,5,3,0,"),
+
+                Arguments.of(2944, 6, "3,5,5,3,0,"),
+                Arguments.of(2945, 6, "3,5,5,3,0,"),
+                Arguments.of(2948, 2, "3,5,5,3,0,"),
+                Arguments.of(2948, 6, "3,5,5,3,0,"),
+                Arguments.of(2953, 4, "3,5,5,3,0,"),
+                Arguments.of(2953, 6, "3,5,5,3,0,"),
+                Arguments.of(2956, 2, "3,5,5,3,0,"),
+                Arguments.of(2956, 6, "3,5,5,3,0,"),
+
+                Arguments.of(23558, 4, "0,3,5,5,3,0,"),
+                Arguments.of(23590, 4, "0,3,5,5,3,0,"),
+                Arguments.of(23654, 4, "0,3,5,5,3,0,"),
+
+                Arguments.of(188468, 4, "4,0,3,5,5,3,0,"),
+                Arguments.of(188468, 4, "4,0,3,5,5,3,0,"),
+                Arguments.of(188468, 4, "4,0,3,5,5,3,0,"),
+
+                Arguments.of(1507748, 6, "1,4,0,3,5,5,3,0,"),
+                Arguments.of(1507748, 6, "1,4,0,3,5,5,3,0,"),
+                Arguments.of(1507748, 6, "1,4,0,3,5,5,3,0,")
+        );
     }
 
     @Test
-    void octalGeneratorTest8() {
+    void testOneNumber() {
 
         // given
-        final Year2024Day17.OctalGenerator octalGenerator = new Year2024Day17.OctalGenerator();
+        final CompiledProgram compiledProgram = new CompiledProgram();
+        final long a = (25295865633502L << 3) << 3;
+        System.out.println(a);
 
         // when
-        for (int i = 0; i < 8; i++) {
-            octalGenerator.yield();
-        }
-        final String value = octalGenerator.valueToString();
+        final String output = compiledProgram.run(a);
 
         // then
-        assertEquals("0000000000000010", value);
+        System.out.println(output);
     }
 
     @Test
-    void octalGeneratorTest65() {
+    void testCorrectInput() {
 
         // given
-        final Year2024Day17.OctalGenerator octalGenerator = new Year2024Day17.OctalGenerator();
+        final CompiledProgram compiledProgram = new CompiledProgram();
+        final long a = 202366925068016L;
 
         // when
-        for (int i = 0; i < 65; i++) {
-            octalGenerator.yield();
-        }
-        final String value = octalGenerator.valueToString();
+        final String output = compiledProgram.run(a);
 
         // then
-        assertEquals("0000000000000101", value);
+        System.out.println(output);
     }
 
     @Test
-    void octalGeneratorTest123plus1() {
+    void testFullComputer() throws IOException {
 
         // given
-        final Year2024Day17.OctalGenerator octalGenerator = new Year2024Day17.OctalGenerator();
+        final Path path = Path.of("src", "main", "resources", "2024", "2024-Day17-1-quine.txt");
+        final String[] input = Files.lines(path, StandardCharsets.UTF_8).toArray(String[]::new);
+        final ChronospatialComputer computer = ChronospatialComputer.initializeFromLines(input);
 
         // when
-        for (int i = 0; i < 123; i++) {
-            octalGenerator.yield();
-        }
-        final long value = octalGenerator.yield();
+        computer.run();
 
         // then
-        assertEquals(124, value);
+        System.out.println(computer.getOutputString());
     }
-
 }

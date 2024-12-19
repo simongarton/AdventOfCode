@@ -73,9 +73,9 @@ public class ChronospatialComputer {
 
     public static ChronospatialComputer initializeFromLines(final String[] input) {
 
-        final long a = Integer.parseInt(input[0].replace("Register A: ", ""));
-        final long b = Integer.parseInt(input[1].replace("Register B: ", ""));
-        final long c = Integer.parseInt(input[2].replace("Register C: ", ""));
+        final long a = Long.parseLong(input[0].replace("Register A: ", ""));
+        final long b = Long.parseLong(input[1].replace("Register B: ", ""));
+        final long c = Long.parseLong(input[2].replace("Register C: ", ""));
 
         final String program = input[4].replace("Program: ", "");
 
