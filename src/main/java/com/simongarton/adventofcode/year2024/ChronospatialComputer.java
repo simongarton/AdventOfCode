@@ -119,6 +119,10 @@ public class ChronospatialComputer {
 
         if (!jump) {
             this.instructionPointer = this.instructionPointer + 2;
+        } else {
+            if (DEBUG) {
+                System.out.println("a " + this.registerA + " b " + this.registerB + " c " + this.registerC + " out " + this.output);
+            }
         }
 
         this.debugMessage(this.statusLine());

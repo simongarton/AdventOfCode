@@ -41,6 +41,15 @@ I got a simple version working, which produced something almost right; detailed 
 couple of numbers and was (ahem) defaulting to zero for those; I then noticed that a previous stage had more than one
 option, so I need Djikstra to find all the branches.
 
+That led on to a late night, but eventually tracked down a typo - ending a range too early - and an int/long precision
+issue, and it all works beautifully. Phew.
+
+This diagram shows the eventual path I found. I built it up left to right, but the computer will run right to left. My
+actual value ended up being the green line, but you can see other paths which would have led me to other starting
+numbers - looks like I have nine that would have worked - and you can also see some branches that just die.
+
+![Part 2](2024-Day17-2.png)
+
 ## Day 16: Reindeer Maze
 
 Sometimes you just get stuck. Today was a maze-navigating algorithm, straight forward enough, except that making a turn

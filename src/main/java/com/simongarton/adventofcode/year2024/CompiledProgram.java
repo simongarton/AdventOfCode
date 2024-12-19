@@ -10,9 +10,10 @@ public class CompiledProgram {
         final StringBuilder output = new StringBuilder();
 
         while (true) {
+            System.out.println("a " + a + " b " + b + " c " + c + " out " + output);
             b = a % 8;
             b = b ^ 1;
-            c = Double.valueOf(Math.floor(1.0D * a / Math.pow(2, b))).intValue();
+            c = Double.valueOf(Math.floor(1.0D * a / Math.pow(2, b))).longValue();
             b = b ^ c;
             b = b ^ 4;
             a = a / 8;
@@ -35,7 +36,7 @@ public class CompiledProgram {
 
         b = a % 8;
         b = b ^ 1;
-        c = Double.valueOf(Math.floor(1.0D * a / Math.pow(2, b))).intValue();
+        c = Double.valueOf(Math.floor(1.0D * a / Math.pow(2, b))).longValue();
         b = b ^ c;
         b = b ^ 4;
         a = a / 8;

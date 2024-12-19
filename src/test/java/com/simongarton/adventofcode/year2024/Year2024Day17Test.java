@@ -126,13 +126,14 @@ class Year2024Day17Test {
 
         // given
         final CompiledProgram compiledProgram = new CompiledProgram();
-        final long a = 202366925068016L;
+        final long a = 202991746427434L;
+        final String expected = "2,4,1,1,7,5,4,4,1,4,0,3,5,5,3,0,";
 
         // when
         final String output = compiledProgram.run(a);
 
         // then
-        System.out.println(output);
+        assertEquals(expected, output);
     }
 
     @Test
@@ -142,11 +143,12 @@ class Year2024Day17Test {
         final Path path = Path.of("src", "main", "resources", "2024", "2024-Day17-1-quine.txt");
         final String[] input = Files.lines(path, StandardCharsets.UTF_8).toArray(String[]::new);
         final ChronospatialComputer computer = ChronospatialComputer.initializeFromLines(input);
+        final String expected = "2,4,1,1,7,5,4,4,1,4,0,3,5,5,3,0";
 
         // when
         computer.run();
 
         // then
-        System.out.println(computer.getOutputString());
+        assertEquals(expected, computer.getOutputString());
     }
 }

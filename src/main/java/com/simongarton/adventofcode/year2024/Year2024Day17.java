@@ -2,10 +2,13 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Year2024Day17 extends AdventOfCodeChallenge {
+
+    private static final boolean DEBUG = false;
 
     private final List<Integer> part2Program = List.of(2, 4, 1, 1, 7, 5, 4, 4, 1, 4, 0, 3, 5, 5, 3, 0);
 
@@ -70,42 +73,76 @@ public class Year2024Day17 extends AdventOfCodeChallenge {
         //  Real computer says          5,6,0,4,6,5,4,4,1,4,0,3,5,5,3,0
 
         // so lets look at what happens on each loop
+        // real computer has big numbers in first two lines
+        // a 25295865633502 b 101183462534013 c 101183462534008 out [5]
+        // a 3161983204187 b 197623950262 c 197623950261 out [5, 6]
 
+        // compiled program has what looks like ints for b and c
+        // a 202366925068016 b 0 c 0 out
+        // a 25295865633502 b 2147483642 c 2147483647 out 2,
+        // a 3161983204187 b 2147483644 c 2147483647 out 2,4,
+
+        // a tracks correctly.
+
+        // ah, there was a damn intValue() on one of my calculations. :facepalm
+
+        final List<String> graph = new ArrayList<>();
+        graph.add("digraph {");
+        graph.add("rankdir=\"LR\"");
         long correctInput = 0;
         while (!available.isEmpty()) {
             final ProgramNode current = available.remove(0);
             visited.add(current);
+            graph.add("\"" + current.graphString() + "\"");
             final int programLineFromEnd = current.index + 1;
             if (programLineFromEnd == 16) {
                 correctInput = current.a;
-                break; // I'm done, even though my computer is still running.
+                this.updateGraphWithCurrent(graph, current);
+                break;
             }
 
             values = this.findValuesForIndex(current.a, programLineFromEnd, compiledProgram);
-            System.out.println("working with " + current + " and I got " + values);
+            if (DEBUG) {
+                System.out.println("working with " + current + " and I got " + values);
+            }
             if (values.isEmpty()) {
                 continue;
             }
             for (final int value : values) {
                 final ProgramNode previousNode = new ProgramNode(programLineFromEnd, value, current);
                 available.add(previousNode);
+                graph.add("\"" + current.graphString() + "\" -> \"" + previousNode.graphString() + "\"");
             }
         }
 
-        // let's check it again
-        final String output = compiledProgram.run(correctInput);
-        System.out.println("For a=" + correctInput + " I get " + output);
+        if (DEBUG) {
+            // let's check it again
+            final String output = compiledProgram.run(correctInput);
+            System.out.println("For a=" + correctInput + " I get " + output);
 
-        // and let's check the real computer
-        // use this to validate the result when I get one
-        final ChronospatialComputer computer = ChronospatialComputer.initializeFromLines(input);
-        computer.setRegisterA(correctInput);
-        computer.run();
-        System.out.println("Real computer says          " + computer.getOutputString());
-        System.out.println("Real program is             " + computer.getProgramString());
+            // and let's check the real computer
+            // use this to validate the result when I get one
+            final ChronospatialComputer computer = ChronospatialComputer.initializeFromLines(input);
+            computer.setRegisterA(correctInput);
+            computer.run();
+            System.out.println("Real computer says          " + computer.getOutputString());
+            System.out.println("Real program is             " + computer.getProgramString());
 
+            graph.add("}");
+            this.dumpGraphToFile("graph.dot", graph);
+        }
 
         return String.valueOf(correctInput);
+    }
+
+    private void updateGraphWithCurrent(final List<String> graph, final ProgramNode current) {
+
+        graph.add("\"" + current.graphString() + "\" [style=filled color=green]");
+        ProgramNode previousNode = current.next;
+        while (previousNode != null) {
+            graph.add("\"" + previousNode.graphString() + "\" [style=filled color=green]");
+            previousNode = previousNode.next;
+        }
     }
 
     private String displayNodeAsTarget(final ProgramNode programNode) {
@@ -119,30 +156,6 @@ public class Year2024Day17 extends AdventOfCodeChallenge {
         return line;
     }
 
-    private String displayNode(final ProgramNode programNode) {
-
-        String line = "";
-        ProgramNode workingNode = programNode;
-        while (workingNode != null) {
-            line = line + workingNode.index + " (" + workingNode.value + ") ";
-            workingNode = workingNode.next;
-        }
-        return line;
-    }
-
-    private Long calculateValueForNode(final ProgramNode programNode) {
-
-        long value = programNode.value;
-        ProgramNode workingNode = programNode.next;
-        while (workingNode != null) {
-            value = value << 3;
-            value = value + workingNode.value;
-            workingNode = workingNode.next;
-        }
-        return value;
-
-    }
-
     private List<Integer> findValuesForIndex(final long previousA,
                                              final int programLineFromEnd,
                                              final CompiledProgram compiledProgram) {
@@ -153,15 +166,8 @@ public class Year2024Day17 extends AdventOfCodeChallenge {
             final long a = (previousA << 3) + i;
             final String singleShot = compiledProgram.singleShot(a);
             final int hit = Integer.parseInt(singleShot.substring(0, 1));
-            try {
-                if (hit == this.part2Program.get(15 - programLineFromEnd)) {
-                    values.add(i);
-                }
-            } catch (final ArrayIndexOutOfBoundsException e) {
-                System.out.println("part2Program " + this.part2Program);
-                System.out.println("part2Program size " + this.part2Program.size());
-                System.out.println("programLineFromEnd " + programLineFromEnd);
-                throw new RuntimeException("Should not have got here");
+            if (hit == this.part2Program.get(15 - programLineFromEnd)) {
+                values.add(i);
             }
         }
 
@@ -170,10 +176,10 @@ public class Year2024Day17 extends AdventOfCodeChallenge {
 
     static class ProgramNode {
 
-        int index; // 0 -> 15, the index in the array
-        long value; // the value I will use here, one digit
-        long a; // the overall value
-        ProgramNode next; // next because it's in reverse
+        final int index; // 0 -> 15, the index in the array
+        final long value; // the value I will use here, one digit
+        final long a; // the overall value
+        final ProgramNode next; // next because it's in reverse
 
         public ProgramNode(final int index, final int value, final ProgramNode next) {
             this.index = index;
@@ -191,6 +197,11 @@ public class Year2024Day17 extends AdventOfCodeChallenge {
 
             return "i " + this.index + " v " + this.value + " a " + this.a;
         }
-    }
 
+        public String graphString() {
+
+            final DecimalFormat decimalFormat = new DecimalFormat("#,##0");
+            return decimalFormat.format(this.a);
+        }
+    }
 }
