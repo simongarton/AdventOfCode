@@ -43,6 +43,8 @@ public class Year2024Day17 extends AdventOfCodeChallenge {
         final ChronospatialComputer computer = ChronospatialComputer.initializeFromLines(input);
 
         final int[] ratchet = new int[16];
+        final CompiledProgram compiledProgram = new CompiledProgram();
+
         int clicked = 0;
 
         while (clicked < 16) {
