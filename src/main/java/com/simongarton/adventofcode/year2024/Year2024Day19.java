@@ -2,28 +2,14 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Year2024Day19 extends AdventOfCodeChallenge {
 
     private List<String> towels = new ArrayList<>();
     private List<String> carpets = new ArrayList<>();
 
-    /*
-
-    towels: 447
-    carpets: 400 max length 60
-
-    Had a couple of ideas.
-
-    Recursion and memoisation.
-    Learn how a Trie works.
-
-    222 is too low
-
-     */
+    private final Map<String, Long> towelCache = new HashMap<>();
 
     @Override
     public String title() {
@@ -38,9 +24,18 @@ public class Year2024Day19 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
+        this.setup(input);
+
+        final long validCarpets = this.countValidCarpets();
+
+        return String.valueOf(validCarpets);
+    }
+
+    private void setup(final String[] input) {
+
         this.towels = Arrays.asList(input[0].split(", "));
 
-        System.out.println("towels: " + this.towels.size());
+        // System.out.println("towels: " + this.towels.size());
 
         this.carpets = new ArrayList<>();
         int maxLength = 0;
@@ -53,14 +48,10 @@ public class Year2024Day19 extends AdventOfCodeChallenge {
             }
         }
 
-        System.out.println("carpets: " + this.carpets.size() + " max length " + maxLength);
-
-        final int validCarpets = this.countValidCarpets();
-
-        return String.valueOf(validCarpets);
+        // System.out.println("carpets: " + this.carpets.size() + " max length " + maxLength);
     }
 
-    private int countValidCarpets() {
+    private long countValidCarpets() {
 
         int valid = 0;
         for (final String carpet : this.carpets) {
@@ -76,26 +67,21 @@ public class Year2024Day19 extends AdventOfCodeChallenge {
     private boolean validCarpet(final String carpet) {
 
         final List<Node> available = new ArrayList<>();
-        final List<Node> visited = new ArrayList<>();
 
         available.add(new Node(carpet));
 
         while (!available.isEmpty()) {
             final int index = this.bestToUse(available);
             final Node current = available.remove(index);
-//            System.out.println(current.patternLeft);
 
-            visited.add(current);
             if (current.patternLeft.isEmpty()) {
                 return true;
             }
 
-            boolean usedATowel = false;
             for (final String towel : this.towels) {
                 if (current.couldUseTowel(towel)) {
                     final Node next = current.useTowel(towel);
                     available.add(next);
-                    usedATowel = true;
                 }
             }
         }
@@ -118,13 +104,54 @@ public class Year2024Day19 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.setup(input);
+
+        final long validCarpetCombos = this.countValidCarpetCombos();
+
+        return String.valueOf(validCarpetCombos);
+    }
+
+    private long countValidCarpetCombos() {
+
+        long valid = 0;
+        for (final String carpet : this.carpets) {
+            final boolean wasValid = this.validCarpet(carpet);
+            if (wasValid) {
+                final long combos = this.recursiveValidCarpetCombos(carpet);
+                valid += combos;
+            }
+        }
+        return valid;
+    }
+
+    private long recursiveValidCarpetCombos(final String carpet) {
+
+        if (carpet.isEmpty()) {
+            return 1;
+        }
+
+        if (this.towelCache.containsKey(carpet)) {
+            return this.towelCache.get(carpet);
+        }
+
+        long combos = 0;
+        for (final String towel : this.towels) {
+            if (carpet.length() >= towel.length()) {
+                if (carpet.substring(0, towel.length()).equalsIgnoreCase(towel)) {
+                    combos = combos + this.recursiveValidCarpetCombos(carpet.substring(towel.length()));
+                }
+            }
+        }
+
+        this.towelCache.put(carpet, combos);
+        return combos;
     }
 
     static class Node {
 
-        String originalPattern;
-        List<String> towelsUsed;
+        final String originalPattern;
+        final List<String> towelsUsed;
         String patternLeft;
 
         public Node(final String originalPattern) {

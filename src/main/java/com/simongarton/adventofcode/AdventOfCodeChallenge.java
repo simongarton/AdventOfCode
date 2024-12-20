@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +48,8 @@ public abstract class AdventOfCodeChallenge {
     protected int mapHeight;
 
     protected TerminalScreen screen;
+
+    private final DecimalFormat decimalFormat = new DecimalFormat("#,##0");
 
     public abstract String part1(final String[] input);
 
@@ -354,6 +357,12 @@ public abstract class AdventOfCodeChallenge {
         }
         folder.delete();
     }
+
+
+    public String formatBig(final Object o) {
+        return this.decimalFormat.format(o);
+    }
+
 
     public static class AoCCoord {
 

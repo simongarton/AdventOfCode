@@ -9,6 +9,12 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 19 : Linen Layout
+
+Lots of recursion and memoisation. Made part 2 far too hard, went to read Reddit, realised I could chop out about 90% of
+my code, move the cache to a different place, and away we go. Sometimes the numbers are so stupidly big, it becomes
+obvious you're on the wrong path.
+
 ## Day 18 : RAM Run
 
 And I thought the Day 16 map was evil. A* delivers a shortest path very quickly, but the really shortest one
