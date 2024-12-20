@@ -24,7 +24,7 @@ takes AGES to find.
 
 But part 2 was disappointingly easy, just find when you've added too many walls to navigate the maze.
 
-## Day 16: Chronospatial Computer (1,2)
+## Day 17: Chronospatial Computer (1,2)
 
 A famous OpCode computer. I've really struggled with these in the past, but this time I persevered, and got
 part 1 working - I'd written the computer which reads the program, it was passing all the tests, but
