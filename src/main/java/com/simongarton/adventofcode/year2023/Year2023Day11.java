@@ -50,7 +50,7 @@ public class Year2023Day11 extends AdventOfCodeChallenge {
     }
 
     private long getSumDistances() {
-        return this.distances.values().stream().mapToLong(Long::new).sum();
+        return this.distances.values().stream().mapToLong(Long::valueOf).sum();
     }
 
     private void getDistances() {

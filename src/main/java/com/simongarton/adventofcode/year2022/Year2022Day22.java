@@ -10,8 +10,6 @@ public class Year2022Day22 extends AdventOfCodeChallenge {
 
     private static final boolean DEBUG = false;
     private static final String SPACE = " ";
-    private static final String DOT = ".";
-    private static final String WALL = "#";
 
     private List<String> map;
     private int width;
@@ -108,7 +106,7 @@ public class Year2022Day22 extends AdventOfCodeChallenge {
             return this.maybeTraceUpFromBottom();
         }
         final String spot = this.getMap(this.position.getX(), this.position.getY() - 1);
-        if (spot.equalsIgnoreCase(DOT)) {
+        if (spot.equalsIgnoreCase(EMPTY)) {
             return new Coord(this.position.getX(), this.position.getY() - 1);
         }
         if (spot.equalsIgnoreCase(WALL)) {
@@ -123,7 +121,7 @@ public class Year2022Day22 extends AdventOfCodeChallenge {
         if (spot.equalsIgnoreCase(WALL)) {
             return new Coord(this.position.getX(), this.position.getY());
         }
-        if (spot.equalsIgnoreCase(DOT)) {
+        if (spot.equalsIgnoreCase(EMPTY)) {
             return new Coord(this.position.getX(), bottom);
         }
         throw new RuntimeException("maybeTraceUpFromBottom didn't work");
@@ -136,7 +134,7 @@ public class Year2022Day22 extends AdventOfCodeChallenge {
             return this.maybeTraceDownFromTop();
         }
         final String spot = this.getMap(this.position.getX(), this.position.getY() + 1);
-        if (spot.equalsIgnoreCase(DOT)) {
+        if (spot.equalsIgnoreCase(EMPTY)) {
             return new Coord(this.position.getX(), this.position.getY() + 1);
         }
         if (spot.equalsIgnoreCase(WALL)) {
@@ -151,7 +149,7 @@ public class Year2022Day22 extends AdventOfCodeChallenge {
         if (spot.equalsIgnoreCase(WALL)) {
             return new Coord(this.position.getX(), this.position.getY());
         }
-        if (spot.equalsIgnoreCase(DOT)) {
+        if (spot.equalsIgnoreCase(EMPTY)) {
             return new Coord(this.position.getX(), top);
         }
         throw new RuntimeException("maybeTraceUpFromBottom didn't work");
@@ -164,7 +162,7 @@ public class Year2022Day22 extends AdventOfCodeChallenge {
             return this.maybeTraceRightFromLeft();
         }
         final String spot = this.getMap(this.position.getX() + 1, this.position.getY());
-        if (spot.equalsIgnoreCase(DOT)) {
+        if (spot.equalsIgnoreCase(EMPTY)) {
             return new Coord(this.position.getX() + 1, this.position.getY());
         }
         if (spot.equalsIgnoreCase(WALL)) {
@@ -179,7 +177,7 @@ public class Year2022Day22 extends AdventOfCodeChallenge {
         if (spot.equalsIgnoreCase(WALL)) {
             return new Coord(this.position.getX(), this.position.getY());
         }
-        if (spot.equalsIgnoreCase(DOT)) {
+        if (spot.equalsIgnoreCase(EMPTY)) {
             return new Coord(left, this.position.getY());
         }
         throw new RuntimeException("maybeTraceRightFromLeft didn't work");
@@ -192,7 +190,7 @@ public class Year2022Day22 extends AdventOfCodeChallenge {
             return this.maybeTraceLeftFromRight();
         }
         final String spot = this.getMap(this.position.getX() - 1, this.position.getY());
-        if (spot.equalsIgnoreCase(DOT)) {
+        if (spot.equalsIgnoreCase(EMPTY)) {
             return new Coord(this.position.getX() - 1, this.position.getY());
         }
         if (spot.equalsIgnoreCase(WALL)) {
@@ -207,7 +205,7 @@ public class Year2022Day22 extends AdventOfCodeChallenge {
         if (spot.equalsIgnoreCase(WALL)) {
             return new Coord(this.position.getX(), this.position.getY());
         }
-        if (spot.equalsIgnoreCase(DOT)) {
+        if (spot.equalsIgnoreCase(EMPTY)) {
             return new Coord(left, this.position.getY());
         }
         throw new RuntimeException("maybeTraceLeftFromRight didn't work");

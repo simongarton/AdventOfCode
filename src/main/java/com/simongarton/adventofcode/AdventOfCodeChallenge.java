@@ -9,6 +9,8 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
+import com.simongarton.adventofcode.common.ChallengeCoord;
+import com.simongarton.adventofcode.common.ChallengeNode;
 import com.simongarton.adventofcode.exceptions.InvalidSetupException;
 import lombok.Getter;
 
@@ -23,8 +25,8 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class AdventOfCodeChallenge {
@@ -35,6 +37,10 @@ public abstract class AdventOfCodeChallenge {
 
     private static final int CHAR_WIDTH = 12;
     private static final int CHAR_HEIGHT = 24;
+
+    public static final String WALL = "#";
+    public static final String EMPTY = ".";
+    public static final String PATH = "O";
 
     public abstract Outcome run();
 
@@ -258,20 +264,49 @@ public abstract class AdventOfCodeChallenge {
 
     protected void drawChallengeMap() {
 
-        for (final String line : this.challengeMap) {
+        this.drawMapFromLines(this.challengeMap);
+    }
+
+    protected void drawMapFromLines(final List<String> lines) {
+
+        for (final String line : lines) {
             System.out.println(line);
         }
         System.out.println();
     }
 
-    protected String getChallengeMapLetter(final AoCCoord c) {
+    protected List<String> updateMapWithNode(final ChallengeNode end, final String symbol) {
 
-        return this.getChallengeMapLetter(c.x, c.y);
+        final List<String> lines = new ArrayList<>(this.challengeMap);
+        ChallengeNode node = end;
+        while (node != null) {
+            this.updateWithNode(lines, node, symbol);
+            node = node.getPrevious();
+        }
+
+        return lines;
     }
 
-    protected void setChallengeMapLetter(final AoCCoord c, final String letter) {
+    protected void updateWithNode(final List<String> lines,
+                                  final ChallengeNode node,
+                                  final String symbol) {
 
-        this.setChallengeMapLetter(c.x, c.y, letter);
+        final ChallengeCoord coord = node.getCoord();
+        final String line = lines.get(coord.getY());
+        final String newLine = line.substring(0, coord.getX()) + symbol + line.substring(coord.getX() + 1);
+        lines.add(coord.getY(), newLine);
+        lines.remove(coord.getY() + 1);
+    }
+
+
+    protected String getChallengeMapSymbol(final ChallengeCoord c) {
+
+        return this.getChallengeMapSymbol(c.getX(), c.getY());
+    }
+
+    protected void setChallengeMapLetter(final ChallengeCoord c, final String letter) {
+
+        this.setChallengeMapLetter(c.getX(), c.getY(), letter);
     }
 
     protected void setChallengeMapLetter(final int x, final int y, final String letter) {
@@ -288,8 +323,7 @@ public abstract class AdventOfCodeChallenge {
         this.challengeMap.add(y, newLine);
     }
 
-
-    protected String getChallengeMapLetter(final int x, final int y) {
+    protected String getChallengeMapSymbol(final int x, final int y) {
 
         if (x < 0 || x >= this.mapWidth) {
             return null;
@@ -300,7 +334,7 @@ public abstract class AdventOfCodeChallenge {
         return this.challengeMap.get(y).charAt(x) + "";
     }
 
-    protected void putChallengeMapLetter(final int x, final int y, final String letter) {
+    protected void setChallengeMapSymbol(final int x, final int y, final String symbol) {
 
         if (x < 0 || x >= this.mapWidth) {
             throw new RuntimeException("Out of bounds for x=" + x);
@@ -310,7 +344,7 @@ public abstract class AdventOfCodeChallenge {
 
         }
         final String existingRow = this.challengeMap.get(y);
-        final String newRow = existingRow.substring(0, x) + letter + existingRow.substring(x + 1);
+        final String newRow = existingRow.substring(0, x) + symbol + existingRow.substring(x + 1);
         this.challengeMap.add(y, newRow);
         this.challengeMap.remove(y + 1);
     }
@@ -333,9 +367,9 @@ public abstract class AdventOfCodeChallenge {
         return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
     }
 
-    protected long manhattan(final AoCCoord a, final AoCCoord b) {
+    protected long manhattanDistance(final ChallengeCoord a, final ChallengeCoord b) {
 
-        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+        return Math.abs(a.getX() - b.getX()) + Math.abs(a.getY() - b.getY());
     }
 
     protected void emptyTempFolder() {
@@ -358,91 +392,138 @@ public abstract class AdventOfCodeChallenge {
         folder.delete();
     }
 
-
     public String formatBig(final Object o) {
         return this.decimalFormat.format(o);
     }
 
+    public List<ChallengeNode> getShortestPathAStar(final ChallengeCoord start, final ChallengeCoord end) {
 
-    public static class AoCCoord {
-
-        public final int x;
-        public final int y;
-
-        public AoCCoord(final int x, final int y) {
-
-            this.x = x;
-            this.y = y;
+        ChallengeNode working = this.getShortestPathAStarEnd(start, end);
+        if (working == null) {
+            return Collections.emptyList();
         }
-
-        public AoCCoord(final String data) {
-
-            this(
-                    Integer.parseInt(data.split(",")[0]),
-                    Integer.parseInt(data.split(",")[1])
-            );
+        final List<ChallengeNode> path = new ArrayList<>();
+        path.add(0, working);
+        working = working.getPrevious();
+        while (working != null) {
+            path.add(0, working);
+            working = working.getPrevious();
         }
-
-        @Override
-        public String toString() {
-
-            return this.x + "," + this.y;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-
-            if (this == o) {
-                return true;
-            }
-            if (o == null || this.getClass() != o.getClass()) {
-                return false;
-            }
-            final AoCCoord aoCCoord = (AoCCoord) o;
-            return this.x == aoCCoord.x && this.y == aoCCoord.y;
-        }
-
-        @Override
-        public int hashCode() {
-
-            return Objects.hash(this.x, this.y);
-        }
+        return path;
     }
 
-    public static class AoCLongCoord {
+    public ChallengeNode getShortestPathAStarEnd(final ChallengeCoord start, final ChallengeCoord end) {
 
-        public final long x;
-        public final long y;
+        final List<ChallengeNode> available = new ArrayList<>(
+                List.of(
+                        ChallengeNode.builder()
+                                .coord(ChallengeCoord.builder()
+                                        .x(start.getX())
+                                        .y(start.getY())
+                                        .build())
+                                .cost(0L)
+                                .build())
+        );
 
-        public AoCLongCoord(final long x, final long y) {
+        final List<ChallengeNode> visited = new ArrayList<>();
 
-            this.x = x;
-            this.y = y;
-        }
+        ChallengeNode current = null;
+        while (!available.isEmpty()) {
+            final int bestIndex = this.getBestNodeIndexForAStar(available);
+            current = available.remove(bestIndex);
+            visited.add(current);
 
-        @Override
-        public String toString() {
-
-            return this.x + "," + this.y;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-
-            if (this == o) {
-                return true;
+            if (current.getCoord().equals(end)) {
+                break;
             }
-            if (o == null || this.getClass() != o.getClass()) {
-                return false;
-            }
-            final AoCLongCoord coord = (AoCLongCoord) o;
-            return this.x == coord.x && this.y == coord.y;
+            final List<ChallengeNode> neighbours = this.getNeighboursForAStar(current, available, visited);
+            available.addAll(neighbours);
         }
 
-        @Override
-        public int hashCode() {
-
-            return Objects.hash(this.x, this.y);
-        }
+        return current;
     }
+
+    private List<ChallengeNode> getNeighboursForAStar(final ChallengeNode current, final List<ChallengeNode> available, final List<ChallengeNode> visited) {
+
+        final List<ChallengeNode> neighbours = new ArrayList<>();
+        this.maybeAddNeighbour(neighbours, current, +1, 0, available, visited);
+        this.maybeAddNeighbour(neighbours, current, -1, 0, available, visited);
+        this.maybeAddNeighbour(neighbours, current, 0, +1, available, visited);
+        this.maybeAddNeighbour(neighbours, current, 0, -1, available, visited);
+
+        return neighbours;
+    }
+
+    private void maybeAddNeighbour(final List<ChallengeNode> neighbours,
+                                   final ChallengeNode current,
+                                   final int xDelta,
+                                   final int yDelta,
+                                   final List<ChallengeNode> available,
+                                   final List<ChallengeNode> visited) {
+
+        final ChallengeCoord coord = ChallengeCoord.builder()
+                .x(current.getCoord().getX() + xDelta)
+                .y(current.getCoord().getY() + yDelta)
+                .build();
+        final String challengeMapSymbol = this.getChallengeMapSymbol(coord);
+        if (challengeMapSymbol == null || challengeMapSymbol.equalsIgnoreCase(WALL)) {
+            return;
+        }
+        if (this.nodeListContainsCoord(available, coord)) {
+            return;
+        }
+        if (this.nodeListContainsCoord(visited, coord)) {
+            return;
+        }
+        final ChallengeNode next = ChallengeNode.builder()
+                .coord(coord)
+                .cost(current.getCost() + 1)
+                .previous(current)
+                .build();
+        neighbours.add(next);
+    }
+
+    private boolean nodeListContainsCoord(final List<ChallengeNode> visited, final ChallengeCoord coord) {
+
+        return visited.stream().anyMatch(n -> n.getCoord().equals(coord));
+    }
+
+    private int getBestNodeIndexForAStar(final List<ChallengeNode> available) {
+
+        // TBC
+        return 0;
+    }
+
+    protected long heuristicForAStart(final ChallengeCoord workingCoord) {
+
+        return 1L;
+    }
+
+    public ChallengeNode getShortestPathDjikstra(final ChallengeCoord start, final ChallengeCoord end) {
+
+        return null;
+    }
+
+    public List<ChallengeNode> getBFS(final ChallengeCoord start) {
+
+        return null;
+    }
+
+    public List<ChallengeNode> getDFS(final ChallengeCoord start) {
+
+        return null;
+    }
+
+    public ChallengeCoord findChallengeCoord(final String symbol) {
+
+        for (int x = 0; x < this.mapWidth; x++) {
+            for (int y = 0; y < this.mapHeight; y++) {
+                if (this.getChallengeMapSymbol(x, y).equalsIgnoreCase(symbol)) {
+                    return ChallengeCoord.builder().x(x).y(y).build();
+                }
+            }
+        }
+        return null;
+    }
+
 }

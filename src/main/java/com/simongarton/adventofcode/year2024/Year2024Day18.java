@@ -1,6 +1,7 @@
 package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
+import com.simongarton.adventofcode.common.ChallengeCoord;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -17,9 +18,6 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
     private static final boolean DEBUG = false;
 
     private static final int BITMAP_SCALE = 10;
-    private static final String CORRUPT = "#";
-    private static final String WALL = "#";
-    private static final String EMPTY = ".";
 
     int shortest = Integer.MAX_VALUE;
 
@@ -42,8 +40,8 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
 
         for (int iteration = 0; iteration < totalIterations; iteration++) {
             final String data = input[iteration];
-            final AoCCoord coord = new AoCCoord(data);
-            this.setChallengeMapLetter(coord.x, coord.y, "#");
+            final ChallengeCoord coord = new ChallengeCoord(data);
+            this.setChallengeMapLetter(coord, WALL);
         }
 
         this.shortest = Integer.MAX_VALUE;
@@ -90,36 +88,21 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
         this.paintMap(1, lines);
     }
 
-    private void drawChallengeMapWithNode(final Node shorted) {
-
-        final List<String> lines = new ArrayList<>(this.challengeMap);
-        Node node = shorted;
-        while (node != null) {
-            this.updateWithNode(lines, node, "O");
-            node = node.previous;
-        }
-
-        for (final String line : lines) {
-            System.out.println(line);
-        }
-        System.out.println();
-    }
-
     private void updateWithNode(final List<String> lines,
                                 final Node node,
                                 final String symbol) {
 
-        final AoCCoord coord = node.coord;
-        final String line = lines.get(coord.y);
-        final String newLine = line.substring(0, coord.x) + symbol + line.substring(coord.x + 1);
-        lines.add(coord.y, newLine);
-        lines.remove(coord.y + 1);
+        final ChallengeCoord coord = node.coord;
+        final String line = lines.get(coord.getY());
+        final String newLine = line.substring(0, coord.getX()) + symbol + line.substring(coord.getX() + 1);
+        lines.add(coord.getY(), newLine);
+        lines.remove(coord.getY() + 1);
     }
 
     private List<Node> shortestPaths(final boolean findAll) {
 
-        final Node startNode = new Node(new AoCCoord(0, 0), null, 0);
-        final AoCCoord endCoord = new AoCCoord(this.mapWidth - 1, this.mapHeight - 1);
+        final Node startNode = new Node(new ChallengeCoord(0, 0), null, 0);
+        final ChallengeCoord endCoord = new ChallengeCoord(this.mapWidth - 1, this.mapHeight - 1);
 
         final List<Node> available = new ArrayList<>();
         available.add(startNode);
@@ -243,12 +226,12 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
                                    final List<Node> visited,
                                    final List<Node> available) {
 
-        final AoCCoord coord = new AoCCoord(current.coord.x + x, current.coord.y + y);
-        final String mapLetter = this.getChallengeMapLetter(coord);
+        final ChallengeCoord coord = new ChallengeCoord(current.coord.getX() + x, current.coord.getY() + y);
+        final String mapLetter = this.getChallengeMapSymbol(coord);
         if (mapLetter == null) {
             return;
         }
-        if (mapLetter.equalsIgnoreCase(CORRUPT)) {
+        if (mapLetter.equalsIgnoreCase(WALL)) {
             return;
         }
         final Node node = new Node(coord, current, current.cost + 1);
@@ -276,13 +259,13 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
         return false;
     }
 
-    private int bestAvailable(final List<Node> available, final AoCCoord endCoord) {
+    private int bestAvailable(final List<Node> available, final ChallengeCoord endCoord) {
 
         int best = 0;
         int index = 0;
         double distance = Integer.MAX_VALUE;
         for (final Node node : available) {
-            final double thisDistance = this.pythagoras(this.mapWidth - node.coord.x, this.mapHeight - node.coord.y);
+            final double thisDistance = this.pythagoras(this.mapWidth - node.coord.getX(), this.mapHeight - node.coord.getY());
 //            final double thisDistance = this.manhattan(node.coord, endCoord);
             if (thisDistance < distance) {
                 distance = thisDistance;
@@ -308,8 +291,8 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
 
             for (int iteration = 0; iteration < totalIterations; iteration++) {
                 final String data = input[iteration];
-                final AoCCoord coord = new AoCCoord(data);
-                this.setChallengeMapLetter(coord.x, coord.y, "#");
+                final ChallengeCoord coord = new ChallengeCoord(data);
+                this.setChallengeMapLetter(coord.getX(), coord.getY(), "#");
             }
 
             this.shortest = Integer.MAX_VALUE;
@@ -325,11 +308,11 @@ public class Year2024Day18 extends AdventOfCodeChallenge {
 
     static class Node {
 
-        AoCCoord coord;
+        ChallengeCoord coord;
         Node previous;
         int cost;
 
-        public Node(final AoCCoord coord, final Node previous, final int cost) {
+        public Node(final ChallengeCoord coord, final Node previous, final int cost) {
             this.coord = coord;
             this.previous = previous;
             this.cost = cost;

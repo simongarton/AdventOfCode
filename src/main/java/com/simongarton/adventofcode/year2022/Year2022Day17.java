@@ -16,8 +16,7 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
     private static final String FALLING_ROCK = "@";
     private static final String SPACE = ".";
     private static final String LEFT = "<";
-    private static final String RIGHT = ">";
-    private static final String WALL = "|";
+    private static final String VERTICAL_WALL = "|";
     private static final int EMPTY = 3;
     private static final int WALL_WIDTH = 1;
     private static final int TWO = 2;
@@ -346,7 +345,7 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
         final int top = this.findLevel(); // 0 based
         int rowsAdded = 0;
         while (this.cave.size() <= (top + EMPTY + rock.getHeight())) {
-            this.cave.add(WALL + SPACE.repeat(7) + WALL);
+            this.cave.add(VERTICAL_WALL + SPACE.repeat(7) + VERTICAL_WALL);
             rowsAdded++;
         }
         final int position = top + EMPTY + rock.getHeight();
@@ -386,7 +385,7 @@ public class Year2022Day17 extends AdventOfCodeChallenge {
         } catch (final IllegalArgumentException e) {
             throw new RuntimeException(filledRow);
         }
-        final String intermediate = WALL + filledRow + WALL;
+        final String intermediate = VERTICAL_WALL + filledRow + VERTICAL_WALL;
         String finalLine = "";
         for (int i = 0; i < intermediate.length(); i++) {
             if (emptyRow.substring(i, i + 1).equalsIgnoreCase(ROCK)) {

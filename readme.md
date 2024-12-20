@@ -443,7 +443,7 @@ modifications on the list and it's iterator but banged out a solution just in ti
 
 ### Day 3: Gear Ratios
 
-Still happy. Read a map and place various entities : some are single aoCCoord, some are rows of several coords
+Still happy. Read a map and place various entities : some are single challengeCoord, some are rows of several coords
 which makes it trickier. Good data structures and supporting methods, so part 2 was straight forward.
 Top 3k for both parts so `<smug_mode>on</smug_mode>`
 

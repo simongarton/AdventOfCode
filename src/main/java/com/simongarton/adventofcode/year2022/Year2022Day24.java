@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class Year2022Day24 extends AdventOfCodeChallenge {
-    private static final String WALL = "#";
-    private static final String DOT = ".";
+
     private static final String MULTIPLE_STORM = "*";
     private static final String RIGHT = ">";
     private static final String LEFT = "<";
@@ -109,7 +108,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
                 if (symbol.equalsIgnoreCase(WALL)) {
                     continue;
                 }
-                if (symbol.equalsIgnoreCase(DOT)) {
+                if (symbol.equalsIgnoreCase(EMPTY)) {
                     continue;
                 }
                 this.blizzards.add(new Blizzard(new Coord(col, row), symbol));
@@ -143,11 +142,11 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
     private void addMap() {
 
         String newMap = this.maps.get(this.maps.size() - 1)
-                .replace(DOWN, DOT)
-                .replace(UP, DOT)
-                .replace(LEFT, DOT)
-                .replace(RIGHT, DOT)
-                .replace(MULTIPLE_STORM, DOT);
+                .replace(DOWN, EMPTY)
+                .replace(UP, EMPTY)
+                .replace(LEFT, EMPTY)
+                .replace(RIGHT, EMPTY)
+                .replace(MULTIPLE_STORM, EMPTY);
         for (final Blizzard blizzard : this.blizzards) {
             newMap = this.moveBlizzardAndUpdateMap(newMap, blizzard);
         }
@@ -185,7 +184,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
                 throw new RuntimeException(blizzard.symbol);
         }
         switch (this.getSymbol(newMap, blizzard.position.getX(), blizzard.position.getY())) {
-            case DOT:
+            case EMPTY:
                 newMap = this.updateMapWithSymbol(newMap, blizzard.position.getX(), blizzard.position.getY(), blizzard.symbol);
                 return newMap;
             case MULTIPLE_STORM:
@@ -229,22 +228,22 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
 
         public void buildNeighbours() {
             final String map = this.challenge.getOrCreateMap(this.iteration + 1);
-            if (this.challenge.getSymbol(map, this.position.getX(), this.position.getY()).equalsIgnoreCase(DOT)) {
+            if (this.challenge.getSymbol(map, this.position.getX(), this.position.getY()).equalsIgnoreCase(EMPTY)) {
                 this.neighbours.add(new State(this.iteration + 1, this.position, this.challenge));
             }
-            if (this.challenge.getSymbol(map, this.position.getX() - 1, this.position.getY()).equalsIgnoreCase(DOT)) {
+            if (this.challenge.getSymbol(map, this.position.getX() - 1, this.position.getY()).equalsIgnoreCase(EMPTY)) {
                 final Coord newPosition = new Coord(this.position.getX() - 1, this.position.getY());
                 this.neighbours.add(new State(this.iteration + 1, newPosition, this.challenge));
             }
-            if (this.challenge.getSymbol(map, this.position.getX() + 1, this.position.getY()).equalsIgnoreCase(DOT)) {
+            if (this.challenge.getSymbol(map, this.position.getX() + 1, this.position.getY()).equalsIgnoreCase(EMPTY)) {
                 final Coord newPosition = new Coord(this.position.getX() + 1, this.position.getY());
                 this.neighbours.add(new State(this.iteration + 1, newPosition, this.challenge));
             }
-            if (this.challenge.getSymbol(map, this.position.getX(), this.position.getY() - 1).equalsIgnoreCase(DOT)) {
+            if (this.challenge.getSymbol(map, this.position.getX(), this.position.getY() - 1).equalsIgnoreCase(EMPTY)) {
                 final Coord newPosition = new Coord(this.position.getX(), this.position.getY() - 1);
                 this.neighbours.add(new State(this.iteration + 1, newPosition, this.challenge));
             }
-            if (this.challenge.getSymbol(map, this.position.getX(), this.position.getY() + 1).equalsIgnoreCase(DOT)) {
+            if (this.challenge.getSymbol(map, this.position.getX(), this.position.getY() + 1).equalsIgnoreCase(EMPTY)) {
                 final Coord newPosition = new Coord(this.position.getX(), this.position.getY() + 1);
                 this.neighbours.add(new State(this.iteration + 1, newPosition, this.challenge));
             }
@@ -424,7 +423,7 @@ public class Year2022Day24 extends AdventOfCodeChallenge {
                 return TextColor.ANSI.CYAN;
             case WALL:
                 return TextColor.ANSI.WHITE;
-            case DOT:
+            case EMPTY:
                 return TextColor.ANSI.BLACK_BRIGHT;
             default:
                 throw new RuntimeException(mapSymbol);

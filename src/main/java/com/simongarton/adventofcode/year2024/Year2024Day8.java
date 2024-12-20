@@ -32,7 +32,7 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
         }
 
         for (final AntiNode antiNode : this.getAntiNodes()) {
-            this.putChallengeMapLetter(antiNode.x, antiNode.y, "#");
+            this.setChallengeMapSymbol(antiNode.x, antiNode.y, WALL);
         }
 
         if (DEBUG) {
@@ -81,7 +81,7 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
                 final int x = antenna2.x + deltaX;
                 final int y = antenna2.y + deltaY;
 
-                if (this.getChallengeMapLetter(x, y) == null) {
+                if (this.getChallengeMapSymbol(x, y) == null) {
                     continue;
                 }
 
@@ -122,7 +122,7 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
 
                 while (true) {
                     // off map
-                    if (this.getChallengeMapLetter(x, y) == null) {
+                    if (this.getChallengeMapSymbol(x, y) == null) {
                         break;
                     }
 
@@ -160,7 +160,7 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
 
         for (int y = 0; y < this.mapHeight; y++) {
             for (int x = 0; x < this.mapWidth; x++) {
-                final String frequency = this.getChallengeMapLetter(x, y);
+                final String frequency = this.getChallengeMapSymbol(x, y);
                 if (frequency.equalsIgnoreCase(".")) {
                     continue;
                 }
@@ -194,7 +194,7 @@ public class Year2024Day8 extends AdventOfCodeChallenge {
         }
 
         for (final AntiNode antiNode : this.getAntiNodes()) {
-            this.putChallengeMapLetter(antiNode.x, antiNode.y, "#");
+            this.setChallengeMapSymbol(antiNode.x, antiNode.y, WALL);
         }
 
         if (DEBUG) {

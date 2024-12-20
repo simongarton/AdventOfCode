@@ -1,6 +1,7 @@
 package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
+import com.simongarton.adventofcode.common.ChallengeCoord;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,11 +20,9 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
 
     private static final int BITMAP_SCALE = 20;
 
-    private static final String WALL = "#";
     private static final String BOX = "O";
     private static final String LEFT_BOX = "[";
     private static final String RIGHT_BOX = "]";
-    private static final String EMPTY = ".";
     private static final String ROBOT = "@";
     public static final String RIGHT = ">";
     public static final String LEFT = "<";
@@ -92,7 +91,7 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
 
         for (int row = 0; row < this.mapWidth; row++) {
             for (int col = 0; col < this.mapHeight; col++) {
-                final String thing = this.getChallengeMapLetter(col, row);
+                final String thing = this.getChallengeMapSymbol(col, row);
                 if (thing.equalsIgnoreCase(EMPTY)) {
                     continue;
                 }
@@ -142,14 +141,14 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
 
         for (final String uuidToMove : this.thingsToMove) {
             final ThingWithCoord thingToMove = this.findThingToMove(uuidToMove);
-            final AoCCoord position = thingToMove.position;
+            final ChallengeCoord position = thingToMove.position;
             this.setChallengeMapLetter(position, EMPTY);
         }
 
         for (final String uuidToMove : this.thingsToMove) {
             final ThingWithCoord thingToMove = this.findThingToMove(uuidToMove);
-            final AoCCoord position = thingToMove.position;
-            final AoCCoord newPosition = this.getNewPosition(position, this.moveDirection);
+            final ChallengeCoord position = thingToMove.position;
+            final ChallengeCoord newPosition = this.getNewPosition(position, this.moveDirection);
 
             if (thingToMove.getClass().getSimpleName().equalsIgnoreCase("Robot")) {
                 this.robot.position = newPosition;
@@ -167,18 +166,18 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
 
         for (final String uuidToMove : this.thingsToMove) {
             final ThingWithCoord thingToMove = this.findThingToMove(uuidToMove);
-            final AoCCoord position = thingToMove.position;
+            final ChallengeCoord position = thingToMove.position;
             this.setChallengeMapLetter(position, EMPTY);
             if (thingToMove.getClass().getSimpleName().equalsIgnoreCase("Box")) {
-                final AoCCoord otherHalfOfBox = new AoCCoord(position.x + 1, position.y);
+                final ChallengeCoord otherHalfOfBox = new ChallengeCoord(position.getX() + 1, position.getY());
                 this.setChallengeMapLetter(otherHalfOfBox, EMPTY);
             }
         }
 
         for (final String uuidToMove : this.thingsToMove) {
             final ThingWithCoord thingToMove = this.findThingToMove(uuidToMove);
-            final AoCCoord position = thingToMove.position;
-            final AoCCoord newPosition = this.getNewPosition(position, this.moveDirection);
+            final ChallengeCoord position = thingToMove.position;
+            final ChallengeCoord newPosition = this.getNewPosition(position, this.moveDirection);
 
             if (thingToMove.getClass().getSimpleName().equalsIgnoreCase("Robot")) {
                 this.robot.position = newPosition;
@@ -189,7 +188,7 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
             final Box boxToMove = (Box) thingToMove;
             boxToMove.position = newPosition;
             this.setChallengeMapLetter(newPosition, LEFT_BOX);
-            final AoCCoord otherHalfOfBox = new AoCCoord(newPosition.x + 1, newPosition.y);
+            final ChallengeCoord otherHalfOfBox = new ChallengeCoord(newPosition.getX() + 1, newPosition.getY());
             this.setChallengeMapLetter(otherHalfOfBox, RIGHT_BOX);
         }
     }
@@ -207,68 +206,68 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
         throw new RuntimeException("oops");
     }
 
-    private AoCCoord getNewPosition(final AoCCoord position, final String moveDirection) {
+    private ChallengeCoord getNewPosition(final ChallengeCoord position, final String moveDirection) {
 
         if (moveDirection.equalsIgnoreCase(LEFT)) {
-            return new AoCCoord(position.x - 1, position.y);
+            return new ChallengeCoord(position.getX() - 1, position.getY());
         }
         if (moveDirection.equalsIgnoreCase(RIGHT)) {
-            return new AoCCoord(position.x + 1, position.y);
+            return new ChallengeCoord(position.getX() + 1, position.getY());
         }
         if (moveDirection.equalsIgnoreCase(UP)) {
-            return new AoCCoord(position.x, position.y - 1);
+            return new ChallengeCoord(position.getX(), position.getY() - 1);
         }
         if (moveDirection.equalsIgnoreCase(DOWN)) {
-            return new AoCCoord(position.x, position.y + 1);
+            return new ChallengeCoord(position.getX(), position.getY() + 1);
         }
         throw new RuntimeException("oops");
     }
 
-    private boolean recursiveMove(final String move, final AoCCoord position) {
+    private boolean recursiveMove(final String move, final ChallengeCoord position) {
 
         if (move.equalsIgnoreCase(LEFT)) {
-            final AoCCoord nextPosition = new AoCCoord(position.x - 1, position.y);
+            final ChallengeCoord nextPosition = new ChallengeCoord(position.getX() - 1, position.getY());
             return this.checkMove(nextPosition, move);
         }
         if (move.equalsIgnoreCase(RIGHT)) {
-            final AoCCoord nextPosition = new AoCCoord(position.x + 1, position.y);
+            final ChallengeCoord nextPosition = new ChallengeCoord(position.getX() + 1, position.getY());
             return this.checkMove(nextPosition, move);
         }
         if (move.equalsIgnoreCase(UP)) {
-            final AoCCoord nextPosition = new AoCCoord(position.x, position.y - 1);
+            final ChallengeCoord nextPosition = new ChallengeCoord(position.getX(), position.getY() - 1);
             return this.checkMove(nextPosition, move);
         }
         if (move.equalsIgnoreCase(DOWN)) {
-            final AoCCoord nextPosition = new AoCCoord(position.x, position.y + 1);
+            final ChallengeCoord nextPosition = new ChallengeCoord(position.getX(), position.getY() + 1);
             return this.checkMove(nextPosition, move);
         }
         throw new RuntimeException("oops");
     }
 
-    private boolean recursiveDoubleMove(final String move, final AoCCoord position) {
+    private boolean recursiveDoubleMove(final String move, final ChallengeCoord position) {
 
         if (move.equalsIgnoreCase(LEFT)) {
-            final AoCCoord nextPosition = new AoCCoord(position.x - 1, position.y);
+            final ChallengeCoord nextPosition = new ChallengeCoord(position.getX() - 1, position.getY());
             return this.checkDoubleMove(nextPosition, move);
         }
         if (move.equalsIgnoreCase(RIGHT)) {
-            final AoCCoord nextPosition = new AoCCoord(position.x + 1, position.y);
+            final ChallengeCoord nextPosition = new ChallengeCoord(position.getX() + 1, position.getY());
             return this.checkDoubleMove(nextPosition, move);
         }
         if (move.equalsIgnoreCase(UP)) {
-            final AoCCoord nextPosition = new AoCCoord(position.x, position.y - 1);
+            final ChallengeCoord nextPosition = new ChallengeCoord(position.getX(), position.getY() - 1);
             return this.checkDoubleMove(nextPosition, move);
         }
         if (move.equalsIgnoreCase(DOWN)) {
-            final AoCCoord nextPosition = new AoCCoord(position.x, position.y + 1);
+            final ChallengeCoord nextPosition = new ChallengeCoord(position.getX(), position.getY() + 1);
             return this.checkDoubleMove(nextPosition, move);
         }
         throw new RuntimeException("oops");
     }
 
-    private boolean checkMove(final AoCCoord nextPosition, final String nextMove) {
+    private boolean checkMove(final ChallengeCoord nextPosition, final String nextMove) {
 
-        final String thing = this.getChallengeMapLetter(nextPosition);
+        final String thing = this.getChallengeMapSymbol(nextPosition);
         if (thing.equalsIgnoreCase(WALL)) {
             return false;
         }
@@ -284,9 +283,9 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
         throw new RuntimeException("oops");
     }
 
-    private boolean checkDoubleMove(final AoCCoord nextPosition, final String nextMove) {
+    private boolean checkDoubleMove(final ChallengeCoord nextPosition, final String nextMove) {
 
-        final String thing = this.getChallengeMapLetter(nextPosition);
+        final String thing = this.getChallengeMapSymbol(nextPosition);
         if (thing.equalsIgnoreCase(WALL)) {
             return false;
         }
@@ -307,7 +306,7 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
         throw new RuntimeException("oops");
     }
 
-    private boolean specialDoubleMoveLeft(final AoCCoord nextPosition, final String nextMove) {
+    private boolean specialDoubleMoveLeft(final ChallengeCoord nextPosition, final String nextMove) {
 
         // I'm hitting the left side of a box
         // if I'm going right it's normal
@@ -329,19 +328,19 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
                 this.thingsToMove.add(box.id);
             }
             final boolean leftSide = this.recursiveDoubleMove(nextMove, nextPosition);
-            final AoCCoord otherHalfOfBox = new AoCCoord(nextPosition.x + 1, nextPosition.y);
+            final ChallengeCoord otherHalfOfBox = new ChallengeCoord(nextPosition.getX() + 1, nextPosition.getY());
             final boolean rightSide = this.recursiveDoubleMove(nextMove, otherHalfOfBox);
             return leftSide && rightSide;
         }
         throw new RuntimeException("oops");
     }
 
-    private boolean specialDoubleMoveRight(final AoCCoord nextPosition, final String nextMove) {
+    private boolean specialDoubleMoveRight(final ChallengeCoord nextPosition, final String nextMove) {
 
         // I'm hitting the right side of a box
         // if I'm going left it's normal
         if (nextMove.equalsIgnoreCase(LEFT)) {
-            final AoCCoord otherHalfOfBox = new AoCCoord(nextPosition.x - 1, nextPosition.y);
+            final ChallengeCoord otherHalfOfBox = new ChallengeCoord(nextPosition.getX() - 1, nextPosition.getY());
             final Box box = this.getBoxAt(otherHalfOfBox);
             // could have done this as a set or map ...
             if (!this.thingsToMove.contains(box.id)) {
@@ -355,7 +354,7 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
         }
         // if I'm going up, I need to check both coord above and one to the right
         if (nextMove.equalsIgnoreCase(UP) || nextMove.equalsIgnoreCase(DOWN)) {
-            final AoCCoord otherHalfOfBox = new AoCCoord(nextPosition.x - 1, nextPosition.y);
+            final ChallengeCoord otherHalfOfBox = new ChallengeCoord(nextPosition.getX() - 1, nextPosition.getY());
             final Box box = this.getBoxAt(otherHalfOfBox);
             if (!this.thingsToMove.contains(box.id)) {
                 this.thingsToMove.add(box.id);
@@ -367,7 +366,7 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
         throw new RuntimeException("oops");
     }
 
-    private Box getBoxAt(final AoCCoord nextPosition) {
+    private Box getBoxAt(final ChallengeCoord nextPosition) {
 
         for (final Box box : this.boxes) {
             if (box.position.equals(nextPosition)) {
@@ -381,7 +380,7 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
 
         long total = 0;
         for (final Box box : this.boxes) {
-            total += (box.position.y * 100L + box.position.x);
+            total += (box.position.getY() * 100L + box.position.getX());
         }
         return total;
     }
@@ -391,13 +390,13 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
         this.boxes = new ArrayList<>();
         for (int x = 0; x < this.mapWidth; x++) {
             for (int y = 0; y < this.mapHeight; y++) {
-                final String thing = this.getChallengeMapLetter(x, y);
+                final String thing = this.getChallengeMapSymbol(x, y);
                 if (thing.equalsIgnoreCase("@")) {
-                    final AoCCoord c = new AoCCoord(x, y);
+                    final ChallengeCoord c = new ChallengeCoord(x, y);
                     this.robot = new Robot(c);
                 }
                 if (thing.equalsIgnoreCase("O")) {
-                    final AoCCoord c = new AoCCoord(x, y);
+                    final ChallengeCoord c = new ChallengeCoord(x, y);
                     this.boxes.add(new Box(c));
                 }
             }
@@ -473,13 +472,13 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
         this.boxes = new ArrayList<>();
         for (int x = 0; x < this.mapWidth; x++) {
             for (int y = 0; y < this.mapHeight; y++) {
-                final String thing = this.getChallengeMapLetter(x, y);
+                final String thing = this.getChallengeMapSymbol(x, y);
                 if (thing.equalsIgnoreCase("@")) {
-                    final AoCCoord c = new AoCCoord(x, y);
+                    final ChallengeCoord c = new ChallengeCoord(x, y);
                     this.robot = new Robot(c);
                 }
                 if (thing.equalsIgnoreCase("[")) {
-                    final AoCCoord c = new AoCCoord(x, y);
+                    final ChallengeCoord c = new ChallengeCoord(x, y);
                     this.boxes.add(new Box(c));
                 }
                 // don't worry about the second side of the box
@@ -526,13 +525,13 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
     static class ThingWithCoord {
 
         String id;
-        AoCCoord position;
+        ChallengeCoord position;
         String symbol;
     }
 
     static class Robot extends ThingWithCoord {
 
-        public Robot(final AoCCoord position) {
+        public Robot(final ChallengeCoord position) {
 
             this.id = UUID.randomUUID().toString();
             this.position = position;
@@ -542,7 +541,7 @@ public class Year2024Day15 extends AdventOfCodeChallenge {
 
     static class Box extends ThingWithCoord {
 
-        public Box(final AoCCoord position) {
+        public Box(final ChallengeCoord position) {
 
             this.id = UUID.randomUUID().toString();
             this.position = position;

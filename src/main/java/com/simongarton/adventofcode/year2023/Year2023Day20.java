@@ -218,7 +218,7 @@ public class Year2023Day20 extends AdventOfCodeChallenge {
         protected List<AoCModule> targets;
 
         protected Boolean state; // for flipflops
-        protected Boolean finishState = false; // for rx
+        protected Boolean finishState; // for rx
         protected Map<String, PulseType> inputs; // for conjunctions
 
         public void handlePulse(final Pulse pulse) {

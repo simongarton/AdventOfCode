@@ -52,7 +52,7 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
 
     private int checkPerimeter(final int x, final int y, final Region region) {
 
-        final String letter = this.getChallengeMapLetter(x, y);
+        final String letter = this.getChallengeMapSymbol(x, y);
         if (letter == null || !(letter.equalsIgnoreCase(region.plant))) {
             return 1;
         }
@@ -70,7 +70,7 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
                 if (this.regionAt(c)) {
                     continue;
                 }
-                final String letter = this.getChallengeMapLetter(c.x, c.y);
+                final String letter = this.getChallengeMapSymbol(c.x, c.y);
                 final Region region = this.getOrCreateRegion(letter, c);
                 this.growRegion(c, region);
             }
@@ -108,7 +108,7 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
         if (this.regionAt(next)) {
             return false;
         }
-        final String letter = this.getChallengeMapLetter(next.x, next.y);
+        final String letter = this.getChallengeMapSymbol(next.x, next.y);
         if (letter == null) {
             return false;
         }
@@ -377,7 +377,7 @@ public class Year2024Day12 extends AdventOfCodeChallenge {
     private void addNeighbour(final Coord c, final Region region, final int deltaX, final int deltaY, final String direction) {
 
         final Coord next = new Coord(c.x + deltaX, c.y + deltaY);
-        String letter = this.getChallengeMapLetter(next.x, next.y);
+        String letter = this.getChallengeMapSymbol(next.x, next.y);
         if (letter == null) {
             letter = "^";
             if (direction.equalsIgnoreCase("E")) {

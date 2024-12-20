@@ -622,8 +622,8 @@ public class Year2023Day10 extends AdventOfCodeChallenge {
         private int y;
         private String contents;
         private String insideOutside;
-        private int distance = -1;
-        private boolean start = false;
+        private int distance;
+        private boolean start;
 
         public boolean outN() {
             return List.of("|", "L", "J").contains(this.contents);

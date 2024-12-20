@@ -178,7 +178,7 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
                           final int x,
                           final int y) {
 
-        final String mapLetter = this.getChallengeMapLetter(x, y);
+        final String mapLetter = this.getChallengeMapSymbol(x, y);
         if (mapLetter == null) {
             return;
         }
@@ -197,7 +197,7 @@ public class Year2024Day10 extends AdventOfCodeChallenge {
         final List<Coord> trailHeads = new ArrayList<>();
         for (int x = 0; x < this.mapWidth; x++) {
             for (int y = 0; y < this.mapHeight; y++) {
-                if (this.getChallengeMapLetter(x, y).equalsIgnoreCase("0")) {
+                if (this.getChallengeMapSymbol(x, y).equalsIgnoreCase("0")) {
                     trailHeads.add(new Coord(x, y));
                 }
             }

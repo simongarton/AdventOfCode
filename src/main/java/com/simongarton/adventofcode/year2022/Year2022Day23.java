@@ -10,8 +10,6 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
 
     private static final boolean DEBUG = false;
     private static final String ELF = "#";
-    private static final String DOT = ".";
-    private static final String VOID = " ";
 
     private InfiniteGrid grid;
     private List<Elf> elves;
@@ -85,7 +83,7 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
                 final Coord next = elf.next;
                 if (moveCount.getOrDefault(next.toString(), 0) == 1
                         && (!(elf.next.toString().equalsIgnoreCase(elf.original.toString())))) {
-                    this.grid.putCoord(elf.original, DOT);
+                    this.grid.putCoord(elf.original, EMPTY);
                     this.grid.putCoord(elf.next, ELF);
                     this.debugPrint("Elf " + elf.index + " moves to " + elf.next);
                     elf.move();
@@ -109,7 +107,7 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
     private void loadGridAndElves(final String[] input) {
         this.elves = new ArrayList<>();
         this.grid = new InfiniteGrid();
-        this.grid.setDefaultResult(DOT);
+        this.grid.setDefaultResult(EMPTY);
         for (int row = 0; row < input.length; row++) {
             final String line = input[row];
             for (int col = 0; col < line.length(); col++) {
@@ -125,7 +123,7 @@ public class Year2022Day23 extends AdventOfCodeChallenge {
         if (DEBUG) {
             this.grid.drawOnTerminal();
         }
-        this.grid.setDefaultResult(DOT);
+        this.grid.setDefaultResult(EMPTY);
     }
 
     public static final class Elf {

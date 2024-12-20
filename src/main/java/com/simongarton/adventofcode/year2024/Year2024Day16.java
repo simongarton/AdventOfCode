@@ -1,6 +1,7 @@
 package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
+import com.simongarton.adventofcode.common.ChallengeCoord;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,10 +20,8 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
 
     private static final boolean DEBUG = true;
 
-    private static final String WALL = "#";
     private static final String START = "S";
     private static final String END = "E";
-    private static final String EMPTY = ".";
 
     public static final String RIGHT = ">";
     public static final String LEFT = "<";
@@ -46,8 +45,8 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
 
         this.loadChallengeMap(input);
 
-        final AoCCoord startCoord = this.findStart();
-        final AoCCoord endCoord = this.findEnd();
+        final ChallengeCoord startCoord = this.findStart();
+        final ChallengeCoord endCoord = this.findEnd();
 
         final List<State> available = new ArrayList<>();
         final List<State> visited = new ArrayList<>();
@@ -154,10 +153,10 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         return best;
     }
 
-    private double pythag(final AoCCoord coord, final AoCCoord endCoord) {
+    private double pythag(final ChallengeCoord coord, final ChallengeCoord endCoord) {
         return Math.sqrt(
-                Math.pow(endCoord.x - coord.x, 2) +
-                        Math.pow(endCoord.y - coord.y, 2)
+                Math.pow(endCoord.getX() - coord.getX(), 2) +
+                        Math.pow(endCoord.getY() - coord.getY(), 2)
         );
     }
 
@@ -189,16 +188,16 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
                                  final State state,
                                  final String symbol) {
 
-        final AoCCoord coord = state.coord;
-        final String line = lines.get(coord.y);
-        final String oldSymbol = line.charAt(coord.x) + "";
+        final ChallengeCoord coord = state.coord;
+        final String line = lines.get(coord.getY());
+        final String oldSymbol = line.charAt(coord.getX()) + "";
         if (oldSymbol.equalsIgnoreCase("E")) {
             return;
         }
         final String symbolToUse = symbol == null ? this.symbolForDirection(state.direction) : symbol;
-        final String newLine = line.substring(0, coord.x) + symbolToUse + line.substring(coord.x + 1);
-        lines.add(coord.y, newLine);
-        lines.remove(coord.y + 1);
+        final String newLine = line.substring(0, coord.getX()) + symbolToUse + line.substring(coord.getX() + 1);
+        lines.add(coord.getY(), newLine);
+        lines.remove(coord.getY() + 1);
     }
 
     private String symbolForDirection(final int direction) {
@@ -237,13 +236,13 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
     private boolean looksInteresting(final State workingState, final int newDirection) {
         switch (newDirection) {
             case 0:
-                return !this.getChallengeMapLetter(workingState.coord.x, workingState.coord.y - 1).equalsIgnoreCase(WALL);
+                return !this.getChallengeMapSymbol(workingState.coord.getX(), workingState.coord.getY() - 1).equalsIgnoreCase(WALL);
             case 1:
-                return !this.getChallengeMapLetter(workingState.coord.x + 1, workingState.coord.y).equalsIgnoreCase(WALL);
+                return !this.getChallengeMapSymbol(workingState.coord.getX() + 1, workingState.coord.getY()).equalsIgnoreCase(WALL);
             case 2:
-                return !this.getChallengeMapLetter(workingState.coord.x, workingState.coord.y + 1).equalsIgnoreCase(WALL);
+                return !this.getChallengeMapSymbol(workingState.coord.getX(), workingState.coord.getY() + 1).equalsIgnoreCase(WALL);
             case 3:
-                return !this.getChallengeMapLetter(workingState.coord.x - 1, workingState.coord.y).equalsIgnoreCase(WALL);
+                return !this.getChallengeMapSymbol(workingState.coord.getX() - 1, workingState.coord.getY()).equalsIgnoreCase(WALL);
             default:
                 throw new RuntimeException("oops");
         }
@@ -254,7 +253,7 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
                                final List<State> neighbours,
                                final int direction) {
 
-        final Optional<AoCCoord> optImmediateCoord = this.possibleNextCoord(workingState.coord, direction);
+        final Optional<ChallengeCoord> optImmediateCoord = this.possibleNextCoord(workingState.coord, direction);
         if (optImmediateCoord.isPresent()) {
             final State state = new State(
                     optImmediateCoord.get(),
@@ -286,31 +285,31 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         }
     }
 
-    private Optional<AoCCoord> possibleNextCoord(final AoCCoord coord, final int direction) {
+    private Optional<ChallengeCoord> possibleNextCoord(final ChallengeCoord coord, final int direction) {
 
-        final AoCCoord nextCoord = this.nextCoord(coord, direction);
-        final String thing = this.getChallengeMapLetter(nextCoord);
+        final ChallengeCoord nextCoord = this.nextCoord(coord, direction);
+        final String thing = this.getChallengeMapSymbol(nextCoord);
         if (!thing.equalsIgnoreCase(WALL)) {
             return Optional.of(nextCoord);
         }
         return Optional.empty();
     }
 
-    private AoCCoord nextCoord(final AoCCoord coord, final int direction) {
+    private ChallengeCoord nextCoord(final ChallengeCoord coord, final int direction) {
 
-        AoCCoord nextCoord = null;
+        ChallengeCoord nextCoord = null;
         switch (direction) {
             case 0:
-                nextCoord = new AoCCoord(coord.x, coord.y - 1);
+                nextCoord = new ChallengeCoord(coord.getX(), coord.getY() - 1);
                 break;
             case 1:
-                nextCoord = new AoCCoord(coord.x + 1, coord.y);
+                nextCoord = new ChallengeCoord(coord.getX() + 1, coord.getY());
                 break;
             case 2:
-                nextCoord = new AoCCoord(coord.x, coord.y + 1);
+                nextCoord = new ChallengeCoord(coord.getX(), coord.getY() + 1);
                 break;
             case 3:
-                nextCoord = new AoCCoord(coord.x - 1, coord.y);
+                nextCoord = new ChallengeCoord(coord.getX() - 1, coord.getY());
                 break;
             default:
                 throw new RuntimeException("oops");
@@ -318,21 +317,21 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         return nextCoord;
     }
 
-    private AoCCoord findStart() {
+    private ChallengeCoord findStart() {
         return this.findOnMap(START);
     }
 
-    private AoCCoord findEnd() {
+    private ChallengeCoord findEnd() {
         return this.findOnMap(END);
     }
 
-    private AoCCoord findOnMap(final String target) {
+    private ChallengeCoord findOnMap(final String target) {
 
         for (int row = 0; row < this.mapWidth; row++) {
             for (int col = 0; col < this.mapHeight; col++) {
-                final String thing = this.getChallengeMapLetter(col, row);
+                final String thing = this.getChallengeMapSymbol(col, row);
                 if (thing.equalsIgnoreCase(target)) {
-                    return new AoCCoord(col, row);
+                    return new ChallengeCoord(col, row);
                 }
             }
         }
@@ -354,8 +353,8 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
 
         this.loadChallengeMap(input);
 
-        final AoCCoord startCoord = this.findStart();
-        final AoCCoord endCoord = this.findEnd();
+        final ChallengeCoord startCoord = this.findStart();
+        final ChallengeCoord endCoord = this.findEnd();
 
         final List<State> available = new ArrayList<>();
         final List<State> visited = new ArrayList<>();
@@ -421,7 +420,7 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
 
         final int bestScore = score;
         final List<State> bestPaths = hits.stream().filter(s -> s.moves == bestScore).collect(Collectors.toList());
-        final Set<AoCCoord> seatingPlaces = new HashSet<>();
+        final Set<ChallengeCoord> seatingPlaces = new HashSet<>();
         for (final State path : bestPaths) {
             seatingPlaces.addAll(this.getCoords(path));
         }
@@ -429,9 +428,9 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
         return String.valueOf(seatingPlaces.size());
     }
 
-    private Collection<? extends AoCCoord> getCoords(final State path) {
+    private Collection<? extends ChallengeCoord> getCoords(final State path) {
 
-        final Set<AoCCoord> coords = new HashSet<>();
+        final Set<ChallengeCoord> coords = new HashSet<>();
         coords.add(path.coord);
         State nextState = path.previousState;
         while (nextState != null) {
@@ -491,14 +490,14 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
 
     static class State {
 
-        final AoCCoord coord;
+        final ChallengeCoord coord;
         final int direction; // N 0 E 1 S 2 W 3
         final int moves;
         final State previousState;
         // don't know if I need this
         final String action; // "", "L", "R", "F"
 
-        public State(final AoCCoord coord,
+        public State(final ChallengeCoord coord,
                      final int direction,
                      final int moves,
                      final State previousState,
