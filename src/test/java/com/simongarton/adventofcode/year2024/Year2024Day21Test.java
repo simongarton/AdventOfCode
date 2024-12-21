@@ -11,24 +11,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Year2024Day21Test {
 
-    @Test
-    void fullSequence() {
+    @ParameterizedTest
+    @MethodSource("sampleSequences")
+    void fullSequences(final String code, final String expected) {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
-        final String code = "029A";
-        final String expected = "<A^A^^>AvvvA";
 
         // when
         final String actual = year2024Day21.fullSequence(code);
 
         // then
         assertEquals(expected, actual);
-
     }
 
     @Test
-    void buildStateForNumber() {
+    void buildStateForNumpad() {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
@@ -41,11 +39,10 @@ class Year2024Day21Test {
         expected.presses = "^<<A";
 
         // when
-        final Year2024Day21.State actual = year2024Day21.buildStateForNumber(from, to);
+        final Year2024Day21.State actual = year2024Day21.buildStateForNumpad(from, to);
 
         // then
         assertEquals(expected, actual);
-
     }
 
     @ParameterizedTest
@@ -62,6 +59,26 @@ class Year2024Day21Test {
         assertEquals(expected, actual);
     }
 
+    @ParameterizedTest
+    @MethodSource("dirpadMovement")
+    void buildStateForDirpad(final String from, final String to, final String expectedPresses) {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final Year2024Day21.State expected = new Year2024Day21.State();
+        expected.initialLocation = from;
+        expected.finalLocation = to;
+        expected.requiredPress = to; // this may / may not be redundant ?
+        expected.presses = expectedPresses;
+
+        // when
+        final Year2024Day21.State actual = year2024Day21.buildStateForDirpad(from, to);
+
+        // then
+        assertEquals(expected, actual);
+
+    }
+
     static List<Arguments> numberMovement() {
 
         return List.of(
@@ -73,6 +90,28 @@ class Year2024Day21Test {
                 Arguments.of("8", "1", "<vvA"),
                 Arguments.of("A", "1", "^<<A"),
                 Arguments.of("1", "A", ">>vA")
+        );
+    }
+
+    static List<Arguments> dirpadMovement() {
+
+        return List.of(
+                Arguments.of("A", "^", "<A"),
+                Arguments.of("A", "<", "v<<A"),
+                Arguments.of("<", "A", ">>^A"),
+                Arguments.of("v", "^", "^A"),
+                Arguments.of("^", ">", "v>A")
+        );
+    }
+
+    static List<Arguments> sampleSequences() {
+
+        return List.of(
+                Arguments.of("029A", "<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A"),
+                Arguments.of("980A", "<v<A>>^AAAvA^A<vA<AA>>^AvAA<^A>A<v<A>A>^AAAvA<^A>A<vA>^A<A>A"),
+                Arguments.of("179A", "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A"),
+                Arguments.of("456A", "<v<A>>^AA<vA<A>>^AAvAA<^A>A<vA>^A<A>A<vA>^A<A>A<v<A>A>^AAvA<^A>A"),
+                Arguments.of("379A", "<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A")
         );
     }
 }
