@@ -3,11 +3,44 @@
 [Advent of Code](https://adventofcode.com/) is an annual programming competition, with initially simple puzzles starting
 on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
-2022 wasn't too shabby though.
+2022 wasn't too shabby though ... and with some stiff competition from work, 2024 is looking good.
 
 ![progress](images/progress.png)
 
 ## 2024
+
+## Day 20 : Race Condition (1/2)
+
+This was fun, even though I don't have part 2 complete yet.
+
+It's a maze with a single path through it. But for part 1, you can knock down a single wall. How many times does this
+help you get to the end, quicker ? And it's a doozy of a maze - you're going from green to red.
+
+![Part 1](2024-Day20-1.png)
+
+Part 2 then became evil : you can knock up to 20 walls. Actually this is getting a bit vague, and I may have
+misinterpreted the question. Does the phrase `(but can still only end when the program is on normal track)` mean that
+if you're carving a shortcut, you have to stop _at the first normal track_ or can you skip over some and go into
+more walls ?
+
+Here's the first example from the actual challenge sample.
+
+![Part 2](2024-Day20-2.png)
+
+There's a lot in this. Bright green and red are the start and end; then the paler green square and the blue square are
+the start and end of the short cut, and I've marked out the shortest path in 3 sections, green, yellow red. The black
+squares with white edges are walls I have removed as part of the short cut.
+
+This example works - but I get far more results than the real one. All in all I get about 3000 possible short cuts, and
+where the example gets 3 that save 76 seconds, I get 20, and further 29 that save more time. I also see traces
+backtracking ...
+
+Ah, looking at those, I get a clue. Some of mine are not starting one tile off from the normal path, they start in the
+middle of a block and spread out. Can I fix that ? Also I think I need to trace to the start before I remove any other
+walls.
+
+Yes I can, dropped a lot of options. Still got 12 more than the max ... let's look at those. My counts are out, and I
+think I'm getting confused with where the shortcut starts and ends. To be continued.
 
 ## Day 19 : Linen Layout
 

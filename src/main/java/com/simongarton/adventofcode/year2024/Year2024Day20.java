@@ -80,6 +80,7 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
 
         final List<ChallengeCoord> startingPoints = this.findStartingPointsWhichAreNotWallsForPart1();
         final Map<Long, Long> cheats = new HashMap<>();
+
         for (final ChallengeCoord start : startingPoints) {
 
             final Map<Long, Long> coordCheats = this.cheatsFromStart(start, shortestPath);
@@ -188,18 +189,34 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
             System.out.println(cheat);
 
             this.loadChallengeMap(input);
-            this.removeSomeWalls(cheat.wallsToRemove);
 
             final List<ChallengeNode> shortestPathForCheat = this.getShortestPathAStar(start, end);
             final ChallengeNode endNodeForCheat = shortestPathForCheat.get(shortestPathForCheat.size() - 1);
 
+            this.removeSomeWalls(List.of(cheat.startNode.getCoord()));
+            final List<ChallengeNode> shortestPathtoCheatStart = this.getShortestPathAStar(start, cheat.startNode.getCoord());
 
-            final long savings = startingCost - endNodeForCheat.getCost();
-            if (savings == 0) {
+            this.removeSomeWalls(cheat.wallsToRemove);
+            final List<ChallengeNode> shortestPathCheatStartToEnd = this.getShortestPathAStar(cheat.startNode.getCoord(), cheat.endNode.getCoord());
+            final List<ChallengeNode> shortestPathCheatEndToEnd = this.getShortestPathAStar(cheat.endNode.getCoord(), end);
+
+            final long cost1 = shortestPathtoCheatStart.get(shortestPathtoCheatStart.size() - 1).getCost();
+            final long cost2 = shortestPathCheatStartToEnd.get(shortestPathCheatStartToEnd.size() - 1).getCost();
+            final long cost3 = shortestPathCheatEndToEnd.get(shortestPathCheatEndToEnd.size() - 1).getCost();
+
+            cheat.cost = cost1 + (cost2 - 1) + (cost3 - 1);
+
+            final long savings = startingCost - cost1 - (cost2 - 1) - (cost3 - 1);
+
+
+            if (savings <= 0) {
                 continue;
             }
 
-            this.paintCheatMap(cheat, shortestPathForCheat);
+//            this.paintCheatMap(cheat, shortestPathForCheat);
+            if (savings >= 76) {
+                this.paintCheatMap(cheat, shortestPathtoCheatStart, shortestPathCheatStartToEnd, shortestPathCheatEndToEnd);
+            }
             // System.out.println("for cheat " + cheat + " I now trace at " + endNodeForCheat.getCost() + " saving " + savings);
 
             cheatTable.put(savings, cheatTable.getOrDefault(savings, 0L) + 1);
@@ -218,6 +235,37 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         }
 
         return String.valueOf(atLeast100Picos);
+    }
+
+    private void paintCheatMap(final Cheat cheat,
+                               final List<ChallengeNode> shortestPathtoCheatStart,
+                               final List<ChallengeNode> shortestPathCheatStartToEnd,
+                               final List<ChallengeNode> shortestPathCheatEndToEnd) {
+
+        String filename = "temp/" +
+                cheat.startNode.getCoord() +
+                "->" +
+                cheat.endNode.getCoord() +
+                "cost" +
+                cheat.cost +
+                ".png";
+        filename = filename.replace(" ", "_").replace(",", "|");
+
+        final BufferedImage bufferedImage = new BufferedImage(this.mapWidth * MAP_TILE, this.mapHeight * MAP_TILE, TYPE_INT_RGB);
+        final Graphics2D graphics2D = bufferedImage.createGraphics();
+        this.clearBackground(graphics2D);
+        this.paintNormalBackground(graphics2D);
+        this.paintRemovedWalls(graphics2D, cheat.wallsToRemove);
+        this.paintCheatStartEnd(graphics2D, cheat);
+        this.paintShortestPath(graphics2D, shortestPathtoCheatStart, Color.GREEN);
+        this.paintShortestPath(graphics2D, shortestPathCheatStartToEnd, Color.YELLOW);
+        this.paintShortestPath(graphics2D, shortestPathCheatEndToEnd, Color.RED);
+        try {
+            ImageIO.write(bufferedImage, "PNG", new File(filename));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        graphics2D.dispose();
     }
 
     private void paintNormalMap() {
@@ -246,7 +294,7 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         final Graphics2D graphics2D = bufferedImage.createGraphics();
         this.clearBackground(graphics2D);
         this.paintNormalBackground(graphics2D);
-        this.paintShortestPath(graphics2D, shortestPath);
+        this.paintShortestPath(graphics2D, shortestPath, Color.YELLOW);
         try {
             ImageIO.write(bufferedImage, "PNG", new File(filename));
         } catch (final IOException e) {
@@ -266,7 +314,7 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         this.paintNormalBackground(graphics2D);
         this.paintRemovedWalls(graphics2D, cheat.wallsToRemove);
         this.paintCheatStartEnd(graphics2D, cheat);
-        this.paintShortestPath(graphics2D, shortestPathForCheat);
+        this.paintShortestPath(graphics2D, shortestPathForCheat, Color.YELLOW);
         try {
             ImageIO.write(bufferedImage, "PNG", new File(filename));
         } catch (final IOException e) {
@@ -275,7 +323,7 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         graphics2D.dispose();
     }
 
-    private void paintShortestPath(final Graphics2D graphics2D, final List<ChallengeNode> shortestPathForCheat) {
+    private void paintShortestPath(final Graphics2D graphics2D, final List<ChallengeNode> shortestPathForCheat, final Color fillColor) {
 
         final int quarterMapTile = MAP_TILE / 4;
         final int halfMapTile = MAP_TILE / 2;
@@ -284,7 +332,7 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
             final int col = challengeNode.getCoord().getX();
             final int row = challengeNode.getCoord().getY();
 
-            graphics2D.setPaint(new Color(200, 200, 200));
+            graphics2D.setPaint(fillColor);
             graphics2D.fillOval(col * MAP_TILE + quarterMapTile, row * MAP_TILE + quarterMapTile, halfMapTile, halfMapTile);
             graphics2D.setPaint(new Color(0, 0, 0));
             graphics2D.drawOval(col * MAP_TILE + quarterMapTile, row * MAP_TILE + quarterMapTile, halfMapTile, halfMapTile);
@@ -485,13 +533,13 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         final List<ChallengeNode> pointsEndedUpAt = new ArrayList<>();
 
         Cheat cheatFromHereButNotToThere = this.buildCheat(start, pointsEndedUpAt);
-        System.out.println("first cheat for " + start + " is " + cheatFromHereButNotToThere);
+        // System.out.println("first cheat for " + start + " is " + cheatFromHereButNotToThere);
 
         while (cheatFromHereButNotToThere != null) {
             cheats.add(cheatFromHereButNotToThere);
             pointsEndedUpAt.add(cheatFromHereButNotToThere.endNode);
             cheatFromHereButNotToThere = this.buildCheat(start, pointsEndedUpAt);
-            System.out.println("  next cheat for " + start + " is " + cheatFromHereButNotToThere);
+            // System.out.println("  next cheat for " + start + " is " + cheatFromHereButNotToThere);
         }
 
         return cheats;
@@ -505,16 +553,31 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
                 final ChallengeCoord start = ChallengeCoord.builder().x(x).y(y).build();
                 final String startSymbol = this.getChallengeMapSymbol(start);
                 if (startSymbol.equalsIgnoreCase(WALL)) {
-                    final ChallengeNode startNode = ChallengeNode.builder()
-                            .coord(start)
-                            .previous(null)
-                            .cost(0)
-                            .build();
-                    cheatStarts.add(startNode);
+                    if (this.hasNeighbourOnNormalTrack(start)) {
+                        final ChallengeNode startNode = ChallengeNode.builder()
+                                .coord(start)
+                                .previous(null)
+                                .cost(0)
+                                .build();
+                        cheatStarts.add(startNode);
+                    }
                 }
             }
         }
         return cheatStarts;
+    }
+
+    private boolean hasNeighbourOnNormalTrack(final ChallengeCoord start) {
+        if (!this.getChallengeMapSymbol(start.getX() - 1, start.getY()).equalsIgnoreCase(WALL)) {
+            return true;
+        }
+        if (!this.getChallengeMapSymbol(start.getX() + 1, start.getY()).equalsIgnoreCase(WALL)) {
+            return true;
+        }
+        if (!this.getChallengeMapSymbol(start.getX(), start.getY() - 1).equalsIgnoreCase(WALL)) {
+            return true;
+        }
+        return !this.getChallengeMapSymbol(start.getX(), start.getY() + 1).equalsIgnoreCase(WALL);
     }
 
     private List<ChallengeCoord> findInteriorWalls() {
@@ -536,6 +599,7 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
 
         final ChallengeNode startNode; // will be a wall or the Start
         final ChallengeNode endNode; // will be a wall or the End
+        long cost;
 
         final List<ChallengeCoord> wallsToRemove;
 
