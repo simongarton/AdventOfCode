@@ -1,5 +1,7 @@
 package com.simongarton.adventofcode.year2024;
 
+import com.simongarton.adventofcode.year2024.day21.DirectionalKeypad;
+import com.simongarton.adventofcode.year2024.day21.NumericKeypad;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,7 +15,7 @@ class Year2024Day21Test {
 
     @ParameterizedTest
     @MethodSource("sampleSequences")
-    void fullSequences(final String code, final String expected) {
+    void fullSequencesIdentical(final String code, final String expected) {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
@@ -22,8 +24,59 @@ class Year2024Day21Test {
         final String actual = year2024Day21.fullSequence(code);
 
         // then
+        // this is weird. I am getting different sequences, but 4 out of 5 are the same length.
         assertEquals(expected, actual);
     }
+
+    @ParameterizedTest
+    @MethodSource("sampleSequences")
+    void fullSequencesReversedSameLength(final String code, final String expected) {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+
+        // when
+        final String actual = year2024Day21.fullSequence(code);
+
+        // then
+        // this is weird. I am getting different sequences, but 4 out of 5 are the same length.
+        assertEquals(expected.length(), actual.length());
+    }
+
+    @ParameterizedTest
+    @MethodSource("testingOutputToGetCode")
+    void checkingOutput(final String program, final String code) {
+
+        // given
+        final NumericKeypad target = new NumericKeypad("target");
+        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", null, target);
+        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", robot1, null);
+
+        // when
+        robot2.run(program);
+
+        // then
+        assertEquals(code, String.join("", target.getKeysPressed()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("sampleSequences")
+    void fullSequences(final String code, final String expected) {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String program = year2024Day21.fullSequence(code);
+        final NumericKeypad target = new NumericKeypad("target");
+        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", null, target);
+        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", robot1, null);
+
+        // when
+        robot2.run(program);
+
+        // then
+        assertEquals(code, String.join("", target.getKeysPressed()));
+    }
+
 
     @Test
     void buildStateForNumpad() {
@@ -76,7 +129,42 @@ class Year2024Day21Test {
 
         // then
         assertEquals(expected, actual);
+    }
 
+    @ParameterizedTest
+    @MethodSource("drivingRoutesForDirpad")
+    void testDirpadDriving(final String program, final List<String> expectedController, final List<String> expectedTarget) {
+
+        // given
+        final DirectionalKeypad target = new DirectionalKeypad("target", null, null);
+        final DirectionalKeypad controller = new DirectionalKeypad("controller", target, null);
+
+        // when
+        controller.run(program);
+
+        // then
+        assertEquals(expectedController, controller.getKeysPressed());
+        System.out.println(controller.getKeysPressed());
+        assertEquals(expectedTarget, target.getKeysPressed());
+        System.out.println(target.getKeysPressed());
+    }
+
+    @ParameterizedTest
+    @MethodSource("drivingRoutesForNumpad")
+    void testNumpadDriving(final String program, final List<String> expectedController, final List<String> expectedTarget) {
+
+        // given
+        final NumericKeypad target = new NumericKeypad("target");
+        final DirectionalKeypad controller = new DirectionalKeypad("controller", null, target);
+
+        // when
+        controller.run(program);
+
+        // then
+        assertEquals(expectedController, controller.getKeysPressed());
+        System.out.println(controller.getKeysPressed());
+        assertEquals(expectedTarget, target.getKeysPressed());
+        System.out.println(target.getKeysPressed());
     }
 
     static List<Arguments> numberMovement() {
@@ -112,6 +200,33 @@ class Year2024Day21Test {
                 Arguments.of("179A", "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A"),
                 Arguments.of("456A", "<v<A>>^AA<vA<A>>^AAvAA<^A>A<vA>^A<A>A<vA>^A<A>A<v<A>A>^AAvA<^A>A"),
                 Arguments.of("379A", "<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A")
+        );
+    }
+
+    static List<Arguments> drivingRoutesForDirpad() {
+
+        return List.of(
+                Arguments.of("A", List.of("A"), List.of("A")),
+                Arguments.of("<v<A", List.of("<"), List.of()),
+                Arguments.of("<v<A>>^A", List.of("<", "A"), List.of("^"))
+        );
+    }
+
+    static List<Arguments> drivingRoutesForNumpad() {
+
+        return List.of(
+                Arguments.of("A", List.of("A"), List.of("A")),
+                Arguments.of("<A", List.of("^"), List.of()),
+                Arguments.of("<A>A", List.of("^", "A"), List.of("3"))
+        );
+    }
+
+    static List<Arguments> testingOutputToGetCode() {
+
+        // these appear to both be valid, but mine is longer
+        return List.of(
+                Arguments.of("<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A", "379A"),
+                Arguments.of("v<<A>>^AvA^Av<<A>>^AAv<A<A>>^AAvAA<^A>Av<A>^AA<A>Av<A<A>>^AAAvA<^A>A", "379A")
         );
     }
 }

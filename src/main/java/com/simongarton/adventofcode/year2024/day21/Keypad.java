@@ -1,7 +1,8 @@
 package com.simongarton.adventofcode.year2024.day21;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,51 +10,23 @@ import static com.simongarton.adventofcode.year2024.Year2024Day21FiguringOutProb
 
 public abstract class Keypad {
 
-    String name;
-    String currentLetter = ACTIVATE;
-    DirectionalKeypad controller;
+    protected String name;
+    protected String currentLetter = ACTIVATE;
+    protected DirectionalKeypad controller;
 
-    Map<String, Map<String, String>> movements;
-    List<String> keysPressed;
+    @Getter
+    private final List<String> keysPressed;
 
     public Keypad(final String name) {
         this.name = name;
         this.keysPressed = new ArrayList<>();
-
-        this.setupMovements();
     }
 
     public Keypad getController() {
         return this.controller;
     }
 
-    public void setupMovements() {
-
-        this.movements = new HashMap<>();
-        // top level is the current position
-        this.movements.put(UP, this.getPositionsForUp());
-        this.movements.put(RIGHT, this.getPositionsForRight());
-        this.movements.put(DOWN, this.getPositionsForDown());
-        this.movements.put(LEFT, this.getPositionsForLeft());
-    }
-
-    public void press(final String key) {
-
-        if (key.equalsIgnoreCase(ACTIVATE)) {
-            this.activate();
-            return;
-        }
-
-        if (!this.movements.containsKey(key)) {
-            throw new RuntimeException("bad key press " + key);
-        }
-        final Map<String, String> movement = this.movements.get(key);
-
-        if (!movement.containsKey(this.currentLetter)) {
-            throw new RuntimeException("invalid movement for key " + key + " from position " + this.currentLetter);
-        }
-        this.currentLetter = movement.get(this.currentLetter);
-    }
+    abstract Map<String, Map<String, String>> getMovements();
 
     abstract Map<String, String> getPositionsForUp();
 
@@ -66,12 +39,18 @@ public abstract class Keypad {
     public void activate() {
 
         this.keysPressed.add(this.currentLetter);
-        System.out.println(this.name + " pressed " + this.currentLetter);
+        System.out.println(this.getName() + " pressed " + this.currentLetter);
     }
 
-    public List<String> keysPressed() {
-        return this.keysPressed;
+    public void setupMovements() {
+
+        // top level is the current position
+        this.getMovements().put(UP, this.getPositionsForUp());
+        this.getMovements().put(RIGHT, this.getPositionsForRight());
+        this.getMovements().put(DOWN, this.getPositionsForDown());
+        this.getMovements().put(LEFT, this.getPositionsForLeft());
     }
+
 
     public Program getProgramFor(final List<String> commandsNeeded, final Map<Keypad, String> status) {
 

@@ -1,16 +1,24 @@
 package com.simongarton.adventofcode.year2024.day21;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.simongarton.adventofcode.year2024.Year2024Day21FiguringOutProblem.ACTIVATE;
 
+@Getter
 public class NumericKeypad extends Keypad {
+
+    private final Map<String, Map<String, String>> movements;
 
     public NumericKeypad(final String name) {
 
         super(name);
+
+        this.movements = new HashMap<>();
+        this.setupMovements();
     }
 
     @Override
@@ -109,5 +117,23 @@ public class NumericKeypad extends Keypad {
         data.put("0", 1);
         data.put("A", 2);
         return data.get(key);
+    }
+
+    public void press(final String key) {
+
+        if (key.equalsIgnoreCase(ACTIVATE)) {
+            this.activate();
+            return;
+        }
+
+        if (!this.getMovements().containsKey(key)) {
+            throw new RuntimeException("bad key press " + key);
+        }
+        final Map<String, String> movement = this.getMovements().get(key);
+
+        if (!movement.containsKey(this.currentLetter)) {
+            throw new RuntimeException("invalid movement for key " + key + " from position " + this.currentLetter);
+        }
+        this.currentLetter = movement.get(this.currentLetter);
     }
 }

@@ -27,7 +27,7 @@ class Year2024Day21FiguringOutProblemTest {
         keyPresses.forEach(main::press);
 
         // then
-        assertEquals(List.of("1", "9"), main.keysPressed());
+        assertEquals(List.of("1", "9"), main.getKeysPressed());
     }
 
     @Test
@@ -43,7 +43,7 @@ class Year2024Day21FiguringOutProblemTest {
         keyPresses.forEach(robot1::press);
 
         // then
-        assertEquals(List.of("1", "9"), main.keysPressed());
+        assertEquals(List.of("1", "9"), main.getKeysPressed());
     }
 
     @Test

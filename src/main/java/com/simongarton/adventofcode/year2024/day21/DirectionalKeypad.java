@@ -1,5 +1,7 @@
 package com.simongarton.adventofcode.year2024.day21;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,12 +11,10 @@ import static com.simongarton.adventofcode.year2024.Year2024Day21FiguringOutProb
 
 public class DirectionalKeypad extends Keypad {
 
-    String name;
-    String currentLetter = ACTIVATE;
-    DirectionalKeypad controller;
+    private String currentLetter = ACTIVATE;
 
-    Map<String, Map<String, String>> movements;
-    List<String> keysPressed;
+    @Getter
+    private Map<String, Map<String, String>> movements;
 
     final DirectionalKeypad nextDirectionalKeyPad;
     final NumericKeypad numericKeypad;
@@ -23,6 +23,9 @@ public class DirectionalKeypad extends Keypad {
                              final DirectionalKeypad nextDirectionalKeyPad,
                              final NumericKeypad numericKeypad) {
         super(name);
+
+        this.movements = new HashMap<>();
+        this.setupMovements();
 
         this.nextDirectionalKeyPad = nextDirectionalKeyPad;
         if (nextDirectionalKeyPad != null) {
@@ -33,6 +36,24 @@ public class DirectionalKeypad extends Keypad {
         if (numericKeypad != null) {
             numericKeypad.controller = this;
         }
+    }
+
+    public void press(final String key) {
+
+        if (key.equalsIgnoreCase(ACTIVATE)) {
+            this.activate();
+            return;
+        }
+
+        if (!this.getMovements().containsKey(key)) {
+            throw new RuntimeException("bad key press " + key);
+        }
+        final Map<String, String> movement = this.getMovements().get(key);
+
+        if (!movement.containsKey(this.currentLetter)) {
+            throw new RuntimeException("invalid movement for key " + key + " from position " + this.currentLetter);
+        }
+        this.currentLetter = movement.get(this.currentLetter);
     }
 
     @Override
@@ -76,8 +97,8 @@ public class DirectionalKeypad extends Keypad {
     @Override
     public void activate() {
 
-        this.keysPressed.add(this.currentLetter);
-        System.out.println(this.name + " pressed " + this.currentLetter);
+        this.getKeysPressed().add(this.currentLetter);
+        System.out.println(this.getName() + " pressed " + this.currentLetter);
         if (this.nextDirectionalKeyPad != null) {
             this.nextDirectionalKeyPad.press(this.currentLetter);
         }
@@ -167,7 +188,12 @@ public class DirectionalKeypad extends Keypad {
         }
 
         return null;
-
     }
 
+    public void run(final String program) {
+
+        for (int i = 0; i < program.length(); i++) {
+            this.press(program.substring(i, i + 1));
+        }
+    }
 }
