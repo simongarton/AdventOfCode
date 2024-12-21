@@ -41,6 +41,8 @@ public abstract class AdventOfCodeChallenge {
     public static final String WALL = "#";
     public static final String EMPTY = ".";
     public static final String PATH = "O";
+    public static final String START = "S";
+    public static final String END = "E";
 
     public abstract Outcome run();
 
@@ -275,6 +277,11 @@ public abstract class AdventOfCodeChallenge {
         System.out.println();
     }
 
+    protected List<String> getMapLines() {
+
+        return new ArrayList<>(this.challengeMap);
+    }
+
     protected List<String> updateMapWithNode(final ChallengeNode end, final String symbol) {
 
         final List<String> lines = new ArrayList<>(this.challengeMap);
@@ -297,7 +304,6 @@ public abstract class AdventOfCodeChallenge {
         lines.add(coord.getY(), newLine);
         lines.remove(coord.getY() + 1);
     }
-
 
     protected String getChallengeMapSymbol(final ChallengeCoord c) {
 
@@ -483,7 +489,12 @@ public abstract class AdventOfCodeChallenge {
         neighbours.add(next);
     }
 
-    private boolean nodeListContainsCoord(final List<ChallengeNode> visited, final ChallengeCoord coord) {
+    protected boolean coordListContainsCoord(final List<ChallengeCoord> visited, final ChallengeCoord coord) {
+
+        return visited.stream().anyMatch(n -> n.equals(coord));
+    }
+
+    protected boolean nodeListContainsCoord(final List<ChallengeNode> visited, final ChallengeCoord coord) {
 
         return visited.stream().anyMatch(n -> n.getCoord().equals(coord));
     }
