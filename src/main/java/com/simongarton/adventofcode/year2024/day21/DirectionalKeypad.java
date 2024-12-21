@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.simongarton.adventofcode.year2024.Year2024Day21.*;
+import static com.simongarton.adventofcode.year2024.Year2024Day21FiguringOutProblem.*;
 
-public class DirectionalKeypad implements Keypad {
+public class DirectionalKeypad extends Keypad {
 
     String name;
     String currentLetter = ACTIVATE;
@@ -22,10 +22,7 @@ public class DirectionalKeypad implements Keypad {
     public DirectionalKeypad(final String name,
                              final DirectionalKeypad nextDirectionalKeyPad,
                              final NumericKeypad numericKeypad) {
-        this.name = name;
-        this.keysPressed = new ArrayList<>();
-
-        this.setupMovements();
+        super(name);
 
         this.nextDirectionalKeyPad = nextDirectionalKeyPad;
         if (nextDirectionalKeyPad != null) {
@@ -36,24 +33,6 @@ public class DirectionalKeypad implements Keypad {
         if (numericKeypad != null) {
             numericKeypad.controller = this;
         }
-    }
-
-    @Override
-    public Keypad getController() {
-        return this.controller;
-    }
-
-    @Override
-    public void setupMovements() {
-
-        // this is coming from a DirectionalKeypad.
-
-        this.movements = new HashMap<>();
-        // top level is the current position
-        this.movements.put(UP, this.getPositionsForUp());
-        this.movements.put(RIGHT, this.getPositionsForRight());
-        this.movements.put(DOWN, this.getPositionsForDown());
-        this.movements.put(LEFT, this.getPositionsForLeft());
     }
 
     @Override
@@ -94,24 +73,6 @@ public class DirectionalKeypad implements Keypad {
         );
     }
 
-    public void press(final String key) {
-
-        if (key.equalsIgnoreCase(ACTIVATE)) {
-            this.activate();
-            return;
-        }
-
-        if (!this.movements.containsKey(key)) {
-            throw new RuntimeException("bad key press " + key);
-        }
-        final Map<String, String> movement = this.movements.get(key);
-
-        if (!movement.containsKey(this.currentLetter)) {
-            throw new RuntimeException("invalid movement for key " + key + " from position " + this.currentLetter);
-        }
-        this.currentLetter = movement.get(this.currentLetter);
-    }
-
     @Override
     public void activate() {
 
@@ -126,59 +87,87 @@ public class DirectionalKeypad implements Keypad {
     }
 
     @Override
-    public Program getProgramFor(final List<String> commandsNeeded, final Map<Keypad, String> status) {
+    public List<String> damnItIllDoItMyself(final String commandNeeded, final Map<Keypad, String> status) {
 
-        // same as the other !
+        System.out.println("I  (" + this.getName() + ") need to do this myself : " + commandNeeded);
 
-        // first I need to build my tree
-        Keypad nestedKeypad = this;
-        Keypad topLevel = null;
-        System.out.println("I am " + nestedKeypad);
-        while (nestedKeypad.getController() != null) {
-            System.out.println(" and am controlled by " + nestedKeypad.getController());
-            nestedKeypad = nestedKeypad.getController();
-            topLevel = nestedKeypad;
+        if (this.numericKeypad != null) {
+            return this.getCommandsForNumericKeypad(this.numericKeypad, commandNeeded, status);
         }
 
-        // now I need to figure out some commands
-        final List<String> commands = this.buildCommandsRecursivelyFor(this.controller, commandsNeeded, status);
-        return new Program(topLevel, commands);
-    }
+        return this.getCommandsForDirectionalKeypad(this.nextDirectionalKeyPad, commandNeeded, status);
 
-    private List<String> buildCommandsRecursivelyFor(final Keypad keypad,
-                                                     final List<String> commandsNeeded,
-                                                     final Map<Keypad, String> status) {
-
-        if (keypad.getController() == null) {
-            return keypad.damnItIllDoItMyself(commandsNeeded, status);
-        }
-
-        final List<String> commands = new ArrayList<>();
-        for (final String commandNeeded : commandsNeeded) {
-            // I need you, my controller, to tell me what you have to have pressed, to get this command.
-            System.out.println("  I " + this.name + " need my controller " + this.controller.name + " to do this one key press: " + commandNeeded);
-            commands.addAll(this.buildCommandsRecursivelyFor(this.controller, commandsNeeded, status));
-        }
-        return commands;
     }
 
     @Override
-    public List<String> damnItIllDoItMyself(final List<String> commandsNeeded, final Map<Keypad, String> status) {
-
-        System.out.println("I need to do this myself : " + commandsNeeded);
-
-        final List<String> commands = new ArrayList<>();
-
-        return commands;
+    int rowForKey(final String key) {
+        return 0;
     }
 
     @Override
-    public List<String> keysPressed() {
-        return this.keysPressed;
+    int colForKey(final String key) {
+        return 0;
     }
 
-    @Override
-    public String toString() {
-        return this.name + " (" + this.getClass().getSimpleName() + ")";
+    private List<String> getCommandsForDirectionalKeypad(
+            final DirectionalKeypad nextDirectionalKeyPad,
+            final String commandNeeded,
+            final Map<Keypad, String> status) {
+        return null;
     }
+
+    private List<String> getCommandsForNumericKeypad(
+            final NumericKeypad numericKeypad,
+            final String commandNeeded,
+            final Map<Keypad, String> status) {
+
+        // ok where am I on the num pad
+        final String myPosition = numericKeypad.currentLetter;
+
+        // and where do I need to go to ?
+        final String myNextPosition = commandNeeded;
+
+        final List<String> movementsNeeded = this.plotCourseOnNumericKeypad(numericKeypad, myPosition, myNextPosition);
+
+        final String key = myPosition + "->" + myNextPosition;
+
+        final Map<String, List<String>> programs = new HashMap<>();
+
+        return null;
+    }
+
+    private List<String> plotCourseOnNumericKeypad(final NumericKeypad numericKeypad, final String start, final String end) {
+
+        final List<String> course = new ArrayList<>();
+
+        final int startRow = numericKeypad.rowForKey(start);
+        final int startCol = numericKeypad.colForKey(start);
+        final int endRow = numericKeypad.rowForKey(end);
+        final int endCol = numericKeypad.colForKey(end);
+
+        if (startRow > endRow) {
+            for (int i = startRow; i > endRow; i--) {
+                course.add(DOWN);
+            }
+        }
+        if (startRow < endRow) {
+            for (int i = startRow; i < endRow; i++) {
+                course.add(UP);
+            }
+        }
+        if (startCol > endCol) {
+            for (int i = startCol; i > endCol; i--) {
+                course.add(LEFT);
+            }
+        }
+        if (startCol < endCol) {
+            for (int i = startCol; i < endCol; i++) {
+                course.add(RIGHT);
+            }
+        }
+
+        return null;
+
+    }
+
 }

@@ -1,70 +1,78 @@
 package com.simongarton.adventofcode.year2024;
 
-import com.simongarton.adventofcode.year2024.day21.DirectionalKeypad;
-import com.simongarton.adventofcode.year2024.day21.Keypad;
-import com.simongarton.adventofcode.year2024.day21.NumericKeypad;
-import com.simongarton.adventofcode.year2024.day21.Program;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static com.simongarton.adventofcode.year2024.Year2024Day21.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class Year2024Day21Test {
 
     @Test
-    void testDirectionalOnly() {
+    void fullSequence() {
 
         // given
-        final NumericKeypad main = new NumericKeypad("main");
-        final List<String> keyPresses = List.of(UP, LEFT, LEFT, ACTIVATE, UP, RIGHT, UP, RIGHT, ACTIVATE);
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String code = "029A";
+        final String expected = "<A^A^^>AvvvA";
 
         // when
-        keyPresses.forEach(main::press);
+        final String actual = year2024Day21.fullSequence(code);
 
         // then
-        assertEquals(List.of("1", "9"), main.keysPressed());
+        assertEquals(expected, actual);
+
     }
 
     @Test
-    void twoTwoKeypads() {
+    void buildStateForNumber() {
 
         // given
-        final NumericKeypad main = new NumericKeypad("main");
-        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", null, main);
-        final List<String> keyPresses = List.of(LEFT, ACTIVATE, DOWN, LEFT, ACTIVATE, ACTIVATE, RIGHT, RIGHT, UP, ACTIVATE,
-                LEFT, ACTIVATE, ACTIVATE, DOWN, RIGHT, ACTIVATE, ACTIVATE, UP, ACTIVATE);
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String from = "3";
+        final String to = "4";
+        final Year2024Day21.State expected = new Year2024Day21.State();
+        expected.initialLocation = from;
+        expected.finalLocation = to;
+        expected.requiredPress = to; // this may / may not be redundant ?
+        expected.presses = "^<<A";
 
         // when
-        keyPresses.forEach(robot1::press);
+        final Year2024Day21.State actual = year2024Day21.buildStateForNumber(from, to);
 
         // then
-        assertEquals(List.of("1", "9"), main.keysPressed());
+        assertEquals(expected, actual);
+
     }
 
-    @Test
-    void integrationTest() {
+    @ParameterizedTest
+    @MethodSource("numberMovement")
+    void buildPressesForNumberMovement(final String from, final String to, final String expected) {
 
         // given
-        final NumericKeypad main = new NumericKeypad("main");
-        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", null, main);
-
-        final Map<Keypad, String> status = new HashMap<>();
-        status.put(main, "A");
-        status.put(robot1, "A");
-
-        List<String> commandsNeeded = List.of("1");
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
 
         // when
-        Program program = main.getProgramFor(commandsNeeded, status);
+        final String actual = year2024Day21.buildPressesForNumberMovement(from, to);
 
         // then
-        assertNotNull(program);
+        assertEquals(expected, actual);
+    }
 
+    static List<Arguments> numberMovement() {
 
+        return List.of(
+                Arguments.of("A", "3", "^A"),
+                Arguments.of("A", "0", "<A"),
+                Arguments.of("A", "2", "^<A"),
+                Arguments.of("7", "A", ">>vvvA"),
+                Arguments.of("4", "9", "^>>A"),
+                Arguments.of("8", "1", "<vvA"),
+                Arguments.of("A", "1", "^<<A"),
+                Arguments.of("1", "A", ">>vA")
+        );
     }
 }
