@@ -526,4 +526,22 @@ public abstract class AdventOfCodeChallenge {
         return null;
     }
 
+    protected String plural(final long c) {
+        return c == 1 ? "s" : "";
+    }
+
+    protected String nonPlural(final long c) {
+        return c == 1 ? "" : "s";
+    }
+
+    protected String niceCount(final long c) {
+
+        if (c == 0) {
+            return "are no";
+        }
+        if (c == 1) {
+            return "is one";
+        }
+        return "are " + c;
+    }
 }

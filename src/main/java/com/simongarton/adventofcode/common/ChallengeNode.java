@@ -13,4 +13,13 @@ public class ChallengeNode {
     @Getter
     private ChallengeNode previous;
 
+    @Override
+    public String toString() {
+        String result = "coord=" + this.coord + " (" + this.cost + ")";
+        if (this.previous != null) {
+            result += "+";
+        }
+        return result;
+    }
+
 }
