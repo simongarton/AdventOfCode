@@ -10,15 +10,20 @@ import static com.simongarton.adventofcode.year2024.Year2024Day21FiguringOutProb
 
 public abstract class Keypad {
 
+    @Getter
+    protected int level;
+    @Getter
     protected String name;
+    @Getter
     protected String currentLetter = ACTIVATE;
     protected DirectionalKeypad controller;
 
     @Getter
     private final List<String> keysPressed;
 
-    public Keypad(final String name) {
+    public Keypad(final String name, final int level) {
         this.name = name;
+        this.level = level;
         this.keysPressed = new ArrayList<>();
     }
 
@@ -36,11 +41,7 @@ public abstract class Keypad {
 
     abstract Map<String, String> getPositionsForLeft();
 
-    public void activate() {
-
-        this.keysPressed.add(this.currentLetter);
-        System.out.println(this.getName() + " pressed " + this.currentLetter);
-    }
+    abstract void activate();
 
     public void setupMovements() {
 
@@ -94,10 +95,6 @@ public abstract class Keypad {
     @Override
     public String toString() {
         return this.name + " (" + this.getClass().getSimpleName() + ")";
-    }
-
-    protected String getName() {
-        return this.name;
     }
 
     abstract int rowForKey(String key);

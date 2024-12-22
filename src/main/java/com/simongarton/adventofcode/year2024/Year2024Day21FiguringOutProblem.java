@@ -43,16 +43,15 @@ public class Year2024Day21FiguringOutProblem extends AdventOfCodeChallenge {
          */
 
         final NumericKeypad main = new NumericKeypad("main");
-        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", null, main);
-        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", robot1, null);
-        final DirectionalKeypad robot3 = new DirectionalKeypad("robot3", robot2, null);
+        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, main);
+        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", 2, robot1, null);
+        final DirectionalKeypad robot3 = new DirectionalKeypad("robot3", 3, robot2, null);
 
         final Map<Keypad, String> status = new HashMap<>();
         status.put(main, "A");
         status.put(robot1, "A");
         status.put(robot2, "A");
         status.put(robot3, "A");
-
 
         // I want to press a 0
         final Program program = main.getProgramFor(List.of("0"), status);

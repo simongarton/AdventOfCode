@@ -15,7 +15,7 @@ public class NumericKeypad extends Keypad {
 
     public NumericKeypad(final String name) {
 
-        super(name);
+        super(name, 0);
 
         this.movements = new HashMap<>();
         this.setupMovements();
@@ -80,6 +80,13 @@ public class NumericKeypad extends Keypad {
     }
 
     @Override
+    void activate() {
+
+        this.getKeysPressed().add(this.currentLetter);
+        Radio.broadcast(this, this.currentLetter);
+    }
+
+    @Override
     public List<String> damnItIllDoItMyself(final String commandNeeded, final Map<Keypad, String> status) {
 
         throw new RuntimeException("you're joking.");
@@ -120,6 +127,8 @@ public class NumericKeypad extends Keypad {
     }
 
     public void press(final String key) {
+
+        Radio.tick();
 
         if (key.equalsIgnoreCase(ACTIVATE)) {
             this.activate();

@@ -2,6 +2,7 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.year2024.day21.DirectionalKeypad;
 import com.simongarton.adventofcode.year2024.day21.NumericKeypad;
+import com.simongarton.adventofcode.year2024.day21.Radio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -49,14 +50,19 @@ class Year2024Day21Test {
 
         // given
         final NumericKeypad target = new NumericKeypad("target");
-        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", null, target);
-        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", robot1, null);
+        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, target);
+        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", 2, robot1, null);
 
         // when
+        Radio.resetTick();
         robot2.run(program);
 
         // then
         assertEquals(code, String.join("", target.getKeysPressed()));
+        System.out.println(program.length() + ":" + program);
+        System.out.println(String.join("", target.getKeysPressed()));
+        System.out.println(String.join("", robot1.getKeysPressed()));
+        System.out.println(String.join("", robot2.getKeysPressed()));
     }
 
     @ParameterizedTest
@@ -67,8 +73,8 @@ class Year2024Day21Test {
         final Year2024Day21 year2024Day21 = new Year2024Day21();
         final String program = year2024Day21.fullSequence(code);
         final NumericKeypad target = new NumericKeypad("target");
-        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", null, target);
-        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", robot1, null);
+        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, target);
+        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", 2, robot1, null);
 
         // when
         robot2.run(program);
@@ -136,8 +142,8 @@ class Year2024Day21Test {
     void testDirpadDriving(final String program, final List<String> expectedController, final List<String> expectedTarget) {
 
         // given
-        final DirectionalKeypad target = new DirectionalKeypad("target", null, null);
-        final DirectionalKeypad controller = new DirectionalKeypad("controller", target, null);
+        final DirectionalKeypad target = new DirectionalKeypad("target", 1, null, null);
+        final DirectionalKeypad controller = new DirectionalKeypad("controller", 2, target, null);
 
         // when
         controller.run(program);
@@ -155,7 +161,7 @@ class Year2024Day21Test {
 
         // given
         final NumericKeypad target = new NumericKeypad("target");
-        final DirectionalKeypad controller = new DirectionalKeypad("controller", null, target);
+        final DirectionalKeypad controller = new DirectionalKeypad("controller", 0, null, target);
 
         // when
         controller.run(program);

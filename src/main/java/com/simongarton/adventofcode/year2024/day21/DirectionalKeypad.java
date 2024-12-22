@@ -11,8 +11,6 @@ import static com.simongarton.adventofcode.year2024.Year2024Day21FiguringOutProb
 
 public class DirectionalKeypad extends Keypad {
 
-    private String currentLetter = ACTIVATE;
-
     @Getter
     private Map<String, Map<String, String>> movements;
 
@@ -20,9 +18,10 @@ public class DirectionalKeypad extends Keypad {
     final NumericKeypad numericKeypad;
 
     public DirectionalKeypad(final String name,
+                             final int level,
                              final DirectionalKeypad nextDirectionalKeyPad,
                              final NumericKeypad numericKeypad) {
-        super(name);
+        super(name, level);
 
         this.movements = new HashMap<>();
         this.setupMovements();
@@ -39,6 +38,8 @@ public class DirectionalKeypad extends Keypad {
     }
 
     public void press(final String key) {
+
+        Radio.tick();
 
         if (key.equalsIgnoreCase(ACTIVATE)) {
             this.activate();
@@ -98,7 +99,7 @@ public class DirectionalKeypad extends Keypad {
     public void activate() {
 
         this.getKeysPressed().add(this.currentLetter);
-        System.out.println(this.getName() + " pressed " + this.currentLetter);
+        Radio.broadcast(this, this.currentLetter);
         if (this.nextDirectionalKeyPad != null) {
             this.nextDirectionalKeyPad.press(this.currentLetter);
         }

@@ -34,10 +34,13 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
          */
 
+        int total = 0;
         for (final String numericCode : input) {
             final String fullSequence = this.fullSequence(numericCode);
+            final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
+            total += numericPart * fullSequence.length();
         }
-        return null;
+        return String.valueOf(total);
     }
 
     public String fullSequence(final String numericCode) {

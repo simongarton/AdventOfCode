@@ -35,7 +35,7 @@ class Year2024Day21FiguringOutProblemTest {
 
         // given
         final NumericKeypad main = new NumericKeypad("main");
-        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", null, main);
+        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, main);
         final List<String> keyPresses = List.of(LEFT, ACTIVATE, DOWN, LEFT, ACTIVATE, ACTIVATE, RIGHT, RIGHT, UP, ACTIVATE,
                 LEFT, ACTIVATE, ACTIVATE, DOWN, RIGHT, ACTIVATE, ACTIVATE, UP, ACTIVATE);
 
@@ -51,7 +51,7 @@ class Year2024Day21FiguringOutProblemTest {
 
         // given
         final NumericKeypad main = new NumericKeypad("main");
-        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", null, main);
+        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, main);
 
         final Map<Keypad, String> status = new HashMap<>();
         status.put(main, "A");
