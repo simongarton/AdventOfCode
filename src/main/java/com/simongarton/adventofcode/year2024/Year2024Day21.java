@@ -2,7 +2,9 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class Year2024Day21 extends AdventOfCodeChallenge {
@@ -22,6 +24,17 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         // 147756 too high
         // 142688 too high
+
+        /*
+
+        Expected :<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A
+        Actual   :v<A<AA>>^AvAA<^A>Av<<A>>^AvA^Av<<A>>^AAv<A>A^A<A>Av<A<A>>^AAAvA<^A>A
+
+        this is the first of mu fullSequencesIdentical() test.
+        the As are in different places. it would be interesting to see where the keypad went.
+        I know I get the right numbers in the right order - but how is it different ?
+
+         */
 
         int total = 0;
         for (final String numericCode : input) {
@@ -80,7 +93,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         return state;
     }
-    
+
     private boolean dirPadSafeToMove(final int x, final int y, final String direction) {
 
         // I can always move down or right
@@ -107,6 +120,10 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     private String buildPressesForDirpadMovement(final String startingLocation, final String finalLocation) {
 
+        if (false) {
+            return this.hardcodedMovement(startingLocation, finalLocation);
+        }
+
         final int startRow = this.findDirpadRow(startingLocation);
         final int endRow = this.findDirpadRow(finalLocation);
 
@@ -116,6 +133,73 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         } else {
             return this.buildPressesForDirpadMovementLeftRightFirst(startingLocation, finalLocation);
         }
+    }
+
+    private String hardcodedMovement(final String startingLocation, final String finalLocation) {
+
+        final Map<String, Map<String, String>> map = new HashMap<>();
+        map.put("A", this.hardCodedA(startingLocation, finalLocation));
+        map.put("<", this.hardCodedLeft(startingLocation, finalLocation));
+        map.put(">", this.hardCodedRight(startingLocation, finalLocation));
+        map.put("v", this.hardCodedDown(startingLocation, finalLocation));
+        map.put("^", this.hardCodedUp(startingLocation, finalLocation));
+
+        return map.get(startingLocation).get(finalLocation) + "A";
+    }
+
+    private Map<String, String> hardCodedA(final String startingLocation, final String finalLocation) {
+
+        return Map.of(
+                "^", "<",
+                "<", "<v<",
+                "v", "<v",
+                ">", "v",
+                "A", "" // don't know about this
+        );
+    }
+
+    private Map<String, String> hardCodedLeft(final String startingLocation, final String finalLocation) {
+
+        return Map.of(
+                "^", ">^",
+                "<", "",
+                "v", ">",
+                ">", ">>",
+                "A", ">>^"
+        );
+    }
+
+    private Map<String, String> hardCodedRight(final String startingLocation, final String finalLocation) {
+
+        return Map.of(
+                "^", "<^",
+                "<", "<<",
+                "v", "<",
+                ">", "",
+                "A", "^"
+        );
+    }
+
+    private Map<String, String> hardCodedUp(final String startingLocation, final String finalLocation) {
+
+        return Map.of(
+                "^", "",
+                "<", "v<",
+                "v", "v",
+                ">", "v>",
+                "A", ">"
+        );
+    }
+
+    private Map<String, String> hardCodedDown(final String startingLocation, final String finalLocation) {
+
+        return Map.of(
+                "^", "^",
+                "<", "<",
+                "v", "",
+                ">", ">",
+                "A", ">^"
+        );
     }
 
     public State buildStateForNumpad(final String startingLocation, final String finalLocation) {
