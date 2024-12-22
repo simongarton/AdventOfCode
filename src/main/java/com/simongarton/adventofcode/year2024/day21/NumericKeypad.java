@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.simongarton.adventofcode.year2024.Year2024Day21FiguringOutProblem.ACTIVATE;
-
 @Getter
 public class NumericKeypad extends Keypad {
 

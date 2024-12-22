@@ -173,7 +173,8 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         this.emptyTempFolder();
         this.paintNormalMap();
 
-        final List<Cheat> cheats = this.buildCheatList();
+        final List<Cheat> cheats = this.buildBruteForceCheatList();
+//        final List<Cheat> cheats = this.buildCheatList();
 
         final Map<Long, Long> cheatTable = new HashMap<>();
         final ChallengeCoord start = this.findChallengeCoord(START);
@@ -182,11 +183,11 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         final ChallengeNode endNode = shortestPath.get(shortestPath.size() - 1);
         this.paintNormalMapWithTrace(shortestPath);
 
-        System.out.println("for no cheats I now trace at " + endNode.getCost());
+//        System.out.println("for no cheats I now trace at " + endNode.getCost());
         final long startingCost = endNode.getCost();
 
         for (final Cheat cheat : cheats) {
-            System.out.println(cheat);
+//            System.out.println(cheat);
 
             this.loadChallengeMap(input);
 
@@ -201,13 +202,17 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
             final List<ChallengeNode> shortestPathCheatEndToEnd = this.getShortestPathAStar(cheat.endNode.getCoord(), end);
 
             final long cost1 = shortestPathtoCheatStart.get(shortestPathtoCheatStart.size() - 1).getCost();
-            final long cost2 = shortestPathCheatStartToEnd.get(shortestPathCheatStartToEnd.size() - 1).getCost();
-            final long cost3 = shortestPathCheatEndToEnd.get(shortestPathCheatEndToEnd.size() - 1).getCost();
+//            final long cost2 = shortestPathCheatStartToEnd.get(shortestPathCheatStartToEnd.size() - 1).getCost();
+            final long cost2 = cheat.cost;
+            long cost3 = shortestPathCheatEndToEnd.get(shortestPathCheatEndToEnd.size() - 1).getCost();
 
             cheat.cost = cost1 + (cost2 - 1) + (cost3 - 1);
+//            System.out.println(cheat.endNode + " " + endNode + " " + cost3);
+            if (cost3 == 0) {
+                cost3 = 1;
+            }
 
             final long savings = startingCost - cost1 - (cost2 - 1) - (cost3 - 1);
-
 
             if (savings <= 0) {
                 continue;
@@ -411,6 +416,47 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         this.setChallengeMapLetter(c, EMPTY);
     }
 
+    private List<Cheat> buildBruteForceCheatList() {
+
+        final List<Cheat> cheats = new ArrayList<>();
+
+        for (int x = 1; x < this.mapWidth - 1; x++) {
+            for (int y = 1; y < this.mapHeight - 1; y++) {
+                final ChallengeCoord start = ChallengeCoord.builder().x(x).y(y).build();
+                final String startSymbol = this.getChallengeMapSymbol(start);
+                if (!startSymbol.equalsIgnoreCase(WALL)) {
+                    continue;
+                }
+                final ChallengeNode startNode = ChallengeNode.builder()
+                        .coord(start)
+                        .cost(0)
+                        .previous(null)
+                        .build();
+                for (int x1 = 1; x1 < this.mapWidth - 1; x1++) {
+                    for (int y1 = 1; y1 < this.mapHeight - 1; y1++) {
+                        final ChallengeCoord end = ChallengeCoord.builder().x(x1).y(y1).build();
+                        final String endSymbol = this.getChallengeMapSymbol(end);
+                        if (!endSymbol.equalsIgnoreCase(WALL)) {
+                            continue;
+                        }
+                        final long dist = this.manhattanDistance(start, end);
+                        if (dist == 0 || dist >= 20) {
+                            continue;
+                        }
+                        final ChallengeNode endNode = ChallengeNode.builder()
+                                .coord(end)
+                                .cost(dist)
+                                .previous(null)
+                                .build();
+                        final Cheat cheat = new Cheat(startNode, endNode, dist);
+                        cheats.add(cheat);
+                    }
+                }
+            }
+        }
+        return cheats;
+    }
+
     private List<Cheat> buildCheatList() {
 
         final List<Cheat> cheats = new ArrayList<>();
@@ -598,10 +644,17 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
     static class Cheat {
 
         final ChallengeNode startNode; // will be a wall or the Start
-        final ChallengeNode endNode; // will be a wall or the End
+        final ChallengeNode endNode; // will be not a wall or the End
         long cost;
 
         final List<ChallengeCoord> wallsToRemove;
+
+        public Cheat(final ChallengeNode startNode, final ChallengeNode endNode, final long cost) {
+            this.startNode = startNode;
+            this.endNode = endNode;
+            this.cost = cost;
+            this.wallsToRemove = new ArrayList<>();
+        }
 
         public Cheat(final ChallengeNode startNode, final ChallengeNode endNode, final List<ChallengeCoord> wallsToRemove) {
             this.startNode = startNode;

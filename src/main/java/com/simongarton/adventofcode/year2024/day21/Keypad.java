@@ -6,9 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.simongarton.adventofcode.year2024.Year2024Day21FiguringOutProblem.*;
-
 public abstract class Keypad {
+
+    public static final String ACTIVATE = "A";
+    public static final String UP = "^";
+    public static final String DOWN = "v";
+    public static final String LEFT = "<";
+    public static final String RIGHT = ">";
 
     @Getter
     protected int level;
