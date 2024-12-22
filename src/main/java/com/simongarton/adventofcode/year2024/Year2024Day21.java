@@ -20,6 +20,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
+        // 147756 too high
+
         /* I want to press this on the numeric keypad
         1968
         If I start from A - all sequences are dependent on starting point - then I need to do
@@ -48,32 +50,22 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         final StringBuilder fullSequence = new StringBuilder();
 
         State numpadState = new State();
-        numpadState.initialLocation = null;
-        numpadState.finalLocation = "A";
         State dirpadState1 = new State();
-        dirpadState1.initialLocation = null;
-        dirpadState1.finalLocation = "A";
-        State dirpadState2 = new State();
-        dirpadState2.initialLocation = null;
-        dirpadState2.finalLocation = "A";
-        final State dirpadState3 = new State();
-        dirpadState3.initialLocation = null;
-        dirpadState3.finalLocation = "A";
+        State dirpadState2;
         for (int i = 0; i < numericCode.length(); i++) {
             // these are the numpad actions. I'm starting from the previous final location.
             numpadState = this.buildStateForNumpad(numpadState.finalLocation, numericCode.substring(i, i + 1));
             // I need to now drive a dirpad to produce this
-            dirpadState1 = this.convertNumpadStateIntoDirpadPresses(numpadState, dirpadState1);
-            // and twice more. jeez. this broke.
-            dirpadState2 = this.convertNumpadStateIntoDirpadPresses(dirpadState1, dirpadState1);
-//            dirpadState3 = this.convertNumpadStateIntoDirpadPresses(dirpadState2, dirpadState3);
+            dirpadState1 = this.convertStateIntoDirpadPresses(numpadState, dirpadState1);
+            // and again.
+            dirpadState2 = this.convertStateIntoDirpadPresses(dirpadState1, dirpadState1);
             fullSequence.append(dirpadState2.presses);
         }
 
         return fullSequence.toString();
     }
 
-    public State convertNumpadStateIntoDirpadPresses(final State numpadState, State dirpadState) {
+    public State convertStateIntoDirpadPresses(final State numpadState, State dirpadState) {
 
         final StringBuilder fullSequence = new StringBuilder();
 
@@ -102,6 +94,70 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         return state;
     }
 
+    private String buildPressesForDirpadMovementZigZag(final String startingLocation, final String finalLocation) {
+
+        // let's try zig zagging - this more than doubled the length
+        final StringBuilder sequence = new StringBuilder();
+
+        int startRow = this.findDirpadRow(startingLocation);
+        final int endRow = this.findDirpadRow(finalLocation);
+        int startCol = this.findDirpadCol(startingLocation);
+        final int endCol = this.findDirpadCol(finalLocation);
+
+        while (startRow != endRow && startCol != endCol) {
+            if (startRow > endRow) {
+                if (this.dirPadSafeToMove(startRow, startCol, "^")) {
+                    sequence.append("^");
+                    startRow = startRow - 1;
+                }
+            }
+            if (startRow < endRow) {
+                if (this.dirPadSafeToMove(startRow, startCol, "v")) {
+                    sequence.append("v");
+                    startRow = startRow + 1;
+                }
+            }
+            if (startCol > endCol) {
+                if (this.dirPadSafeToMove(startCol, startCol, "<")) {
+                    sequence.append("<");
+                    startCol = startCol - 1;
+                }
+            }
+            if (startCol < endCol) {
+                if (this.dirPadSafeToMove(startCol, startCol, ">")) {
+                    sequence.append(">");
+                    startCol = startCol + 1;
+                }
+            }
+        }
+
+        return sequence.toString();
+    }
+
+    private boolean dirPadSafeToMove(final int x, final int y, final String direction) {
+
+        // I can always move down or right
+        if (direction.equalsIgnoreCase(">")) {
+            return true;
+        }
+        if (direction.equalsIgnoreCase("v")) {
+            return true;
+        }
+        if (direction.equalsIgnoreCase("<")) {
+            if (x == 1 && y == 0) {
+                return false;
+            }
+            return true;
+        }
+        if (direction.equalsIgnoreCase("^")) {
+            if (x == 0 && y == 1) {
+                return false;
+            }
+            return true;
+        }
+        throw new RuntimeException("oops");
+    }
+
     private String buildPressesForDirpadMovement(final String startingLocation, final String finalLocation) {
 
         final int startRow = this.findDirpadRow(startingLocation);
@@ -113,7 +169,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         } else {
             return this.buildPressesForDirpadMovementLeftRightFirst(startingLocation, finalLocation);
         }
-
     }
 
     public State buildStateForNumpad(final String startingLocation, final String finalLocation) {
@@ -132,11 +187,13 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         final int startRow = this.findNumberRow(startingLocation);
         final int endRow = this.findNumberRow(finalLocation);
+        final int startCol = this.findNumberCol(startingLocation);
+        final int endCol = this.findNumberCol(finalLocation);
 
-        if (startRow > endRow) {
-            return this.buildPressesForNumberMovementUpDownFirst(startingLocation, finalLocation);
-        } else {
+        if (startRow != 3 && endRow != 1) {
             return this.buildPressesForNumberMovementLeftRightFirst(startingLocation, finalLocation);
+        } else {
+            return this.buildPressesForNumberMovementUpDownFirst(startingLocation, finalLocation);
         }
     }
 
@@ -299,6 +356,12 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         String initialLocation;
         String finalLocation;
         String presses;
+
+
+        public State() {
+            // needed if I'm using this in a chain
+            this.finalLocation = "A";
+        }
 
         @Override
         public boolean equals(final Object o) {

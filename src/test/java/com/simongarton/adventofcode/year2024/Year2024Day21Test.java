@@ -83,7 +83,6 @@ class Year2024Day21Test {
         assertEquals(code, String.join("", target.getKeysPressed()));
     }
 
-
     @Test
     void buildStateForNumpad() {
 
@@ -180,7 +179,7 @@ class Year2024Day21Test {
                 Arguments.of("A", "0", "<A"),
                 Arguments.of("A", "2", "^<A"),
                 Arguments.of("7", "A", ">>vvvA"),
-                Arguments.of("4", "9", "^>>A"),
+                Arguments.of("4", "9", ">>^A"),
                 Arguments.of("8", "1", "<vvA"),
                 Arguments.of("A", "1", "^<<A"),
                 Arguments.of("1", "A", ">>vA")
