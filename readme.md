@@ -9,17 +9,19 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 ## 2024
 
+## Day 22 : Monkey Magic
+
+Easy, probably making us feel better for the difficult ones over the weekend. Manipulating lists of numbers. My solution
+takes a few seconds, so could probably be optimized, but I need to get back to days 20 and 21.
+
 ## Day 21 : Race Condition (0/2)
 
 Brilliant, but although I'm really close to part 1, I'm not there.
 
 Imagine a simple numerical keypad, and you have to type out a 3 digit number and press # (well, A). Only you're doing
-this remotely,
-and so have a 4-way directional pad to move a pointer around the keypad until it's over the number you want, when you
-can
-push it. Only you can't even do that ... there's a chain of keypads, and you need to write commands for a directional
-pad to
-drive a second directional pad which actually operates the numerical one.
+this remotely, and so have a 4-way directional pad to move a pointer around the keypad until it's over the number you
+want, when you can push it. Only you can't even do that ... there's a chain of keypads, and you need to write commands
+for a directional pad to drive a second directional pad which actually operates the numerical one.
 
 I'm super close - I'm passing the sample, and I've written a slew of tests and it's all making perfect sense. But "Your
 answer is too high." I do note that my command sequences I am using are different from the examples - but they are the
