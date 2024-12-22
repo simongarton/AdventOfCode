@@ -21,20 +21,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
 
         // 147756 too high
-
-        /* I want to press this on the numeric keypad
-        1968
-        If I start from A - all sequences are dependent on starting point - then I need to do
-        ^<<A ^^>>A vA ^<A [key presses on main]
-        To do this from a directional keypad, again starting from A, then I need to go
-        THIS IS DRIVING THE FINGER ON THE NUMPAD
-        <A v<A A >>A A ^A (this just for the 1) [key presses on robot1]
-        Next level is DRIVING THE FINGER ON THE DIRPAD starting from A
-        v<<A >>^A <vA <A >>^A  (this just for <A v<A) [key presses on robot2]
-        Next level is ... I think going to be the same]
-        [robot 3
-
-         */
+        // 142688 too high
 
         int total = 0;
         for (final String numericCode : input) {
@@ -93,47 +80,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         return state;
     }
-
-    private String buildPressesForDirpadMovementZigZag(final String startingLocation, final String finalLocation) {
-
-        // let's try zig zagging - this more than doubled the length
-        final StringBuilder sequence = new StringBuilder();
-
-        int startRow = this.findDirpadRow(startingLocation);
-        final int endRow = this.findDirpadRow(finalLocation);
-        int startCol = this.findDirpadCol(startingLocation);
-        final int endCol = this.findDirpadCol(finalLocation);
-
-        while (startRow != endRow && startCol != endCol) {
-            if (startRow > endRow) {
-                if (this.dirPadSafeToMove(startRow, startCol, "^")) {
-                    sequence.append("^");
-                    startRow = startRow - 1;
-                }
-            }
-            if (startRow < endRow) {
-                if (this.dirPadSafeToMove(startRow, startCol, "v")) {
-                    sequence.append("v");
-                    startRow = startRow + 1;
-                }
-            }
-            if (startCol > endCol) {
-                if (this.dirPadSafeToMove(startCol, startCol, "<")) {
-                    sequence.append("<");
-                    startCol = startCol - 1;
-                }
-            }
-            if (startCol < endCol) {
-                if (this.dirPadSafeToMove(startCol, startCol, ">")) {
-                    sequence.append(">");
-                    startCol = startCol + 1;
-                }
-            }
-        }
-
-        return sequence.toString();
-    }
-
+    
     private boolean dirPadSafeToMove(final int x, final int y, final String direction) {
 
         // I can always move down or right
@@ -190,7 +137,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         final int startCol = this.findNumberCol(startingLocation);
         final int endCol = this.findNumberCol(finalLocation);
 
-        if (startRow != 3 && endRow != 1) {
+        // always go left first.
+        if (startRow != 3 && startCol != 1) {
             return this.buildPressesForNumberMovementLeftRightFirst(startingLocation, finalLocation);
         } else {
             return this.buildPressesForNumberMovementUpDownFirst(startingLocation, finalLocation);
@@ -201,8 +149,15 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         final StringBuilder sequence = new StringBuilder();
 
-        sequence.append(this.buildPressesForNumberMovementLeftRight(startingLocation, finalLocation));
-        sequence.append(this.buildPressesForNumberMovementUpDown(startingLocation, finalLocation));
+        String actualStartingLocation = startingLocation;
+        // this never happens ?!
+        if (startingLocation.equalsIgnoreCase("0") && !finalLocation.equalsIgnoreCase("A")) {
+            sequence.append("^");
+            actualStartingLocation = "2";
+        }
+
+        sequence.append(this.buildPressesForNumberMovementLeftRight(actualStartingLocation, finalLocation));
+        sequence.append(this.buildPressesForNumberMovementUpDown(actualStartingLocation, finalLocation));
         sequence.append("A");
 
         return sequence.toString();

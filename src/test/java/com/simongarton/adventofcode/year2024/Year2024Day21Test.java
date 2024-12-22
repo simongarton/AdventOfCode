@@ -25,7 +25,6 @@ class Year2024Day21Test {
         final String actual = year2024Day21.fullSequence(code);
 
         // then
-        // this is weird. I am getting different sequences, but 4 out of 5 are the same length.
         assertEquals(expected, actual);
     }
 
@@ -40,7 +39,6 @@ class Year2024Day21Test {
         final String actual = year2024Day21.fullSequence(code);
 
         // then
-        // this is weird. I am getting different sequences, but 4 out of 5 are the same length.
         assertEquals(expected.length(), actual.length());
     }
 
@@ -94,7 +92,7 @@ class Year2024Day21Test {
         expected.initialLocation = from;
         expected.finalLocation = to;
         expected.requiredPress = to; // this may / may not be redundant ?
-        expected.presses = "^<<A";
+        expected.presses = "<<^A";
 
         // when
         final Year2024Day21.State actual = year2024Day21.buildStateForNumpad(from, to);
@@ -180,7 +178,7 @@ class Year2024Day21Test {
                 Arguments.of("A", "2", "^<A"),
                 Arguments.of("7", "A", ">>vvvA"),
                 Arguments.of("4", "9", ">>^A"),
-                Arguments.of("8", "1", "<vvA"),
+                Arguments.of("8", "1", "vv<A"),
                 Arguments.of("A", "1", "^<<A"),
                 Arguments.of("1", "A", ">>vA")
         );
