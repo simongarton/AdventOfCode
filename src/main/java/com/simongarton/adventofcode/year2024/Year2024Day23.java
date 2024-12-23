@@ -42,18 +42,6 @@ public class Year2024Day23 extends AdventOfCodeChallenge {
 
     private List<String> findSetsOf3() {
 
-        /*
-        a-b
-        b-c
-        c-a
-
-        build all the pairs, and sort them before storing.
-
-        get a and all it's connections a [b,c,d,e]
-        for each connection, check to see if any of them are connected to each other
-
-         */
-
         final Set<String> triplets = new HashSet<>();
 
         for (final Map.Entry<String, Computer> entry : this.computers.entrySet()) {
@@ -84,11 +72,11 @@ public class Year2024Day23 extends AdventOfCodeChallenge {
     private void handleLine(final String line) {
 
         final String[] pcs = line.split("-");
-        final Computer pc1 = this.getOrCreate(pcs[0], pcs[1]);
-        final Computer pc2 = this.getOrCreate(pcs[1], pcs[0]);
+        this.updateComputerList(pcs[0], pcs[1]);
+        this.updateComputerList(pcs[1], pcs[0]);
     }
 
-    private Computer getOrCreate(final String pc, final String pc1) {
+    private void updateComputerList(final String pc, final String pc1) {
 
         final Computer computer;
         if (!this.computers.containsKey(pc)) {
@@ -98,12 +86,85 @@ public class Year2024Day23 extends AdventOfCodeChallenge {
             computer = this.computers.get(pc);
         }
         computer.others.add(pc1);
-        return computer;
     }
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.computers = new HashMap<>();
+        for (final String line : input) {
+            this.handleLine(line);
+        }
+
+        final List<String> chains = new ArrayList<>();
+        for (final Computer computer : this.computers.values()) {
+            chains.add(computer.address);
+        }
+
+        boolean somethingChanged;
+        do {
+            somethingChanged = false;
+
+            for (final Computer computer : this.computers.values()) {
+                final String address = computer.address;
+                for (final String other : computer.others) {
+                    if (this.updateChains(chains, address, other)) {
+                        somethingChanged = true;
+                    }
+                }
+            }
+
+        } while (!somethingChanged);
+
+        return String.valueOf(chains.stream().
+                map(String::length).
+                mapToLong(Long::valueOf).
+                max().
+                getAsLong());
+    }
+
+    private boolean updateChains(final List<String> chains, final String address, final String other) {
+
+        return this.updateChainsOneWay(chains, address, other) || this.updateChainsOneWay(chains, other, address);
+    }
+
+    private boolean updateChainsOneWay(final List<String> chains, final String address, final String other) {
+
+        // I'm interested in any chains that have address. If they also already have other, then
+        // I don't need to do anything. But if they don't, I need to see other also connects to ALL the
+        // others in the chain
+
+        boolean somethingHappened = false;
+        for (final String chain : chains) {
+            if (!chain.contains(address)) {
+                // not applicable
+                continue;
+            }
+            if (chain.contains(other)) {
+                // already done
+                continue;
+            }
+            final String[] network = chain.split("-");
+            boolean include = true;
+            for (final String localAddress : network) {
+                final Computer computer = this.computers.get(localAddress);
+                if (!computer.others.contains(other)) {
+                    include = false;
+                    break;
+                }
+            }
+            if (include) {
+                final List<String> newNetwork = new ArrayList<>();
+                newNetwork.addAll(Arrays.asList(network));
+                newNetwork.add(other);
+                newNetwork.sort(Comparator.naturalOrder());
+                final String newChain = String.join("-", newNetwork);
+                chains.remove(chain);
+                chains.add(newChain);
+                somethingHappened = true;
+            }
+        }
+        return somethingHappened;
     }
 
     static class Computer {
