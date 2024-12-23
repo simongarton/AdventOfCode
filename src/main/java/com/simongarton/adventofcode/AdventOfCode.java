@@ -19,10 +19,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
@@ -235,7 +233,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2022Day18());
         this.challenges.add(new Year2022Day19());
         this.challenges.add(new Year2022Day20());
-        this.challenges.add(new Year2022Day21()); // slow part 2 18 seconds
+//        this.challenges.add(new Year2022Day21()); // slow part 2 18 seconds
         this.challenges.add(new Year2022Day22());
         this.challenges.add(new Year2022Day23());
         this.challenges.add(new Year2022Day24()); // slow part 2 15 seconds
@@ -290,7 +288,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2024Day17());
         this.challenges.add(new Year2024Day18()); // slow part 1 (!) 180 seconds
         this.challenges.add(new Year2024Day19());
-        this.challenges.add(new Year2024Day20()); // slow
+        this.challenges.add(new Year2024Day20()); // slow didn't finish
         this.challenges.add(new Year2024Day21());
         this.challenges.add(new Year2024Day22());
     }
@@ -437,6 +435,12 @@ public class AdventOfCode {
 
     private long getTimeForDay(final int year, final int day, final int part) {
 
+        final Optional<Integer> shortcut = this.getShortcutTimeForDay(year, day, part);
+        if (shortcut.isPresent()) {
+            return shortcut.get();
+        }
+
+
         if (!this.complete.containsKey(year)) {
             return -1;
         }
@@ -447,7 +451,35 @@ public class AdventOfCode {
                 this.complete.get(year).get(day).timeInMs2;
     }
 
+    private Optional<Integer> getShortcutTimeForDay(final int year, final int day, final int part) {
+
+        return this.getShortcutForDay(year, day, part, 1);
+    }
+
+    private Optional<Integer> getShortcutOutcomeForDay(final int year, final int day, final int part) {
+
+        return this.getShortcutForDay(year, day, part, 0);
+    }
+
+    private Optional<Integer> getShortcutForDay(final int year, final int day, final int part, final int index) {
+
+        final Map<String, List<Integer>> shorts = new HashMap<>();
+        shorts.put("2022-21.1", List.of(2, 64));
+        shorts.put("2022-21.2", List.of(2, 18790));
+
+        final String key = year + "-" + day + "." + part;
+        if (!shorts.containsKey(key)) {
+            return Optional.empty();
+        }
+        return Optional.of(shorts.get(key).get(index));
+    }
+
     private int getOutcomeForDay(final int year, final int day) {
+
+        final Optional<Integer> shortcut = this.getShortcutOutcomeForDay(year, day, 1);
+        if (shortcut.isPresent()) {
+            return shortcut.get();
+        }
 
         if (this.complete.containsKey(year)) {
             if (this.complete.get(year).containsKey(day)) {
@@ -462,6 +494,7 @@ public class AdventOfCode {
         }
         return -1;
     }
+
 
     private void clearBackground(final Graphics2D graphics2D) {
 
