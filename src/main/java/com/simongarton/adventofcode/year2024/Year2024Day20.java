@@ -11,13 +11,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class Year2024Day20 extends AdventOfCodeChallenge {
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final int MAP_TILE = 10;
 
     private final Map<ChallengeCoord, Long> costCache = new HashMap<>();
@@ -54,7 +53,9 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         long atLeast100Picos = 0;
         for (final Long key : keys) {
             final long c = cheats.get(key);
-//            System.out.println("There " + this.niceCount(c) + " cheat" + this.nonPlural(c) + " that save" + this.plural(c) + " " + key + " picoseconds.");
+            if (DEBUG) {
+                System.out.println("There " + this.niceCount(c) + " cheat" + this.nonPlural(c) + " that save" + this.plural(c) + " " + key + " picoseconds.");
+            }
             if (key >= 100) {
                 atLeast100Picos += c;
             }
@@ -153,11 +154,6 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
-        // not complete
-        if (true) {
-            return null;
-        }
-
         /*
 
         Map is 141 x 141
@@ -170,6 +166,8 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
 
         For each, remember the start, end and the walls I have to take out. Then for each, shortest path the whole thing.
 
+        No - I already know how long it will take from my first pass.
+
         I'm worried that there will be weird edge cases.
 
         A start point is always a wall.
@@ -179,9 +177,9 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         this.loadChallengeMap(input);
         this.emptyTempFolder();
         this.paintNormalMap();
+        this.drawChallengeMap();
 
         final List<Cheat> cheats = this.buildBruteForceCheatList();
-//        final List<Cheat> cheats = this.buildCheatList();
 
         final Map<Long, Long> cheatTable = new HashMap<>();
         final ChallengeCoord start = this.findChallengeCoord(START);
@@ -190,46 +188,36 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         final ChallengeNode endNode = shortestPath.get(shortestPath.size() - 1);
         this.paintNormalMapWithTrace(shortestPath);
 
-//        System.out.println("for no cheats I now trace at " + endNode.getCost());
-        final long startingCost = endNode.getCost();
+        final long normalCost = endNode.getCost();
+        if (DEBUG) {
+            System.out.println("for no cheats I now trace at " + normalCost);
+        }
 
         for (final Cheat cheat : cheats) {
-//            System.out.println(cheat);
 
-            this.loadChallengeMap(input);
+            System.out.println(cheat);
+            System.out.println("start node is at " + start + " and has a cost of " + this.getNodeForCoordinate(start, shortestPath).getCost());
+            System.out.println("cheat origin is at " + cheat.origin.getCoord() + " and has a cost of " + this.getNodeForCoordinate(cheat.origin.getCoord(), shortestPath).getCost());
+            System.out.println("cheat end is at " + cheat.endNode.getCoord() + " and has a cost of " + this.getNodeForCoordinate(cheat.endNode.getCoord(), shortestPath).getCost());
+            System.out.println("  cheat cost is " + cheat.cost);
+            System.out.println("end node is at " + end + " and has a cost of " + this.getNodeForCoordinate(end, shortestPath).getCost());
 
-            final List<ChallengeNode> shortestPathForCheat = this.getShortestPathAStar(start, end);
-            final ChallengeNode endNodeForCheat = shortestPathForCheat.get(shortestPathForCheat.size() - 1);
+            /*
 
-            this.removeSomeWalls(List.of(cheat.startNode.getCoord()));
-            final List<ChallengeNode> shortestPathtoCheatStart = this.getShortestPathAStar(start, cheat.startNode.getCoord());
+            Now I have ended up at the end of the cheat - back on the trail at a cost;
+            But with the shortcut
 
-            this.removeSomeWalls(cheat.wallsToRemove);
-            final List<ChallengeNode> shortestPathCheatStartToEnd = this.getShortestPathAStar(cheat.startNode.getCoord(), cheat.endNode.getCoord());
-            final List<ChallengeNode> shortestPathCheatEndToEnd = this.getShortestPathAStar(cheat.endNode.getCoord(), end);
+             */
 
-            final long cost1 = shortestPathtoCheatStart.get(shortestPathtoCheatStart.size() - 1).getCost();
-//            final long cost2 = shortestPathCheatStartToEnd.get(shortestPathCheatStartToEnd.size() - 1).getCost();
-            final long cost2 = cheat.cost;
-            long cost3 = shortestPathCheatEndToEnd.get(shortestPathCheatEndToEnd.size() - 1).getCost();
+            final long normalCostToShortcutEnd = this.getNodeForCoordinate(cheat.endNode.getCoord(), shortestPath).getCost();
+            final long shortcutCostToShortcutEnd = this.getNodeForCoordinate(cheat.origin.getCoord(), shortestPath).getCost() // this is how much it cost me on the map to get to before the cheat
+                    + 1 // and one to step into the shortcut
+                    + cheat.cost; // and the actual cost of the cheat
+            // sorry about cheat.cost - am I one over ?
+            final long savings = normalCostToShortcutEnd - shortcutCostToShortcutEnd;
 
-            cheat.cost = cost1 + (cost2 - 1) + (cost3 - 1);
-//            System.out.println(cheat.endNode + " " + endNode + " " + cost3);
-            if (cost3 == 0) {
-                cost3 = 1;
-            }
-
-            final long savings = startingCost - cost1 - (cost2 - 1) - (cost3 - 1);
-
-            if (savings <= 0) {
-                continue;
-            }
-
-//            this.paintCheatMap(cheat, shortestPathForCheat);
-            if (savings >= 76) {
-                this.paintCheatMap(cheat, shortestPathtoCheatStart, shortestPathCheatStartToEnd, shortestPathCheatEndToEnd);
-            }
-            // System.out.println("for cheat " + cheat + " I now trace at " + endNodeForCheat.getCost() + " saving " + savings);
+            cheat.savings = savings;
+            this.paintCheatMap(cheat);
 
             cheatTable.put(savings, cheatTable.getOrDefault(savings, 0L) + 1);
         }
@@ -240,7 +228,9 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         long atLeast100Picos = 0;
         for (final Long key : keys) {
             final long c = cheatTable.get(key);
-//            System.out.println("There " + this.niceCount(c) + " cheat" + this.nonPlural(c) + " that save" + this.plural(c) + " " + key + " picoseconds.");
+            if (DEBUG) {
+                System.out.println("There " + this.niceCount(c) + " cheat" + this.nonPlural(c) + " that save" + this.plural(c) + " " + key + " picoseconds.");
+            }
             if (key >= 50) {
                 atLeast100Picos += c;
             }
@@ -249,16 +239,16 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         return String.valueOf(atLeast100Picos);
     }
 
-    private void paintCheatMap(final Cheat cheat,
-                               final List<ChallengeNode> shortestPathtoCheatStart,
-                               final List<ChallengeNode> shortestPathCheatStartToEnd,
-                               final List<ChallengeNode> shortestPathCheatEndToEnd) {
+    private void paintCheatMap(final Cheat cheat) {
 
         String filename = "temp/" +
+                "savings-" +
+                cheat.savings +
+                "-" +
                 cheat.startNode.getCoord() +
                 "->" +
                 cheat.endNode.getCoord() +
-                "cost" +
+                "-cost-" +
                 cheat.cost +
                 ".png";
         filename = filename.replace(" ", "_").replace(",", "|");
@@ -267,11 +257,7 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         final Graphics2D graphics2D = bufferedImage.createGraphics();
         this.clearBackground(graphics2D);
         this.paintNormalBackground(graphics2D);
-        this.paintRemovedWalls(graphics2D, cheat.wallsToRemove);
-        this.paintCheatStartEnd(graphics2D, cheat);
-        this.paintShortestPath(graphics2D, shortestPathtoCheatStart, Color.GREEN);
-        this.paintShortestPath(graphics2D, shortestPathCheatStartToEnd, Color.YELLOW);
-        this.paintShortestPath(graphics2D, shortestPathCheatEndToEnd, Color.RED);
+        this.paintCheatStartEndOrigin(graphics2D, cheat);
         try {
             ImageIO.write(bufferedImage, "PNG", new File(filename));
         } catch (final IOException e) {
@@ -324,8 +310,7 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         final Graphics2D graphics2D = bufferedImage.createGraphics();
         this.clearBackground(graphics2D);
         this.paintNormalBackground(graphics2D);
-        this.paintRemovedWalls(graphics2D, cheat.wallsToRemove);
-        this.paintCheatStartEnd(graphics2D, cheat);
+        this.paintCheatStartEndOrigin(graphics2D, cheat);
         this.paintShortestPath(graphics2D, shortestPathForCheat, Color.YELLOW);
         try {
             ImageIO.write(bufferedImage, "PNG", new File(filename));
@@ -352,12 +337,12 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         }
     }
 
-    private void paintCheatStartEnd(final Graphics2D graphics2D, final Cheat cheat) {
+    private void paintCheatStartEndOrigin(final Graphics2D graphics2D, final Cheat cheat) {
 
         ChallengeCoord c = cheat.startNode.getCoord();
         int col = c.getX();
         int row = c.getY();
-        graphics2D.setPaint(new Color(100, 200, 100));
+        graphics2D.setPaint(Color.BLUE);
         graphics2D.fillRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
         graphics2D.setPaint(new Color(0, 0, 0));
         graphics2D.drawRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
@@ -365,22 +350,19 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         c = cheat.endNode.getCoord();
         col = c.getX();
         row = c.getY();
-        graphics2D.setPaint(new Color(100, 100, 200));
+        graphics2D.setPaint(Color.ORANGE);
         graphics2D.fillRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
         graphics2D.setPaint(new Color(0, 0, 0));
         graphics2D.drawRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
-    }
 
-    private void paintRemovedWalls(final Graphics2D graphics2D, final List<ChallengeCoord> wallsToRemove) {
-
-        for (final ChallengeCoord c : wallsToRemove) {
-            final int col = c.getX();
-            final int row = c.getY();
-            graphics2D.setPaint(new Color(0, 0, 0));
-            graphics2D.fillRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
-            graphics2D.setPaint(new Color(200, 200, 200));
-            graphics2D.drawRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
-        }
+        final int extra = MAP_TILE / 4;
+        c = cheat.origin.getCoord();
+        col = c.getX();
+        row = c.getY();
+        graphics2D.setPaint(Color.MAGENTA);
+        graphics2D.fillRect(col * MAP_TILE + extra, row * MAP_TILE + extra, extra * 2, extra * 2);
+        graphics2D.setPaint(new Color(0, 0, 0));
+        graphics2D.drawRect(col * MAP_TILE + extra, row * MAP_TILE + extra, extra * 2, extra * 2);
     }
 
     private void paintNormalBackground(final Graphics2D graphics2D) {
@@ -426,132 +408,85 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
 
     private List<Cheat> buildBruteForceCheatList() {
 
-        final List<Cheat> cheats = new ArrayList<>();
+        final Map<String, Cheat> uniqueCheats = new HashMap<>();
 
         for (int x = 1; x < this.mapWidth - 1; x++) {
             for (int y = 1; y < this.mapHeight - 1; y++) {
-                final ChallengeCoord start = ChallengeCoord.builder().x(x).y(y).build();
-                final String startSymbol = this.getChallengeMapSymbol(start);
-                if (!startSymbol.equalsIgnoreCase(WALL)) {
+                // get the origin, where I would leave the trail for the short cut.
+                // must be EMPTY or START
+                final ChallengeCoord origin = ChallengeCoord.builder().x(x).y(y).build();
+                final String originSymbol = this.getChallengeMapSymbol(origin);
+                if (!(originSymbol.equalsIgnoreCase(EMPTY) || originSymbol.equalsIgnoreCase(START))) {
                     continue;
                 }
-                final ChallengeNode startNode = ChallengeNode.builder()
-                        .coord(start)
+                final ChallengeNode originNode = ChallengeNode.builder()
+                        .coord(origin)
                         .cost(0)
                         .previous(null)
                         .build();
-                for (int x1 = 1; x1 < this.mapWidth - 1; x1++) {
-                    for (int y1 = 1; y1 < this.mapHeight - 1; y1++) {
-                        final ChallengeCoord end = ChallengeCoord.builder().x(x1).y(y1).build();
-                        final String endSymbol = this.getChallengeMapSymbol(end);
-                        if (!endSymbol.equalsIgnoreCase(WALL)) {
-                            continue;
+
+                // for the origin, get the (up to) 4 orthogonal neighbours
+                // these must be walls
+                for (final ChallengeCoord start : this.findWallsNearOrigin(origin)) {
+                    final String startSymbol = this.getChallengeMapSymbol(start);
+                    if (!startSymbol.equalsIgnoreCase(WALL)) {
+                        continue;
+                    }
+                    final ChallengeNode startNode = ChallengeNode.builder()
+                            .coord(start)
+                            .cost(0)
+                            .previous(null)
+                            .build();
+                    // now roam around the map for the start, and find end points
+                    // that are not walls, and are at least 1 and less than / equal to 20
+                    // manhattan around.
+                    for (int x1 = 1; x1 < this.mapWidth - 1; x1++) {
+                        for (int y1 = 1; y1 < this.mapHeight - 1; y1++) {
+                            final ChallengeCoord end = ChallengeCoord.builder().x(x1).y(y1).build();
+                            final long dist = this.manhattanDistance(start, end);
+                            if (!(dist > 1 && dist <= 20)) {
+                                continue;
+                            }
+                            final String endSymbol = this.getChallengeMapSymbol(end);
+                            if (endSymbol.equalsIgnoreCase(WALL)) {
+                                continue;
+                            }
+                            final ChallengeNode endNode = ChallengeNode.builder()
+                                    .coord(end)
+                                    .cost(dist)
+                                    .previous(null)
+                                    .build();
+                            final Cheat cheat = new Cheat(originNode, startNode, endNode, startSymbol, endSymbol, dist);
+                            final String key = startNode.getCoord() + "->" + endNode.getCoord();
+//                            if (key.equalsIgnoreCase("6,6->5,7")) {
+                            uniqueCheats.put(key, cheat);
+//                            }
                         }
-                        final long dist = this.manhattanDistance(start, end);
-                        if (dist == 0 || dist >= 20) {
-                            continue;
-                        }
-                        final ChallengeNode endNode = ChallengeNode.builder()
-                                .coord(end)
-                                .cost(dist)
-                                .previous(null)
-                                .build();
-                        final Cheat cheat = new Cheat(startNode, endNode, dist);
-                        cheats.add(cheat);
                     }
                 }
             }
         }
-        return cheats;
+        return new ArrayList<>(uniqueCheats.values());
     }
 
-    private List<Cheat> buildCheatList() {
+    private List<ChallengeCoord> findWallsNearOrigin(final ChallengeCoord origin) {
 
-        final List<Cheat> cheats = new ArrayList<>();
-        for (final ChallengeNode start : this.findAllCheatStartsWhichAreWallsInPart2()) {
-            final List<Cheat> cheatsForNode = this.buildCheats(start);
-            final List<String> lines = this.getMapLines();
-            if (DEBUG) {
-                this.drawChallengeMap();
-                for (final Cheat cheat : cheatsForNode) {
-                    this.updateWithNode(lines, cheat.endNode, "*");
-                    this.updateWithNode(lines, cheat.startNode, "O");
-                }
-                this.drawMapFromLines(lines);
-            }
-            cheats.addAll(cheatsForNode);
-            // System.out.println("for " + start + " I built " + cheatsForNode.size() + " and now have " + cheats.size());
-        }
-        return cheats;
-    }
-
-    private Cheat buildCheat(final ChallengeNode start, final List<ChallengeNode> pointsEndedUpAt) {
-
-        // start is a wall. pointsEndedUpAt will be empty or end. I'm not worrying about
-        // stepping backwards like part 1, because that was a different algorithm.
-
-        final List<ChallengeNode> available = this.addShortcutNeighbours(start,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                pointsEndedUpAt);
-        final List<ChallengeNode> visited = new ArrayList<>();
-
-        ChallengeNode exitNode = null;
-        while (!available.isEmpty()) {
-            final ChallengeNode current = available.remove(0); // 0 for BFS, size()-1 for DFS
-            if (current.getCost() > 20) {
-                continue;
-            }
-            final String currentSymbol = this.getChallengeMapSymbol(current.getCoord());
-            if (currentSymbol == null) {
-                continue;
-            }
-            if (currentSymbol.equalsIgnoreCase(EMPTY) ||
-                    currentSymbol.equalsIgnoreCase(START) ||
-                    currentSymbol.equalsIgnoreCase(END)) {
-                // I'm out
-                exitNode = current;
-                break;
-            }
-            visited.add(current);
-
-            // I'm a wall
-            final List<ChallengeNode> neighbours = this.addShortcutNeighbours(current, available, visited, pointsEndedUpAt);
-            available.addAll(neighbours);
-        }
-
-        if (exitNode == null) {
-            // I didn't find anything to test
-            return null;
-        }
-        final List<ChallengeCoord> wallCoords = visited.stream().map(ChallengeNode::getCoord).collect(Collectors.toList());
-        return new Cheat(start, exitNode, wallCoords);
-    }
-
-    private List<ChallengeNode> addShortcutNeighbours(final ChallengeNode current,
-                                                      final List<ChallengeNode> available,
-                                                      final List<ChallengeNode> visited,
-                                                      final List<ChallengeNode> pointsEndedUpAt) {
-
-        final List<ChallengeNode> neighbours = new ArrayList<>();
-        this.maybeAddNeighbour2024202(neighbours, current, +1, 0, available, visited, pointsEndedUpAt);
-        this.maybeAddNeighbour2024202(neighbours, current, -1, 0, available, visited, pointsEndedUpAt);
-        this.maybeAddNeighbour2024202(neighbours, current, 0, +1, available, visited, pointsEndedUpAt);
-        this.maybeAddNeighbour2024202(neighbours, current, 0, -1, available, visited, pointsEndedUpAt);
+        final List<ChallengeCoord> neighbours = new ArrayList<>();
+        this.maybeAddWall(neighbours, origin, +1, 0);
+        this.maybeAddWall(neighbours, origin, -1, 0);
+        this.maybeAddWall(neighbours, origin, 0, +1);
+        this.maybeAddWall(neighbours, origin, 0, -1);
         return neighbours;
     }
 
-    private void maybeAddNeighbour2024202(final List<ChallengeNode> neighbours,
-                                          final ChallengeNode current,
-                                          final int xDelta,
-                                          final int yDelta,
-                                          final List<ChallengeNode> available,
-                                          final List<ChallengeNode> visited,
-                                          final List<ChallengeNode> pointsEndedUpAt) {
+    private void maybeAddWall(final List<ChallengeCoord> neighbours,
+                              final ChallengeCoord origin,
+                              final int xDelta,
+                              final int yDelta) {
 
         final ChallengeCoord newCoord = ChallengeCoord.builder()
-                .x(current.getCoord().getX() + xDelta)
-                .y(current.getCoord().getY() + yDelta)
+                .x(origin.getX() + xDelta)
+                .y(origin.getY() + yDelta)
                 .build();
 
         if (newCoord.getX() == 0 || newCoord.getX() == (this.mapWidth - 1)) {
@@ -561,118 +496,44 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
             return;
         }
         final String challengeMapSymbol = this.getChallengeMapSymbol(newCoord);
-        if (challengeMapSymbol == null) {
+        if (!challengeMapSymbol.equalsIgnoreCase(WALL)) {
             return;
         }
-        if (this.nodeListContainsCoord(available, newCoord)) {
-            return;
-        }
-        if (this.nodeListContainsCoord(visited, newCoord)) {
-            return;
-        }
-        if (this.nodeListContainsCoord(pointsEndedUpAt, newCoord)) {
-            return;
-        }
-        final ChallengeNode newNode = ChallengeNode.builder()
-                .coord(newCoord)
-                .cost(current.getCost() + 1)
-                .previous(current)
-                .build();
-        neighbours.add(newNode);
-    }
-
-    private List<Cheat> buildCheats(final ChallengeNode start) {
-
-        final List<Cheat> cheats = new ArrayList<>();
-        final List<ChallengeNode> pointsEndedUpAt = new ArrayList<>();
-
-        Cheat cheatFromHereButNotToThere = this.buildCheat(start, pointsEndedUpAt);
-        // System.out.println("first cheat for " + start + " is " + cheatFromHereButNotToThere);
-
-        while (cheatFromHereButNotToThere != null) {
-            cheats.add(cheatFromHereButNotToThere);
-            pointsEndedUpAt.add(cheatFromHereButNotToThere.endNode);
-            cheatFromHereButNotToThere = this.buildCheat(start, pointsEndedUpAt);
-            // System.out.println("  next cheat for " + start + " is " + cheatFromHereButNotToThere);
-        }
-
-        return cheats;
-    }
-
-    private List<ChallengeNode> findAllCheatStartsWhichAreWallsInPart2() {
-
-        final List<ChallengeNode> cheatStarts = new ArrayList<>();
-        for (int x = 1; x < this.mapWidth - 1; x++) {
-            for (int y = 1; y < this.mapHeight - 1; y++) {
-                final ChallengeCoord start = ChallengeCoord.builder().x(x).y(y).build();
-                final String startSymbol = this.getChallengeMapSymbol(start);
-                if (startSymbol.equalsIgnoreCase(WALL)) {
-                    if (this.hasNeighbourOnNormalTrack(start)) {
-                        final ChallengeNode startNode = ChallengeNode.builder()
-                                .coord(start)
-                                .previous(null)
-                                .cost(0)
-                                .build();
-                        cheatStarts.add(startNode);
-                    }
-                }
-            }
-        }
-        return cheatStarts;
-    }
-
-    private boolean hasNeighbourOnNormalTrack(final ChallengeCoord start) {
-        if (!this.getChallengeMapSymbol(start.getX() - 1, start.getY()).equalsIgnoreCase(WALL)) {
-            return true;
-        }
-        if (!this.getChallengeMapSymbol(start.getX() + 1, start.getY()).equalsIgnoreCase(WALL)) {
-            return true;
-        }
-        if (!this.getChallengeMapSymbol(start.getX(), start.getY() - 1).equalsIgnoreCase(WALL)) {
-            return true;
-        }
-        return !this.getChallengeMapSymbol(start.getX(), start.getY() + 1).equalsIgnoreCase(WALL);
-    }
-
-    private List<ChallengeCoord> findInteriorWalls() {
-
-        final List<ChallengeCoord> interiorWalls = new ArrayList<>();
-        for (int x = 1; x < this.mapWidth - 1; x++) {
-            for (int y = 1; y < this.mapHeight - 1; y++) {
-                final ChallengeCoord start = ChallengeCoord.builder().x(x).y(y).build();
-                final String startSymbol = this.getChallengeMapSymbol(start);
-                if (startSymbol.equalsIgnoreCase(WALL)) {
-                    interiorWalls.add(start);
-                }
-            }
-        }
-        return interiorWalls;
+        neighbours.add(newCoord);
     }
 
     static class Cheat {
 
-        final ChallengeNode startNode; // will be a wall or the Start
-        final ChallengeNode endNode; // will be not a wall or the End
-        long cost;
+        final ChallengeNode origin; // will be EMPTY or a WALL
+        final ChallengeNode startNode; // will be a WALL
+        final ChallengeNode endNode; // will be not a WALL (could be start, which is dumb)
+        final String startSymbol;
+        final String endSymbol;
+        final long cost;
+        long savings;
 
-        final List<ChallengeCoord> wallsToRemove;
-
-        public Cheat(final ChallengeNode startNode, final ChallengeNode endNode, final long cost) {
+        public Cheat(
+                final ChallengeNode origin,
+                final ChallengeNode startNode,
+                final ChallengeNode endNode,
+                final String startSymbol,
+                final String endSymbol,
+                final long cost) {
+            this.origin = origin;
             this.startNode = startNode;
             this.endNode = endNode;
+            this.startSymbol = startSymbol;
+            this.endSymbol = endSymbol;
             this.cost = cost;
-            this.wallsToRemove = new ArrayList<>();
-        }
-
-        public Cheat(final ChallengeNode startNode, final ChallengeNode endNode, final List<ChallengeCoord> wallsToRemove) {
-            this.startNode = startNode;
-            this.endNode = endNode;
-            this.wallsToRemove = wallsToRemove;
         }
 
         @Override
         public String toString() {
-            return this.startNode + "->" + this.endNode + " [" + this.wallsToRemove.size() + "]";
+            return this.startNode +
+                    " [" + this.startSymbol + "] -> " +
+                    this.endNode +
+                    " [" + this.endSymbol + "] cost " +
+                    this.cost + " saves " + this.savings;
         }
     }
 }

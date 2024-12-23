@@ -1,13 +1,17 @@
 # Advent of Code
 
 [Advent of Code](https://adventofcode.com/) is an annual programming competition, with initially simple puzzles starting
-on 1 Dec, and getting progressively harder - I rarely finish the last few days.
+on 1 Dec, and getting progressively harder - I rarely finish the last few days. I started in 2019, and have been picking
+up more and more each year (plus going back and looking at old ones.)
 
-2022 wasn't too shabby though ... and with some stiff competition from work, 2024 is looking good.
+I've also been loudly praising it at work, with a
+private leaderboard ... which got nicely
+competitive, and 2024 is looking pretty good.
 
 ![Progress](AdventOfCode.png)
 
 Performance is generally good : green is <= 1s, yellow <= 5s, orange <= 10s, red <= 30s and purple needs another look.
+Plenty of days when I was so happy just to get the damn thing working, it wasn't worth optimizing.
 
 ![Progress](AdventOfCodeSpeed.png)
 
