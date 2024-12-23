@@ -17,7 +17,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 public class Year2024Day20 extends AdventOfCodeChallenge {
 
     private static final boolean DEBUG = true;
-    private static final int MAP_TILE = 10;
+    private static final int MAP_TILE = 20;
 
     private final Map<ChallengeCoord, Long> costCache = new HashMap<>();
 
@@ -213,8 +213,13 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
             final long shortcutCostToShortcutEnd = this.getNodeForCoordinate(cheat.origin.getCoord(), shortestPath).getCost() // this is how much it cost me on the map to get to before the cheat
                     + 1 // and one to step into the shortcut
                     + cheat.cost; // and the actual cost of the cheat
-            // sorry about cheat.cost - am I one over ?
+            // worry about cheat.cost - am I one over ?
             final long savings = normalCostToShortcutEnd - shortcutCostToShortcutEnd;
+
+            if (savings < 0) {
+                // you're going the wrong way
+                continue;
+            }
 
             cheat.savings = savings;
             this.paintCheatMap(cheat);
@@ -339,30 +344,33 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
 
     private void paintCheatStartEndOrigin(final Graphics2D graphics2D, final Cheat cheat) {
 
+        final int extra = (MAP_TILE / 5) + 1;
+        final int widthBoost = 0;
         ChallengeCoord c = cheat.startNode.getCoord();
         int col = c.getX();
         int row = c.getY();
         graphics2D.setPaint(Color.BLUE);
-        graphics2D.fillRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
-        graphics2D.setPaint(new Color(0, 0, 0));
-        graphics2D.drawRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
+//        graphics2D.fillRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
+        graphics2D.fillRect(col * MAP_TILE + extra, row * MAP_TILE + extra, widthBoost + extra * 2, widthBoost + extra * 2);
+//        graphics2D.setPaint(new Color(0, 0, 0));
+//        graphics2D.drawRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
 
         c = cheat.endNode.getCoord();
         col = c.getX();
         row = c.getY();
         graphics2D.setPaint(Color.ORANGE);
-        graphics2D.fillRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
-        graphics2D.setPaint(new Color(0, 0, 0));
-        graphics2D.drawRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
+//        graphics2D.fillRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
+        graphics2D.fillRect(col * MAP_TILE + extra, row * MAP_TILE + extra, widthBoost + extra * 2, widthBoost + extra * 2);
+//        graphics2D.setPaint(new Color(0, 0, 0));
+//        graphics2D.drawRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
 
-        final int extra = MAP_TILE / 4;
         c = cheat.origin.getCoord();
         col = c.getX();
         row = c.getY();
         graphics2D.setPaint(Color.MAGENTA);
-        graphics2D.fillRect(col * MAP_TILE + extra, row * MAP_TILE + extra, extra * 2, extra * 2);
-        graphics2D.setPaint(new Color(0, 0, 0));
-        graphics2D.drawRect(col * MAP_TILE + extra, row * MAP_TILE + extra, extra * 2, extra * 2);
+        graphics2D.fillRect(col * MAP_TILE + extra, row * MAP_TILE + extra, widthBoost + extra * 2, widthBoost + extra * 2);
+//        graphics2D.setPaint(new Color(0, 0, 0));
+//        graphics2D.drawRect(col * MAP_TILE + extra, row * MAP_TILE + extra, extra * 2, extra * 2);
     }
 
     private void paintNormalBackground(final Graphics2D graphics2D) {
@@ -384,6 +392,8 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
                     graphics2D.setPaint(new Color(100, 100, 100));
                 }
                 graphics2D.fillRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
+                graphics2D.setPaint(new Color(0, 0, 0));
+                graphics2D.drawRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
             }
         }
 
