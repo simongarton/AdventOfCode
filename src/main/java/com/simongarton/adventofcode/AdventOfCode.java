@@ -33,19 +33,19 @@ public class AdventOfCode {
     private int width;
     private int height;
 
-    final int startYear = 2019;
+    final int startYear = 2015;
     final int endYear = 2024;
-
 
     public static void main(final String[] args) {
 
+        // can I load these by reflection / inspection ?
         final AdventOfCode adventOfCode = new AdventOfCode();
         adventOfCode.load2019();
         adventOfCode.load2020();
-//        adventOfCode.load2021();
-//        adventOfCode.load2022();
-//        adventOfCode.load2023();
-//        adventOfCode.load2024();
+        adventOfCode.load2021();
+        adventOfCode.load2022();
+        adventOfCode.load2023();
+        adventOfCode.load2024();
         adventOfCode.run();
     }
 
@@ -63,6 +63,7 @@ public class AdventOfCode {
 
         this.displayResults();
         this.paintMap("AdventOfCode.png");
+        this.paintSpeedMap("AdventOfCodeSpeed.png");
     }
 
     private String textSymbolForDay(final int outcome) {
@@ -137,7 +138,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2021Day17());
         this.challenges.add(new Year2021Day18());
         this.challenges.add(new Year2021Day20());
-        // this.challenges.add(new Year2021Day21()); // slow
+        this.challenges.add(new Year2021Day21()); // slow
         this.challenges.add(new Year2021Day25());
     }
 
@@ -162,10 +163,10 @@ public class AdventOfCode {
         this.challenges.add(new Year2022Day18());
         this.challenges.add(new Year2022Day19());
         this.challenges.add(new Year2022Day20());
-//        this.challenges.add(new Year2022Day21()); // slow
+        this.challenges.add(new Year2022Day21()); // slow
         this.challenges.add(new Year2022Day22());
         this.challenges.add(new Year2022Day23());
-//        this.challenges.add(new Year2022Day24()); // slow
+        this.challenges.add(new Year2022Day24()); // slow
         this.challenges.add(new Year2022Day25());
     }
 
@@ -174,9 +175,9 @@ public class AdventOfCode {
         this.challenges.add(new Year2023Day2());
         this.challenges.add(new Year2023Day3());
         this.challenges.add(new Year2023Day4());
-//        this.challenges.add(new Year2023Day5()); // slow
+        this.challenges.add(new Year2023Day5()); // slow
         this.challenges.add(new Year2023Day6());
-//        this.challenges.add(new Year2023Day7()); // slow
+        this.challenges.add(new Year2023Day7()); // slow
         this.challenges.add(new Year2023Day8());
         this.challenges.add(new Year2023Day9());
         this.challenges.add(new Year2023Day10());
@@ -186,15 +187,15 @@ public class AdventOfCode {
         this.challenges.add(new Year2023Day14());
         this.challenges.add(new Year2023Day15());
         this.challenges.add(new Year2023Day16());
-//        this.challenges.add(new Year2023Day17()); // slow
+        this.challenges.add(new Year2023Day17()); // slow
         this.challenges.add(new Year2023Day18());
         this.challenges.add(new Year2023Day19());
         this.challenges.add(new Year2023Day20());
         this.challenges.add(new Year2023Day21());
-//        this.challenges.add(new Year2023Day22()); // slow
+        this.challenges.add(new Year2023Day22()); // slow
         this.challenges.add(new Year2023Day23());
         this.challenges.add(new Year2023Day24());
-//        this.challenges.add(new Year2023Day25());
+        this.challenges.add(new Year2023Day25()); // slow
     }
 
     private void load2024() {
@@ -203,37 +204,44 @@ public class AdventOfCode {
         this.challenges.add(new Year2024Day3());
         this.challenges.add(new Year2024Day4());
         this.challenges.add(new Year2024Day5());
-//        this.challenges.add(new Year2024Day6()); slow
+        this.challenges.add(new Year2024Day6()); // slow
         this.challenges.add(new Year2024Day7());
         this.challenges.add(new Year2024Day8());
         this.challenges.add(new Year2024Day9());
         this.challenges.add(new Year2024Day10());
         this.challenges.add(new Year2024Day11());
         this.challenges.add(new Year2024Day12());
-        this.challenges.add(new Year2024Day13());
+        this.challenges.add(new Year2024Day13()); // slow
         this.challenges.add(new Year2024Day14());
         this.challenges.add(new Year2024Day15());
-        this.challenges.add(new Year2024Day16());
+        this.challenges.add(new Year2024Day16()); // slow
         this.challenges.add(new Year2024Day17());
-        this.challenges.add(new Year2024Day18());
+        this.challenges.add(new Year2024Day18()); // slow
         this.challenges.add(new Year2024Day19());
-        this.challenges.add(new Year2024Day20());
+        this.challenges.add(new Year2024Day20()); // slow
+        this.challenges.add(new Year2024Day21());
+        this.challenges.add(new Year2024Day22());
     }
 
-    private void paintMap(final String filename) {
-
-        // do this but with text
+    private BufferedImage getBufferedImage() {
 
         final int years = this.endYear - this.startYear;
         final int days = 25;
 
-        this.width = (days + 10) * XSCALE;
-        this.height = ((years + 10) * YSCALE) / 2;
+        this.width = (days + 2) * XSCALE;
+        this.height = ((years + 15) * YSCALE) / 2;
 
-        final BufferedImage bufferedImage = new BufferedImage(this.width, this.height, TYPE_INT_RGB);
+        return new BufferedImage(this.width, this.height, TYPE_INT_RGB);
+    }
+
+    private void paintMap(final String filename) {
+
+        final BufferedImage bufferedImage = this.getBufferedImage();
         final Graphics2D graphics2D = bufferedImage.createGraphics();
+
         this.clearBackground(graphics2D);
-        this.paintOutcomes(graphics2D);
+        this.drawStarsForOutcomes(graphics2D);
+
         try {
             ImageIO.write(bufferedImage, "PNG", new File(filename));
         } catch (final IOException e) {
@@ -242,21 +250,105 @@ public class AdventOfCode {
         graphics2D.dispose();
     }
 
-    private void paintOutcomes(final Graphics2D graphics2D) {
+    private void paintSpeedMap(final String filename) {
+
+        final BufferedImage bufferedImage = this.getBufferedImage();
+        final Graphics2D graphics2D = bufferedImage.createGraphics();
+
+        this.clearBackground(graphics2D);
+        this.paintSpeedOutcomes(graphics2D);
+        try {
+            ImageIO.write(bufferedImage, "PNG", new File(filename));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        graphics2D.dispose();
+    }
+
+    private void drawStarsForOutcomes(final Graphics2D graphics2D) {
+
+        final String fontName = "Source Code Pro";
+
+        final Font symbolFont = new Font(fontName, Font.BOLD, 40);
+        graphics2D.setFont(symbolFont);
+        for (int year = this.startYear; year <= this.endYear; year++) {
+            for (int day = 1; day <= 25; day++) {
+
+                final int x = 35 + day * XSCALE;
+                final int y = -8 + ((2 + year - this.startYear) * YSCALE);
+
+                graphics2D.setPaint(this.getColorForOutcome(this.getOutcomeForDay(year, day)));
+                graphics2D.drawString("*", x, y);
+            }
+        }
+
+        this.paintAxes(graphics2D);
+    }
+
+    private void paintAxes(final Graphics2D graphics2D) {
+
+        final String fontName = "Source Code Pro";
+
+        final Font textFont = new Font(fontName, Font.PLAIN, 20);
+        graphics2D.setFont(textFont);
+        graphics2D.setPaint(Color.WHITE);
+        for (int year = this.startYear; year <= this.endYear; year++) {
+            graphics2D.drawString(String.valueOf(year), 10, Math.round((1.65 * YSCALE)) + (long) (year - this.startYear) * YSCALE);
+        }
+
+        for (int day = 1; day <= 25; day++) {
+            graphics2D.drawString(String.valueOf(day), 35 + day * XSCALE, YSCALE - 5);
+        }
+    }
+
+    private void paintSpeedOutcomes(final Graphics2D graphics2D) {
+
+        final int halfXScale = (XSCALE / 2) - 1;
+        final int quarterYScale = (YSCALE / 4) - 2;
+        final int threeQuarterYScale = (3 * YSCALE / 4) - 2;
 
         for (int year = this.startYear; year <= this.endYear; year++) {
             for (int day = 1; day <= 25; day++) {
 
-                final int x = 10 + day * XSCALE;
-                final int y = 10 + (year - this.startYear) * YSCALE;
+                final int x = 32 + day * XSCALE;
+                final int y = ((1 + year - this.startYear) * YSCALE);
 
-                graphics2D.setPaint(this.getColorForOutcome(this.getOutcomeForDay(year, day)));
-                graphics2D.fillRect(x + 4, y + 4, XSCALE - 4, YSCALE - 4);
+                long time = this.getTimeForDay(year, day, 1);
+                if (time != -1) {
+                    if (this.complete.get(year).get(day).part1) {
+                        graphics2D.setPaint(this.getColorForTime(time));
+                        graphics2D.fillRect(x, y, halfXScale, threeQuarterYScale);
+                    }
+                }
 
-                graphics2D.setPaint(Color.BLUE);
-                graphics2D.drawRect(x + 2, y + 2, XSCALE - 2, YSCALE - 2);
+                time = this.getTimeForDay(year, day, 2);
+                if (time != -1) {
+                    if (this.complete.get(year).get(day).part2) {
+                        graphics2D.setPaint(this.getColorForTime(time));
+                        graphics2D.fillRect(x + XSCALE / 2, y + quarterYScale, halfXScale, threeQuarterYScale);
+                    }
+                }
             }
         }
+
+        this.paintAxes(graphics2D);
+    }
+
+    private Paint getColorForTime(final long time) {
+
+        if (time <= 1000) {
+            return Color.GREEN;
+        }
+        if (time <= 5000) {
+            return Color.YELLOW;
+        }
+        if (time <= 10000) {
+            return Color.ORANGE;
+        }
+        if (time <= 30000) {
+            return Color.RED;
+        }
+        return Color.MAGENTA;
     }
 
     private Paint getColorForOutcome(final int outcomeForDay) {
@@ -269,6 +361,18 @@ public class AdventOfCode {
             default:
                 return Color.BLACK;
         }
+    }
+
+    private long getTimeForDay(final int year, final int day, final int part) {
+
+        if (!this.complete.containsKey(year)) {
+            return -1;
+        }
+        if (!this.complete.get(year).containsKey(day)) {
+            return -1;
+        }
+        return part == 1 ? this.complete.get(year).get(day).timeInMs1 :
+                this.complete.get(year).get(day).timeInMs2;
     }
 
     private int getOutcomeForDay(final int year, final int day) {

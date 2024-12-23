@@ -5,7 +5,11 @@ on 1 Dec, and getting progressively harder - I rarely finish the last few days.
 
 2022 wasn't too shabby though ... and with some stiff competition from work, 2024 is looking good.
 
-![progress](images/progress.png)
+![Progress](AdventOfCode.png)
+
+Performance is generally good : green is <= 1s, yellow <= 5s, orange <= 10s, red <= 30s and purple needs another look.
+
+![Progress](AdventOfCodeSpeed.png)
 
 ## 2024
 

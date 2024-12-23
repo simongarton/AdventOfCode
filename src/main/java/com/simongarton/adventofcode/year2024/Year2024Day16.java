@@ -18,7 +18,7 @@ public class Year2024Day16 extends AdventOfCodeChallenge {
 
     private static final int BITMAP_SCALE = 4;
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static final String START = "S";
     private static final String END = "E";

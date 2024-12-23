@@ -16,7 +16,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class Year2024Day15 extends AdventOfCodeChallenge {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static final int BITMAP_SCALE = 20;
 

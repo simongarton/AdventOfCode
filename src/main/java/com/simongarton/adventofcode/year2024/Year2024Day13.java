@@ -238,9 +238,9 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
             final Long outcome = this.useMathsAndGoalSeek(scenario);
             if (outcome != null) {
                 minimumTokenSpend += outcome;
-                System.out.println(scenario + " solved in " + (System.currentTimeMillis() - scenarioStart));
+                // System.out.println(scenario + " solved in " + (System.currentTimeMillis() - scenarioStart));
             } else {
-                System.out.println(scenario + " failed in " + (System.currentTimeMillis() - scenarioStart));
+                // System.out.println(scenario + " failed in " + (System.currentTimeMillis() - scenarioStart));
             }
 
         }

@@ -43,7 +43,9 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         final ChallengeNode endNode = shortestPath.get(shortestPath.size() - 1);
 
         final List<String> lines = this.updateMapWithNode(endNode, PATH);
-        this.drawMapFromLines(lines);
+        if (DEBUG) {
+            this.drawMapFromLines(lines);
+        }
 
         this.setupCache(shortestPath);
         final Map<Long, Long> cheats = this.countCheats(shortestPath);
@@ -233,7 +235,7 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         long atLeast100Picos = 0;
         for (final Long key : keys) {
             final long c = cheatTable.get(key);
-            System.out.println("There " + this.niceCount(c) + " cheat" + this.nonPlural(c) + " that save" + this.plural(c) + " " + key + " picoseconds.");
+//            System.out.println("There " + this.niceCount(c) + " cheat" + this.nonPlural(c) + " that save" + this.plural(c) + " " + key + " picoseconds.");
             if (key >= 50) {
                 atLeast100Picos += c;
             }
@@ -328,7 +330,8 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         graphics2D.dispose();
     }
 
-    private void paintShortestPath(final Graphics2D graphics2D, final List<ChallengeNode> shortestPathForCheat, final Color fillColor) {
+    private void paintShortestPath(final Graphics2D graphics2D, final List<ChallengeNode> shortestPathForCheat,
+                                   final Color fillColor) {
 
         final int quarterMapTile = MAP_TILE / 4;
         final int halfMapTile = MAP_TILE / 2;

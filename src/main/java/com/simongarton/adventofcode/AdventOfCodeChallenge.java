@@ -72,6 +72,11 @@ public abstract class AdventOfCodeChallenge {
             final String[] input = this.loadStrings(year, day, part);
             final String expected = this.loadAnswer(year, day, part);
             final String actual = part == 1 ? this.part1(input) : this.part2(input);
+            if (part == 1) {
+                outcome.timeInMs1 = System.currentTimeMillis() - start;
+            } else {
+                outcome.timeInMs2 = System.currentTimeMillis() - start;
+            }
             if (!expected.equals(actual)) {
                 if (part == 1) {
                     outcome.part1 = false;
@@ -176,8 +181,11 @@ public abstract class AdventOfCodeChallenge {
     }
 
     public static final class Outcome {
+
         boolean part1 = true;
         boolean part2 = true;
+        long timeInMs1;
+        long timeInMs2;
 
         public boolean both() {
             return this.part1 && this.part2;

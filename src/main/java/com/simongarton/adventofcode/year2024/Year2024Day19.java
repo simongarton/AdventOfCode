@@ -35,8 +35,6 @@ public class Year2024Day19 extends AdventOfCodeChallenge {
 
         this.towels = Arrays.asList(input[0].split(", "));
 
-        // System.out.println("towels: " + this.towels.size());
-
         this.carpets = new ArrayList<>();
         int maxLength = 0;
 
@@ -47,8 +45,6 @@ public class Year2024Day19 extends AdventOfCodeChallenge {
                 maxLength = carpet.length();
             }
         }
-
-        // System.out.println("carpets: " + this.carpets.size() + " max length " + maxLength);
     }
 
     private long countValidCarpets() {
@@ -59,7 +55,6 @@ public class Year2024Day19 extends AdventOfCodeChallenge {
             if (wasValid) {
                 valid++;
             }
-            System.out.println(carpet + " : " + wasValid);
         }
         return valid;
     }
