@@ -13,6 +13,14 @@ Performance is generally good : green is <= 1s, yellow <= 5s, orange <= 10s, red
 
 ## 2024
 
+## Day 23 : LAN Party
+
+Nice. Given a bunch of pairs - connected PCs - work out whos in a network of at least 3 ... and for part 2, work out the
+largest network. I quite liked my solution for part 2 - build up alphabetical lists, for each pair, check to see if the
+first is in the network, the second isn't yet ... but can join if it connects to all the others there.
+
+https://adventofcode.com/2024/day/23
+
 ## Day 22 : Monkey Magic
 
 Easy, probably making us feel better for the difficult ones over the weekend. Manipulating lists of numbers. My solution

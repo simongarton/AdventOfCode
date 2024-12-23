@@ -96,14 +96,24 @@ public class Year2024Day23 extends AdventOfCodeChallenge {
             this.handleLine(line);
         }
 
-        final List<String> chains = new ArrayList<>();
+        final List<List<String>> chains = new ArrayList<>();
         for (final Computer computer : this.computers.values()) {
-            chains.add(computer.address);
+            final List<String> chain = new ArrayList<>();
+            chain.add(computer.address);
+            chains.add(chain);
         }
 
         boolean somethingChanged;
+        int longest = 0;
+        List<String> longestChain = new ArrayList<>();
         do {
             somethingChanged = false;
+            for (final List<String> chain : chains) {
+                if (chain.size() > longest) {
+                    longest = chain.size();
+                    longestChain = chain;
+                }
+            }
 
             for (final Computer computer : this.computers.values()) {
                 final String address = computer.address;
@@ -114,28 +124,24 @@ public class Year2024Day23 extends AdventOfCodeChallenge {
                 }
             }
 
-        } while (!somethingChanged);
+        } while (somethingChanged);
 
-        return String.valueOf(chains.stream().
-                map(String::length).
-                mapToLong(Long::valueOf).
-                max().
-                getAsLong());
+        return longestChain.toString().replace(" ", "");
     }
 
-    private boolean updateChains(final List<String> chains, final String address, final String other) {
+    private boolean updateChains(final List<List<String>> chains, final String address, final String other) {
 
         return this.updateChainsOneWay(chains, address, other) || this.updateChainsOneWay(chains, other, address);
     }
 
-    private boolean updateChainsOneWay(final List<String> chains, final String address, final String other) {
+    private boolean updateChainsOneWay(final List<List<String>> chains, final String address, final String other) {
 
         // I'm interested in any chains that have address. If they also already have other, then
         // I don't need to do anything. But if they don't, I need to see other also connects to ALL the
-        // others in the chain
+        // others in the chain - and if so, I can add it.
 
         boolean somethingHappened = false;
-        for (final String chain : chains) {
+        for (final List<String> chain : chains) {
             if (!chain.contains(address)) {
                 // not applicable
                 continue;
@@ -144,9 +150,8 @@ public class Year2024Day23 extends AdventOfCodeChallenge {
                 // already done
                 continue;
             }
-            final String[] network = chain.split("-");
             boolean include = true;
-            for (final String localAddress : network) {
+            for (final String localAddress : chain) {
                 final Computer computer = this.computers.get(localAddress);
                 if (!computer.others.contains(other)) {
                     include = false;
@@ -154,13 +159,8 @@ public class Year2024Day23 extends AdventOfCodeChallenge {
                 }
             }
             if (include) {
-                final List<String> newNetwork = new ArrayList<>();
-                newNetwork.addAll(Arrays.asList(network));
-                newNetwork.add(other);
-                newNetwork.sort(Comparator.naturalOrder());
-                final String newChain = String.join("-", newNetwork);
-                chains.remove(chain);
-                chains.add(newChain);
+                chain.add(other);
+                chain.sort(Comparator.naturalOrder());
                 somethingHappened = true;
             }
         }
