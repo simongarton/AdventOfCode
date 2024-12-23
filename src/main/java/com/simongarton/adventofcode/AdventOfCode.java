@@ -535,7 +535,6 @@ public class AdventOfCode {
         return -1;
     }
 
-
     private void clearBackground(final Graphics2D graphics2D) {
 
         graphics2D.setPaint(Color.BLACK);
