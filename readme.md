@@ -60,26 +60,19 @@ help you get to the end, quicker ? And it's a doozy of a maze - you're going fro
 Part 2 then became evil : you can knock up to 20 walls. Actually this is getting a bit vague, and I may have
 misinterpreted the question. Does the phrase `(but can still only end when the program is on normal track)` mean that
 if you're carving a shortcut, you have to stop _at the first normal track_ or can you skip over some and go into
-more walls ?
+more walls ? It's the latter.
 
-Here's the first example from the actual challenge sample.
+Here's an example.
 
 ![Part 2](2024-Day20-2.png)
 
-There's a lot in this. Bright green and red are the start and end; then the paler green square and the blue square are
-the start and end of the short cut, and I've marked out the shortest path in 3 sections, green, yellow red. The black
-squares with white edges are walls I have removed as part of the short cut.
+Bright green and red are the start and end; purple is the 'origin' of the shortcut, where I am on the track before I
+step off into the blue portal and pop out on the yellow one (incurring travel costs, though) before
+continuing on the red. This saved 60-odd picoseconds - obviously going straight down and popping out higher on that last
+bit would be better.
 
-This example works - but I get far more results than the real one. All in all I get about 3000 possible short cuts, and
-where the example gets 3 that save 76 seconds, I get 20, and further 29 that save more time. I also see traces
-backtracking ...
-
-Ah, looking at those, I get a clue. Some of mine are not starting one tile off from the normal path, they start in the
-middle of a block and spread out. Can I fix that ? Also I think I need to trace to the start before I remove any other
-walls.
-
-Yes I can, dropped a lot of options. Still got 12 more than the max ... let's look at those. My counts are out, and I
-think I'm getting confused with where the shortcut starts and ends. To be continued.
+I'm getting the correct max (3 cheats that save 76 picoseconds) but am only finding one cheat that saves 74
+picoseconds - and there should be 4. I have 9 that save 72 picoseonds, there should be 22. And so on.
 
 https://adventofcode.com/2024/day/20
 

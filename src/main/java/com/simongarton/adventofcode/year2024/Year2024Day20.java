@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.*;
 
@@ -46,7 +47,6 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
             this.drawMapFromLines(lines);
         }
 
-        this.setupCache(shortestPath);
         final Map<Long, Long> cheats = this.countCheats(shortestPath);
         final List<Long> keys = new ArrayList<>(cheats.keySet());
         keys.sort(Comparator.naturalOrder());
@@ -154,66 +154,50 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
-        /*
-
-        Map is 141 x 141
-        There are 9944 interior walls.
-        I could iterate through all versions of taking up to 20 of those out, but that would take a little while.
-
-        Cheats must start on a wall and end on the first time we hit empty again.
-        So I could iterate through all walls, and build up trees of all paths IN ALL DIRECTIONS - can't be just towards
-        the finish that end on an empty.
-
-        For each, remember the start, end and the walls I have to take out. Then for each, shortest path the whole thing.
-
-        No - I already know how long it will take from my first pass.
-
-        I'm worried that there will be weird edge cases.
-
-        A start point is always a wall.
-
-         */
+        // I'm not getting all of the options for the sample, and the real one takes far too long.
+        if (true) {
+            return null;
+        }
 
         this.loadChallengeMap(input);
         this.emptyTempFolder();
-        this.paintNormalMap();
-        this.drawChallengeMap();
+        if (DEBUG) {
+            this.paintNormalMap();
+            this.drawChallengeMap();
+        }
 
+        // finds 3.5 million cheats on real
         final List<Cheat> cheats = this.buildBruteForceCheatList();
 
         final Map<Long, Long> cheatTable = new HashMap<>();
         final ChallengeCoord start = this.findChallengeCoord(START);
         final ChallengeCoord end = this.findChallengeCoord(END);
         final List<ChallengeNode> shortestPath = this.getShortestPathAStar(start, end);
-        final ChallengeNode endNode = shortestPath.get(shortestPath.size() - 1);
-        this.paintNormalMapWithTrace(shortestPath);
 
+        final ChallengeNode endNode = shortestPath.get(shortestPath.size() - 1);
         final long normalCost = endNode.getCost();
         if (DEBUG) {
             System.out.println("for no cheats I now trace at " + normalCost);
         }
 
+        this.setupCache(shortestPath);
+        this.paintNormalMapWithTrace(shortestPath);
+
         for (final Cheat cheat : cheats) {
 
-            System.out.println(cheat);
-            System.out.println("start node is at " + start + " and has a cost of " + this.getNodeForCoordinate(start, shortestPath).getCost());
-            System.out.println("cheat origin is at " + cheat.origin.getCoord() + " and has a cost of " + this.getNodeForCoordinate(cheat.origin.getCoord(), shortestPath).getCost());
-            System.out.println("cheat end is at " + cheat.endNode.getCoord() + " and has a cost of " + this.getNodeForCoordinate(cheat.endNode.getCoord(), shortestPath).getCost());
-            System.out.println("  cheat cost is " + cheat.cost);
-            System.out.println("end node is at " + end + " and has a cost of " + this.getNodeForCoordinate(end, shortestPath).getCost());
-
-            /*
-
-            Now I have ended up at the end of the cheat - back on the trail at a cost;
-            But with the shortcut
-
-             */
+            if (DEBUG) {
+                System.out.println("\n" + cheat);
+                System.out.println("start node is at " + start + " and has a cost of " + this.costCache.get(start));
+                System.out.println("cheat origin is at " + cheat.origin.getCoord() + " and has a cost of " + this.costCache.get(cheat.origin.getCoord()));
+                System.out.println("cheat end is at " + cheat.endNode.getCoord() + " and has a cost of " + this.costCache.get(cheat.endNode.getCoord()));
+                System.out.println("  cheat cost is " + cheat.cost);
+                System.out.println("end node is at " + end + " and has a cost of " + this.costCache.get(end));
+            }
 
             final long normalCostToShortcutEnd = this.getNodeForCoordinate(cheat.endNode.getCoord(), shortestPath).getCost();
             final long shortcutCostToShortcutEnd = this.getNodeForCoordinate(cheat.origin.getCoord(), shortestPath).getCost() // this is how much it cost me on the map to get to before the cheat
                     + 1 // and one to step into the shortcut
                     + cheat.cost; // and the actual cost of the cheat
-            // worry about cheat.cost - am I one over ?
             final long savings = normalCostToShortcutEnd - shortcutCostToShortcutEnd;
 
             if (savings < 0) {
@@ -246,7 +230,11 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
 
     private void paintCheatMap(final Cheat cheat) {
 
+        // fiddling around with file names so they sort nicely for animation
+        final DecimalFormat decimalFormat = new DecimalFormat("000");
         String filename = "temp/" +
+//                decimalFormat.format(this.costCache.get(cheat.origin.getCoord())) + "|" +
+//                cheat.startNode.getCoord() +
                 "savings-" +
                 cheat.savings +
                 "-" +
@@ -306,25 +294,6 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         graphics2D.dispose();
     }
 
-    private void paintCheatMap(final Cheat cheat, final List<ChallengeNode> shortestPathForCheat) {
-
-        String filename = "temp/" + cheat.startNode.getCoord().toString() + "->" + cheat.endNode.getCoord().toString() + ".png";
-        filename = filename.replace(" ", "_").replace(",", "|");
-
-        final BufferedImage bufferedImage = new BufferedImage(this.mapWidth * MAP_TILE, this.mapHeight * MAP_TILE, TYPE_INT_RGB);
-        final Graphics2D graphics2D = bufferedImage.createGraphics();
-        this.clearBackground(graphics2D);
-        this.paintNormalBackground(graphics2D);
-        this.paintCheatStartEndOrigin(graphics2D, cheat);
-        this.paintShortestPath(graphics2D, shortestPathForCheat, Color.YELLOW);
-        try {
-            ImageIO.write(bufferedImage, "PNG", new File(filename));
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-        graphics2D.dispose();
-    }
-
     private void paintShortestPath(final Graphics2D graphics2D, final List<ChallengeNode> shortestPathForCheat,
                                    final Color fillColor) {
 
@@ -350,27 +319,19 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         int col = c.getX();
         int row = c.getY();
         graphics2D.setPaint(Color.BLUE);
-//        graphics2D.fillRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
         graphics2D.fillRect(col * MAP_TILE + extra, row * MAP_TILE + extra, widthBoost + extra * 2, widthBoost + extra * 2);
-//        graphics2D.setPaint(new Color(0, 0, 0));
-//        graphics2D.drawRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
 
         c = cheat.endNode.getCoord();
         col = c.getX();
         row = c.getY();
         graphics2D.setPaint(Color.ORANGE);
-//        graphics2D.fillRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
         graphics2D.fillRect(col * MAP_TILE + extra, row * MAP_TILE + extra, widthBoost + extra * 2, widthBoost + extra * 2);
-//        graphics2D.setPaint(new Color(0, 0, 0));
-//        graphics2D.drawRect(col * MAP_TILE, row * MAP_TILE, MAP_TILE, MAP_TILE);
 
         c = cheat.origin.getCoord();
         col = c.getX();
         row = c.getY();
         graphics2D.setPaint(Color.MAGENTA);
         graphics2D.fillRect(col * MAP_TILE + extra, row * MAP_TILE + extra, widthBoost + extra * 2, widthBoost + extra * 2);
-//        graphics2D.setPaint(new Color(0, 0, 0));
-//        graphics2D.drawRect(col * MAP_TILE + extra, row * MAP_TILE + extra, extra * 2, extra * 2);
     }
 
     private void paintNormalBackground(final Graphics2D graphics2D) {
@@ -403,17 +364,6 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
 
         graphics2D.setPaint(Color.BLACK);
         graphics2D.fillRect(0, 0, this.mapWidth * MAP_TILE, this.mapHeight * MAP_TILE);
-    }
-
-
-    private void removeSomeWalls(final List<ChallengeCoord> wallsToRemove) {
-
-        wallsToRemove.forEach(this::removeWall);
-    }
-
-    private void removeWall(final ChallengeCoord c) {
-
-        this.setChallengeMapLetter(c, EMPTY);
     }
 
     private List<Cheat> buildBruteForceCheatList() {
@@ -468,9 +418,7 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
                                     .build();
                             final Cheat cheat = new Cheat(originNode, startNode, endNode, startSymbol, endSymbol, dist);
                             final String key = startNode.getCoord() + "->" + endNode.getCoord();
-//                            if (key.equalsIgnoreCase("6,6->5,7")) {
                             uniqueCheats.put(key, cheat);
-//                            }
                         }
                     }
                 }
