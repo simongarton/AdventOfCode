@@ -1,5 +1,6 @@
 package com.simongarton.adventofcode;
 
+import com.simongarton.adventofcode.year2015.Year2015Day1;
 import com.simongarton.adventofcode.year2019.Year2019Day1;
 import com.simongarton.adventofcode.year2019.Year2019Day2;
 import com.simongarton.adventofcode.year2019.Year2019Day3;
@@ -13,8 +14,11 @@ import com.simongarton.adventofcode.year2024.*;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +44,7 @@ public class AdventOfCode {
 
         // can I load these by reflection / inspection ?
         final AdventOfCode adventOfCode = new AdventOfCode();
+        adventOfCode.load2015();
         adventOfCode.load2019();
         adventOfCode.load2020();
         adventOfCode.load2021();
@@ -50,7 +55,9 @@ public class AdventOfCode {
     }
 
     private void run() {
+
         this.complete.clear();
+
         for (final AdventOfCodeChallenge codeChallenge : this.challenges) {
             final AdventOfCodeChallenge.Outcome outcome = codeChallenge.run();
             final int year = codeChallenge.getYear();
@@ -62,8 +69,36 @@ public class AdventOfCode {
         }
 
         this.displayResults();
+        this.writeResultsToFile("progress.md");
         this.paintMap("AdventOfCode.png");
         this.paintSpeedMap("AdventOfCodeSpeed.png");
+        this.writeTimesToFile("times.csv");
+    }
+
+    private void writeTimesToFile(final String filename) {
+
+        final List<String> times = new ArrayList<>();
+        times.add("year,day,part,time_ms");
+        for (int year = this.startYear; year <= this.endYear; year++) {
+            for (int day = 1; day <= 25; day++) {
+                String line = year + "," + day + ",";
+                if (this.complete.containsKey(year)) {
+                    if (this.complete.get(year).containsKey(day)) {
+                        if (this.complete.get(year).get(day).part1) {
+                            line = line + this.complete.get(year).get(day).timeInMs1 + ",";
+                        } else {
+                            line = line + ",";
+                        }
+                        if (this.complete.get(year).get(day).part2) {
+                            line = line + this.complete.get(year).get(day).timeInMs2;
+                        }
+                        times.add(line);
+                    }
+                }
+            }
+        }
+
+        this.writeStringsToFile(times, Path.of(filename).toFile());
     }
 
     private String textSymbolForDay(final int outcome) {
@@ -81,17 +116,54 @@ public class AdventOfCode {
     private void displayResults() {
 
         System.out.println();
-        System.out.println("                1111111111222222");
-        System.out.println("       1234567890123456789012345");
+
+        final List<String> results = this.getResults();
+        results.forEach(System.out::println);
+    }
+
+    private void writeResultsToFile(final String filename) {
+
+        final List<String> lines = this.getResults();
+        lines.add(0, "```");
+        lines.add(lines.size(), "```");
+        this.writeStringsToFile(lines, Path.of(filename).toFile());
+    }
+
+    private void writeStringsToFile(final List<String> lines, final File file) {
+
+        try {
+            final BufferedWriter br = new BufferedWriter(new FileWriter(file.getAbsolutePath()));
+            for (final String str : lines) {
+                br.write(str + System.lineSeparator());
+            }
+            br.close();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private List<String> getResults() {
+
+        final List<String> results = new ArrayList<>();
+
+        results.add("                1111111111222222  ");
+        results.add("       1234567890123456789012345  ");
         for (int year = this.startYear; year <= this.endYear; year++) {
             final StringBuilder line = new StringBuilder(year + " : ");
             for (int day = 1; day <= 25; day++) {
                 line.append(this.textSymbolForDay(this.getOutcomeForDay(year, day)));
             }
-            System.out.println(line);
+            results.add(line.toString() + "  ");
         }
-        System.out.println("       1234567890123456789012345");
-        System.out.println("                1111111111222222");
+        results.add("       1234567890123456789012345  ");
+        results.add("                1111111111222222  ");
+
+        return results;
+    }
+
+    private void load2015() {
+        this.challenges.add(new Year2015Day1());
     }
 
     private void load2019() {
@@ -163,10 +235,10 @@ public class AdventOfCode {
         this.challenges.add(new Year2022Day18());
         this.challenges.add(new Year2022Day19());
         this.challenges.add(new Year2022Day20());
-        this.challenges.add(new Year2022Day21()); // slow
+        this.challenges.add(new Year2022Day21()); // slow part 2 18 seconds
         this.challenges.add(new Year2022Day22());
         this.challenges.add(new Year2022Day23());
-        this.challenges.add(new Year2022Day24()); // slow
+        this.challenges.add(new Year2022Day24()); // slow part 2 15 seconds
         this.challenges.add(new Year2022Day25());
     }
 
@@ -175,9 +247,9 @@ public class AdventOfCode {
         this.challenges.add(new Year2023Day2());
         this.challenges.add(new Year2023Day3());
         this.challenges.add(new Year2023Day4());
-        this.challenges.add(new Year2023Day5()); // slow
+        this.challenges.add(new Year2023Day5()); // slow part 2 63 seconds
         this.challenges.add(new Year2023Day6());
-        this.challenges.add(new Year2023Day7()); // slow
+        this.challenges.add(new Year2023Day7()); // slow part 2 29 seconds
         this.challenges.add(new Year2023Day8());
         this.challenges.add(new Year2023Day9());
         this.challenges.add(new Year2023Day10());
@@ -187,15 +259,15 @@ public class AdventOfCode {
         this.challenges.add(new Year2023Day14());
         this.challenges.add(new Year2023Day15());
         this.challenges.add(new Year2023Day16());
-        this.challenges.add(new Year2023Day17()); // slow
+        this.challenges.add(new Year2023Day17()); // slow part 2 26 seconds
         this.challenges.add(new Year2023Day18());
         this.challenges.add(new Year2023Day19());
         this.challenges.add(new Year2023Day20());
         this.challenges.add(new Year2023Day21());
-        this.challenges.add(new Year2023Day22()); // slow
+        // this.challenges.add(new Year2023Day22()); // stupidly slow part 1 (!) 938 seconds
         this.challenges.add(new Year2023Day23());
         this.challenges.add(new Year2023Day24());
-        this.challenges.add(new Year2023Day25()); // slow
+        // this.challenges.add(new Year2023Day25()); // stupidly slow
     }
 
     private void load2024() {
@@ -211,12 +283,12 @@ public class AdventOfCode {
         this.challenges.add(new Year2024Day10());
         this.challenges.add(new Year2024Day11());
         this.challenges.add(new Year2024Day12());
-        this.challenges.add(new Year2024Day13()); // slow
+        this.challenges.add(new Year2024Day13()); // slow part 2 64 seconds
         this.challenges.add(new Year2024Day14());
         this.challenges.add(new Year2024Day15());
-        this.challenges.add(new Year2024Day16()); // slow
+        this.challenges.add(new Year2024Day16()); // slow part 2 81 seconds
         this.challenges.add(new Year2024Day17());
-        this.challenges.add(new Year2024Day18()); // slow
+        this.challenges.add(new Year2024Day18()); // slow part 1 (!) 180 seconds
         this.challenges.add(new Year2024Day19());
         this.challenges.add(new Year2024Day20()); // slow
         this.challenges.add(new Year2024Day21());

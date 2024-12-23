@@ -10,7 +10,10 @@ public class Part1 {
 
     public static void main(final String[] args) throws IOException {
 
-        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-1.txt", CurrentChallenge.DAY));
+        final Path path = Paths.get(String.format("src/main/resources/%s/%s-%s-1.txt",
+                CurrentChallenge.YEAR,
+                CurrentChallenge.YEAR,
+                CurrentChallenge.DAY));
         System.out.println(CurrentChallenge.getCurrentChallenge()
                 .part1(Files.lines(path, StandardCharsets.UTF_8)
                         .toArray(String[]::new)));

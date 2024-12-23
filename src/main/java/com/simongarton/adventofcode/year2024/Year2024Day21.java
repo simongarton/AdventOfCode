@@ -22,6 +22,12 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
+        // not complete
+        if (true) {
+            return null;
+        }
+
+
         // 147756 too high
         // 142688 too high
 
@@ -386,6 +392,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
+
         return null;
     }
 

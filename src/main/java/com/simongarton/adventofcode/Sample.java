@@ -10,11 +10,12 @@ public class Sample {
 
     public static void main(final String[] args) throws IOException {
 
-        // which part to do with sample ?
-        final boolean part1 = false;
+        final Path path = Paths.get(String.format("src/main/resources/%s/%s-%s-sample.txt",
+                CurrentChallenge.YEAR,
+                CurrentChallenge.YEAR,
+                CurrentChallenge.DAY));
 
-        final Path path = Paths.get(String.format("src/main/resources/2024/2024-%s-sample.txt", CurrentChallenge.DAY));
-        if (part1) {
+        if (true) {
             System.out.println(CurrentChallenge.getCurrentChallenge()
                     .part1(Files.lines(path, StandardCharsets.UTF_8)
                             .toArray(String[]::new)));

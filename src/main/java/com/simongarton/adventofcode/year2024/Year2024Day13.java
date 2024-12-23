@@ -245,7 +245,6 @@ public class Year2024Day13 extends AdventOfCodeChallenge {
 
         }
 
-        System.out.println("All done in n " + (System.currentTimeMillis() - runStart));
         return String.valueOf(minimumTokenSpend);
     }
 

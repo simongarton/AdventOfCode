@@ -152,6 +152,7 @@ public abstract class AdventOfCodeChallenge {
     }
 
     private String loadAnswer(final int year, final int day, final int part) {
+
         final Path path = Paths.get(String.format("src/main/resources/%s/%s-Day%s-%s-answer.txt",
                 year,
                 year,

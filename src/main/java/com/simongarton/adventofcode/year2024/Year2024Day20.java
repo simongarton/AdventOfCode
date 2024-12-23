@@ -153,6 +153,11 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
+        // not complete
+        if (true) {
+            return null;
+        }
+
         /*
 
         Map is 141 x 141
