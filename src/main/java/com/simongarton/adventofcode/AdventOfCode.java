@@ -236,7 +236,7 @@ public class AdventOfCode {
 //        this.challenges.add(new Year2022Day21()); // slow part 2 18 seconds
         this.challenges.add(new Year2022Day22());
         this.challenges.add(new Year2022Day23());
-        this.challenges.add(new Year2022Day24()); // slow part 2 15 seconds
+//        this.challenges.add(new Year2022Day24()); // slow part 2 15 seconds
         this.challenges.add(new Year2022Day25());
     }
 
@@ -245,9 +245,9 @@ public class AdventOfCode {
         this.challenges.add(new Year2023Day2());
         this.challenges.add(new Year2023Day3());
         this.challenges.add(new Year2023Day4());
-        this.challenges.add(new Year2023Day5()); // slow part 2 63 seconds
+//        this.challenges.add(new Year2023Day5()); // slow part 2 63 seconds
         this.challenges.add(new Year2023Day6());
-        this.challenges.add(new Year2023Day7()); // slow part 2 29 seconds
+//        this.challenges.add(new Year2023Day7()); // slow part 2 29 seconds
         this.challenges.add(new Year2023Day8());
         this.challenges.add(new Year2023Day9());
         this.challenges.add(new Year2023Day10());
@@ -257,7 +257,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2023Day14());
         this.challenges.add(new Year2023Day15());
         this.challenges.add(new Year2023Day16());
-        this.challenges.add(new Year2023Day17()); // slow part 2 26 seconds
+//        this.challenges.add(new Year2023Day17()); // slow part 2 26 seconds
         this.challenges.add(new Year2023Day18());
         this.challenges.add(new Year2023Day19());
         this.challenges.add(new Year2023Day20());
@@ -274,23 +274,24 @@ public class AdventOfCode {
         this.challenges.add(new Year2024Day3());
         this.challenges.add(new Year2024Day4());
         this.challenges.add(new Year2024Day5());
-        this.challenges.add(new Year2024Day6()); // slow
+//        this.challenges.add(new Year2024Day6()); // slow
         this.challenges.add(new Year2024Day7());
         this.challenges.add(new Year2024Day8());
         this.challenges.add(new Year2024Day9());
         this.challenges.add(new Year2024Day10());
         this.challenges.add(new Year2024Day11());
         this.challenges.add(new Year2024Day12());
-        this.challenges.add(new Year2024Day13()); // slow part 2 64 seconds
+//        this.challenges.add(new Year2024Day13()); // slow part 2 64 seconds
         this.challenges.add(new Year2024Day14());
         this.challenges.add(new Year2024Day15());
-        this.challenges.add(new Year2024Day16()); // slow part 2 81 seconds
+//        this.challenges.add(new Year2024Day16()); // slow part 2 81 seconds
         this.challenges.add(new Year2024Day17());
-        this.challenges.add(new Year2024Day18()); // slow part 1 (!) 180 seconds
+//        this.challenges.add(new Year2024Day18()); // slow part 1 (!) 180 seconds
         this.challenges.add(new Year2024Day19());
-        this.challenges.add(new Year2024Day20()); // slow didn't finish
+//        this.challenges.add(new Year2024Day20()); // slow didn't finish
         this.challenges.add(new Year2024Day21());
         this.challenges.add(new Year2024Day22());
+        this.challenges.add(new Year2024Day23());
     }
 
     private BufferedImage getBufferedImage() {
@@ -373,9 +374,15 @@ public class AdventOfCode {
 
     private void paintSpeedOutcomes(final Graphics2D graphics2D) {
 
-        final int halfXScale = (XSCALE / 2) - 1;
+        final int quarterXScale = (XSCALE / 4) - 1;
+        final int halfXScale = (XSCALE / 2);
         final int quarterYScale = (YSCALE / 4) - 2;
+        final int halfYScale = (YSCALE / 2) - 2;
         final int threeQuarterYScale = (3 * YSCALE / 4) - 2;
+
+        final String fontName = "Source Code Pro";
+
+        final Font textFont = new Font(fontName, Font.PLAIN, 12);
 
         for (int year = this.startYear; year <= this.endYear; year++) {
             for (int day = 1; day <= 25; day++) {
@@ -385,17 +392,25 @@ public class AdventOfCode {
 
                 long time = this.getTimeForDay(year, day, 1);
                 if (time != -1) {
-                    if (this.complete.get(year).get(day).part1) {
+                    if (this.getOutcomeForDay(year, day) >= 1) {
                         graphics2D.setPaint(this.getColorForTime(time));
-                        graphics2D.fillRect(x, y, halfXScale, threeQuarterYScale);
+                        graphics2D.fillRect(x, y, halfXScale - 2, threeQuarterYScale);
+
+                        graphics2D.setFont(textFont);
+                        graphics2D.setPaint(Color.BLACK);
+                        graphics2D.drawString("1", x + quarterXScale - 2, y + halfYScale);
                     }
                 }
 
                 time = this.getTimeForDay(year, day, 2);
                 if (time != -1) {
-                    if (this.complete.get(year).get(day).part2) {
+                    if (this.getOutcomeForDay(year, day) == 2) {
                         graphics2D.setPaint(this.getColorForTime(time));
-                        graphics2D.fillRect(x + XSCALE / 2, y + quarterYScale, halfXScale, threeQuarterYScale);
+                        graphics2D.fillRect(x + halfXScale, y + quarterYScale, halfXScale - 2, threeQuarterYScale);
+
+                        graphics2D.setFont(textFont);
+                        graphics2D.setPaint(Color.BLACK);
+                        graphics2D.drawString("2", x + halfXScale + quarterXScale - 2, y + halfYScale + quarterYScale);
                     }
                 }
             }
@@ -464,8 +479,33 @@ public class AdventOfCode {
     private Optional<Integer> getShortcutForDay(final int year, final int day, final int part, final int index) {
 
         final Map<String, List<Integer>> shorts = new HashMap<>();
+
+        // these are real
         shorts.put("2022-21.1", List.of(2, 64));
         shorts.put("2022-21.2", List.of(2, 18790));
+        shorts.put("2022-24.1", List.of(2, 5260));
+        shorts.put("2022-24.2", List.of(2, 15193));
+        shorts.put("2023-5.1", List.of(2, 4));
+        shorts.put("2023-5.2", List.of(2, 56274));
+        shorts.put("2023-7.1", List.of(2, 13));
+        shorts.put("2023-7.2", List.of(2, 31696));
+        shorts.put("2023-17.1", List.of(2, 9380));
+        shorts.put("2023-17.2", List.of(2, 32292));
+        shorts.put("2024-6.1", List.of(2, 37));
+        shorts.put("2024-6.2", List.of(2, 86172));
+        shorts.put("2024-13.1", List.of(2, 14));
+        shorts.put("2024-13.2", List.of(2, 62522));
+        shorts.put("2024-16.1", List.of(2, 1136));
+        shorts.put("2024-16.2", List.of(2, 73186));
+        shorts.put("2024-18.1", List.of(2, 169065));
+        shorts.put("2024-18.2", List.of(2, 9));
+
+        // these I don't have timings for yet
+        shorts.put("2023-23.1", List.of(1, Integer.MAX_VALUE));
+        shorts.put("2023-23.2", List.of(1, Integer.MAX_VALUE));
+        shorts.put("2024-20.1", List.of(1, Integer.MAX_VALUE)); // only got part 1
+        shorts.put("2024-20.2", List.of(1, Integer.MAX_VALUE)); // only got part 1
+
 
         final String key = year + "-" + day + "." + part;
         if (!shorts.containsKey(key)) {
