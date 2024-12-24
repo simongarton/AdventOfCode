@@ -16,8 +16,52 @@ import java.util.*;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class Year2024Day20 extends AdventOfCodeChallenge {
+    /*
 
-    private static final boolean DEBUG = false;
+    I have two problems
+
+    I don't quite get to the right answer.
+    I get
+
+    There are 23 cheats that save 60 picoseconds.
+    There are 19 cheats that save 62 picoseconds.
+    There are 18 cheats that save 64 picoseconds.
+    There are 16 cheats that save 66 picoseconds.
+    There are 12 cheats that save 68 picoseconds.
+    There are 12 cheats that save 70 picoseconds.
+    There are 17 cheats that save 72 picoseconds.
+    There are 4 cheats that save 74 picoseconds.
+    There are 3 cheats that save 76 picoseconds.
+
+    But the sample data ...
+
+    There are 23 cheats that save 60 picoseconds.
+    There are 20 cheats that save 62 picoseconds. -- 1 more
+    There are 19 cheats that save 64 picoseconds. -- 1 more
+    There are 12 cheats that save 66 picoseconds. -- 4 less
+    There are 14 cheats that save 68 picoseconds. -- 2 more
+    There are 12 cheats that save 70 picoseconds.
+    There are 22 cheats that save 72 picoseconds. -- 5 more
+    There are 4 cheats that save 74 picoseconds.
+    There are 3 cheats that save 76 picoseconds.
+
+    So I'm not generating it right.
+
+    Second problem = it's taking minutes just to find my list of cheats : 1,831,735 in total. The next bit is quick.
+
+    1088106 is too high. but it was a hospital pass, knowing I'm not getting the sample right.
+
+    My approach is to simply work along the existing shortest path, picking entry points NESW from each point on the trail
+    and emerging at a later point. I ... don't know why it's not working.
+
+    As long as I have a wall to step into, it should be a valid cheat. Am I not counting the cost correctly ? I wouldn't
+    have expected to be so close if I was getting it wrong.
+
+    I've stepped through a handful, and it all looks fine - distance, cost, savings.
+
+ */
+
+    private static final boolean DEBUG = true;
     private static final int MAP_TILE = 20;
 
     private final Map<ChallengeCoord, Long> costCache = new HashMap<>();
@@ -67,6 +111,11 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
     private void setupCache(final List<ChallengeNode> shortestPath) {
 
         shortestPath.forEach(n -> this.costCache.put(n.getCoord(), n.getCost()));
+        if (DEBUG) {
+            for (final ChallengeNode n : shortestPath) {
+                System.out.println(n.getCoord() + ": " + n.getCost());
+            }
+        }
     }
 
     private List<ChallengeCoord> getVectors() {
@@ -171,18 +220,18 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
 
         final ChallengeNode endNode = shortestPath.get(shortestPath.size() - 1);
         final long normalCost = endNode.getCost();
-        if (DEBUG) {
-            System.out.println("for no cheats I now trace at " + normalCost);
-        }
 
         final List<Cheat> cheats = this.buildCheatListForPath(shortestPath);
-        System.out.println(cheats.size() + " cheats to check ... ");
+        if (DEBUG) {
+            System.out.println("with no cheats I trace out at " + normalCost);
+            System.out.println(cheats.size() + " cheats to check ... ");
+            this.paintNormalMapWithTrace(shortestPath);
+        }
 
         // 3,542
         final Map<Long, Long> cheatTable = new HashMap<>();
 
         this.setupCache(shortestPath);
-        this.paintNormalMapWithTrace(shortestPath);
 
         for (final Cheat cheat : cheats) {
 
@@ -233,14 +282,18 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
 //                cheat.startNode.getCoord() +
 //                cheat.origin.getCoord() + "^" +
 //                cheat.startNode.getCoord() +
-                "savings-" +
-                cheat.savings +
+                cheat.originOfShortCut.getCoord() +
                 "-" +
+//                "savings-" +
+//                cheat.savings +
+//                "-" +
                 cheat.firstWallInShortCut.getCoord() +
                 "->" +
                 cheat.endWhenBrokenThrough.getCoord() +
                 "-cost-" +
                 cheat.cost +
+                "-savings-" +
+                cheat.savings +
                 ".png";
         filename = filename.replace(" ", "_").replace(",", "|");
 
@@ -393,7 +446,7 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
                             .previous(null)
                             .build();
 
-                    final long dist = this.manhattanDistance(shortcutStart, shortcutEnd);
+                    final long dist = this.manhattanDistance(shortcutStart, shortcutEnd) + 1;
                     if (dist > 20) {
                         continue;
                     }
@@ -402,11 +455,17 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
                     // Check the original diagram.
                     //final String key = shortcutStart + "->" + shortcutEnd;
                     final String key = origin + "->" + shortcutEnd;
-                    final Cheat cheat = new Cheat(originNode, shortcutStartNode, shortcutEndNode, shortcutStartSymbol, shortcutEndSymbol, dist);
+                    final Cheat cheat = new Cheat(originNode,
+                            shortcutStartNode,
+                            shortcutEndNode,
+                            shortcutStartSymbol,
+                            shortcutEndSymbol,
+                            dist);
                     final long costToEndOfNormal = this.getNodeForCoordinate(cheat.originOfShortCut.getCoord(), shortestPath).getCost();
                     final long costAtEndOfShortcut = this.getNodeForCoordinate(cheat.endWhenBrokenThrough.getCoord(), shortestPath).getCost();
-                    final long costViaShortcut = costToEndOfNormal + dist + 1; // +1 to get onto shortcut
-//                    System.out.println(shortcutStart + "->" + shortcutEnd + " cost " + costAtEndOfShortcut + "/" + costViaShortcut + " (" + dist + ")");
+                    final long costViaShortcut = costToEndOfNormal + dist;
+                    System.out.println(shortcutStart + "->" + shortcutEnd + " cost " + costAtEndOfShortcut + "/" + costViaShortcut
+                            + " (" + dist + ") savings " + (costAtEndOfShortcut - costViaShortcut));
                     cheat.savings = costAtEndOfShortcut - costViaShortcut;
                     if (!cheats.containsKey(key)) {
                         cheats.put(key, cheat);
