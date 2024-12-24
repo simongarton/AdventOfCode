@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public class Year2024Day24 extends AdventOfCodeChallenge {
 
+    private static final boolean DEBUG = false;
+
     private List<Wire> wires;
     private List<Gate> gates;
 
@@ -19,7 +21,7 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
 
     @Override
     public Outcome run() {
-        return this.runChallenge(2018, 24);
+        return this.runChallenge(2024, 24);
     }
 
     @Override
@@ -50,9 +52,13 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
                 if (gate.evaluate()) {
                     somethingHappened = true;
                 }
-                System.out.println(gate);
+                if (DEBUG) {
+                    System.out.println(gate);
+                }
             }
-            this.wires.forEach(System.out::println);
+            if (DEBUG) {
+                this.wires.forEach(System.out::println);
+            }
             if (!somethingHappened) {
                 break;
             }
@@ -96,8 +102,10 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
 
         this.buildGraph();
 
-        System.out.println("wires: " + this.wires.size());
-        System.out.println("gates: " + this.gates.size());
+        if (DEBUG) {
+            System.out.println("wires: " + this.wires.size());
+            System.out.println("gates: " + this.gates.size());
+        }
 
         boolean somethingHappened;
         while (true) {
@@ -106,9 +114,13 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
                 if (gate.evaluate()) {
                     somethingHappened = true;
                 }
-                System.out.println(gate);
+                if (DEBUG) {
+                    System.out.println(gate);
+                }
             }
-            this.wires.forEach(System.out::println);
+            if (DEBUG) {
+                this.wires.forEach(System.out::println);
+            }
             if (!somethingHappened) {
                 break;
             }
@@ -118,7 +130,9 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
         final long y = this.figureOutWires("y");
         final long z = this.figureOutWires("z");
         final long check = x & y;
-        System.out.println(x + " && " + y + "=" + z + " (" + check + ")");
+        if (DEBUG) {
+            System.out.println(x + " && " + y + "=" + z + " (" + check + ")");
+        }
         return String.valueOf(z);
     }
 

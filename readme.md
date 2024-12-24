@@ -17,6 +17,15 @@ Plenty of days when I was so happy just to get the damn thing working, it wasn't
 
 ## 2024
 
+## Day 24 : Crossed Wires (1/2)
+
+Very nice. Build a circuit of wires and logic gates, and analyse it. Yeah, OK. Oh, wait, 4 pairs of the gates are cross
+wired - you can figure it out by looking at the inputs and outputs. Well, there's a lot of combinations to check ...
+
+![Part 2](2024-24.1.png)
+
+https://adventofcode.com/2024/day/23
+
 ## Day 23 : LAN Party
 
 Nice. Given a bunch of pairs - connected PCs - work out whos in a network of at least 3 ... and for part 2, work out the
