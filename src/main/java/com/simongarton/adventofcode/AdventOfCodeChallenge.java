@@ -57,7 +57,7 @@ public abstract class AdventOfCodeChallenge {
 
     protected TerminalScreen screen;
 
-    private final DecimalFormat decimalFormat = new DecimalFormat("#,##0");
+    private final DecimalFormat decimalFormatCommas = new DecimalFormat("#,##0");
 
     public abstract String part1(final String[] input);
 
@@ -408,7 +408,25 @@ public abstract class AdventOfCodeChallenge {
     }
 
     public String formatBig(final Object o) {
-        return this.decimalFormat.format(o);
+        return this.decimalFormatCommas.format(o);
+    }
+
+    public String leftPad(final String main, final int length, final String filler) {
+
+        if (main.length() > length) {
+            return main.substring(0, length);
+        }
+        final int diff = length - main.length();
+        return filler.substring(0, 1).repeat(diff) + main;
+    }
+
+    public String rightPad(final String main, final int length, final String filler) {
+
+        if (main.length() > length) {
+            return main.substring(0, length);
+        }
+        final int diff = length - main.length();
+        return main + filler.substring(0, 1).repeat(diff);
     }
 
     public List<ChallengeNode> getShortestPathAStar(final ChallengeCoord start, final ChallengeCoord end) {
