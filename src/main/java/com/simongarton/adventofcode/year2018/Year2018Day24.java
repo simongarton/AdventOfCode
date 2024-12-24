@@ -11,7 +11,7 @@ public class Year2018Day24 extends AdventOfCodeChallenge {
 
     @Override
     public Outcome run() {
-        return this.runChallenge(2018, 24);
+        return this.runChallenge(2018, 0);
     }
 
     @Override

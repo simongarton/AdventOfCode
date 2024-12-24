@@ -2,25 +2,187 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+
 public class Year2024Day24 extends AdventOfCodeChallenge {
+
+    private List<Wire> wires;
+    private List<Gate> gates;
 
     @Override
     public String title() {
-        return "Day 0: Template code";
+        return "Day 24: Crossed Wires";
     }
 
     @Override
     public Outcome run() {
-        return this.runChallenge(2024, 0);
+        return this.runChallenge(2018, 24);
     }
 
     @Override
     public String part1(final String[] input) {
-        return null;
+
+        boolean longoGates = false;
+        this.wires = new ArrayList<>();
+        this.gates = new ArrayList<>();
+
+        for (final String line : input) {
+
+            if (line.isEmpty()) {
+                longoGates = true;
+                continue;
+            }
+
+            if (!longoGates) {
+                this.wires.add(this.parseWire(line));
+            } else {
+                this.gates.add(this.parseGate(line));
+            }
+        }
+
+        boolean somethingHappened;
+        while (true) {
+            somethingHappened = false;
+            for (final Gate gate : this.gates) {
+                if (gate.evaluate()) {
+                    somethingHappened = true;
+                }
+                System.out.println(gate);
+            }
+            this.wires.forEach(System.out::println);
+            if (!somethingHappened) {
+                break;
+            }
+
+        }
+
+        return String.valueOf(this.figureOutWires());
+    }
+
+    private long figureOutWires() {
+
+        long total = 0;
+        final List<Wire> zWires = new ArrayList<>(this.wires.stream().filter(w -> w.name.startsWith("z")).toList());
+        zWires.sort(Comparator.comparing(w -> w.name));
+        for (int i = 0; i < zWires.size(); i++) {
+            total += zWires.get(i).voltage * (long) Math.pow(2, i);
+        }
+        return total;
     }
 
     @Override
     public String part2(final String[] input) {
+
         return null;
+    }
+
+    private Wire parseWire(final String line) {
+
+        final String[] parts = line.split(": ");
+        return new Wire(parts[0], Long.parseLong(parts[1]));
+    }
+
+    private Gate parseGate(final String line) {
+
+        final String[] parts = line.split(" ");
+        return new Gate(
+                this.getWire(parts[0]),
+                this.parseOperation(parts[1]),
+                this.getWire(parts[2]),
+                this.getWire(parts[4])
+        );
+    }
+
+    private Operation parseOperation(final String part) {
+        if (part.equalsIgnoreCase("AND")) {
+            return Operation.AND;
+        }
+        if (part.equalsIgnoreCase("OR")) {
+            return Operation.OR;
+        }
+        if (part.equalsIgnoreCase("XOR")) {
+            return Operation.XOR;
+        }
+        throw new RuntimeException(part);
+    }
+
+    private Wire getWire(final String part) {
+
+        final Optional<Wire> optionalWire = this.wires.stream().filter(w -> w.name.equalsIgnoreCase(part)).findFirst();
+        if (optionalWire.isPresent()) {
+            return optionalWire.get();
+        }
+        final Wire wire = new Wire(part, null);
+        this.wires.add(wire);
+        return wire;
+    }
+
+    public enum Operation {
+        AND, OR, XOR
+    }
+
+    static class Wire {
+
+        String name;
+        Long voltage;
+
+        public Wire(final String name, final Long voltage) {
+            this.name = name;
+            this.voltage = voltage;
+        }
+
+        @Override
+        public String toString() {
+            return this.name + " (" + this.voltage + ")";
+        }
+    }
+
+    static class Gate {
+
+        Wire wire1;
+        Operation operation;
+        Wire wire2;
+        Wire output;
+
+        public Gate(final Wire wire1,
+                    final Operation operation,
+                    final Wire wire2,
+                    final Wire output) {
+            this.wire1 = wire1;
+            this.operation = operation;
+            this.wire2 = wire2;
+            this.output = output;
+        }
+
+        @Override
+        public String toString() {
+            return this.wire1 + " " + this.operation + " " + this.wire2 + " -> " + this.output;
+        }
+
+        public boolean evaluate() {
+
+            if (this.output.voltage != null) {
+                return false;
+            }
+
+            if (this.wire1.voltage == null || this.wire2.voltage == null) {
+                return false;
+            }
+            switch (this.operation) {
+                case AND -> {
+                    this.output.voltage = (this.wire1.voltage == 1 && this.wire2.voltage == 1) ? 1L : 0;
+                }
+                case OR -> {
+                    this.output.voltage = (this.wire1.voltage == 1 || this.wire2.voltage == 1) ? 1L : 0;
+                }
+                case XOR -> {
+                    this.output.voltage = (this.wire1.voltage == 1 ^ this.wire2.voltage == 1) ? 1L : 0;
+                }
+            }
+            return true;
+        }
     }
 }
