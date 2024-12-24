@@ -25,18 +25,18 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        boolean longoGates = false;
+        boolean processingGates = false;
         this.wires = new ArrayList<>();
         this.gates = new ArrayList<>();
 
         for (final String line : input) {
 
             if (line.isEmpty()) {
-                longoGates = true;
+                processingGates = true;
                 continue;
             }
 
-            if (!longoGates) {
+            if (!processingGates) {
                 this.wires.add(this.parseWire(line));
             } else {
                 this.gates.add(this.parseGate(line));
@@ -59,13 +59,13 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
 
         }
 
-        return String.valueOf(this.figureOutWires());
+        return String.valueOf(this.figureOutWires("z"));
     }
 
-    private long figureOutWires() {
+    private long figureOutWires(final String prefix) {
 
         long total = 0;
-        final List<Wire> zWires = new ArrayList<>(this.wires.stream().filter(w -> w.name.startsWith("z")).toList());
+        final List<Wire> zWires = new ArrayList<>(this.wires.stream().filter(w -> w.name.startsWith(prefix)).toList());
         zWires.sort(Comparator.comparing(w -> w.name));
         for (int i = 0; i < zWires.size(); i++) {
             total += zWires.get(i).voltage * (long) Math.pow(2, i);
@@ -76,6 +76,100 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
+        boolean processingGates = false;
+        this.wires = new ArrayList<>();
+        this.gates = new ArrayList<>();
+
+        for (final String line : input) {
+
+            if (line.isEmpty()) {
+                processingGates = true;
+                continue;
+            }
+
+            if (!processingGates) {
+                this.wires.add(this.parseWire(line));
+            } else {
+                this.gates.add(this.parseGate(line));
+            }
+        }
+
+        this.buildGraph();
+
+        System.out.println("wires: " + this.wires.size());
+        System.out.println("gates: " + this.gates.size());
+
+        boolean somethingHappened;
+        while (true) {
+            somethingHappened = false;
+            for (final Gate gate : this.gates) {
+                if (gate.evaluate()) {
+                    somethingHappened = true;
+                }
+                System.out.println(gate);
+            }
+            this.wires.forEach(System.out::println);
+            if (!somethingHappened) {
+                break;
+            }
+        }
+
+        final long x = this.figureOutWires("x");
+        final long y = this.figureOutWires("y");
+        final long z = this.figureOutWires("z");
+        final long check = x & y;
+        System.out.println(x + " && " + y + "=" + z + " (" + check + ")");
+        return String.valueOf(z);
+    }
+
+    private void buildGraph() {
+
+        final List<String> lines = new ArrayList<>();
+        lines.add("digraph {");
+        lines.add("rankdir = \"LR\"");
+
+        for (final Wire wire : this.wires) {
+            lines.add(wire.name + " [style=\"filled\" shape=\"box\" color=\"gray50\" fillcolor=\"" + this.getWireColor(wire.name) + "\"]");
+        }
+        for (final Gate gate : this.gates) {
+            lines.add(gate.id + " [label=\"" + gate.operation + "\" style=\"filled\" color=\"gray50\" fillcolor=\"" + this.getGateColor(gate.operation) + "\"]");
+        }
+        for (final Gate gate : this.gates) {
+            lines.add(gate.wire1.name + "->" + gate.id);
+            lines.add(gate.wire2.name + "->" + gate.id);
+            lines.add(gate.id + "->" + gate.output.name);
+        }
+        lines.add("}");
+        this.dumpGraphToFile("2024-24.2.dot", lines);
+    }
+
+    private String getWireColor(final String name) {
+
+        if (name.startsWith("x")) {
+            return "lawngreen";
+        }
+        if (name.startsWith("y")) {
+            return "gold";
+        }
+        if (name.startsWith("z")) {
+            return "orangered";
+        }
+        return "ghostwhite";
+    }
+
+    private String getGateColor(final Operation operation) {
+
+        switch (operation) {
+            case AND -> {
+                return "cornflowerblue";
+            }
+            case OR -> {
+                return "dodgerblue";
+            }
+            case XOR -> {
+                return "lightslateblue";
+            }
+        }
         return null;
     }
 
@@ -89,6 +183,7 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
 
         final String[] parts = line.split(" ");
         return new Gate(
+                this.gates.size(),
                 this.getWire(parts[0]),
                 this.parseOperation(parts[1]),
                 this.getWire(parts[2]),
@@ -142,15 +237,18 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
 
     static class Gate {
 
+        int id;
         Wire wire1;
         Operation operation;
         Wire wire2;
         Wire output;
 
-        public Gate(final Wire wire1,
+        public Gate(final int id,
+                    final Wire wire1,
                     final Operation operation,
                     final Wire wire2,
                     final Wire output) {
+            this.id = id;
             this.wire1 = wire1;
             this.operation = operation;
             this.wire2 = wire2;

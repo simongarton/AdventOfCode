@@ -11,12 +11,12 @@ public class Sample {
     public static void main(final String[] args) throws IOException {
 
         // it's always 1-sample
-        final Path path = Paths.get(String.format("src/main/resources/%s/%s-Day%s-sample.txt",
+        final Path path = Paths.get(String.format("src/main/resources/%s/%s-Day%s-sample-2.txt",
                 CurrentChallenge.YEAR,
                 CurrentChallenge.YEAR,
                 CurrentChallenge.DAY));
 
-        if (true) {
+        if (false) {
             System.out.println(CurrentChallenge.getCurrentChallenge()
                     .part1(Files.lines(path, StandardCharsets.UTF_8)
                             .toArray(String[]::new)));
