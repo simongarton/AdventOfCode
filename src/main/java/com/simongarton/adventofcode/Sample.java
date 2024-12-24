@@ -10,7 +10,8 @@ public class Sample {
 
     public static void main(final String[] args) throws IOException {
 
-        final Path path = Paths.get(String.format("src/main/resources/%s/%s-%s-sample.txt",
+        // it's always 1-sample
+        final Path path = Paths.get(String.format("src/main/resources/%s/%s-Day%s-1-sample.txt",
                 CurrentChallenge.YEAR,
                 CurrentChallenge.YEAR,
                 CurrentChallenge.DAY));

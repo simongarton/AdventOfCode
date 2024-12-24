@@ -1,6 +1,7 @@
 package com.simongarton.adventofcode;
 
 import com.simongarton.adventofcode.year2015.Year2015Day1;
+import com.simongarton.adventofcode.year2016.Year2016Day1;
 import com.simongarton.adventofcode.year2019.Year2019Day1;
 import com.simongarton.adventofcode.year2019.Year2019Day2;
 import com.simongarton.adventofcode.year2019.Year2019Day3;
@@ -43,6 +44,7 @@ public class AdventOfCode {
         // can I load these by reflection / inspection ?
         final AdventOfCode adventOfCode = new AdventOfCode();
         adventOfCode.load2015();
+        adventOfCode.load2016();
         adventOfCode.load2019();
         adventOfCode.load2020();
         adventOfCode.load2021();
@@ -162,6 +164,10 @@ public class AdventOfCode {
 
     private void load2015() {
         this.challenges.add(new Year2015Day1());
+    }
+
+    private void load2016() {
+        this.challenges.add(new Year2016Day1());
     }
 
     private void load2019() {

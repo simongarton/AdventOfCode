@@ -1146,6 +1146,14 @@ fuel ...
 
 https://adventofcode.com/2019/day/1
 
+## 2016
+
+### Day 1: No Time for a Taxicab
+
+Simple coordinates with left and right turns.
+
+https://adventofcode.com/2015/day/1
+
 ## 2015
 
 ### Day 1: Not Quite Lisp
@@ -1153,4 +1161,4 @@ https://adventofcode.com/2019/day/1
 The very first AoC puzzle. Simple string manipulation, the first one I did with regex, the second I had to write a tiny
 loop.
 
-https://adventofcode.com/2023/day/1
+https://adventofcode.com/2015/day/1
