@@ -2,6 +2,8 @@ package com.simongarton.adventofcode;
 
 import com.simongarton.adventofcode.year2015.Year2015Day1;
 import com.simongarton.adventofcode.year2016.Year2016Day1;
+import com.simongarton.adventofcode.year2017.Year2017Day1;
+import com.simongarton.adventofcode.year2018.Year2018Day1;
 import com.simongarton.adventofcode.year2019.Year2019Day1;
 import com.simongarton.adventofcode.year2019.Year2019Day2;
 import com.simongarton.adventofcode.year2019.Year2019Day3;
@@ -45,6 +47,8 @@ public class AdventOfCode {
         final AdventOfCode adventOfCode = new AdventOfCode();
         adventOfCode.load2015();
         adventOfCode.load2016();
+        adventOfCode.load2017();
+        adventOfCode.load2018();
         adventOfCode.load2019();
         adventOfCode.load2020();
         adventOfCode.load2021();
@@ -154,7 +158,7 @@ public class AdventOfCode {
             for (int day = 1; day <= 25; day++) {
                 line.append(this.textSymbolForDay(this.getOutcomeForDay(year, day)));
             }
-            results.add(line.toString() + "  ");
+            results.add(line + "  ");
         }
         results.add("       1234567890123456789012345  ");
         results.add("                1111111111222222  ");
@@ -168,6 +172,14 @@ public class AdventOfCode {
 
     private void load2016() {
         this.challenges.add(new Year2016Day1());
+    }
+
+    private void load2017() {
+        this.challenges.add(new Year2017Day1());
+    }
+
+    private void load2018() {
+        this.challenges.add(new Year2018Day1());
     }
 
     private void load2019() {

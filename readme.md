@@ -1146,6 +1146,22 @@ fuel ...
 
 https://adventofcode.com/2019/day/1
 
+## 2018
+
+### Day 1: Chronal Calibration
+
+Summing numbers. Part 1 in one line of code;
+
+https://adventofcode.com/2018/day/1
+
+## 2017
+
+### Day 1: Inverse Captcha
+
+Looking for sequences in strings.
+
+https://adventofcode.com/2017/day/1
+
 ## 2016
 
 ### Day 1: No Time for a Taxicab
