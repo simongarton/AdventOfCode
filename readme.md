@@ -71,8 +71,9 @@ step off into the blue portal and pop out on the yellow one (incurring travel co
 continuing on the red. This saved 60-odd picoseconds - obviously going straight down and popping out higher on that last
 bit would be better.
 
-I'm getting the correct max (3 cheats that save 76 picoseconds) but am only finding one cheat that saves 74
-picoseconds - and there should be 4. I have 9 that save 72 picoseonds, there should be 22. And so on.
+I'm getting the first couple of counts correct (3 cheats that save 76 picoseconds, 4 for 74) but am only finding 17
+cheats that saves 72 picoseconds - and there should be 22. Been staring for too long. It's also really slow, so not the
+right approach.
 
 https://adventofcode.com/2024/day/20
 
