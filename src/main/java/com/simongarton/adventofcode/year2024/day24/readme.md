@@ -47,11 +47,11 @@ Fix, and repeat
 I've now done 3 swaps of the 4 so we're almost there.
 
 ```
-        final List<OutputSwap> swapsNeeded = List.of(
-                new OutputSwap(53, 150), // hdt & z05
-                new OutputSwap(55, 89), // z09 & gbf
-                new OutputSwap(174, 114) // nbf & z30
-        );
+final List<OutputSwap> swapsNeeded = List.of(
+        new OutputSwap(53, 150), // hdt & z05
+        new OutputSwap(55, 89), // z09 & gbf
+        new OutputSwap(174, 114) // nbf & z30
+);
 ```
 
 ```
@@ -72,3 +72,5 @@ The differences appear to be at the start and end - which, since the sequence
 extends over two cycles, is kind of inevitable.
 
 I could .. brute force ?
+
+No, curiously that didn't work. Took a minute ... it seems sensible.

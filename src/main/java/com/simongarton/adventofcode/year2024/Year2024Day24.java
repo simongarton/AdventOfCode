@@ -76,15 +76,7 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
         return total;
     }
 
-    @Override
-    public String part2(final String[] input) {
-
-        /*
-
-        Dumped out a graph with graphViz just to see what I could see - and there are some obvious patterns.
-        Can I find them ? Is this the answer ?
-
-         */
+    private void loadWiresAndGates(final String[] input) {
 
         boolean processingGates = false;
         this.wires = new ArrayList<>();
@@ -104,44 +96,20 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
             }
         }
 
-        if (false) {
-            final List<OutputSwap> swapsNeeded = List.of(
-                    new OutputSwap(53, 150), // hdt & z05
-                    new OutputSwap(55, 89), // z09 & gbf
-                    new OutputSwap(174, 114) // nbf & z30
-            );
+    }
 
-            this.swapOutputs(swapsNeeded);
-        }
+    private void doVisualSwaps() {
 
-       /*
+        final List<OutputSwap> swapsNeeded = List.of(
+                new OutputSwap(53, 150), // hdt & z05
+                new OutputSwap(55, 89), // z09 & gbf
+                new OutputSwap(174, 114) // nbf & z30
+        );
 
-        what is the swapping doing to the output ?
+        this.swapOutputs(swapsNeeded);
+    }
 
-        21117783899853 && 30540314920985=51657025112326 (20910451017737)
-        21117783899853 && 30540314920985=51657025112294 (20910451017737) add hdt & z05
-        21117783899853 && 30540314920985=51657025111782 (20910451017737) add z09 & gbf
-        21117783899853 && 30540314920985=51658098853606 (20910451017737) and nbf & z30
-
-         */
-
-        // let's take a look at the gates
-        final Map<String, Integer> counts = new HashMap<>();
-        for (final Gate gate : this.gates) {
-            final String explained = this.explainGate(gate);
-            System.out.println(explained);
-            final String key = explained.substring(6).trim();
-            counts.put(key, counts.getOrDefault(key, 0) + 1);
-        }
-        for (final Map.Entry<String, Integer> entry : counts.entrySet()) {
-            System.out.println(entry.getKey() + "=" + entry.getValue());
-        }
-
-        this.buildGraph();
-        if (DEBUG) {
-            System.out.println("wires: " + this.wires.size());
-            System.out.println("gates: " + this.gates.size());
-        }
+    private void runUntilStable() {
 
         boolean somethingHappened;
         while (true) {
@@ -161,6 +129,82 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
                 break;
             }
         }
+    }
+
+    public String part2BruteForceDidntWork(final String[] input) {
+
+        this.loadWiresAndGates(input);
+        final List<Integer> gateIds = this.gates.stream().map(g -> g.id).toList();
+
+        long z = 0;
+        final List<Integer> alreadyDone = List.of(53, 150, 55, 89, 174, 114);
+        for (int i = 0; i < gateIds.size(); i++) {
+            System.out.println(i + " " + gateIds.size());
+            for (int j = 0; j < gateIds.size(); j++) {
+                if (i == j) {
+                    continue;
+                }
+                if (alreadyDone.contains(i) || alreadyDone.contains(j)) {
+                    continue;
+                }
+
+                this.loadWiresAndGates(input);
+                this.doVisualSwaps();
+
+                final List<OutputSwap> swapsNeeded = List.of(
+                        new OutputSwap(i, j)
+                );
+                this.swapOutputs(swapsNeeded);
+
+                this.runUntilStable();
+
+                try {
+                    final long x = this.figureOutWires("x");
+                    final long y = this.figureOutWires("y");
+                    z = this.figureOutWires("z");
+                    final long check = x & y; // this should match z
+                    if (DEBUG) {
+                        System.out.println(x + " && " + y + "=" + z + " (" + check + ")");
+                    }
+                    if (check == z) {
+                        System.out.println("swapping " + i + "," + j + " (" + this.getGate(i).output + "," + this.getGate(j).output + ")");
+                        break;
+                    }
+                } catch (final NullPointerException npe) {
+                    continue;
+                }
+            }
+        }
+
+        return String.valueOf(z);
+    }
+
+
+    @Override
+    public String part2(final String[] input) {
+
+        this.loadWiresAndGates(input);
+        this.doVisualSwaps();
+
+        // let's take a look at the gates
+        final Map<String, Integer> counts = new HashMap<>();
+        for (final Gate gate : this.gates) {
+            final String explained = this.explainGate(gate);
+            System.out.println(explained);
+            final String key = explained.substring(6).trim();
+            counts.put(key, counts.getOrDefault(key, 0) + 1);
+        }
+        for (final Map.Entry<String, Integer> entry : counts.entrySet()) {
+            System.out.println(entry.getKey() + "=" + entry.getValue());
+        }
+
+        this.buildGraph();
+        if (DEBUG) {
+            System.out.println("wires: " + this.wires.size());
+            System.out.println("gates: " + this.gates.size());
+        }
+
+        runUntilStable();
 
         final long x = this.figureOutWires("x");
         final long y = this.figureOutWires("y");
