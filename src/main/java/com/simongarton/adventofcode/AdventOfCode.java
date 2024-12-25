@@ -306,7 +306,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2024Day17());
 //        this.challenges.add(new Year2024Day18()); // slow part 1 (!) 180 seconds
         this.challenges.add(new Year2024Day19());
-//        this.challenges.add(new Year2024Day20()); // slow didn't finish
+        this.challenges.add(new Year2024Day20());
         this.challenges.add(new Year2024Day21());
         this.challenges.add(new Year2024Day22());
         this.challenges.add(new Year2024Day23());
@@ -523,9 +523,6 @@ public class AdventOfCode {
         // these I don't have timings for yet
         shorts.put("2023-23.1", List.of(1, Integer.MAX_VALUE));
         shorts.put("2023-23.2", List.of(1, Integer.MAX_VALUE));
-        shorts.put("2024-20.1", List.of(1, Integer.MAX_VALUE)); // only got part 1
-        shorts.put("2024-20.2", List.of(1, Integer.MAX_VALUE)); // only got part 1
-
 
         final String key = year + "-" + day + "." + part;
         if (!shorts.containsKey(key)) {

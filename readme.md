@@ -22,6 +22,8 @@ Plenty of days when I was so happy just to get the damn thing working, it wasn't
 Day 25 is always easy and is always only 1 part - the second part is having 49 other stars by now, which ... I don't
 quite. Let's go back and try and fix them.
 
+https://adventofcode.com/2024/day/25
+
 ## Day 24 : Crossed Wires
 
 Very nice. Build a circuit of wires and logic gates, and analyse it. Yeah, OK. Oh, wait, 4 pairs of the gates are cross
@@ -33,7 +35,7 @@ I love [GraphViz](https://graphviz.org/). Dumped it out, added some colors - and
 wiring is different. But I couldn't spot the fourth ... until I looped through the 45 powers of 2 and tested if my
 circuit worked adding two numbers, and it broke at a certain pair of inputs ...
 
-https://adventofcode.com/2024/day/23
+https://adventofcode.com/2024/day/24
 
 ## Day 23 : LAN Party
 
@@ -66,7 +68,7 @@ out what the problem is.
 
 https://adventofcode.com/2024/day/21
 
-## Day 20 : Race Condition (1/2)
+## Day 20 : Race Condition
 
 This was fun, even though I don't have part 2 complete yet.
 
@@ -92,6 +94,12 @@ bit would be better.
 I'm getting the first couple of counts correct (3 cheats that save 76 picoseconds, 4 for 74) but am only finding 17
 cheats that saves 72 picoseconds - and there should be 22. Been staring for too long. It's also really slow, so not the
 right approach.
+
+And then I suddenly realized that most of the question is irrelevant. The cheats have to start and end on the trail, so
+I don't need to worry about walls or anything - just iterate over the 3k steps in the trail twice, checking the distance
+you'd save by short-cutting between two points and checking the manhattan distance. :facepalm.
+
+<deletes many many lines of code.>
 
 https://adventofcode.com/2024/day/20
 
