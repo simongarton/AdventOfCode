@@ -2,6 +2,7 @@ package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Year2024Day24 extends AdventOfCodeChallenge {
@@ -100,13 +101,20 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
 
     private void doVisualSwaps() {
 
-        final List<OutputSwap> swapsNeeded = List.of(
+        this.swapOutputs(this.getSwapsNeeded());
+    }
+
+    private List<OutputSwap> getSwapsNeeded() {
+
+        // gbf,hdt,jgt,mht,nbf,z05,z09,z30
+
+        return List.of(
                 new OutputSwap(53, 150), // hdt & z05
                 new OutputSwap(55, 89), // z09 & gbf
-                new OutputSwap(174, 114) // nbf & z30
+                new OutputSwap(174, 114),
+                // nbf & z30
+                new OutputSwap(109, 20) // mht, jgt
         );
-
-        this.swapOutputs(swapsNeeded);
     }
 
     private void runUntilStable() {
@@ -131,73 +139,29 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
         }
     }
 
-    public String part2BruteForceDidntWork(final String[] input) {
-
-        this.loadWiresAndGates(input);
-        final List<Integer> gateIds = this.gates.stream().map(g -> g.id).toList();
-
-        long z = 0;
-        final List<Integer> alreadyDone = List.of(53, 150, 55, 89, 174, 114);
-        for (int i = 0; i < gateIds.size(); i++) {
-            System.out.println(i + " " + gateIds.size());
-            for (int j = 0; j < gateIds.size(); j++) {
-                if (i == j) {
-                    continue;
-                }
-                if (alreadyDone.contains(i) || alreadyDone.contains(j)) {
-                    continue;
-                }
-
-                this.loadWiresAndGates(input);
-                this.doVisualSwaps();
-
-                final List<OutputSwap> swapsNeeded = List.of(
-                        new OutputSwap(i, j)
-                );
-                this.swapOutputs(swapsNeeded);
-
-                this.runUntilStable();
-
-                try {
-                    final long x = this.figureOutWires("x");
-                    final long y = this.figureOutWires("y");
-                    z = this.figureOutWires("z");
-                    final long check = x & y; // this should match z
-                    if (DEBUG) {
-                        System.out.println(x + " && " + y + "=" + z + " (" + check + ")");
-                    }
-                    if (check == z) {
-                        System.out.println("swapping " + i + "," + j + " (" + this.getGate(i).output + "," + this.getGate(j).output + ")");
-                        break;
-                    }
-                } catch (final NullPointerException npe) {
-                    continue;
-                }
-            }
-        }
-
-        return String.valueOf(z);
-    }
-
-
     @Override
     public String part2(final String[] input) {
 
-        this.explainBinary();
+        // this found another pair ...
+        // this.iterate(input);
 
         this.loadWiresAndGates(input);
         this.doVisualSwaps();
 
+        // this.adhocAnalysis();
+
         // let's take a look at the gates
-        final Map<String, Integer> counts = new HashMap<>();
-        for (final Gate gate : this.gates) {
-            final String explained = this.explainGate(gate);
-            System.out.println(explained);
-            final String key = explained.substring(6).trim();
-            counts.put(key, counts.getOrDefault(key, 0) + 1);
-        }
-        for (final Map.Entry<String, Integer> entry : counts.entrySet()) {
-            System.out.println(entry.getKey() + "=" + entry.getValue());
+        if (DEBUG) {
+            final Map<String, Integer> counts = new HashMap<>();
+            for (final Gate gate : this.gates) {
+                final String explained = this.explainGate(gate);
+                System.out.println(explained);
+                final String key = explained.substring(6).trim();
+                counts.put(key, counts.getOrDefault(key, 0) + 1);
+            }
+            for (final Map.Entry<String, Integer> entry : counts.entrySet()) {
+                System.out.println(entry.getKey() + "=" + entry.getValue());
+            }
         }
 
         this.buildGraph();
@@ -211,27 +175,99 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
         final long x = this.figureOutWires("x");
         final long y = this.figureOutWires("y");
         final long z = this.figureOutWires("z");
-        final long check = x & y; // this should match z
+        final long check = x + y;
         if (DEBUG) {
             System.out.println(x + " && " + y + "=" + z + " (" + check + ")");
+            this.displayBinary(x, y, z, check);
         }
-        System.out.println(x + " && " + y + "=" + z + " (" + check + ")");
-        return String.valueOf(z);
+
+        final List<OutputSwap> swapsNeeded = this.getSwapsNeeded();
+        final List<String> wireNames = new ArrayList<>();
+        for (final OutputSwap outputSwap : swapsNeeded) {
+            wireNames.add(this.getGate(outputSwap.gate1).output.name);
+            wireNames.add(this.getGate(outputSwap.gate2).output.name);
+        }
+        wireNames.sort(Comparator.naturalOrder());
+        return String.join(",", wireNames);
+    }
+
+    private void iterate(final String[] input) {
+
+        for (long i = 0; i < 45; i++) {
+            this.loadWiresAndGates(input);
+            this.doVisualSwaps();
+            final long boost = (long) Math.pow(2, i);
+            this.setWiresToValue(boost, boost);
+            this.runUntilStable();
+            final long z = this.figureOutWires("z");
+            if (z != (2 * boost)) {
+                System.out.println("broke at " + i + " with " + (2 * boost) + " != " + z);
+            }
+        }
+    }
+
+    private void setWiresToValue(final long x, final long y) {
+
+        final DecimalFormat decimalFormat = new DecimalFormat("00");
+
+        final String binaryXReversed = new StringBuilder(this.leftPad(longToBinary(x), 45, "0")).reverse().toString();
+        final String binaryYReversed = new StringBuilder(this.leftPad(longToBinary(y), 45, "0")).reverse().toString();
+
+        for (int i = 0; i < 45; i++) {
+            this.getWire("x" + decimalFormat.format(i)).voltage = Long.parseLong(binaryXReversed.substring(i, i + 1));
+            this.getWire("y" + decimalFormat.format(i)).voltage = Long.parseLong(binaryYReversed.substring(i, i + 1));
+        }
+    }
+
+    private void adhocAnalysis() {
+
+        // all the x/y wires go to the same pair of gates
+        final DecimalFormat decimalFormat = new DecimalFormat("00");
+        for (int i = 0; i < 45; i++) {
+            final Wire x = this.getWire("x" + decimalFormat.format(i));
+            final Wire y = this.getWire("y" + decimalFormat.format(i));
+            final List<Gate> xGates = this.gatesConsumingWire(x);
+            final List<Gate> yGates = this.gatesConsumingWire(y);
+            System.out.println(x + " " + y);
+            final String xGateString = String.join(" ", xGates.stream().map(Gate::toString).toList());
+            final String yGateString = String.join(" ", yGates.stream().map(Gate::toString).toList());
+            if (!xGateString.equalsIgnoreCase(yGateString)) {
+                System.out.println(xGateString);
+                System.out.println(yGateString);
+            }
+        }
     }
 
     private void explainBinary() {
 
-        final Long x = 21117783899853L;
-        final Long y = 30540314920985L;
-        final Long sum = 51658098853606L;
-        final Long check = 20910451017737L;
+        // these are values after the three swaps I think I've found
+        // I was hoping to see a clear pattern to point me at the 4th.
+        // but sadly no.
+
+        // 21117783899853    100110011010011011110000000011111111011001101
+        // 30540314920985    110111100011010111000100111110100100000011001
+        // 51658098853606   1011101111101110010110101000011100011011100110
+        // 20910451017737    100110000010010011000000000010100100000001001
+
+        // wait. The two real numbers I have would end in 8, which is 0 in binary
+        // so my check must end in a 0. It doesn't. Which end of the circuit is doing
+        // the first digit ?
+
+        final long x = 21117783899853L;
+        final long y = 30540314920985L;
+        final long z = 51658098853606L;
+        final long check = 20910451017737L;
+
+        this.displayBinary(x, y, z, check);
+    }
+
+    private void displayBinary(final long x, final long y, final long z, final long check) {
 
         final int size = 48;
         System.out.println(x + " " + this.leftPad(longToBinary(x), size, " "));
         System.out.println(y + " " + this.leftPad(longToBinary(y), size, " "));
-        System.out.println(sum + " " + this.leftPad(longToBinary(sum), size, " "));
+        System.out.println(z + " " + this.leftPad(longToBinary(z), size, " "));
         System.out.println(check + " " + this.leftPad(longToBinary(check), size, " "));
-
     }
 
     public static String longToBinary(long n) {
@@ -361,13 +397,13 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
         throw new RuntimeException(part);
     }
 
-    private Wire getWire(final String part) {
+    private Wire getWire(final String name) {
 
-        final Optional<Wire> optionalWire = this.wires.stream().filter(w -> w.name.equalsIgnoreCase(part)).findFirst();
+        final Optional<Wire> optionalWire = this.wires.stream().filter(w -> w.name.equalsIgnoreCase(name)).findFirst();
         if (optionalWire.isPresent()) {
             return optionalWire.get();
         }
-        final Wire wire = new Wire(part, null);
+        final Wire wire = new Wire(name, null);
         this.wires.add(wire);
         return wire;
     }
