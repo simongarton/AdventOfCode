@@ -183,6 +183,8 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
+        this.explainBinary();
+
         this.loadWiresAndGates(input);
         this.doVisualSwaps();
 
@@ -204,7 +206,7 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
             System.out.println("gates: " + this.gates.size());
         }
 
-        runUntilStable();
+        this.runUntilStable();
 
         final long x = this.figureOutWires("x");
         final long y = this.figureOutWires("y");
@@ -216,6 +218,31 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
         System.out.println(x + " && " + y + "=" + z + " (" + check + ")");
         return String.valueOf(z);
     }
+
+    private void explainBinary() {
+
+        final Long x = 21117783899853L;
+        final Long y = 30540314920985L;
+        final Long sum = 51658098853606L;
+        final Long check = 20910451017737L;
+
+        final int size = 48;
+        System.out.println(x + " " + this.leftPad(longToBinary(x), size, " "));
+        System.out.println(y + " " + this.leftPad(longToBinary(y), size, " "));
+        System.out.println(sum + " " + this.leftPad(longToBinary(sum), size, " "));
+        System.out.println(check + " " + this.leftPad(longToBinary(check), size, " "));
+
+    }
+
+    public static String longToBinary(long n) {
+        String s = "";
+        while (n > 0) {
+            s = ((n % 2) == 0 ? "0" : "1") + s;
+            n = n / 2;
+        }
+        return s;
+    }
+
 
     private void swapOutputs(final List<OutputSwap> swapsNeeded) {
         swapsNeeded.forEach(this::swapOutput);

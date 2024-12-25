@@ -17,6 +17,11 @@ Plenty of days when I was so happy just to get the damn thing working, it wasn't
 
 ## 2024
 
+## Day 25 : Code Chronicle (1/1)
+
+Day 25 is always easy and is always only 1 part - the second part is having 49 other stars by now, which ... I don't
+quite. Let's go back and try and fix them.
+
 ## Day 24 : Crossed Wires (1/2)
 
 Very nice. Build a circuit of wires and logic gates, and analyse it. Yeah, OK. Oh, wait, 4 pairs of the gates are cross
