@@ -27,11 +27,11 @@ quite. Let's go back and try and fix them.
 Very nice. Build a circuit of wires and logic gates, and analyse it. Yeah, OK. Oh, wait, 4 pairs of the gates are cross
 wired - you can figure it out by looking at the inputs and outputs. Well, there's a lot of combinations to check ...
 
-![Part 2](2024-24.1.png)
+![Part 2](2024-24.2-original.png)
 
 I love [GraphViz](https://graphviz.org/). Dumped it out, added some colors - and I could spot 3 of the 4 problems : the
 wiring is different. But I couldn't spot the fourth ... until I looped through the 45 powers of 2 and tested if my
-circuit worked, and it broke at a certain pair of inputs ...
+circuit worked adding two numbers, and it broke at a certain pair of inputs ...
 
 https://adventofcode.com/2024/day/23
 
