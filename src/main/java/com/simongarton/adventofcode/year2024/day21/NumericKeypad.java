@@ -3,7 +3,6 @@ package com.simongarton.adventofcode.year2024.day21;
 import lombok.Getter;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -11,12 +10,15 @@ public class NumericKeypad extends Keypad {
 
     private final Map<String, Map<String, String>> movements;
 
+    private String currentLetter;
+
     public NumericKeypad(final String name) {
 
         super(name, 0);
 
         this.movements = new HashMap<>();
         this.setupMovements();
+        this.currentLetter = ACTIVATE;
     }
 
     @Override
@@ -82,12 +84,6 @@ public class NumericKeypad extends Keypad {
 
         this.getKeysPressed().add(this.currentLetter);
         Radio.broadcast(this, this.currentLetter);
-    }
-
-    @Override
-    public List<String> damnItIllDoItMyself(final String commandNeeded, final Map<Keypad, String> status) {
-
-        throw new RuntimeException("you're joking.");
     }
 
     @Override

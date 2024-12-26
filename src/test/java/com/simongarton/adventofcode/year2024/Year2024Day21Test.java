@@ -43,8 +43,49 @@ class Year2024Day21Test {
     }
 
     @ParameterizedTest
+    @MethodSource("exploringOneDirpadOptions")
+    void exploringOneDirpad(final String expected, final String program) {
+
+        // this is just checking that my keypads all talk together nicely, given I have a valid program
+
+        // given
+        final NumericKeypad target = new NumericKeypad("target");
+        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, target);
+
+        // when
+        Radio.resetTick();
+        robot1.run(program);
+
+        // then
+        assertEquals(expected, String.join("", target.getKeysPressed()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("exploringTwoDirpadOptions")
+    void exploringTwoDirpad(final String expected, final String program) {
+
+        // this is just checking that my keypads all talk together nicely, given I have a valid program
+
+        // given
+        final NumericKeypad target = new NumericKeypad("target");
+        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, target);
+        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", 2, robot1, null);
+
+        // when
+        Radio.resetTick();
+        robot2.run(program);
+
+        // then
+        assertEquals(expected, String.join("", target.getKeysPressed()));
+    }
+
+
+    @ParameterizedTest
     @MethodSource("testingOutputToGetCode")
     void checkingOutput(final String program, final String code) {
+
+        // Eric  Arguments.of("<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A", "379A"),
+        // me    Arguments.of("v<<A>>^AvA^Av<<A>>^AAv<A<A>>^AAvAA<^A>Av<A>^AA<A>Av<A<A>>^AAAvA<^A>A", "379A")
 
         // given
         final NumericKeypad target = new NumericKeypad("target");
@@ -80,27 +121,7 @@ class Year2024Day21Test {
         // then
         assertEquals(code, String.join("", target.getKeysPressed()));
     }
-
-    @Test
-    void buildStateForNumpad() {
-
-        // given
-        final Year2024Day21 year2024Day21 = new Year2024Day21();
-        final String from = "3";
-        final String to = "4";
-        final Year2024Day21.State expected = new Year2024Day21.State();
-        expected.initialLocation = from;
-        expected.finalLocation = to;
-        expected.requiredPress = to; // this may / may not be redundant ?
-        expected.presses = "<<^A";
-
-        // when
-        final Year2024Day21.State actual = year2024Day21.buildStateForNumpad(from, to);
-
-        // then
-        assertEquals(expected, actual);
-    }
-
+    
     @ParameterizedTest
     @MethodSource("numberMovement")
     void buildPressesForNumberMovement(final String from, final String to, final String expected) {
@@ -110,25 +131,6 @@ class Year2024Day21Test {
 
         // when
         final String actual = year2024Day21.buildPressesForNumberMovement(from, to);
-
-        // then
-        assertEquals(expected, actual);
-    }
-
-    @ParameterizedTest
-    @MethodSource("dirpadMovement")
-    void buildStateForDirpad(final String from, final String to, final String expectedPresses) {
-
-        // given
-        final Year2024Day21 year2024Day21 = new Year2024Day21();
-        final Year2024Day21.State expected = new Year2024Day21.State();
-        expected.initialLocation = from;
-        expected.finalLocation = to;
-        expected.requiredPress = to; // this may / may not be redundant ?
-        expected.presses = expectedPresses;
-
-        // when
-        final Year2024Day21.State actual = year2024Day21.buildStateForDirpad(from, to);
 
         // then
         assertEquals(expected, actual);
@@ -170,6 +172,21 @@ class Year2024Day21Test {
         System.out.println(target.getKeysPressed());
     }
 
+    @Test
+    void testOneLevelBuilding() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String code = "0";
+        final String expected = "v<A<AA>>^AvAA<^A>A"; // I think ..
+
+        // when
+        final String actual = year2024Day21.fullSequence(code);
+
+        // then
+        assertEquals(expected, actual);
+    }
+
     static List<Arguments> numberMovement() {
 
         return List.of(
@@ -181,17 +198,6 @@ class Year2024Day21Test {
                 Arguments.of("8", "1", "vv<A"),
                 Arguments.of("A", "1", "^<<A"),
                 Arguments.of("1", "A", ">>vA")
-        );
-    }
-
-    static List<Arguments> dirpadMovement() {
-
-        return List.of(
-                Arguments.of("A", "^", "<A"),
-                Arguments.of("A", "<", "v<<A"),
-                Arguments.of("<", "A", ">>^A"),
-                Arguments.of("v", "^", "^A"),
-                Arguments.of("^", ">", "v>A")
         );
     }
 
@@ -230,6 +236,24 @@ class Year2024Day21Test {
         return List.of(
                 Arguments.of("<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A", "379A"),
                 Arguments.of("v<<A>>^AvA^Av<<A>>^AAv<A<A>>^AAvAA<^A>Av<A>^AA<A>Av<A<A>>^AAAvA<^A>A", "379A")
+        );
+    }
+
+    static List<Arguments> exploringOneDirpadOptions() {
+
+        return List.of(
+                Arguments.of("0", "v<<A>>^A"),
+                Arguments.of("3", "<A>A"),
+                Arguments.of("2", "v<<A>^A>A"),
+                Arguments.of("23", "v<<A>^A>AvA^A")
+        );
+    }
+
+    static List<Arguments> exploringTwoDirpadOptions() {
+
+        return List.of(
+                Arguments.of("0", "v<A<AA>>^AvAA<^A>A"),
+                Arguments.of("029A", "<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A")
         );
     }
 }

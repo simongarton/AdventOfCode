@@ -12,6 +12,8 @@ public class DirectionalKeypad extends Keypad {
     @Getter
     private Map<String, Map<String, String>> movements;
 
+    private String currentLetter;
+
     final DirectionalKeypad nextDirectionalKeyPad;
     final NumericKeypad numericKeypad;
 
@@ -23,6 +25,7 @@ public class DirectionalKeypad extends Keypad {
 
         this.movements = new HashMap<>();
         this.setupMovements();
+        this.currentLetter = ACTIVATE;
 
         this.nextDirectionalKeyPad = nextDirectionalKeyPad;
         if (nextDirectionalKeyPad != null) {
@@ -52,7 +55,9 @@ public class DirectionalKeypad extends Keypad {
         if (!movement.containsKey(this.currentLetter)) {
             throw new RuntimeException("invalid movement for key " + key + " from position " + this.currentLetter);
         }
+        final String oldPosition = this.currentLetter;
         this.currentLetter = movement.get(this.currentLetter);
+        Radio.broadcast(this, "press " + key + ": " + oldPosition + " -> " + this.currentLetter);
     }
 
     @Override
@@ -97,26 +102,14 @@ public class DirectionalKeypad extends Keypad {
     public void activate() {
 
         this.getKeysPressed().add(this.currentLetter);
-        Radio.broadcast(this, this.currentLetter);
+        final String key = "A";
+        Radio.broadcast(this, "press " + key + ": " + this.currentLetter + " activated");
         if (this.nextDirectionalKeyPad != null) {
             this.nextDirectionalKeyPad.press(this.currentLetter);
         }
         if (this.numericKeypad != null) {
             this.numericKeypad.press(this.currentLetter);
         }
-    }
-
-    @Override
-    public List<String> damnItIllDoItMyself(final String commandNeeded, final Map<Keypad, String> status) {
-
-        System.out.println("I  (" + this.getName() + ") need to do this myself : " + commandNeeded);
-
-        if (this.numericKeypad != null) {
-            return this.getCommandsForNumericKeypad(this.numericKeypad, commandNeeded, status);
-        }
-
-        return this.getCommandsForDirectionalKeypad(this.nextDirectionalKeyPad, commandNeeded, status);
-
     }
 
     @Override
@@ -142,7 +135,7 @@ public class DirectionalKeypad extends Keypad {
             final Map<Keypad, String> status) {
 
         // ok where am I on the num pad
-        final String myPosition = numericKeypad.currentLetter;
+        final String myPosition = numericKeypad.getCurrentLetter();
 
         // and where do I need to go to ?
         final String myNextPosition = commandNeeded;

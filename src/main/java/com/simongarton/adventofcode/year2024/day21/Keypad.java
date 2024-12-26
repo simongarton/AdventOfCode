@@ -18,8 +18,6 @@ public abstract class Keypad {
     protected int level;
     @Getter
     protected String name;
-    @Getter
-    protected String currentLetter = ACTIVATE;
     protected DirectionalKeypad controller;
 
     @Getter
@@ -55,46 +53,6 @@ public abstract class Keypad {
         this.getMovements().put(DOWN, this.getPositionsForDown());
         this.getMovements().put(LEFT, this.getPositionsForLeft());
     }
-
-
-    public Program getProgramFor(final List<String> commandsNeeded, final Map<Keypad, String> status) {
-
-        // same as the other !
-
-        // first I need to build my tree
-        Keypad nestedKeypad = this;
-        Keypad topLevel = null;
-        System.out.println("I am " + nestedKeypad);
-        while (nestedKeypad.getController() != null) {
-            System.out.println(" and am controlled by " + nestedKeypad.getController());
-            nestedKeypad = nestedKeypad.getController();
-            topLevel = nestedKeypad;
-        }
-
-        // now I need to figure out some commands
-        System.out.println("I (" + this.name + ") need to do this : " + commandsNeeded);
-        final List<String> commands = new ArrayList();
-        for (final String commandNeeded : commandsNeeded) {
-            commands.addAll(this.buildCommandsRecursivelyFor(commandNeeded, status));
-        }
-        return new Program(topLevel, commands);
-    }
-
-    private List<String> buildCommandsRecursivelyFor(final String commandNeeded,
-                                                     final Map<Keypad, String> status) {
-
-        if (this.getController() == null) {
-            return this.damnItIllDoItMyself(commandNeeded, status);
-        }
-
-        final List<String> commands = new ArrayList<>();
-        // I need you, my controller, to tell me what you have to have pressed, to get this command.
-        System.out.println("  I (" + this.name + ") need my controller (" + this.getController().name + ") to do this one key press: " + commandNeeded);
-        commands.addAll(this.getController().buildCommandsRecursivelyFor(commandNeeded, status));
-        return commands;
-    }
-
-    abstract List<String> damnItIllDoItMyself(final String commandNeeded, final Map<Keypad, String> status);
 
     @Override
     public String toString() {
