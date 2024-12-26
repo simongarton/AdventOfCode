@@ -8,16 +8,6 @@ import java.util.List;
 
 public class Year2024Day21 extends AdventOfCodeChallenge {
 
-    /*
-    testOneLevelBuilding()
-    org.opentest4j.AssertionFailedError:
-    Expected :v<A<AA>>^AvAA<^A>A
-    Actual   :v<A<AA>>^AAA^<A>A
-
-    Super close - think I need to build a simulator to see what things are doing, why does it go wrong halfway through ?
-    */
-
-
     @Override
     public String title() {
         return "Day 21: Keypad Conundrum";
@@ -117,10 +107,10 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         if (startCol == endCol) {
             final DirectionHeading heading = this.upOrDown(startRow, endRow); // UP or DOWN
-            return new DirectionPlan(heading, 0, verticalMoves);
+            return new DirectionPlan(heading, verticalMoves, 0);
         }
 
-        final boolean horizontalFirst = !(startRow == 3 && startCol == 1);
+        final boolean horizontalFirst = !(startRow == 3 && startCol == 1 && endCol == 0);
 
         if (startCol > endCol) { // must go left
             if (startRow < endRow) { // must go down
@@ -177,10 +167,12 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         if (startCol == endCol) {
             final DirectionHeading heading = this.upOrDown(startRow, endRow); // UP or DOWN
-            return new DirectionPlan(heading, 0, verticalMoves);
+            return new DirectionPlan(heading, verticalMoves, 0);
         }
 
-        final boolean horizontalFirst = (startRow == 1 && startCol == 0);
+        // I want to go horizontal first.
+        // I can do that unless I am on the top row AND moving left as far as 0
+        final boolean horizontalFirst = !((startRow == 0) && (endCol < startCol) && (endCol == 0));
 
         if (startCol > endCol) {
             if (startRow < endRow) {
@@ -295,6 +287,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         for (int i = 0; i < numpadMoves.length(); i++) {
             final String neededKey = numpadMoves.substring(i, i + 1);
             final String numpadPresses = this.buildPressesForDirpadRobot1(currentRobotLocation, neededKey);
+//            System.out.println("for numpad " + neededKey + " I got " + numpadPresses);
             fullSequence.append(numpadPresses);
             currentRobotLocation = neededKey;
         }
@@ -314,8 +307,9 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         String currentRobotLocation = "A";
         for (int i = 0; i < dirpadMoves.length(); i++) {
             final String neededKey = dirpadMoves.substring(i, i + 1);
-            final String numpadPresses = this.buildPressesForDirpadRobot2(currentRobotLocation, neededKey);
-            fullSequence.append(numpadPresses);
+            final String dirpadPresses = this.buildPressesForDirpadRobot2(currentRobotLocation, neededKey);
+//            System.out.println("  for dirpad " + neededKey + " I got " + dirpadPresses);
+            fullSequence.append(dirpadPresses);
             currentRobotLocation = neededKey;
         }
 
@@ -326,7 +320,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         // these are the moves I need to make around the current dirpad
         final DirectionPlan directionPlan = this.figureDirectionPlanForDirpad(startingLocation, finalLocation);
-
+//        System.out.println("    " + directionPlan);
         return this.dirpadPressesForPlan(directionPlan);
     }
 
