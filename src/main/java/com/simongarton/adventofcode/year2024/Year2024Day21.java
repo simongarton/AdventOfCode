@@ -25,11 +25,27 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         // 142688 too high
         // 72966 too low
 
+        // Dec 27 : 145240 wrong but sample is still working at 126384
+
+        /*
+
+        This is from part 1.
+
+        140A: <v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>>^AAvA<^A>A<vA>^A<A>A
+        180A: <v<A>>^A<vA<A>>^AAvAA<^A>A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A<vA>^A<A>A
+        176A: <v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<v<A>>^AvA<^A>A<v<A>A>^AAvA<^A>A
+        805A: <vA<AA>>^AvA<^A>AAAvA^A<v<A>A>^AAAvA<^A>A<v<A>>^AAvA^A<vA>^A<v<A>>^AAvA<^A>A
+        638A: <v<A>>^AAvA^A<v<A>A>^AvA<^A>A<vA<AA>>^AvA<^A>AAvA^A<vA>^A<v<A>>^AAAvA<^A>A
+
+         */
+
         int total = 0;
         for (final String numericCode : input) {
             final String fullSequence = this.fullSequence(numericCode);
             final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
             total += numericPart * fullSequence.length();
+            System.out.println(fullSequence);
+            System.out.println("  " + numericCode + ": " + numericPart + " * " + fullSequence.length() + " = " + numericPart * fullSequence.length());
         }
         return String.valueOf(total);
     }
@@ -110,7 +126,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             return new DirectionPlan(heading, verticalMoves, 0);
         }
 
-        final boolean horizontalFirst = !(startRow == 3 && startCol == 1 && endCol == 0);
+        final boolean horizontalFirst = !(startRow == 3 && endRow < 3 && endCol == 0);
 
         if (startCol > endCol) { // must go left
             if (startRow < endRow) { // must go down
@@ -321,6 +337,11 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         // these are the moves I need to make around the current dirpad
         final DirectionPlan directionPlan = this.figureDirectionPlanForDirpad(startingLocation, finalLocation);
 //        System.out.println("    " + directionPlan);
+
+        // hack
+        if (startingLocation.equalsIgnoreCase("A") && finalLocation.equalsIgnoreCase("<")) {
+            return "<v<A";
+        }
         return this.dirpadPressesForPlan(directionPlan);
     }
 

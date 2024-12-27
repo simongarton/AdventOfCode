@@ -53,6 +53,43 @@ class Year2024Day21Test {
     }
 
     @ParameterizedTest
+    @MethodSource("sampleSequences")
+    void driveFullSequences(final String code, final String expected) {
+
+        // given
+        final NumericKeypad target = new NumericKeypad("target");
+        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, target);
+        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", 2, robot1, null);
+
+        // when
+        Radio.resetTick();
+        robot2.run(expected);
+
+        // then
+        assertEquals(code, String.join("", target.getKeysPressed()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("sampleSequences")
+    void generateThenDriveFullSequencesAndJustCheckOutput(final String code, final String expected) {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String program = year2024Day21.fullSequence(code);
+        final NumericKeypad target = new NumericKeypad("target");
+        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, target);
+        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", 2, robot1, null);
+
+        // when
+        Radio.resetTick();
+        robot2.run(program);
+
+        // then
+        assertEquals(code, String.join("", target.getKeysPressed()));
+//        assertEquals(expected, program);
+    }
+
+    @ParameterizedTest
     @MethodSource("exploringOneDirpadOptions")
     void exploringOneDirpad(final String expected, final String program) {
 
@@ -118,24 +155,6 @@ class Year2024Day21Test {
     }
 
     @ParameterizedTest
-    @MethodSource("sampleSequences")
-    void driveFullSequences(final String code, final String expected) {
-
-        // given
-        final Year2024Day21 year2024Day21 = new Year2024Day21();
-        final NumericKeypad target = new NumericKeypad("target");
-        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, target);
-        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", 2, robot1, null);
-
-        // when
-        Radio.resetTick();
-        robot2.run(expected);
-
-        // then
-        assertEquals(code, String.join("", target.getKeysPressed()));
-    }
-
-    @ParameterizedTest
     @MethodSource("numberMovement")
     void buildPressesForNumberMovement(final String from, final String to, final String expected) {
 
@@ -190,8 +209,9 @@ class Year2024Day21Test {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
-        final String code = "0";
-        final String expected = "<vA<AA>>^AvAA<^A>A"; // tested OK
+        final String code = "179A";
+        final String expected = "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A";
+//        final String expected = "<vA<AA>>^AAvA<^A>AvA^A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A";
 
         // when
         final String actual = year2024Day21.fullSequence(code);
@@ -229,11 +249,13 @@ class Year2024Day21Test {
         final NumericKeypad target = new NumericKeypad("target");
         final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, target);
         final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", 2, robot1, null);
-        final String program = "<vA<AA>>^AvAA<^A>A";
-        final String expected = "0";
+        // lovely
+        final String program = "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A";
+//        final String program = "<vA<AA>>^AAvA<^A>AvA^A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A";
+        final String expected = "179A";
 
 //        this.setUpLanterna(64, 16);
-
+//
 //        target.setScreen(this.screen, 2, 7);
 //        robot1.setScreen(this.screen, 12, 8);
 //        robot2.setScreen(this.screen, 22, 9);
@@ -340,6 +362,5 @@ class Year2024Day21Test {
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
