@@ -249,9 +249,7 @@ class Year2024Day21Test {
         final NumericKeypad target = new NumericKeypad("target");
         final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, target);
         final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", 2, robot1, null);
-        // lovely
         final String program = "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A";
-//        final String program = "<vA<AA>>^AAvA<^A>AvA^A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A";
         final String expected = "179A";
 
 //        this.setUpLanterna(64, 16);
@@ -267,6 +265,38 @@ class Year2024Day21Test {
         // then
         assertEquals(expected, String.join("", target.getKeysPressed()));
     }
+
+    @ParameterizedTest
+    @MethodSource("part1")
+    void checkNumpadPaths(final String code) {
+
+        // given
+        final NumericKeypad target = new NumericKeypad("target");
+        final DirectionalKeypad robot1 = new DirectionalKeypad("robot1", 1, null, target);
+        final DirectionalKeypad robot2 = new DirectionalKeypad("robot2", 2, robot1, null);
+
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String program = year2024Day21.fullSequence(code);
+
+        // when
+        robot2.run(program);
+
+        // then
+        System.out.println(target.getCompleteProgram());
+
+    }
+
+    static List<Arguments> part1() {
+
+        return List.of(
+                Arguments.of("140A"),
+                Arguments.of("180A"),
+                Arguments.of("176A"),
+                Arguments.of("805A"),
+                Arguments.of("638A")
+        );
+    }
+
 
     static List<Arguments> numberMovement() {
 

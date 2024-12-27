@@ -26,6 +26,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         // 72966 too low
 
         // Dec 27 : 145240 wrong but sample is still working at 126384
+        // other code, I know the answer is 138764
+        // how do I make my code get to that answer ?
 
         /*
 
@@ -36,6 +38,12 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         176A: <v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<v<A>>^AvA<^A>A<v<A>A>^AAvA<^A>A
         805A: <vA<AA>>^AvA<^A>AAAvA^A<v<A>A>^AAAvA<^A>A<v<A>>^AAvA^A<vA>^A<v<A>>^AAvA<^A>A
         638A: <v<A>>^AAvA^A<v<A>A>^AvA<^A>A<vA<AA>>^AvA<^A>AAvA^A<vA>^A<v<A>>^AAAvA<^A>A
+
+        I've looked at the Numpad sequences and they look sane.
+        I don't yet get why the Dirpad sequences make a difference.
+        And given the sample is perfect ...
+
+        "t doesn't matter. The last digit of every code is A. Making the final robot press A involves every other robot in the chain pressing A. So at the point you finish entering any one of the codes, every single robot is back in the starting position. Therefore you can treat the codes entirely independently."
 
          */
 
