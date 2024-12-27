@@ -29,6 +29,9 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         // other code, I know the answer is 138764
         // how do I make my code get to that answer ?
 
+        // tried this, made it worse on numpad, and dirpad never seems to hit it
+        // https://www.reddit.com/r/adventofcode/comments/1hjgyps/2024_day_21_part_2_i_got_greedyish/
+
         /*
 
         This is from part 1.
@@ -43,7 +46,13 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         I don't yet get why the Dirpad sequences make a difference.
         And given the sample is perfect ...
 
-        "t doesn't matter. The last digit of every code is A. Making the final robot press A involves every other robot in the chain pressing A. So at the point you finish entering any one of the codes, every single robot is back in the starting position. Therefore you can treat the codes entirely independently."
+        "It doesn't matter. The last digit of every code is A. Making the final robot press A involves every other robot in the chain pressing A. So at the point you finish entering any one of the codes, every single robot is back in the starting position. Therefore you can treat the codes entirely independently."
+
+        And I have seen people iterating over sample moves.
+        So I could build a list of sample moves for the numpad
+        And for those I could build a list of moves for the first dir pad.
+        And for those I could build a list of moves for the second dir pad.
+        And BFS that out for the cheapest path.
 
          */
 
@@ -274,7 +283,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     private DirectionHeading leftOrRight(final int startCol, final int endCol) {
 
-        if (startCol < endCol) {
+        if (startCol <= endCol) {
             return DirectionHeading.RIGHT;
         }
         if (startCol > endCol) {
