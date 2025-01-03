@@ -39,6 +39,38 @@ class Year2024Day21Test {
         );
     }
 
+    // this is now timing out, as do other things on level 3
+
+    @Test
+    void singleSampleValueTest() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String numericCode = "029A";
+        final String expected = "<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A";
+
+        // when
+        final String sequence = year2024Day21.shortestFullSequence(numericCode);
+
+        // then
+        assertEquals(expected, sequence);
+    }
+
+    @Test
+    void singleDigitValueTest() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String numericCode = "0";
+        final String expected = "<vA<AA>>^AvAA<^A>A"; // this matches the beginning of the sample
+
+        // when
+        final String sequence = year2024Day21.shortestFullSequence(numericCode);
+
+        // then
+        assertEquals(expected, sequence);
+    }
+
     @ParameterizedTest
     @MethodSource("numPadPathValues")
     void getNumPadPaths(final String from, final String to, final List<String> expected) {
@@ -128,9 +160,11 @@ class Year2024Day21Test {
 
         // when
         final Year2024Day21.Node actual = year2024Day21.buildNodeForNumericSequence(sequence, robotLevel);
+        final String shortestSequence = year2024Day21.shortestKeypadSequenceForNode(actual, robotLevel);
 
         // then
         assertNotNull(actual);
+        assertEquals(expected, shortestSequence);
     }
 
     static List<Arguments> buildNodeForNumericSequenceValues() {
@@ -140,7 +174,12 @@ class Year2024Day21Test {
                 Arguments.of("2", 1, "<^A"),
                 Arguments.of("1", 1, "<^<A"),
 
-                Arguments.of("378A", 1, "^A<<^^A>A>vvvA")
+                Arguments.of("378A", 1, "^A<<^^A>A>vvvA"),
+
+                Arguments.of("3", 2, "<A>A"),
+                Arguments.of("3", 3, "<v<A>>^AvA^A"), // this looks really good, so I'm happy here
+                Arguments.of("32", 1, "^A<A"),
+                Arguments.of("32", 2, "<A>A<v<A>>^A")
         );
     }
 
@@ -164,34 +203,53 @@ class Year2024Day21Test {
         for (final Map.Entry<Integer, Integer> entry : levelData.entrySet()) {
             assertEquals(entry.getValue(), actual.get(entry.getKey()).size());
         }
+        for (final Map.Entry<Integer, List<Year2024Day21.Node>> entry : actual.entrySet()) {
+            assertEquals(entry.getValue().size(), levelData.get(entry.getKey()));
+        }
     }
 
     static List<Arguments> buildLevelsForNumericSequenceValues() {
 
         return List.of(
-                Arguments.of("3", 1, 2, Map.of(0, 1, 1, 3), "^A"),
-                Arguments.of("378A", 1, 2, Map.of(0, 1, 1, 216), "^A<<^^A>A>vvvA"),
-                Arguments.of("2", 1, 2, Map.of(0, 1, 1, 4), "<^A")
+                Arguments.of("3", 1, 2, Map.of(0, 1, 1, 1), "^A"),
+                Arguments.of("378A", 1, 2, Map.of(0, 1, 1, 24), "^A<<^^A>A>vvvA"),
+                Arguments.of("2", 1, 2, Map.of(0, 1, 1, 2), "<^A"),
+                Arguments.of("3", 2, 3, Map.of(0, 1, 1, 1, 2, 4), "<A>A"),
+                Arguments.of("3", 3, 4, Map.of(0, 1, 1, 1, 2, 4, 3, 240), "<v<A>>^AvA^A")
         );
     }
 
     @ParameterizedTest
-    @MethodSource("buildLevelsForNumericSequenceValues")
+    @MethodSource("shortestKeypadSequenceValues")
     void shortestKeypadSequence(final String sequence,
                                 final int robotLevel,
-                                final int levels,
-                                final Map<Integer, Integer> levelData,
                                 final String expected) {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
 
         // when
-        final Year2024Day21.Node node = year2024Day21.buildNodeForNumericSequence(sequence, robotLevel);
         final String actual = year2024Day21.shortestKeypadSequence(sequence, robotLevel);
 
         // then
         assertEquals(expected, actual);
+    }
+
+    static List<Arguments> shortestKeypadSequenceValues() {
+
+        return List.of(
+                Arguments.of("3", 1, "^A"),
+                Arguments.of("378A", 1, "^A<<^^A>A>vvvA"),
+                Arguments.of("2", 1, "<^A"),
+                Arguments.of("3", 2, "<A>A"),
+                Arguments.of("3", 3, "<v<A>>^AvA^A"),
+                Arguments.of("7", 1, "<^<^^A"),
+                Arguments.of("7", 2, "<AAAv<AA>>^A"),
+//                Arguments.of("7", 3, "^A"),
+                Arguments.of("0", 1, "<A"),
+                Arguments.of("0", 2, "<v<A>>^A")
+//                Arguments.of("0", 3, "^A")
+        );
     }
 
 }
