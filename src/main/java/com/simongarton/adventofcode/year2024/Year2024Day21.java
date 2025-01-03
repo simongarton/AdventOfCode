@@ -1,12 +1,28 @@
 package com.simongarton.adventofcode.year2024;
 
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
-import com.simongarton.adventofcode.year2024.day21.DirectionHeading;
-import com.simongarton.adventofcode.year2024.day21.DirectionPlan;
 
-import java.util.List;
+import java.util.*;
 
 public class Year2024Day21 extends AdventOfCodeChallenge {
+
+    /*
+
+    I don't think I can ever have weird non-shortest paths on the dirpad cos only two rows, can't leave and come back
+
+     */
+
+    private Map<String, Map<String, List<String>>> numPadSequences;
+    private Map<String, Map<String, List<String>>> dirPadSequences;
+
+    private final List<String> numPadButtons = List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A");
+    private final List<String> dirPadButtons = List.of("<", ">", "^", "v", "A");
+
+    public Year2024Day21() {
+
+        super();
+        this.setupSequences();
+    }
 
     @Override
     public String title() {
@@ -21,41 +37,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        // 147756 too high
-        // 142688 too high
-        // 72966 too low
-
-        // Dec 27 : 145240 wrong but sample is still working at 126384
-        // other code, I know the answer is 138764
-        // how do I make my code get to that answer ?
-
-        // tried this, made it worse on numpad, and dirpad never seems to hit it
-        // https://www.reddit.com/r/adventofcode/comments/1hjgyps/2024_day_21_part_2_i_got_greedyish/
-
-        /*
-
-        This is from part 1.
-
-        140A: <v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>>^AAvA<^A>A<vA>^A<A>A
-        180A: <v<A>>^A<vA<A>>^AAvAA<^A>A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A<vA>^A<A>A
-        176A: <v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<v<A>>^AvA<^A>A<v<A>A>^AAvA<^A>A
-        805A: <vA<AA>>^AvA<^A>AAAvA^A<v<A>A>^AAAvA<^A>A<v<A>>^AAvA^A<vA>^A<v<A>>^AAvA<^A>A
-        638A: <v<A>>^AAvA^A<v<A>A>^AvA<^A>A<vA<AA>>^AvA<^A>AAvA^A<vA>^A<v<A>>^AAAvA<^A>A
-
-        I've looked at the Numpad sequences and they look sane.
-        I don't yet get why the Dirpad sequences make a difference.
-        And given the sample is perfect ...
-
-        "It doesn't matter. The last digit of every code is A. Making the final robot press A involves every other robot in the chain pressing A. So at the point you finish entering any one of the codes, every single robot is back in the starting position. Therefore you can treat the codes entirely independently."
-
-        And I have seen people iterating over sample moves.
-        So I could build a list of sample moves for the numpad
-        And for those I could build a list of moves for the first dir pad.
-        And for those I could build a list of moves for the second dir pad.
-        And BFS that out for the cheapest path.
-
-         */
-
         int total = 0;
         for (final String numericCode : input) {
             final String fullSequence = this.fullSequence(numericCode);
@@ -67,422 +48,326 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         return String.valueOf(total);
     }
 
-    private void generateMovesForTesting() {
+    private void setupSequences() {
 
-        final List<String> keys = List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "A");
-        for (final String from : keys) {
-            for (final String to : keys) {
-                if (from.equalsIgnoreCase(to)) {
-                    continue;
-                }
-                final DirectionPlan directionPlan = this.figureDirectionPlanForNumpad(from, to);
-                System.out.println(from + "->" + to + " " + directionPlan + " " + this.dirpadPressesForPlan(directionPlan));
-            }
-        }
+        this.setupNumPadSequences();
+        this.setupDirPadSequences();
+    }
 
-        final List<String> dirpadKeys = List.of(">", "<", "^", "v", "A");
-        for (final String from : dirpadKeys) {
-            for (final String to : dirpadKeys) {
-                if (from.equalsIgnoreCase(to)) {
-                    continue;
-                }
-                final DirectionPlan directionPlan = this.figureDirectionPlanForDirpad(from, to);
-                System.out.println(from + "->" + to + " " + directionPlan + " " + this.dirpadPressesForPlan(directionPlan));
+    private void setupDirPadSequences() {
+
+        this.dirPadSequences = new HashMap<>();
+        for (final String from : this.dirPadButtons) {
+            this.dirPadSequences.put(from, new HashMap<>());
+            final Map<String, List<String>> currentMap = this.dirPadSequences.get(from);
+            for (final String to : this.dirPadButtons) {
+                final List<String> paths = this.getDirPadPaths(from, to);
+                currentMap.put(to, paths);
             }
         }
     }
 
-    private String dirpadPressesForPlan(final DirectionPlan directionPlan) {
+    private void setupNumPadSequences() {
 
-        String presses = this.getDirpadPressesFirst(directionPlan.getHeading(), directionPlan.getFirstMoves());
-        presses = presses + this.getDirpadPressesSecond(directionPlan.getHeading(), directionPlan.getSecondMoves());
-        presses = presses + "A";
-        return presses;
+        this.numPadSequences = new HashMap<>();
+        for (final String from : this.numPadButtons) {
+            this.numPadSequences.put(from, new HashMap<>());
+            final Map<String, List<String>> currentMap = this.numPadSequences.get(from);
+            for (final String to : this.numPadButtons) {
+                final List<String> paths = this.getNumPadPaths(from, to);
+                currentMap.put(to, paths);
+            }
+        }
     }
 
-    private String getDirpadPressesFirst(final DirectionHeading heading, final int firstMoves) {
+    public List<String> getNumPadPaths(final String start, final String end) {
 
-        return switch (heading) {
-            case LEFT, LEFT_UP, LEFT_DOWN -> "<".repeat(firstMoves);
-            case RIGHT, RIGHT_UP, RIGHT_DOWN -> ">".repeat(firstMoves);
-            case UP, UP_LEFT, UP_RIGHT -> "^".repeat(firstMoves);
-            case DOWN, DOWN_LEFT, DOWN_RIGHT -> "v".repeat(firstMoves);
+        final Node a = new Node(start, null, null);
+        final List<Node> visited = new ArrayList<>();
+        final List<Node> available = new ArrayList<>(this.numpadNeighboursFor(a, visited));
+        visited.add(a);
+        final List<Node> success = new ArrayList<>();
+
+        while (!available.isEmpty()) {
+            final Node current = available.removeFirst();
+            visited.add(current);
+            if (current.key.equalsIgnoreCase(end)) {
+                success.add(current);
+                continue;
+            }
+            available.addAll(this.numpadNeighboursFor(current, visited));
+        }
+
+        final List<String> sequences = new ArrayList<>();
+        for (final Node node : success) {
+            sequences.add(this.buildSequence(node));
+        }
+        return sequences;
+    }
+
+    public List<String> getDirPadPaths(final String start, final String end) {
+
+        // BFS
+        final Node a = new Node(start, null, null);
+        final List<Node> visited = new ArrayList<>();
+        final List<Node> available = new ArrayList<>(this.dirpadNeighboursFor(a, visited));
+        visited.add(a);
+        final List<Node> success = new ArrayList<>();
+
+        while (!available.isEmpty()) {
+            final Node current = available.removeFirst();
+            visited.add(current);
+            if (current.key.equalsIgnoreCase(end)) {
+                success.add(current);
+                continue;
+            }
+            available.addAll(this.dirpadNeighboursFor(current, visited));
+        }
+
+        final List<String> sequences = new ArrayList<>();
+        for (final Node node : success) {
+            sequences.add(this.buildSequence(node));
+        }
+        return sequences;
+    }
+
+    private String buildSequence(final Node node) {
+
+        final StringBuilder sequence = new StringBuilder();
+        Node current = node;
+        while (current != null) {
+            if (current.direction != null) {
+                sequence.append(current.direction);
+            }
+            current = current.previous;
+        }
+        return sequence.reverse() + "A";
+    }
+
+    private List<Node> numpadNeighboursFor(final Node current, final List<Node> visited) {
+
+        final List<List<String>> neighbourLists = this.numpadNeighbours(current.key);
+        final List<String> keys = neighbourLists.get(0);
+        final List<String> directions = neighbourLists.get(1);
+
+        final List<Node> neighbours = new ArrayList<>();
+        for (int i = 0; i < keys.size(); i++) {
+            final String key = keys.get(i);
+            final String direction = directions.get(i);
+            if (visited.stream().anyMatch(n -> this.visitedNeighbour(n, key, direction))) {
+                continue;
+            }
+            final Node node = new Node(key, direction, current);
+            neighbours.add(node);
+        }
+
+        return neighbours;
+    }
+
+    private List<Node> dirpadNeighboursFor(final Node current, final List<Node> visited) {
+
+        final List<List<String>> neighbourLists = this.dirpadNeighbours(current.key);
+        final List<String> keys = neighbourLists.get(0);
+        final List<String> directions = neighbourLists.get(1);
+
+        final List<Node> neighbours = new ArrayList<>();
+        for (int i = 0; i < keys.size(); i++) {
+            final String key = keys.get(i);
+            final String direction = directions.get(i);
+            if (visited.stream().anyMatch(n -> this.visitedNeighbour(n, key, direction))) {
+                continue;
+            }
+            final Node node = new Node(key, direction, current);
+            neighbours.add(node);
+        }
+
+        return neighbours;
+    }
+
+    private boolean visitedNeighbour(final Node n, final String key, final String direction) {
+
+        if (!(n.key.equalsIgnoreCase(key))) {
+            return false;
+        }
+        if (n.direction == null) {
+            return true; // I came from here
+        }
+        if (!(n.direction.equalsIgnoreCase(direction))) {
+            return false;
+        }
+        return true;
+    }
+
+    private List<List<String>> numpadNeighbours(final String start) {
+
+        return switch (start) {
+            case "A" -> List.of(List.of("0", "3"), List.of("<", "^"));
+            case "0" -> List.of(List.of("A", "2"), List.of(">", "^"));
+            case "1" -> List.of(List.of("2", "4"), List.of(">", "^"));
+            case "2" -> List.of(List.of("0", "1", "3", "5"), List.of("v", "<", ">", "^"));
+            case "3" -> List.of(List.of("A", "2", "6"), List.of("v", "<", "^"));
+            case "4" -> List.of(List.of("1", "5", "7"), List.of("v", ">", "^"));
+            case "5" -> List.of(List.of("2", "4", "6", "8"), List.of("v", "<", ">", "^"));
+            case "6" -> List.of(List.of("3", "5", "9"), List.of("v", "<", "^"));
+            case "7" -> List.of(List.of("4", "8"), List.of("v", ">"));
+            case "8" -> List.of(List.of("5", "7", "9"), List.of("v", "<", ">"));
+            case "9" -> List.of(List.of("6", "8"), List.of("v", "<"));
+            default -> throw new RuntimeException("oops");
         };
     }
 
-    private String getDirpadPressesSecond(final DirectionHeading heading, final int secondMoves) {
-
-        return switch (heading) {
-            case UP, DOWN, LEFT, RIGHT -> "";
-            case UP_LEFT, DOWN_LEFT -> "<".repeat(secondMoves);
-            case UP_RIGHT, DOWN_RIGHT -> ">".repeat(secondMoves);
-            case LEFT_DOWN, RIGHT_DOWN -> "v".repeat(secondMoves);
-            case LEFT_UP, RIGHT_UP -> "^".repeat(secondMoves);
+    private List<List<String>> dirpadNeighbours(final String start) {
+        return switch (start) {
+            case "A" -> List.of(List.of("^", ">"), List.of("<", "v"));
+            case "^" -> List.of(List.of("A", "v"), List.of(">", "v"));
+            case "<" -> List.of(List.of("v"), List.of(">"));
+            case "v" -> List.of(List.of("<", "^", ">"), List.of("<", "^", ">"));
+            case ">" -> List.of(List.of("A", "v"), List.of("^", "<"));
+            default -> throw new RuntimeException("oops");
         };
-    }
-
-    private DirectionPlan figureDirectionPlanForNumpad(final String startingLocation, final String finalLocation) {
-
-        // origin top left
-
-        final int startRow = this.findNumberRow(startingLocation);
-        final int endRow = this.findNumberRow(finalLocation);
-        final int startCol = this.findNumberCol(startingLocation);
-        final int endCol = this.findNumberCol(finalLocation);
-
-        final int verticalMoves = Math.abs(startRow - endRow);
-        final int horizontalMoves = Math.abs(startCol - endCol);
-
-        if (startRow == endRow) {
-            final DirectionHeading heading = this.leftOrRight(startCol, endCol); // LEFT or RIGHT
-            return new DirectionPlan(heading, horizontalMoves, 0);
-        }
-
-        if (startCol == endCol) {
-            final DirectionHeading heading = this.upOrDown(startRow, endRow); // UP or DOWN
-            return new DirectionPlan(heading, verticalMoves, 0);
-        }
-
-        final boolean horizontalFirst = !(startRow == 3 && endRow < 3 && endCol == 0);
-
-        if (startCol > endCol) { // must go left
-            if (startRow < endRow) { // must go down
-                if (horizontalFirst) {
-                    return new DirectionPlan(DirectionHeading.LEFT_DOWN, horizontalMoves, verticalMoves);
-                } else {
-                    return new DirectionPlan(DirectionHeading.DOWN_LEFT, verticalMoves, horizontalMoves);
-                }
-            } else { // must go up
-                if (horizontalFirst) {
-                    return new DirectionPlan(DirectionHeading.LEFT_UP, horizontalMoves, verticalMoves);
-                } else {
-                    return new DirectionPlan(DirectionHeading.UP_LEFT, verticalMoves, horizontalMoves);
-                }
-            }
-        }
-
-        // I will be going right, but could be 0 moves
-
-        if (startRow < endRow) { // must go down
-            if (horizontalFirst) {
-                return new DirectionPlan(DirectionHeading.RIGHT_DOWN, horizontalMoves, verticalMoves);
-            } else {
-                return new DirectionPlan(DirectionHeading.DOWN_RIGHT, verticalMoves, horizontalMoves);
-            }
-        } else { // must go up
-            if (horizontalFirst) {
-                return new DirectionPlan(DirectionHeading.RIGHT_UP, horizontalMoves, verticalMoves);
-            } else {
-                return new DirectionPlan(DirectionHeading.UP_RIGHT, verticalMoves, horizontalMoves);
-            }
-        }
-    }
-
-    private DirectionPlan figureDirectionPlanForDirpad(final String startingLocation, final String finalLocation) {
-
-        // origin top left
-
-        final int startRow = this.findDirpadRow(startingLocation);
-        final int endRow = this.findDirpadRow(finalLocation);
-        final int startCol = this.findDirpadCol(startingLocation);
-        final int endCol = this.findDirpadCol(finalLocation);
-        final int verticalMoves = Math.abs(startRow - endRow);
-        final int horizontalMoves = Math.abs(startCol - endCol);
-
-        if (startRow == endRow) {
-            if (startCol == endCol) {
-                // is this even valid ?
-                return new DirectionPlan(DirectionHeading.DOWN, 0, 0);
-            }
-            final DirectionHeading heading = this.leftOrRight(startCol, endCol); // LEFT or RIGHT
-            return new DirectionPlan(heading, horizontalMoves, 0);
-        }
-
-        if (startCol == endCol) {
-            final DirectionHeading heading = this.upOrDown(startRow, endRow); // UP or DOWN
-            return new DirectionPlan(heading, verticalMoves, 0);
-        }
-
-        // I want to go horizontal first.
-        // I can do that unless I am on the top row AND moving left as far as 0
-        final boolean horizontalFirst = !((startRow == 0) && (endCol < startCol) && (endCol == 0));
-
-        if (startCol > endCol) {
-            if (startRow < endRow) {
-                if (horizontalFirst) {
-                    return new DirectionPlan(DirectionHeading.LEFT_DOWN, horizontalMoves, verticalMoves);
-                } else {
-                    return new DirectionPlan(DirectionHeading.DOWN_LEFT, verticalMoves, horizontalMoves);
-                }
-            } else {
-                if (horizontalFirst) {
-                    return new DirectionPlan(DirectionHeading.LEFT_UP, horizontalMoves, verticalMoves);
-                } else {
-                    return new DirectionPlan(DirectionHeading.UP_LEFT, verticalMoves, horizontalMoves);
-                }
-            }
-        }
-
-        if (startRow < endRow) {
-            if (horizontalFirst) {
-                return new DirectionPlan(DirectionHeading.RIGHT_DOWN, horizontalMoves, verticalMoves);
-            } else {
-                return new DirectionPlan(DirectionHeading.DOWN_RIGHT, verticalMoves, horizontalMoves);
-            }
-        } else {
-            if (horizontalFirst) {
-                return new DirectionPlan(DirectionHeading.RIGHT_UP, horizontalMoves, verticalMoves);
-            } else {
-                return new DirectionPlan(DirectionHeading.UP_RIGHT, verticalMoves, horizontalMoves);
-            }
-        }
-    }
-
-    private DirectionHeading figureDirectionHeading(final String startingLocation, final String finalLocation) {
-
-        // origin top left
-
-        final int startRow = this.findNumberRow(startingLocation);
-        final int endRow = this.findNumberRow(finalLocation);
-        final int startCol = this.findNumberCol(startingLocation);
-        final int endCol = this.findNumberCol(finalLocation);
-
-        if (startRow == endRow) {
-            return this.leftOrRight(startCol, endCol); // LEFT or RIGHT
-        }
-
-        if (startCol == endCol) {
-            return this.upOrDown(startRow, endRow); // UP or DOWN
-        }
-
-        if (startCol < endCol) {
-            if (startRow < endRow) {
-                return DirectionHeading.LEFT_DOWN; // or it could be DOWN_LEFT ?!
-            } else {
-                return DirectionHeading.LEFT_UP; // or it could be UP_LEFT ?!
-            }
-        }
-
-        if (startRow < endRow) {
-            return DirectionHeading.DOWN_RIGHT; // or it could be RIGHT_DOWN ?!
-        } else {
-            return DirectionHeading.UP_RIGHT; // or it could be RIGHT_UP ?!
-        }
-    }
-
-    private DirectionHeading upOrDown(final int startRow, final int endRow) {
-
-        if (startRow < endRow) {
-            return DirectionHeading.DOWN;
-        }
-        if (startRow > endRow) {
-            return DirectionHeading.UP;
-        }
-        throw new RuntimeException("oops");
-    }
-
-    private DirectionHeading leftOrRight(final int startCol, final int endCol) {
-
-        if (startCol <= endCol) {
-            return DirectionHeading.RIGHT;
-        }
-        if (startCol > endCol) {
-            return DirectionHeading.LEFT;
-        }
-        throw new RuntimeException("oops");
     }
 
     public String fullSequence(final String numericCode) {
 
-        final StringBuilder fullSequence = new StringBuilder();
+        /*
 
-        String currentNumpadLocation = "A";
+         This will be given a full numeric code, and will return a long sequence of presses
+         that I must type in.
+
+         I am typing directly into robot 2 and can tap any of it's buttons in any order. This moves robot 2's
+         arm which is hovering over robot 1's directional keypad. When I tap an A, robot 2's arm taps a button on
+         robot 1's directional keypad, which will either move robot 1's arm around the numeric keypad, or (if it was
+         an `A`) actually press a button on the numeric keypad.
+
+         Since there is often more than one way to move a robot arm from one button to another, and Eric goes on about
+         making sure it's the shortest path, I probably need to worry about this ... e.g. is `<<v` better than `v<<`
+         or `<v<` ?
+
+         My approach is going to be that I have two classes for the keypads; and they will pre-calculate all the ways
+         in which you can move around. I can then use ... probably BFS, I'm not sure if Djikstra might not miss
+         something ? - to build up all the trees of moves.
+
+         I'll also have functions to map any movement between any two buttons so that I can do this recursively.
+
+         As an example, I want to press `1`.
+
+         I will need to move from `A` the starting point to `1` by going up and then left twice (or left/up/left) and
+         then pressing the `A` on the numeric keypad.
+
+         Which means robot 1 must be told to go `^<<A`.
+
+         The first `^` will be done by pressing `<A` on robot 2; that leaves me on the `^` key on robot 1, so I need to
+         then press `v<AA` on robot 2 to get the two lefts on robot 1; finally `>>^A` moves robot 2's arm to robot 1's
+         `A` button, and presses it, and robot 1's arm is currently on the `1` on the numpad which will get pressed.
+
+         So `1` came from `^<<A` which in turn came from `<Av<AA>>^A`
+
+         Critical points:
+
+         - Every move on either keypad - numeric and directional - needs to know where it started from.
+         - Every button press means that the particular keypad is at `A` the starting point.
+
+         Why this is important is that when I'm e.g. getting robot 2 to press `^<<A` on robot 1 ... those 4 key presses
+         can be treated independently, BUT the moves for each key press need to maintain state.
+
+         */
+
+        String armPosition = "A";
+        final StringBuilder fullSequence = new StringBuilder();
         for (int i = 0; i < numericCode.length(); i++) {
-            final String neededKey = numericCode.substring(i, i + 1);
-            final String numpadPresses = this.buildPressesForNumpadSimple(currentNumpadLocation, neededKey);
-            fullSequence.append(numpadPresses);
-            currentNumpadLocation = neededKey;
+            final String buttonToPress = numericCode.substring(i, i + 1);
+            fullSequence.append(this.buildShortestKeyPressSequence(armPosition, buttonToPress, 0));
+            armPosition = buttonToPress;
         }
-
         return fullSequence.toString();
     }
 
-    public String buildPressesForNumpadSimple(final String startingLocation, final String finalLocation) {
+    private String buildShortestKeyPressSequence(final String armPosition, final String buttonToPress, final int robotsInvolved) {
 
-        // these are the moves I need to make around the numpad
-        final DirectionPlan directionPlan = this.figureDirectionPlanForNumpad(startingLocation, finalLocation);
-        final String numpadMoves = this.dirpadPressesForPlan(directionPlan);
+        final List<String> possibleSequences = this.buildKeyPressSequences(armPosition, buttonToPress, robotsInvolved);
 
-        final StringBuilder fullSequence = new StringBuilder();
-
-        // now if I have just made a move, the robot will have been on A
-        String currentRobotLocation = "A";
-        for (int i = 0; i < numpadMoves.length(); i++) {
-            final String neededKey = numpadMoves.substring(i, i + 1);
-            final String numpadPresses = this.buildPressesForDirpadRobot1(currentRobotLocation, neededKey);
-//            System.out.println("for numpad " + neededKey + " I got " + numpadPresses);
-            fullSequence.append(numpadPresses);
-            currentRobotLocation = neededKey;
-        }
-
-        return fullSequence.toString();
+        // shortest returns a list of the possibly-more-than-one sequences of the shortest length. if there is more than one, it doesn't
+        // matter which one I return.
+        return this.shortest(possibleSequences).get(0);
     }
 
-    public String buildPressesForDirpadRobot1(final String startingLocation, final String finalLocation) {
+    private List<String> buildKeyPressSequences(final String armPosition, final String buttonToPress, final int robotsInvolved) {
 
-        // these are the moves I need to make around the current dirpad
-        final DirectionPlan directionPlan = this.figureDirectionPlanForDirpad(startingLocation, finalLocation);
-        final String dirpadMoves = this.dirpadPressesForPlan(directionPlan);
+        // this is the first time I need to find a sequence, and I'm on a numeric keypad, so I need to find out the sequences for this.
+        final List<String> keyPressSequences = this.getNumPadSequences(armPosition, buttonToPress);
 
-        final StringBuilder fullSequence = new StringBuilder();
-
-        // now if I have just made a move, THIS robot will have been on A
-        String currentRobotLocation = "A";
-        for (int i = 0; i < dirpadMoves.length(); i++) {
-            final String neededKey = dirpadMoves.substring(i, i + 1);
-            final String dirpadPresses = this.buildPressesForDirpadRobot2(currentRobotLocation, neededKey);
-//            System.out.println("  for dirpad " + neededKey + " I got " + dirpadPresses);
-            fullSequence.append(dirpadPresses);
-            currentRobotLocation = neededKey;
+        if (robotsInvolved == 0) {
+            return keyPressSequences;
         }
 
-        return fullSequence.toString();
+        throw new RuntimeException("Inception.");
     }
 
-    public String buildPressesForDirpadRobot2(final String startingLocation, final String finalLocation) {
+    public List<String> getNumPadSequences(final String armPosition, final String buttonToPress) {
 
-        // these are the moves I need to make around the current dirpad
-        final DirectionPlan directionPlan = this.figureDirectionPlanForDirpad(startingLocation, finalLocation);
-//        System.out.println("    " + directionPlan);
-
-        // hack
-        if (startingLocation.equalsIgnoreCase("A") && finalLocation.equalsIgnoreCase("<")) {
-            return "<v<A";
-        }
-        return this.dirpadPressesForPlan(directionPlan);
+        return this.numPadSequences.get(armPosition).get(buttonToPress);
     }
 
-    public String buildPressesForNumberMovement(final String startingLocation, final String finalLocation) {
+    public List<String> getNumPadShortestSequences(final String armPosition, final String buttonToPress) {
 
-        final int startRow = this.findNumberRow(startingLocation);
-        final int startCol = this.findNumberCol(startingLocation);
-
-        // always go left first.
-        if (startRow != 3 && startCol != 1) {
-            return this.buildPressesForNumberMovementLeftRightFirst(startingLocation, finalLocation);
-        } else {
-            return this.buildPressesForNumberMovementUpDownFirst(startingLocation, finalLocation);
-        }
+        return this.shortest(this.numPadSequences.get(armPosition).get(buttonToPress));
     }
 
-    private String buildPressesForNumberMovementLeftRightFirst(final String startingLocation, final String finalLocation) {
+    public List<String> getDirPadSequences(final String armPosition, final String buttonToPress) {
 
-        final StringBuilder sequence = new StringBuilder();
-
-        String actualStartingLocation = startingLocation;
-        // this never happens ?!
-        if (startingLocation.equalsIgnoreCase("0") && !finalLocation.equalsIgnoreCase("A")) {
-            sequence.append("^");
-            actualStartingLocation = "2";
-        }
-
-        sequence.append(this.buildPressesForNumberMovementLeftRight(actualStartingLocation, finalLocation));
-        sequence.append(this.buildPressesForNumberMovementUpDown(actualStartingLocation, finalLocation));
-        sequence.append("A");
-
-        return sequence.toString();
+        return this.dirPadSequences.get(armPosition).get(buttonToPress);
     }
 
-    private String buildPressesForNumberMovementLeftRight(final String startingLocation, final String finalLocation) {
 
-        final StringBuilder sequence = new StringBuilder();
+    private List<String> shortest(final List<String> sequences) {
 
-        final int startCol = this.findNumberCol(startingLocation);
-        final int endCol = this.findNumberCol(finalLocation);
+        // this will return a list if there are two
 
-        final int deltaCol = Math.abs(startCol - endCol);
-        final String deltaMoveCol = startCol > endCol ? "<" : ">";
-        sequence.append(deltaMoveCol.repeat(deltaCol));
-
-        return sequence.toString();
-    }
-
-    private String buildPressesForNumberMovementUpDown(final String startingLocation, final String finalLocation) {
-
-        final StringBuilder sequence = new StringBuilder();
-
-        final int startRow = this.findNumberRow(startingLocation);
-        final int endRow = this.findNumberRow(finalLocation);
-
-        final int deltaRow = Math.abs(startRow - endRow);
-        final String deltaMoveRow = startRow > endRow ? "^" : "v";
-        sequence.append(deltaMoveRow.repeat(deltaRow));
-
-        return sequence.toString();
-    }
-
-    private String buildPressesForNumberMovementUpDownFirst(final String startingLocation, final String finalLocation) {
-
-        final StringBuilder sequence = new StringBuilder();
-
-        sequence.append(this.buildPressesForNumberMovementUpDown(startingLocation, finalLocation));
-        sequence.append(this.buildPressesForNumberMovementLeftRight(startingLocation, finalLocation));
-        sequence.append("A");
-
-        return sequence.toString();
-    }
-
-    private int findNumberRow(final String key) {
-
-        // from top, left
-
-        if (List.of("7", "8", "9").contains(key)) {
-            return 0;
+        int shortestLength = Integer.MAX_VALUE;
+        for (final String sequence : sequences) {
+            if (sequence.length() < shortestLength) {
+                shortestLength = sequence.length();
+            }
         }
-        if (List.of("4", "5", "6").contains(key)) {
-            return 1;
-        }
-        if (List.of("1", "2", "3").contains(key)) {
-            return 2;
-        }
-        return 3;
-    }
 
-    private int findNumberCol(final String key) {
-
-        if (List.of("1", "4", "7").contains(key)) {
-            return 0;
-        }
-        if (List.of("0", "2", "5", "8").contains(key)) {
-            return 1;
-        }
-        return 2;
-    }
-
-    private int findDirpadRow(final String key) {
-
-        // from top, left
-
-        if (List.of("^", "A").contains(key)) {
-            return 0;
-        }
-        return 1;
-    }
-
-    private int findDirpadCol(final String key) {
-
-        if (List.of("<").contains(key)) {
-            return 0;
-        }
-        if (List.of("^", "v").contains(key)) {
-            return 1;
-        }
-        return 2;
+        final int targetLength = shortestLength;
+        return sequences.stream().filter(s -> s.length() == targetLength).sorted(Comparator.naturalOrder()).toList();
     }
 
     @Override
     public String part2(final String[] input) {
 
         return null;
+    }
+
+    static class Node {
+
+        String key;
+        String direction;
+        Node previous;
+
+        public Node(final String key, final String direction, final Node previous) {
+
+            this.key = key;
+            this.direction = direction;
+            this.previous = previous;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || this.getClass() != o.getClass()) {
+                return false;
+            }
+            final Node node = (Node) o;
+            return Objects.equals(this.key, node.key) && Objects.equals(this.direction, node.direction);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.key, this.direction);
+        }
     }
 }
