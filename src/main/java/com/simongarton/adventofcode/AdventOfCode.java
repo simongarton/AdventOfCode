@@ -307,7 +307,7 @@ public class AdventOfCode {
 //        this.challenges.add(new Year2024Day18()); // slow part 1 (!) 180 seconds
         this.challenges.add(new Year2024Day19());
         this.challenges.add(new Year2024Day20());
-        this.challenges.add(new Year2024Day21ASecondFailure());
+        this.challenges.add(new Year2024Day21());
         this.challenges.add(new Year2024Day22());
         this.challenges.add(new Year2024Day23());
         this.challenges.add(new Year2024Day24());

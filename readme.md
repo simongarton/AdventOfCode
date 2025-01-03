@@ -453,8 +453,10 @@ A decision tree : a list of workflows, involving rules and criteria pointing you
 Part 1 was easy.
 
 Part 2 mentions a number `167409079868000` which just screams "brute force will not work !". I think I have a plan in
-mind : I'm building up a graph of routes through the rules; each node has ranges of values for x,m,a,s, and each time
-I arrive at a node, I need to subdivide those ranges among the possible destinations. But this is complicated and I'm
+mind : I'm building up a graph of routes through the rules; each keypadNode has ranges of values for x,m,a,s, and each
+time
+I arrive at a keypadNode, I need to subdivide those ranges among the possible destinations. But this is complicated and
+I'm
 tired.
 
 https://adventofcode.com/2023/day/19

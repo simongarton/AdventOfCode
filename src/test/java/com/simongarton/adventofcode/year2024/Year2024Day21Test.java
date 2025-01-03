@@ -1,5 +1,6 @@
 package com.simongarton.adventofcode.year2024;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -25,6 +26,17 @@ class Year2024Day21Test {
         assertEquals(expected, sequence);
     }
 
+    static List<Arguments> part1SampleValues() {
+
+        return List.of(
+                Arguments.of("029A", "<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A"),
+                Arguments.of("980A", "<v<A>>^AAAvA^A<vA<AA>>^AvAA<^A>A<v<A>A>^AAAvA<^A>A<vA>^A<A>A"),
+                Arguments.of("179A", "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A"),
+                Arguments.of("456A", "<v<A>>^AA<vA<A>>^AAvAA<^A>A<vA>^A<A>A<vA>^A<A>A<v<A>A>^AAvA<^A>A"),
+                Arguments.of("379A", "<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A")
+        );
+    }
+
     @ParameterizedTest
     @MethodSource("numPadPathValues")
     void getNumPadPaths(final String from, final String to, final List<String> expected) {
@@ -37,6 +49,13 @@ class Year2024Day21Test {
 
         // then
         assertEquals(expected, paths);
+    }
+
+    static List<Arguments> numPadPathValues() {
+
+        return List.of(
+                Arguments.of("A", "3", List.of("^A", "<^>A", "<^^>vA"))
+        );
     }
 
     @ParameterizedTest
@@ -54,6 +73,14 @@ class Year2024Day21Test {
         assertEquals(expected, paths);
     }
 
+    static List<Arguments> numPadShortestPathValues() {
+
+        return List.of(
+                Arguments.of("A", "3", List.of("^A")),
+                Arguments.of("A", "2", List.of("^<A", "<^A"))
+        );
+    }
+
     @ParameterizedTest
     @MethodSource("dirPadPathValues")
     void getDirPadPaths(final String from, final String to, final List<String> expected) {
@@ -68,37 +95,58 @@ class Year2024Day21Test {
         assertEquals(expected, paths);
     }
 
-    static List<Arguments> part1SampleValues() {
-
-        return List.of(
-                Arguments.of("029A", "<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A"),
-                Arguments.of("980A", "<v<A>>^AAAvA^A<vA<AA>>^AvAA<^A>A<v<A>A>^AAAvA<^A>A<vA>^A<A>A"),
-                Arguments.of("179A", "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A"),
-                Arguments.of("456A", "<v<A>>^AA<vA<A>>^AAvAA<^A>A<vA>^A<A>A<vA>^A<A>A<v<A>A>^AAvA<^A>A"),
-                Arguments.of("379A", "<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A")
-        );
-    }
-
-    static List<Arguments> numPadPathValues() {
-
-        return List.of(
-                Arguments.of("A", "3", List.of("^A", "<^>A", "<^^>vA"))
-        );
-    }
-
-    static List<Arguments> numPadShortestPathValues() {
-
-        return List.of(
-                Arguments.of("A", "3", List.of("^A")),
-                Arguments.of("A", "2", List.of("^<A", "<^A"))
-        );
-    }
-
     static List<Arguments> dirPadPathValues() {
 
         return List.of(
                 Arguments.of("A", "^", List.of("<A", "v<^A")),
                 Arguments.of("A", "<", List.of("<v<A", "v<<A"))
         );
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildShortestKeyPressSequenceValues")
+    void buildShortestKeyPressSequence(final String from, final String to, final int robots, final String expected) {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+
+        // when
+        final String actual = year2024Day21.buildShortestKeyPressSequence(from, to, robots);
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    static List<Arguments> buildShortestKeyPressSequenceValues() {
+
+        return List.of(
+                // no robots
+                Arguments.of("A", "3", 0, "^A"),
+                Arguments.of("A", "2", 0, "<^A"), // ^<A would also be valid
+                Arguments.of("A", "1", 0, "<^<A"),
+                Arguments.of("A", "4", 0, "<^<^A"), // favouring zig zags ...
+                Arguments.of("7", "0", 0, ">vvvA"),
+
+                // 1 robot
+                Arguments.of("A", "3", 1, "<A>A"),
+                Arguments.of("A", "2", 1, "<Av<A>>^A"),
+
+                // 2 robots
+                Arguments.of("A", "3", 2, "<A>A")
+        );
+    }
+
+    @Test
+    void buildKeyPressSequencesForSequence() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final List<String> expected = List.of("<Av<A>>^A", "<Av<A>^>A", "v<^Av<A>>^A", "v<^Av<A>^>A");
+
+        // when
+        final List<String> actual = year2024Day21.buildKeyPressSequencesForSequence("^<A");
+
+        // then
+        assertEquals(expected, actual);
     }
 }
