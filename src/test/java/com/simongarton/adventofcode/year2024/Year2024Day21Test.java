@@ -105,39 +105,6 @@ class Year2024Day21Test {
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("buildShortestKeyPressSequenceValues")
-    void buildShortestKeyPressSequence(final String from, final String to, final int robots, final String expected) {
-
-        // given
-        final Year2024Day21 year2024Day21 = new Year2024Day21();
-
-        // when
-        final String actual = year2024Day21.buildShortestKeyPressSequence(from, to, robots);
-
-        // then
-        assertEquals(expected, actual);
-    }
-
-    static List<Arguments> buildShortestKeyPressSequenceValues() {
-
-        return List.of(
-                // no robots
-                Arguments.of("A", "3", 0, "^A"),
-                Arguments.of("A", "2", 0, "<^A"), // ^<A would also be valid
-                Arguments.of("A", "1", 0, "<^<A"),
-                Arguments.of("A", "4", 0, "<^<^A"), // favouring zig zags ...
-                Arguments.of("7", "0", 0, ">vvvA"),
-
-                // 1 robot
-                Arguments.of("A", "3", 1, "<A>A"),
-                Arguments.of("A", "2", 1, "<Av<A>>^A"),
-
-                // 2 robots
-                Arguments.of("A", "3", 2, "<A>A")
-        );
-    }
-
     @Test
     void buildDirPadKeyPressesForSequence() {
 

@@ -274,7 +274,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
          */
 
-        return shortestKeypadSequence(numericCode, 2);
+        return this.shortestKeypadSequence(numericCode, 2);
     }
 
     public String shortestKeypadSequence(final String numericSequence, final int robotLevel) {
@@ -364,81 +364,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         return nodes;
     }
 
-    private Node buildShortestNodeForNumPad(final String numericCode) {
-
-        // this is not a list, it's just a node - because I'm not moving an arm around on a keypad,
-        // there is only one possible option, no alternate paths. No, I'm wrong.
-
-        String armPosition = "A";
-        final StringBuilder fullSequence = new StringBuilder();
-        for (int i = 0; i < numericCode.length(); i++) {
-            final String buttonToPress = numericCode.substring(i, i + 1);
-            fullSequence.append(this.buildShortestKeyPressSequence(armPosition, buttonToPress, 0));
-            armPosition = buttonToPress;
-        }
-
-        return new Node(fullSequence.toString(), 1);
-    }
-
-    public String buildShortestKeyPressSequence(final String armPosition, final String buttonToPress, final int robotsInvolved) {
-
-        final List<String> possibleSequences = this.buildKeyPressSequences(armPosition, buttonToPress, robotsInvolved);
-
-        // shortest returns a list of the possibly-more-than-one sequences of the shortest length. if there is more than one, it doesn't
-        // matter which one I return. This is always just between two buttons.
-        return this.shortest(possibleSequences).getFirst();
-    }
-
-    public List<String> buildKeyPressSequences(final String armPosition, final String buttonToPress, final int robotsInvolved) {
-
-        // this is the first time I need to find a sequence, and I'm on a numeric keypad, so I need to find out the sequences for this.
-        final List<String> keyPressSequences = this.getNumPadSequences(armPosition, buttonToPress);
-
-        // at this point for A -> 3 I have List.of(^A) (but I might have more than one.)
-
-        // if I have no robots, I can just return this (won't happen, but useful for testing.)
-        if (robotsInvolved == 0) {
-            return keyPressSequences;
-        }
-
-        // Ok, I need a robot to press this sequence. Now, it's a sequence, so I can treat it in it's entirety, but while
-        // working on it, I will need to manage state. Also, if I have more than one, I need to include all the branching
-        // paths I might go down.
-
-        final List<String> keyPressSequencesRecursed = new ArrayList<>();
-        keyPressSequences.forEach(s -> keyPressSequencesRecursed.addAll(this.buildDirPadKeyPressesForSequence(s, robotsInvolved, 1)));
-
-        return keyPressSequencesRecursed;
-    }
-
-    // this is the recursive one which will split things up
-    private List<String> buildDirPadKeyPressesForSequence(final String sequence, final int robotsInvolved, final int currentRobot) {
-
-        // I have a sequence like "^<A". I need to work out what the next robot needs to do to get this pressed
-        // I am later going to also test "<^A".
-
-        // any given input sequence might have more than one solution, so I will get lists back.
-
-        // if I have reached the final level of robot, turn it into key presses.
-        final List<String> keyPressesForSequence = this.buildDirPadKeyPressesForSequence(sequence);
-        if (currentRobot == robotsInvolved) {
-            return keyPressesForSequence;
-        }
-
-        // I need to break this up into individual presses ... I have ^<A but I need to split it into
-        // ^ < and A and each one will have trees ... but I need to combine them, so the trees from < get added to
-        // each of the trees from ^ and so on ...
-        // which sounds like BFS
-
-        // I have a sequence like "^<A" which I need to get a robot to type out on another directional keypad.
-        // this is where I start needing to build a tree
-        // and I think I should just BFS this.
-
-
-        return null;
-    }
-
-    // this is the non recursive one which will actually implement the key presses, with state
     public List<String> buildDirPadKeyPressesForSequence(final String sequence) {
 
         // I have a sequence like "^<A" which I need to get a robot to type out on another directional keypad.
