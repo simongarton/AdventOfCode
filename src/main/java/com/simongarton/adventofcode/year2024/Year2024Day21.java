@@ -11,6 +11,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     I don't think I can ever have weird non-shortest paths on the dirpad cos only two rows, can't leave and come back
 
+    I think I want to drop the non shortest paths anyway. I'm getting 216 options for 378A.
+
      */
 
     private Map<String, Map<String, List<String>>> numPadSequences;
@@ -40,7 +42,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         int total = 0;
         for (final String numericCode : input) {
-            final String fullSequence = this.fullSequence(numericCode);
+            final String fullSequence = this.shortestFullSequence(numericCode);
             final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
             total += numericPart * fullSequence.length();
             System.out.println(fullSequence);
@@ -108,7 +110,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     public List<String> getDirPadPaths(final String start, final String end) {
 
-        // BFS
         final KeypadNode a = new KeypadNode(start, null, null);
         final List<KeypadNode> visited = new ArrayList<>();
         final List<KeypadNode> available = new ArrayList<>(this.dirpadNeighboursFor(a, visited));
@@ -228,7 +229,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         };
     }
 
-    public String fullSequence(final String numericCode) {
+    public String shortestFullSequence(final String numericCode) {
 
         /*
 
@@ -273,6 +274,101 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
          */
 
+        return shortestKeypadSequence(numericCode, 2);
+    }
+
+    public String shortestKeypadSequence(final String numericSequence, final int robotLevel) {
+
+        final Node rootNode = this.buildNodeForNumericSequence(numericSequence, robotLevel);
+        final Map<Integer, List<Node>> levels = this.buildLevels(rootNode);
+
+        final int maxLevel = levels.keySet().stream().max(Integer::compareTo).get();
+        final List<String> sequences = levels.get(maxLevel).stream().map(n -> n.sequence).toList();
+        return this.shortest(sequences).getFirst();
+    }
+
+    public Map<Integer, List<Node>> buildLevels(final Node rootNode) {
+
+        final Map<Integer, List<Node>> levels = new HashMap<>();
+        levels.put(rootNode.robotLevel, List.of(rootNode));
+
+        final List<Node> available = new ArrayList<>(rootNode.generatedBy);
+
+        while (!available.isEmpty()) {
+            final Node current = available.removeFirst();
+            final List<Node> nodesAtLevel = levels.getOrDefault(current.robotLevel, new ArrayList<>());
+            nodesAtLevel.add(current);
+            levels.put(current.robotLevel, nodesAtLevel);
+            available.addAll(current.generatedBy);
+        }
+
+        return levels;
+    }
+
+    public Node buildNodeForNumericSequence(final String numericSequence, final int robotLevel) {
+
+        if (robotLevel < 1) {
+            throw new RuntimeException("need at least 1 robot, not " + robotLevel);
+        }
+
+        // this is going to return a single node e.g. "3" or "378A". But that node could have more than one
+        // to generate it, e.g. "2" could be "<^A" or "^<A".
+
+        final Node rootNode = new Node(numericSequence, 0);
+        final List<Node> firstDirPadNodes = this.buildNodesForNumPad(numericSequence);
+        rootNode.generatedBy.addAll(firstDirPadNodes);
+
+        final List<Node> available = new ArrayList<>(firstDirPadNodes);
+
+        while (!available.isEmpty()) {
+
+            final Node current = available.removeFirst();
+            if (current.robotLevel == robotLevel) {
+                continue;
+            }
+            final List<Node> nextLevelNodes = this.buildNodesForDirPad(current.sequence, current.robotLevel + 1);
+            for (final Node node : nextLevelNodes) {
+                current.generatedBy.add(node);
+                available.add(node);
+            }
+        }
+
+        return rootNode;
+    }
+
+    private List<Node> buildNodesForDirPad(final String sequence, final int robotLevel) {
+
+        // this has to be a list as there can be more than one way of doing it.
+
+        final List<Node> nodes = new ArrayList<>();
+        final List<String> keyPressesForSequence = this.buildDirPadKeyPressesForSequence(sequence);
+        for (final String keyPressSequence : keyPressesForSequence) {
+            final Node node = new Node(keyPressSequence, robotLevel);
+            nodes.add(node);
+        }
+        return nodes;
+    }
+
+    private List<Node> buildNodesForNumPad(final String numericCode) {
+
+        // this has to be a list as there can be more than one way of doing it.
+
+        final int robotLevel = 1;
+
+        final List<Node> nodes = new ArrayList<>();
+        final List<String> keyPressesForSequence = this.buildNumPadKeyPressesForSequence(numericCode);
+        for (final String keyPressSequence : keyPressesForSequence) {
+            final Node node = new Node(keyPressSequence, robotLevel);
+            nodes.add(node);
+        }
+        return nodes;
+    }
+
+    private Node buildShortestNodeForNumPad(final String numericCode) {
+
+        // this is not a list, it's just a node - because I'm not moving an arm around on a keypad,
+        // there is only one possible option, no alternate paths. No, I'm wrong.
+
         String armPosition = "A";
         final StringBuilder fullSequence = new StringBuilder();
         for (int i = 0; i < numericCode.length(); i++) {
@@ -280,7 +376,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             fullSequence.append(this.buildShortestKeyPressSequence(armPosition, buttonToPress, 0));
             armPosition = buttonToPress;
         }
-        return fullSequence.toString();
+
+        return new Node(fullSequence.toString(), 1);
     }
 
     public String buildShortestKeyPressSequence(final String armPosition, final String buttonToPress, final int robotsInvolved) {
@@ -309,13 +406,13 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         // paths I might go down.
 
         final List<String> keyPressSequencesRecursed = new ArrayList<>();
-        keyPressSequences.forEach(s -> keyPressSequencesRecursed.addAll(this.buildKeyPressSequencesForSequence(s, robotsInvolved, 1)));
+        keyPressSequences.forEach(s -> keyPressSequencesRecursed.addAll(this.buildDirPadKeyPressesForSequence(s, robotsInvolved, 1)));
 
         return keyPressSequencesRecursed;
     }
 
     // this is the recursive one which will split things up
-    private List<String> buildKeyPressSequencesForSequence(final String sequence, final int robotsInvolved, final int currentRobot) {
+    private List<String> buildDirPadKeyPressesForSequence(final String sequence, final int robotsInvolved, final int currentRobot) {
 
         // I have a sequence like "^<A". I need to work out what the next robot needs to do to get this pressed
         // I am later going to also test "<^A".
@@ -323,7 +420,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         // any given input sequence might have more than one solution, so I will get lists back.
 
         // if I have reached the final level of robot, turn it into key presses.
-        final List<String> keyPressesForSequence = this.buildKeyPressSequencesForSequence(sequence);
+        final List<String> keyPressesForSequence = this.buildDirPadKeyPressesForSequence(sequence);
         if (currentRobot == robotsInvolved) {
             return keyPressesForSequence;
         }
@@ -333,11 +430,16 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         // each of the trees from ^ and so on ...
         // which sounds like BFS
 
+        // I have a sequence like "^<A" which I need to get a robot to type out on another directional keypad.
+        // this is where I start needing to build a tree
+        // and I think I should just BFS this.
+
+
         return null;
     }
 
     // this is the non recursive one which will actually implement the key presses, with state
-    public List<String> buildKeyPressSequencesForSequence(final String sequence) {
+    public List<String> buildDirPadKeyPressesForSequence(final String sequence) {
 
         // I have a sequence like "^<A" which I need to get a robot to type out on another directional keypad.
         // this is where I start needing to build a tree
@@ -366,6 +468,39 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             final int currentKeyIndex = current.keysPressedSoFar.length();
             final String nextKey = sequence.substring(currentKeyIndex, currentKeyIndex + 1);
             final List<String> currentSequences = this.getDirPadSequences(currentKey, nextKey);
+            for (final String padSequence : currentSequences) {
+                final KeyPressNode keyPressNode = new KeyPressNode(nextKey, current.keysPressedSoFar + nextKey, current.sequenceToPressKey + padSequence, current);
+                available.add(keyPressNode);
+            }
+        }
+
+        return complete.stream().map(KeyPressNode::getSequenceToPressKey).sorted(Comparator.naturalOrder()).toList();
+    }
+
+    public List<String> buildNumPadKeyPressesForSequence(final String sequence) {
+
+        final List<KeyPressNode> available = new ArrayList<>();
+        final List<KeyPressNode> complete = new ArrayList<>();
+
+        final String start = "A";
+        final String second = sequence.substring(0, 1);
+
+        final List<String> firstSequences = this.getNumPadSequences(start, second);
+        for (final String padSequence : firstSequences) {
+            final KeyPressNode keyPressNode = new KeyPressNode(second, second, padSequence, null);
+            available.add(keyPressNode);
+        }
+
+        while (!available.isEmpty()) {
+            final KeyPressNode current = available.removeFirst();
+            if (current.keysPressedSoFar.equalsIgnoreCase(sequence)) {
+                complete.add(current);
+                continue;
+            }
+            final String currentKey = current.keyPressed;
+            final int currentKeyIndex = current.keysPressedSoFar.length();
+            final String nextKey = sequence.substring(currentKeyIndex, currentKeyIndex + 1);
+            final List<String> currentSequences = this.getNumPadSequences(currentKey, nextKey);
             for (final String padSequence : currentSequences) {
                 final KeyPressNode keyPressNode = new KeyPressNode(nextKey, current.keysPressedSoFar + nextKey, current.sequenceToPressKey + padSequence, current);
                 available.add(keyPressNode);
@@ -459,6 +594,20 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             this.keysPressedSoFar = keysPressedSoFar;
             this.sequenceToPressKey = sequenceToPressKey;
             this.previous = previous;
+        }
+    }
+
+    public static class Node {
+
+        String sequence;
+        int robotLevel;
+        List<Node> generatedBy;
+
+        public Node(final String sequence, final int robotLevel) {
+
+            this.sequence = sequence;
+            this.robotLevel = robotLevel;
+            this.generatedBy = new ArrayList<>();
         }
     }
 }
