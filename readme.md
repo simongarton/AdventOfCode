@@ -52,19 +52,17 @@ takes a few seconds, so could probably be optimized, but I need to get back to d
 
 https://adventofcode.com/2024/day/22
 
-## Day 21 : Race Condition (0/2)
+## Day 21 : Race Condition (1/2)
 
-Brilliant, but although I'm really close to part 1, I'm not there.
+Brilliant. But my nemesis.
 
 Imagine a simple numerical keypad, and you have to type out a 3 digit number and press # (well, A). Only you're doing
 this remotely, and so have a 4-way directional pad to move a pointer around the keypad until it's over the number you
 want, when you can push it. Only you can't even do that ... there's a chain of keypads, and you need to write commands
 for a directional pad to drive a second directional pad which actually operates the numerical one.
 
-I'm super close - I'm passing the sample, and I've written a slew of tests and it's all making perfect sense. But "Your
-answer is too high." I do note that my command sequences I am using are different from the examples - but they are the
-same length, which is needed for the score - and I suspect if I figure out how it's actually doing it, I would find
-out what the problem is.
+After some days of effort, I've got part 1 working very fast, 27ms. But part 2 bogs down in very deep BFS searches - and
+I think the way I've done this isn't going to make speeding it up easy.
 
 https://adventofcode.com/2024/day/21
 

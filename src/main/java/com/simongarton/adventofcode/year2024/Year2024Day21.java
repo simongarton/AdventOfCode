@@ -66,8 +66,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         // use BFS to find the moves needed to go from start to end on a num pad,
         // and end in an A to activate it
-        // e.g for 1 -> 5, I'll get both ">^A" and "^>A" - but I'll also get
-        // ">>^<A" and "^^>vA". I could almost certainly prune out anything that isn't minimum length.
+        // e.g for 1 -> 5, I'll get both ">^A" and "^>A".
+        // I previously also got ">>^<A" and "^^>vA" but have pruned out anything that isn't minimum length.
 
         // interesting gotcha that caught me out for ages - on the keypads I will need to tap
         // the same key twice in a row ...
@@ -125,10 +125,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     public List<String> getDirPadPaths(final String start, final String end) {
 
-        // use BFS to find the moves needed to go from start to end on a num pad,
+        // use BFS to find the moves needed to go from start to end on a dir pad,
         // and end in an A to activate it
-        // e.g for 1 -> 5, I'll get both ">^A" and "^>A".
-        // I previously also got ">>^<A" and "^^>vA" but have pruned out anything that isn't minimum length.
 
         // interesting gotcha that caught me out for ages - on the keypads I will need to tap
         // the same key twice in a row ...
@@ -294,9 +292,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                 continue;
             }
 
-            System.out.println("expandRootNode() with " + current + " and " + available.size() + " in available");
+            //System.outgk.println("expandRootNode() with " + current + " and " + available.size() + " in available");
             final List<Node> nextLevelNodes = this.buildNodesForDirPad(current.sequence, current.robotLevel + 1);
-            System.out.println("done");
             for (final Node node : nextLevelNodes) {
                 current.generatedBy.add(node);
                 available.add(node);
@@ -354,7 +351,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         // there's a cache here ...
         final List<String> keyPressesForSequence = this.buildDirPadKeyPressesForSequence(sequence, robotLevel);
-        System.out.println("buildNodesForDirPad() sequence " + sequence + " and got " + keyPressesForSequence.size());
+        // System.out.println("buildNodesForDirPad() sequence " + sequence + " and got " + keyPressesForSequence.size());
         for (final String keyPressSequence : keyPressesForSequence) {
             final Node node = new Node(keyPressSequence, robotLevel);
             nodes.add(node);
@@ -389,7 +386,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         while (!available.isEmpty()) {
             final KeyPressNode current = available.removeFirst();
-            System.out.println("buildDirPadKeyPressesForSequence() for " + sequence + " with " + current + " and " + available.size() + " in available");
+            // System.out.println("buildDirPadKeyPressesForSequence() for " + sequence + " with " + current + " and " + available.size() + " in available");
 
             if (current.keysPressedSoFar.equalsIgnoreCase(sequence)) {
                 complete.add(current);
@@ -466,7 +463,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
-        return this.commonLogic(input, 26);
+        return null;
+        //return this.commonLogic(input, 26);
     }
 
     private String commonLogic(final String[] input, final int directionalKeypads) {
@@ -476,8 +474,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             final String fullSequence = this.shortestFullSequence(numericCode, directionalKeypads);
             final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
             total += numericPart * fullSequence.length();
-            System.out.println(fullSequence);
-            System.out.println("  " + numericCode + ": " + numericPart + " * " + fullSequence.length() + " = " + numericPart * fullSequence.length());
+            //System.out.println(fullSequence);
+            //System.out.println("  " + numericCode + ": " + numericPart + " * " + fullSequence.length() + " = " + numericPart * fullSequence.length());
         }
         return String.valueOf(total);
     }
