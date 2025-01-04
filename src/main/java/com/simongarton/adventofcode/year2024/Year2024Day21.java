@@ -7,12 +7,6 @@ import java.util.*;
 
 public class Year2024Day21 extends AdventOfCodeChallenge {
 
-    /*
-
-    I don't think I can ever have weird non-shortest paths on the dirpad cos only two rows, can't leave and come back
-
-     */
-
     private Map<String, Map<String, List<String>>> numPadSequences;
     private Map<String, Map<String, List<String>>> dirPadSequences;
 
@@ -43,7 +37,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         int total = 0;
         for (final String numericCode : input) {
-            final String fullSequence = this.shortestFullSequence(numericCode);
+            final String fullSequence = this.shortestFullSequence(numericCode, 3);
             final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
             total += numericPart * fullSequence.length();
             System.out.println(fullSequence);
@@ -154,6 +148,12 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     private List<KeypadNode> numpadNeighboursFor(final KeypadNode current, final List<KeypadNode> visited) {
 
         final List<List<String>> neighbourLists = this.numpadNeighbours(current.key);
+
+        return this.neighboursFor(current, visited, neighbourLists);
+    }
+
+    private List<KeypadNode> neighboursFor(final KeypadNode current, final List<KeypadNode> visited, final List<List<String>> neighbourLists) {
+
         final List<String> keys = neighbourLists.get(0);
         final List<String> directions = neighbourLists.get(1);
 
@@ -174,21 +174,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     private List<KeypadNode> dirpadNeighboursFor(final KeypadNode current, final List<KeypadNode> visited) {
 
         final List<List<String>> neighbourLists = this.dirpadNeighbours(current.key);
-        final List<String> keys = neighbourLists.get(0);
-        final List<String> directions = neighbourLists.get(1);
 
-        final List<KeypadNode> neighbours = new ArrayList<>();
-        for (int i = 0; i < keys.size(); i++) {
-            final String key = keys.get(i);
-            final String direction = directions.get(i);
-            if (visited.stream().anyMatch(n -> this.visitedNeighbour(n, key, direction))) {
-                continue;
-            }
-            final KeypadNode keypadNode = new KeypadNode(key, direction, current);
-            neighbours.add(keypadNode);
-        }
-
-        return neighbours;
+        return this.neighboursFor(current, visited, neighbourLists);
     }
 
     private boolean visitedNeighbour(final KeypadNode n, final String key, final String direction) {
@@ -199,10 +186,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         if (n.direction == null) {
             return true; // I came from here
         }
-        if (!(n.direction.equalsIgnoreCase(direction))) {
-            return false;
-        }
-        return true;
+        return n.direction.equalsIgnoreCase(direction);
     }
 
     private List<List<String>> numpadNeighbours(final String start) {
@@ -234,56 +218,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         };
     }
 
-    public String shortestFullSequence(final String numericCode) {
-
-        /*
-
-         This will be given a full numeric code, and will return a long sequence of presses
-         that I must type in.
-
-         I am typing directly into robot 2 and can tap any of it's buttons in any order. This moves robot 2's
-         arm which is hovering over robot 1's directional keypad. When I tap an A, robot 2's arm taps a button on
-         robot 1's directional keypad, which will either move robot 1's arm around the numeric keypad, or (if it was
-         an `A`) actually press a button on the numeric keypad.
-
-         Since there is often more than one way to move a robot arm from one button to another, and Eric goes on about
-         making sure it's the shortest path, I probably need to worry about this ... e.g. is `<<v` better than `v<<`
-         or `<v<` ?
-
-         My approach is going to be that I have two classes for the keypads; and they will pre-calculate all the ways
-         in which you can move around. I can then use ... probably BFS, I'm not sure if Djikstra might not miss
-         something ? - to build up all the trees of moves.
-
-         I'll also have functions to map any movement between any two buttons so that I can do this recursively.
-
-         As an example, I want to press `1`.
-
-         I will need to move from `A` the starting point to `1` by going up and then left twice (or left/up/left) and
-         then pressing the `A` on the numeric keypad.
-
-         Which means robot 1 must be told to go `^<<A`.
-
-         The first `^` will be done by pressing `<A` on robot 2; that leaves me on the `^` key on robot 1, so I need to
-         then press `v<AA` on robot 2 to get the two lefts on robot 1; finally `>>^A` moves robot 2's arm to robot 1's
-         `A` button, and presses it, and robot 1's arm is currently on the `1` on the numpad which will get pressed.
-
-         So `1` came from `^<<A` which in turn came from `<Av<AA>>^A`
-
-         Critical points:
-
-         - Every move on either keypad - numeric and directional - needs to know where it started from.
-         - Every button press means that the particular keypad is at `A` the starting point.
-
-         Why this is important is that when I'm e.g. getting robot 2 to press `^<<A` on robot 1 ... those 4 key presses
-         can be treated independently, BUT the moves for each key press need to maintain state.
-
-         */
-
-        // robotLevel should be 3 - actually means mapping levels
-        return this.shortestKeypadSequence(numericCode, 3);
-    }
-
-    public String shortestKeypadSequence(final String numericSequence, final int robotLevel) {
+    public String shortestFullSequence(final String numericSequence, final int directionalKeypads) {
 
         final List<String> sequencesForDigit = new ArrayList<>();
 
@@ -302,44 +237,41 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                 firstDirPadNodes.add(childNode);
             }
             rootNode.generatedBy.addAll(firstDirPadNodes);
+
             // now go off and fill it out
-            final List<Node> available = new ArrayList<>(firstDirPadNodes);
+            this.expandRootNode(new ArrayList<>(firstDirPadNodes), directionalKeypads);
 
-            while (!available.isEmpty()) {
-
-                final Node current = available.removeFirst();
-                if (current.robotLevel == robotLevel) {
-                    continue;
-                }
-
-                System.out.println("shortestKeypadSequence() with " + current + " and " + available.size() + " in available");
-                final List<Node> nextLevelNodes = this.buildNodesForDirPad(current.sequence, current.robotLevel + 1);
-                for (final Node node : nextLevelNodes) {
-                    if (!available.contains(node)) {
-                        current.generatedBy.add(node);
-                        available.add(node);
-                    }
-                }
-            }
-            sequencesForDigit.add(this.shortestKeypadSequenceForNode(rootNode, robotLevel));
+            sequencesForDigit.add(this.shortestKeypadSequenceForNode(rootNode, directionalKeypads));
         }
 
         return String.join("", sequencesForDigit);
     }
 
-    public String shortestKeypadSequenceOld(final String numericSequence, final int robotLevel) {
+    private void expandRootNode(final List<Node> available, final int directionalKeypads) {
 
-        // I can split this up into individual digits as long as I keep state
-        final Node rootNode = this.buildNodeForNumericSequence(numericSequence, robotLevel);
+        while (!available.isEmpty()) {
 
-        return this.shortestKeypadSequenceForNode(rootNode, robotLevel);
+            final Node current = available.removeFirst();
+            if (current.robotLevel == directionalKeypads) {
+                continue;
+            }
+
+            // System.out.println("expandRootNode() with " + current + " and " + available.size() + " in available");
+            final List<Node> nextLevelNodes = this.buildNodesForDirPad(current.sequence, current.robotLevel + 1);
+            for (final Node node : nextLevelNodes) {
+                if (!available.contains(node)) {
+                    current.generatedBy.add(node);
+                    available.add(node);
+                }
+            }
+        }
     }
 
     public String shortestKeypadSequenceForNode(final Node rootNode, final int robotLevel) {
 
         final Map<Integer, List<Node>> levels = this.buildLevels(rootNode);
 
-        final int maxLevel = levels.keySet().stream().max(Integer::compareTo).get();
+        final int maxLevel = levels.keySet().stream().max(Integer::compareTo).orElseThrow();
 
         if (maxLevel < robotLevel) {
             throw new RuntimeException("something broke with max level " + maxLevel + " but robot level " + robotLevel);
@@ -366,63 +298,13 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         return levels;
     }
 
-    public Node buildNodeForNumericSequence(final String numericSequence, final int robotLevel) {
-
-        if (robotLevel < 1) {
-            throw new RuntimeException("need at least 1 robot, not " + robotLevel);
-        }
-
-        // this is going to return a single node e.g. "3" or "378A". But that node could have more than one
-        // to generate it, e.g. "2" could be "<^A" or "^<A".
-
-        final Node rootNode = new Node(numericSequence, 0);
-        final List<Node> firstDirPadNodes = this.buildNodesForNumPad(numericSequence);
-        rootNode.generatedBy.addAll(firstDirPadNodes);
-
-        final List<Node> available = new ArrayList<>(firstDirPadNodes);
-
-        while (!available.isEmpty()) {
-
-            final Node current = available.removeFirst();
-            if (current.robotLevel == robotLevel) {
-                continue;
-            }
-
-            System.out.println("buildNodeForNumericSequence() with " + current + " and " + available.size() + " in available");
-            final List<Node> nextLevelNodes = this.buildNodesForDirPad(current.sequence, current.robotLevel + 1);
-            for (final Node node : nextLevelNodes) {
-                if (!available.contains(node)) {
-                    current.generatedBy.add(node);
-                    available.add(node);
-                }
-            }
-        }
-
-        return rootNode;
-    }
-
     private List<Node> buildNodesForDirPad(final String sequence, final int robotLevel) {
 
         // this has to be a list as there can be more than one way of doing it.
 
         final List<Node> nodes = new ArrayList<>();
         final List<String> keyPressesForSequence = this.buildDirPadKeyPressesForSequence(sequence, robotLevel);
-        System.out.println("buildNodesForDirPad() sequence " + sequence + " and got " + keyPressesForSequence.size());
-        for (final String keyPressSequence : keyPressesForSequence) {
-            final Node node = new Node(keyPressSequence, robotLevel);
-            nodes.add(node);
-        }
-        return nodes;
-    }
-
-    private List<Node> buildNodesForNumPad(final String numericCode) {
-
-        // this has to be a list as there can be more than one way of doing it.
-
-        final int robotLevel = 1;
-
-        final List<Node> nodes = new ArrayList<>();
-        final List<String> keyPressesForSequence = this.buildNumPadKeyPressesForSequence(numericCode);
+//        System.out.println("buildNodesForDirPad() sequence " + sequence + " and got " + keyPressesForSequence.size());
         for (final String keyPressSequence : keyPressesForSequence) {
             final Node node = new Node(keyPressSequence, robotLevel);
             nodes.add(node);
@@ -457,7 +339,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         final List<String> firstSequences = this.getOptimalDirPadSequences(start, second);
         // firstSequences is now List.of(<A, v<^A) which will give me the keys I need to get from A to <
         for (final String padSequence : firstSequences) {
-            final KeyPressNode keyPressNode = new KeyPressNode(second, second, padSequence, null);
+            final KeyPressNode keyPressNode = new KeyPressNode(second, second, padSequence);
             available.add(keyPressNode);
         }
 
@@ -477,7 +359,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                 throw new RuntimeException("failed to go from " + currentKey + " to " + nextKey);
             }
             for (final String padSequence : currentSequences) {
-                final KeyPressNode keyPressNode = new KeyPressNode(nextKey, current.keysPressedSoFar + nextKey, current.sequenceToPressKey + padSequence, current);
+                final KeyPressNode keyPressNode = new KeyPressNode(nextKey, current.keysPressedSoFar + nextKey, current.sequenceToPressKey + padSequence);
                 available.add(keyPressNode);
             }
         }
@@ -489,48 +371,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         final List<String> completedAndSorted = complete.stream().map(KeyPressNode::getSequenceToPressKey).sorted(Comparator.naturalOrder()).toList();
         this.cache.put(key, completedAndSorted);
         return completedAndSorted;
-    }
-
-    public List<String> buildNumPadKeyPressesForSequence(final String sequence) {
-
-        final List<KeyPressNode> available = new ArrayList<>();
-        final List<KeyPressNode> complete = new ArrayList<>();
-
-        final String start = "A";
-        final String second = sequence.substring(0, 1);
-
-        final List<String> firstSequences = this.getNumPadSequences(start, second);
-        for (final String padSequence : firstSequences) {
-            final KeyPressNode keyPressNode = new KeyPressNode(second, second, padSequence, null);
-            available.add(keyPressNode);
-        }
-
-        while (!available.isEmpty()) {
-            final KeyPressNode current = available.removeFirst();
-            if (current.keysPressedSoFar.equalsIgnoreCase(sequence)) {
-                complete.add(current);
-                continue;
-            }
-            final String currentKey = current.keyPressed;
-            final int currentKeyIndex = current.keysPressedSoFar.length();
-            final String nextKey = sequence.substring(currentKeyIndex, currentKeyIndex + 1);
-            final List<String> currentSequences = this.getNumPadSequences(currentKey, nextKey);
-            for (final String padSequence : currentSequences) {
-                final KeyPressNode keyPressNode = new KeyPressNode(nextKey, current.keysPressedSoFar + nextKey, current.sequenceToPressKey + padSequence, current);
-                available.add(keyPressNode);
-            }
-        }
-
-        final int minLength = complete.stream()
-                .map(k -> k.sequenceToPressKey)
-                .map(String::length).min(Integer::compareTo)
-                .get();
-
-        return complete.stream()
-                .map(KeyPressNode::getSequenceToPressKey)
-                .filter(s -> s.length() == minLength)
-                .sorted(Comparator.naturalOrder())
-                .toList();
     }
 
     public List<String> getNumPadSequences(final String armPosition, final String buttonToPress) {
@@ -550,7 +390,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         final int minLength = sequences.stream()
                 .map(String::length)
                 .min(Integer::compareTo)
-                .get();
+                .orElseThrow();
 
         return sequences.stream()
                 .filter(s -> s.length() == minLength)
@@ -580,21 +420,19 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
-        return null;
+        int total = 0;
+        for (final String numericCode : input) {
+            final String fullSequence = this.shortestFullSequence(numericCode, 26);
+            final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
+            total += numericPart * fullSequence.length();
+            System.out.println(fullSequence);
+            System.out.println("  " + numericCode + ": " + numericPart + " * " + fullSequence.length() + " = " + numericPart * fullSequence.length());
+        }
+        return String.valueOf(total);
+
     }
 
-    static class KeypadNode {
-
-        String key;
-        String direction;
-        KeypadNode previous;
-
-        public KeypadNode(final String key, final String direction, final KeypadNode previous) {
-
-            this.key = key;
-            this.direction = direction;
-            this.previous = previous;
-        }
+    record KeypadNode(String key, String direction, Year2024Day21.KeypadNode previous) {
 
         @Override
         public boolean equals(final Object o) {
@@ -617,21 +455,18 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     static class KeyPressNode {
 
-        String keyPressed;
-        String keysPressedSoFar; // will end with keyPressed
+        final String keyPressed;
+        final String keysPressedSoFar; // will end with keyPressed
         @Getter
         String sequenceToPressKey;
-        KeyPressNode previous;
 
         public KeyPressNode(final String keyPressed,
                             final String keysPressedSoFar,
-                            final String sequenceToPressKey,
-                            final KeyPressNode previous) {
+                            final String sequenceToPressKey) {
 
             this.keyPressed = keyPressed;
             this.keysPressedSoFar = keysPressedSoFar;
             this.sequenceToPressKey = sequenceToPressKey;
-            this.previous = previous;
         }
 
         @Override
@@ -642,9 +477,9 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     public static class Node {
 
-        String sequence;
-        int robotLevel;
-        List<Node> generatedBy;
+        final String sequence;
+        final int robotLevel;
+        final List<Node> generatedBy;
 
         public Node(final String sequence, final int robotLevel) {
 
