@@ -17,14 +17,14 @@ Plenty of days when I was so happy just to get the damn thing working, it wasn't
 
 ## 2024
 
-## Day 25 : Code Chronicle (1/1)
+### Day 25 : Code Chronicle (1/1)
 
 Day 25 is always easy and is always only 1 part - the second part is having 49 other stars by now, which ... I don't
 quite. Let's go back and try and fix them.
 
 https://adventofcode.com/2024/day/25
 
-## Day 24 : Crossed Wires
+### Day 24 : Crossed Wires
 
 Very nice. Build a circuit of wires and logic gates, and analyse it. Yeah, OK. Oh, wait, 4 pairs of the gates are cross
 wired - you can figure it out by looking at the inputs and outputs. Well, there's a lot of combinations to check ...
@@ -37,7 +37,7 @@ circuit worked adding two numbers, and it broke at a certain pair of inputs ...
 
 https://adventofcode.com/2024/day/24
 
-## Day 23 : LAN Party
+### Day 23 : LAN Party
 
 Nice. Given a bunch of pairs - connected PCs - work out whos in a network of at least 3 ... and for part 2, work out the
 largest network. I quite liked my solution for part 2 - build up alphabetical lists, for each pair, check to see if the
@@ -45,14 +45,14 @@ first is in the network, the second isn't yet ... but can join if it connects to
 
 https://adventofcode.com/2024/day/23
 
-## Day 22 : Monkey Magic
+### Day 22 : Monkey Magic
 
 Easy, probably making us feel better for the difficult ones over the weekend. Manipulating lists of numbers. My solution
 takes a few seconds, so could probably be optimized, but I need to get back to days 20 and 21.
 
 https://adventofcode.com/2024/day/22
 
-## Day 21 : Race Condition (1/2)
+### Day 21 : Keypad Conundrum (1/2)
 
 Brilliant. But my nemesis.
 
@@ -66,9 +66,9 @@ I think the way I've done this isn't going to make speeding it up easy.
 
 https://adventofcode.com/2024/day/21
 
-## Day 20 : Race Condition
+### Day 20 : Race Condition
 
-This was fun, even though I don't have part 2 complete yet.
+This was fun, even though it took me ages to figure out part 2.
 
 It's a maze with a single path through it. But for part 1, you can knock down a single wall. How many times does this
 help you get to the end, quicker ? And it's a doozy of a maze - you're going from green to red.
@@ -97,11 +97,11 @@ And then I suddenly realized that most of the question is irrelevant. The cheats
 I don't need to worry about walls or anything - just iterate over the 3k steps in the trail twice, checking the distance
 you'd save by short-cutting between two points and checking the manhattan distance. :facepalm.
 
-<deletes many many lines of code.>
+(deletes many many lines of code.)
 
 https://adventofcode.com/2024/day/20
 
-## Day 19 : Linen Layout
+### Day 19 : Linen Layout
 
 Lots of recursion and memoisation. Made part 2 far too hard, went to read Reddit, realised I could chop out about 90% of
 my code, move the cache to a different place, and away we go. Sometimes the numbers are so stupidly big, it becomes
@@ -109,7 +109,7 @@ obvious you're on the wrong path.
 
 https://adventofcode.com/2024/day/19
 
-## Day 18 : RAM Run
+### Day 18 : RAM Run
 
 And I thought the Day 16 map was evil. A* delivers a shortest path very quickly, but the really shortest one
 takes AGES to find.
@@ -120,7 +120,7 @@ But part 2 was disappointingly easy, just find when you've added too many walls 
 
 https://adventofcode.com/2024/day/18
 
-## Day 17: Chronospatial Computer (1,2)
+### Day 17: Chronospatial Computer (1,2)
 
 A famous OpCode computer. I've really struggled with these in the past, but this time I persevered, and got
 part 1 working - I'd written the computer which reads the program, it was passing all the tests, but
@@ -154,7 +154,7 @@ numbers - looks like I have nine that would have worked - and you can also see s
 
 https://adventofcode.com/2024/day/17
 
-## Day 16: Reindeer Maze
+### Day 16: Reindeer Maze
 
 Sometimes you just get stuck. Today was a maze-navigating algorithm, straight forward enough, except that making a turn
 counts as a move, and is expensive ... meaning you have to be careful about pruning nodes. With hindsight, and looking
@@ -170,7 +170,7 @@ on part 1, I must have been in the zone.
 
 https://adventofcode.com/2024/day/16
 
-## Day 15: Warehouse Woes
+### Day 15: Warehouse Woes
 
 Lovely. Those dang robots again, only this time they are pushing boxes around in a warehouse ...
 but if the boxes pile up against a wall, they stop.
@@ -182,7 +182,7 @@ Wrote far too much code, but got the answer.
 
 https://adventofcode.com/2024/day/15
 
-## Day 14: Restroom Redoubt
+### Day 14: Restroom Redoubt
 
 Much nicer. A map, with robots moving around in different directions. Part 1 : at time N, count how many are in each
 quadrant. Easy. Part 2 : at time X, they draw a picture of an Xmas tree : what's X ?
@@ -196,7 +196,7 @@ had a neigbour ... and this popped out after about seven thousand cycles (and re
 
 https://adventofcode.com/2024/day/14
 
-## Day 13: Claw Contraption
+### Day 13: Claw Contraption
 
 One of the deceptively simple ones, which bit hard. Given two buttons, each with a different deltaX, deltaY and a cost
 try and hit a target with the number of minimum presses (and costs.)
@@ -229,7 +229,7 @@ But it's time to move on.
 
 https://adventofcode.com/2024/day/13
 
-## Day 12: Garden Groups
+### Day 12: Garden Groups
 
 Really enjoying this now. This was a 2d map of gardens identified by letters, and you have
 to work out the contiguous area of each patch - including worrying about ponds inside islands
@@ -245,7 +245,7 @@ to print it out to see what was going on. 5 sample files.
 
 https://adventofcode.com/2024/day/12
 
-## Day 11: Plutonian pebbles
+### Day 11: Plutonian pebbles
 
 Loved it ! Take a list of numbers, and iterate with different rules : only 3 rules, but
 crucially one of them will split the number into two. Which means exponential growth.
@@ -263,14 +263,14 @@ This is an example at 10 levels - part two was 75 - showing the cache hits in gr
 
 https://adventofcode.com/2024/day/11
 
-## Day 10: Hoof it
+### Day 10: Hoof it
 
 OK, now I'm happier again. A map and all about gradients : find paths from low to high, that are orthogonal and always
 go up. Took about 1:15 for the first part and 30 seconds for the second part as I'd already got the info I wanted.
 
 https://adventofcode.com/2024/day/10
 
-## Day 9: Disk Fragmenter
+### Day 9: Disk Fragmenter
 
 ... mutter mutter, grumble grumble ... whose idea was this, anyway ?
 
@@ -292,7 +292,7 @@ Harrumph.
 
 https://adventofcode.com/2024/day/9
 
-## Day 8: Resonant Collinearity
+### Day 8: Resonant Collinearity
 
 A good challenge, but grumpy with myself. Again. 2024 is heading downhill at this point ... part 1 took 2:16, but part 2
 only took 2 minutes. It's another map, with antennas, and you have to figure out where they interact ... I managed to
@@ -301,7 +301,7 @@ version of part 2.
 
 https://adventofcode.com/2024/day/8
 
-## Day 7: Bridge Repair
+### Day 7: Bridge Repair
 
 A good challenge, but grumpy with myself. Take an array of numbers and some operators, and see if you can combine them
 in a way to get to an answer. For part 1 I spent far too long trying to work out how to get combinations; for part 2
@@ -310,7 +310,7 @@ it did say what I should have done.
 
 https://adventofcode.com/2024/day/7
 
-## Day 6: Guard Gallivant
+### Day 6: Guard Gallivant
 
 Excellent. A map with obstructions, and you have to map out where a guard walks, following certain rules. Part 2
 involved placing additional obstructions to try and get him to walk in an infinite loop. I came up with a brute force
@@ -322,7 +322,7 @@ repeat, then I must be in an infinite loop. Now finishing in about 86 seconds.
 
 https://adventofcode.com/2024/day/6
 
-## Day 5: Print Queue
+### Day 5: Print Queue
 
 Excellent. A list of pairs of pages, where for A|B A must go before B in any combined list; and then a series of
 combined lists, so you have to make sure all the pairs are valid. So A,B,C is valid; C,A,B is valid, but not B,A,C.
@@ -333,7 +333,7 @@ way more sophisticated.
 
 https://adventofcode.com/2024/day/5
 
-## Day 4: Ceres search
+### Day 4: Ceres search
 
 Given a grid of letters, do a word search. I started off with a nice clever algorithm using objects and recursion,
 which worked perfectly with the tiny sample data, but gave me one extra for the bigger sample. After some lengthy
@@ -347,7 +347,7 @@ Good puzzle, though.
 
 https://adventofcode.com/2024/day/4
 
-## Day 3:  Mull it over
+### Day 3:  Mull it over
 
 Parse a string - no, wait, six strings (:facepalm) - looking for valid calculations inside garbage text.  
 Severe bruising on leg following kicking myself for not having learned regex.  
@@ -356,7 +356,7 @@ were saying day 2 was disappointingly easy ...
 
 https://adventofcode.com/2024/day/3
 
-## Day 2:  Red-Nosed Reports
+### Day 2:  Red-Nosed Reports
 
 Server crashed several times while trying to get puzzle and submit answers :rofl  
 Straight forward - suspicious, not sure what's going on here - parse data into lists, and look
@@ -364,7 +364,7 @@ at deltas.
 
 https://adventofcode.com/2024/day/2
 
-## Day 1:  Historian Hysteria.
+### Day 1:  Historian Hysteria.
 
 Spent more time trying to find the IntelliJ full line completion setting to turn it off - I'd already turned off
 Copilot - than I had hoped. Straight forward read two lists, sort, compare.
@@ -373,7 +373,7 @@ https://adventofcode.com/2024/day/1
 
 ## 2023
 
-## Day 25: Snowverload. (0/2)
+### Day 25: Snowverload. (0/2)
 
 Lovely challenge. I can dump a graph into GraphViz and _almost_ see the solution - I can see 3 edges that link the two
 clusters, just can't read their nodes - but can't figure out how to do it. I have a fast solution for the sample. For
@@ -381,7 +381,7 @@ part 1, of course. Part 2 is going to take a further 27330.794 seconds ...
 
 https://adventofcode.com/2023/day/25
 
-## Day 24:
+### Day 24: Never Tell Me The Odds
 
 Part 1 was nice enough : hailstones flying around in 3 dimensions, will a given pair collide within a given volume ?
 To make it manageable, part 1 was only in 2 dimensions, so was about figuring out and solving pairs of linear equations.
@@ -391,7 +391,7 @@ where do you have to start throwing a rock, and in which 3d dimension, to hit al
 
 https://adventofcode.com/2023/day/24
 
-## Day 23: A long walk. (1/2)
+### Day 23: A long walk. (1/2)
 
 Route finding, A*, priority queue, yeah, yeah, done this before ... wait, you want the _longest_ distance ?
 
@@ -408,7 +408,7 @@ I might just leave part 2 for another day.
 
 https://adventofcode.com/2023/day/23
 
-## Day 22: Sand Slabs
+### Day 22: Sand Slabs
 
 Very nice. 3d Tetris / Jenga : a few shapes, made up of cubes, floating in positive integer space, let them all fall and
 then count the ones you can remove without affecting anything else. Hopefully someone has done this in Minecraft.
@@ -419,7 +419,7 @@ then also falls ? As long as you (spoilers) keep track of which ones have been r
 
 https://adventofcode.com/2023/day/22
 
-## Day 21: Step Counter (1/2)
+### Day 21: Step Counter (1/2)
 
 Nice ! Immediately thought this looks like a cellular automaton, and indeed Part 1 fell very nicely.
 
@@ -432,7 +432,7 @@ just oscillate between two states - subgrids (11x11) I would have and and how ma
 
 https://adventofcode.com/2023/day/21
 
-## Day 20: Pulse Propagation (1/2)
+### Day 20: Pulse Propagation (1/2)
 
 Nice ! A set of modules that receive input signals, modify them and send them on, into a network. I initially got
 bogged down in worries about timings before eventually re-reading the question very carefully, rebuilding it all
@@ -444,7 +444,7 @@ Well, part 1 did. I have no idea on how to do part 2.
 
 https://adventofcode.com/2023/day/20
 
-## Day 19: Aplenty (1/2)
+### Day 19: Aplenty (1/2)
 
 A decision tree : a list of workflows, involving rules and criteria pointing you to different workflows.
 
@@ -459,7 +459,7 @@ tired.
 
 https://adventofcode.com/2023/day/19
 
-## Day 18: Lavaduct Lagoon (1/2)
+### Day 18: Lavaduct Lagoon (1/2)
 
 Part 1 reasonable enough, another grid problem and follow instructions to carve out a tunnel; then flood-fill it to
 work out how much space is enclosed. Curiously the instructions include wall colors, which I implemented fearing it
@@ -472,7 +472,7 @@ out of memory. I suspect it will be something like ray-marching, but to be conti
 
 https://adventofcode.com/2023/day/18
 
-## Day 17: Clumsy Crucible
+### Day 17: Clumsy Crucible
 
 Defeated completely. Superficially it's a route-finding algorithm, but it's a minimal cost from start to end _while
 never taking more than 3 steps in one direction_ (and also only turning, never backtracking : I don't think this is an
@@ -489,7 +489,7 @@ on reddit, adapted a new algorithm and initially it was wrong ...
 
 https://adventofcode.com/2023/day/17
 
-## Day 16: The Floor Will Be Lava
+### Day 16: The Floor Will Be Lava
 
 Heaps of fun, a grid with mirrors and splitters directing light beams. There is a trick to it, which I eventually
 tumbled to after reading the reddit : the beams split infinitely, _but you don't need to worry about tracing an infinite
@@ -498,13 +498,13 @@ you can stop that beam. Part 2 trivial.
 
 https://adventofcode.com/2023/day/16
 
-## Day 15: Lens Library
+### Day 15: Lens Library
 
 Easy enough : ascii, hashcodes, and parsing strings & managing lists. And selling a truck.
 
 https://adventofcode.com/2023/day/15
 
-## Day 14: Parabolic Reflector Dish
+### Day 14: Parabolic Reflector Dish
 
 Sliding rocks on a grid. Was at an AWS thing for the first part so delayed start, then got stuck with logic until
 I simplified it ;-) Then part 2 took nearly 24 hours : I almost had it right several times, but each time I fixed it
@@ -512,7 +512,7 @@ I broke something else, until I could get to the gym and plan it out in my head.
 
 https://adventofcode.com/2023/day/14
 
-### Day 13: Point of Incidence
+#### Day 13: Point of Incidence
 
 Ok, an easy one to help me get over yesterday. Looking for lines of reflection in a grid. Curiously part 2 didn't add
 that much more processing time : a more complex algorithm, sure, but still brute-forcey, and just 63ms vs 21ms for
@@ -1020,13 +1020,13 @@ https://adventofcode.com/2021/day/1
 
 ## 2020
 
-## Day 14: Docking Data
+### Day 14: Docking Data
 
 Build a binary processor that works with values and applies masks.
 
 https://adventofcode.com/2020/day/14
 
-## Day 13: Shuttle Search
+### Day 13: Shuttle Search
 
 Periods and cycles. Part 1 straight forward, part 2 needs a clever solution. The subreddit suggested Chinese Remainder
 Theorem, but my maths isn't up to it. However, other examples suggested periodicity, and I translated an algorithm which
@@ -1034,7 +1034,7 @@ then made sense.
 
 https://adventofcode.com/2020/day/13
 
-## Day 12: Rain Risk
+### Day 12: Rain Risk
 
 Straightforward example of moving a ship around following directions, first absolutely, and then in relation to a
 waypoint that also moves.
@@ -1103,7 +1103,7 @@ byr:1937 iyr:2017 cid:147 hgt:183cm
 
 https://adventofcode.com/2020/day/4
 
-## Day 3: Toboggan Trajectory
+### Day 3: Toboggan Trajectory
 
 Definitely cute : a map of a hillside with trees, given a certain angle to ride the toboggan down, how many trees do you
 hit ? The trees repeat in patterns out to the right.
