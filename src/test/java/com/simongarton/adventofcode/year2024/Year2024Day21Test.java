@@ -145,7 +145,7 @@ class Year2024Day21Test {
         final List<String> expected = List.of("<Av<A>>^A", "<Av<A>^>A", "v<^Av<A>>^A", "v<^Av<A>^>A");
 
         // when
-        final List<String> actual = year2024Day21.buildDirPadKeyPressesForSequence("^<A");
+        final List<String> actual = year2024Day21.buildDirPadKeyPressesForSequence("^<A", 3);
 
         // then
         assertEquals(expected, actual);
