@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Year2024Day21Test {
 
@@ -93,7 +94,7 @@ class Year2024Day21Test {
     static List<Arguments> numPadPathValues() {
 
         return List.of(
-                Arguments.of("A", "3", List.of("^A", "<^>A", "<^^>vA"))
+                Arguments.of("A", "3", List.of("^A"))
         );
     }
 
@@ -155,74 +156,7 @@ class Year2024Day21Test {
         // then
         assertEquals(expected, actual);
     }
-
-//    @ParameterizedTest
-//    @MethodSource("buildNodeForNumericSequenceValues")
-//    void buildNodeForNumericSequence(final String sequence, final int robotLevel, final String expected) {
-//
-//        // given
-//        final Year2024Day21 year2024Day21 = new Year2024Day21();
-//
-//        // when
-//        final String shortestSequence = year2024Day21.shortestKeypadSequenceForNode(actual, robotLevel);
-//
-//        // then
-//        assertNotNull(actual);
-//        assertEquals(expected, shortestSequence);
-//    }
-//
-//    static List<Arguments> buildNodeForNumericSequenceValues() {
-//
-//        return List.of(
-//                Arguments.of("3", 1, "^A"),
-//                Arguments.of("2", 1, "<^A"),
-//                Arguments.of("1", 1, "<^<A"),
-//
-//                Arguments.of("378A", 1, "^A<<^^A>A>vvvA"),
-//
-//                Arguments.of("3", 2, "<A>A"),
-//                Arguments.of("3", 3, "<v<A>>^AvA^A"),
-//                Arguments.of("32", 1, "^A<A"),
-//                Arguments.of("32", 2, "<A>A<v<A>>^A")
-//        );
-//    }
-//
-//    @ParameterizedTest
-//    @MethodSource("buildLevelsForNumericSequenceValues")
-//    void buildLevels(final String sequence,
-//                     final int robotLevel,
-//                     final int levels,
-//                     final Map<Integer, Integer> levelData,
-//                     final String expected) {
-//        // given
-//        final Year2024Day21 year2024Day21 = new Year2024Day21();
-//
-//        // when
-//        final Year2024Day21.Node node = year2024Day21.buildNodeForNumericSequence(sequence, robotLevel);
-//        final Map<Integer, List<Year2024Day21.Node>> actual = year2024Day21.buildLevels(node);
-//
-//        // then
-//        assertNotNull(actual);
-//        assertEquals(levels, actual.size());
-//        for (final Map.Entry<Integer, Integer> entry : levelData.entrySet()) {
-//            assertEquals(entry.getValue(), actual.get(entry.getKey()).size());
-//        }
-//        for (final Map.Entry<Integer, List<Year2024Day21.Node>> entry : actual.entrySet()) {
-//            assertEquals(entry.getValue().size(), levelData.get(entry.getKey()));
-//        }
-//    }
-//
-//    static List<Arguments> buildLevelsForNumericSequenceValues() {
-//
-//        return List.of(
-//                Arguments.of("3", 1, 2, Map.of(0, 1, 1, 1), "^A"),
-//                Arguments.of("378A", 1, 2, Map.of(0, 1, 1, 24), "^A<<^^A>A>vvvA"),
-//                Arguments.of("2", 1, 2, Map.of(0, 1, 1, 2), "<^A"),
-//                Arguments.of("3", 2, 3, Map.of(0, 1, 1, 1, 2, 1), "<A>A"),
-//                Arguments.of("3", 3, 4, Map.of(0, 1, 1, 1, 2, 1, 3, 4), "<v<A>>^AvA^A")
-//        );
-//    }
-
+    
     @ParameterizedTest
     @MethodSource("shortestKeypadSequenceValues")
     void shortestKeypadSequence(final String sequence,
@@ -254,5 +188,37 @@ class Year2024Day21Test {
                 Arguments.of("0", 2, "<v<A>>^A"),
                 Arguments.of("0", 3, "<vA<AA>>^AvAA<^A>A")
         );
+    }
+
+    @Test
+    void testNumPadPaths() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String from = "1";
+        final String to = "5";
+
+        // when
+        final List<String> paths = year2024Day21.getNumPadPaths(from, to);
+
+        // then
+        assertEquals(2, paths.size());
+        assertTrue(paths.contains("^>A"));
+        assertTrue(paths.contains(">^A"));
+    }
+
+    @Test
+    void testRepeatedNumber() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String sequence = "000A";
+        final String expected = "<vA<AA>>^AvAA<^A>AAA<vA>^A<A>A"; // generated, not worked through
+
+        // when
+        final String actual = year2024Day21.shortestFullSequence(sequence, 3);
+
+        // then
+        assertEquals(expected, actual);
     }
 }
