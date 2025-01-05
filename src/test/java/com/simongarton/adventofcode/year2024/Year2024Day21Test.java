@@ -178,7 +178,7 @@ class Year2024Day21Test {
                 Arguments.of("2", 1, "<^A"),
                 Arguments.of("3", 2, "<A>A"),
                 Arguments.of("3", 3, "v<<A>>^AvA^A"),
-                Arguments.of("7", 1, "<^<^^A"),
+                Arguments.of("7", 1, "^^^<<A"),
                 Arguments.of("7", 2, "<AAAv<AA>>^A"),
                 Arguments.of("7", 3, "v<<A>>^AAA<vA<A>>^AAvAA<^A>A"),
                 Arguments.of("0", 1, "<A"),
