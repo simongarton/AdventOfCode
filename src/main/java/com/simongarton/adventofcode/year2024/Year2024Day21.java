@@ -523,7 +523,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         int total = 0;
 
         // here's the magic. if I'm pressing A, all the keypads are lined up and so I can split up the main sequence
-        // to make it manageable.
+        // to make it manageable. but I need to put the As back in again to estimate their size.
         final String[] subsequences = sequence.split("A");
         // System.out.println("  split to " + Arrays.toString(subsequences));
         int subsequenceIndex = 0;
@@ -543,7 +543,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                     shortestOption = option;
                 }
             }
-            System.out.println("for subsequence " + subsequence + " (" + subsequenceIndex + ") of " + sequence + " I am using " + shortestOption + " at level " + level);
+            // System.out.println("for subsequence " + subsequence + " (" + subsequenceIndex + ") of " + sequence + " I am using " + shortestOption + " at level " + level);
             total += shortest;
             subsequenceIndex++;
         }
