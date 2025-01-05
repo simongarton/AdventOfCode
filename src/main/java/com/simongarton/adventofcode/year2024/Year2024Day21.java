@@ -250,7 +250,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     public String shortestFullSequence(final String numericSequence, final int directionalKeypads) {
 
-        // this magic - and the seventh or eighth iteration of this logic :facepalm.
+        // this is the magic - and the seventh or eighth iteration of this logic :facepalm.
         // if you try and do 4 characters at once, it's just too big
 
         final List<String> sequencesForDigit = new ArrayList<>();
@@ -526,19 +526,26 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         // to make it manageable.
         final String[] subsequences = sequence.split("A");
         // System.out.println("  split to " + Arrays.toString(subsequences));
-        for (final String subsequence : subsequences) {
+        int subsequenceIndex = 0;
+        for (final String subsequenceWithoutA : subsequences) {
 
-            final List<String> options = this.buildKeySequences(subsequence + "A");
+            final String subsequence = subsequenceWithoutA + "A";
+
+            final List<String> options = this.buildKeySequences(subsequence);
             // System.out.println("    options for " + subsequence + "A were " + options);
             int shortest = Integer.MAX_VALUE;
+            String shortestOption = "";
             for (final String option : options) {
                 final int optionLength = this.shortestSequenceRecursively(option, level + 1, maxLevel, cache);
                 // System.out.println("      option " + option + " length " + optionLength + " shortest " + shortest);
                 if (shortest > optionLength) {
                     shortest = optionLength;
+                    shortestOption = option;
                 }
             }
+            System.out.println("for subsequence " + subsequence + " (" + subsequenceIndex + ") of " + sequence + " I am using " + shortestOption + " at level " + level);
             total += shortest;
+            subsequenceIndex++;
         }
 
         cache.put(key, total);
