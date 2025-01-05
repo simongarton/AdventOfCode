@@ -292,7 +292,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                 continue;
             }
 
-            //System.outgk.println("expandRootNode() with " + current + " and " + available.size() + " in available");
+            //System.out.println("expandRootNode() with " + current + " and " + available.size() + " in available");
             final List<Node> nextLevelNodes = this.buildNodesForDirPad(current.sequence, current.robotLevel + 1);
             for (final Node node : nextLevelNodes) {
                 current.generatedBy.add(node);
@@ -478,6 +478,71 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             //System.out.println("  " + numericCode + ": " + numericPart + " * " + fullSequence.length() + " = " + numericPart * fullSequence.length());
         }
         return String.valueOf(total);
+    }
+
+    public List<String> buildKeySequences(final String sequence) {
+
+        final List<String> result = new ArrayList<>();
+        this.buildKeySequenceRecursively(sequence, 0, "A", "", result);
+
+        return result;
+    }
+
+    private void buildKeySequenceRecursively(final String sequence,
+                                             final int index,
+                                             final String previousKey,
+                                             final String currentPath,
+                                             final List<String> result) {
+
+        if (index == sequence.length()) {
+            result.add(currentPath);
+            return;
+        }
+
+        final String currentKey = sequence.substring(index, index + 1);
+        final List<String> pathsBetweenKeys = this.getDirPadSequences(previousKey, currentKey);
+
+        for (final String path : pathsBetweenKeys) {
+            this.buildKeySequenceRecursively(sequence, index + 1, currentKey, currentPath + path, result);
+        }
+    }
+
+    public int shortestSequenceRecursively(final String sequence, final int level, final int maxLevel, final Map<String, Integer> cache) {
+
+        // System.out.println("level " + level + "/" + maxLevel + " " + sequence);
+
+        if (level == maxLevel) {
+            return sequence.length(); // keys pressed on this keypad
+        }
+
+        final String key = level + ":" + sequence;
+        if (cache.containsKey(key)) {
+            return cache.get(key);
+        }
+
+        int total = 0;
+
+        // here's the magic. if I'm pressing A, all the keypads are lined up and so I can split up the main sequence
+        // to make it manageable.
+        final String[] subsequences = sequence.split("A");
+        // System.out.println("  split to " + Arrays.toString(subsequences));
+        for (final String subsequence : subsequences) {
+
+            final List<String> options = this.buildKeySequences(subsequence + "A");
+            // System.out.println("    options for " + subsequence + "A were " + options);
+            int shortest = Integer.MAX_VALUE;
+            for (final String option : options) {
+                final int optionLength = this.shortestSequenceRecursively(option, level + 1, maxLevel, cache);
+                // System.out.println("      option " + option + " length " + optionLength + " shortest " + shortest);
+                if (shortest > optionLength) {
+                    shortest = optionLength;
+                }
+            }
+            total += shortest;
+        }
+
+        cache.put(key, total);
+        return total;
     }
 
     record KeypadNode(String key, String direction, Year2024Day21.KeypadNode previous) {
