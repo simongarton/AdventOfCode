@@ -26,6 +26,20 @@ class Year2024Day21Test {
         assertEquals(expected.length(), sequence.length());
     }
 
+    @ParameterizedTest
+    @MethodSource("part1SampleValues")
+    void testPart1SampleOnly(final String numericCode, final String expected) {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+
+        // when
+        final String sequence = year2024Day21.shortestFullSequence(numericCode, 3);
+
+        // then
+        assertEquals(expected, sequence);
+    }
+
     static List<Arguments> part1SampleValues() {
 
         return List.of(
@@ -381,6 +395,33 @@ class Year2024Day21Test {
                 Arguments.of("<^A", false),
                 Arguments.of("v<^A", true),
                 Arguments.of("<^>A", true)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("comparatorValues")
+    void testComparator(final List<String> unsorted, final List<String> expected) {
+
+        // given
+        final Year2024Day21.DirectionComparator directionComparator = new Year2024Day21.DirectionComparator();
+
+        // when
+        final List<String> actual = unsorted.stream().sorted(directionComparator).toList();
+
+        // then
+        assertEquals(expected, actual);
+        assertEquals(expected.getFirst(), actual.getFirst());
+    }
+
+    static List<Arguments> comparatorValues() {
+
+        return List.of(
+                Arguments.of(List.of("<", ">"), List.of("<", ">")),
+                Arguments.of(List.of(">", "<"), List.of("<", ">")),
+                Arguments.of(List.of("<^^", "v<"), List.of("<^^", "v<")),
+                Arguments.of(List.of("v<", "<^^"), List.of("<^^", "v<")),
+                Arguments.of(List.of(">v", "v>"), List.of("v>", ">v")),
+                Arguments.of(List.of("<<", "v>"), List.of("v>", ">v"))
         );
     }
 }

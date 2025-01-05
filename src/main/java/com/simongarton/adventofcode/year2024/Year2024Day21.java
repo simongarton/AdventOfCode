@@ -129,7 +129,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         return sequences.stream()
                 .filter(s -> s.length() == minLength)
                 .filter(s -> !this.hasZigZags(s))
-                .sorted(Comparator.naturalOrder())
+                .sorted(new DirectionComparator())
                 .toList();
     }
 
@@ -213,7 +213,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         final List<String> filteredSequences = sequences.stream()
                 .filter(s -> s.length() == minLength)
                 .filter(s -> !this.hasZigZags(s))
-                .sorted(Comparator.naturalOrder())
+                .sorted(new DirectionComparator())
                 .toList();
 
         return filteredSequences;
@@ -511,7 +511,9 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             throw new RuntimeException("couldn't buildDirPadKeyPressesForSequence() for " + sequence);
         }
 
-        final List<String> completedAndSorted = complete.stream().map(KeyPressNode::getSequenceToPressKey).sorted(Comparator.naturalOrder()).toList();
+        final List<String> completedAndSorted = complete.stream()
+                .map(KeyPressNode::getSequenceToPressKey)
+                .sorted(Comparator.naturalOrder()).toList();
         this.cache.put(key, completedAndSorted);
         return completedAndSorted;
     }
@@ -569,7 +571,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         return this.commonLogic(input, 26);
     }
 
-    private String commonLogic(final String[] input, final int directionalKeypads) {
+    private String oldCommonLogic(final String[] input, final int directionalKeypads) {
 
         // odd. part 1 looks OK ish (wrong answer but different full sequence lengths); part 2
         // has 8589934588 for fullSequenceLength each time ?!
@@ -579,6 +581,22 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
             total += (long) numericPart * sequence.length();
             System.out.println("  " + numericCode + ": " + numericPart + " * " + sequence.length() + " = " + numericPart * sequence.length());
+        }
+        return String.valueOf(total);
+    }
+
+    private String commonLogic(final String[] input, final int directionalKeypads) {
+
+        // odd. part 1 looks OK ish (wrong answer 145240 not 138764 but different full sequence lengths);
+        // part 2 has 8589934588 for fullSequenceLength each time ?!
+        long total = 0;
+        for (final String numericCode : input) {
+            final String sequence = this.shortestFullSequence(numericCode, 1);
+            final Map<String, Long> cache = new HashMap<>();
+            final long sequenceLength = this.shortestSequenceRecursively(sequence, 1, directionalKeypads, cache);
+            final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
+            total += (long) numericPart * sequenceLength;
+            System.out.println("  " + numericCode + ": " + numericPart + " * " + sequenceLength + " = " + numericPart * sequenceLength);
         }
         return String.valueOf(total);
     }
@@ -735,6 +753,64 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         @Override
         public int hashCode() {
             return Objects.hash(this.sequence, this.robotLevel);
+        }
+    }
+
+    static class DirectionComparator implements Comparator<String> {
+
+        @Override
+        public int compare(final String s1, final String s2) {
+
+            /*
+
+            I need to just look at the starting characters.
+            If I have left, then they should go before up or down.
+            If I have right, then they should go after up or down.
+
+             */
+
+
+            final boolean s1HasLeft = s1.startsWith("<");
+            final boolean s1HasRight = s1.startsWith(">");
+            final boolean s1HasUpOrDown = s1.startsWith("^") || s1.startsWith("v");
+
+            final boolean s2HasLeft = s2.startsWith("<");
+            final boolean s2HasRight = s2.startsWith(">");
+            final boolean s2HasUpOrDown = s2.startsWith("^") || s2.startsWith("v");
+
+            if (s1HasLeft && !s2HasLeft) {
+                return -1;
+            }
+            if (!s1HasLeft && s2HasLeft) {
+                return 1;
+            }
+            if (s1HasRight && !s2HasRight) {
+                return 1;
+            }
+            if (!s1HasRight && s2HasRight) {
+                return -1;
+            }
+
+            if (s1HasLeft && s2HasLeft) {
+                if (s1HasUpOrDown && !s2HasUpOrDown) {
+                    return -1;
+                }
+                if (!s1HasUpOrDown && s2HasUpOrDown) {
+                    return 1;
+                }
+                return s1.compareTo(s2);
+            }
+
+            if (!s1HasLeft) {
+                if (s1HasUpOrDown && !s2HasUpOrDown) {
+                    return 1;
+                }
+                if (!s1HasUpOrDown && s2HasUpOrDown) {
+                    return -1;
+                }
+                return s1.compareTo(s2);
+            }
+            return s1.compareTo(s2);
         }
     }
 }
