@@ -41,6 +41,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
 
         // have broken this - now getting 148460 but correct answer is 138764
+        // and I think I broke it before I added the recursion in
         return this.commonLogic(input, 3);
     }
 
@@ -570,6 +571,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                                             final List<String> result) {
 
         // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
+        // https://www.reddit.com/r/adventofcode/comments/1hjgyps/2024_day_21_part_2_i_got_greedyish/
 
         if (index == sequence.length()) {
             result.add(currentPath);
