@@ -40,8 +40,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        // have broken this - now getting 148460 but correct answer is 138764
-        // and I think I broke it before I added the recursion in
         return this.commonLogic(input, 3);
     }
 
@@ -58,11 +56,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         // set up the num pad sequences
         final String filename = "numPadPaths.json";
-        final File file = new File(filename);
-        if (file.exists()) {
-            this.loadNumPadSequencesManually(filename);
-            return;
-        }
 
         this.numPadSequences = new HashMap<>();
         for (final String from : this.numPadButtons) {
@@ -135,6 +128,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         return sequences.stream()
                 .filter(s -> s.length() == minLength)
+                .filter(s -> !this.hasZigZags(s))
                 .sorted(Comparator.naturalOrder())
                 .toList();
     }
@@ -143,11 +137,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         // set up the dir pad sequences
         final String filename = "dirPadPaths.json";
-        final File file = new File(filename);
-        if (file.exists()) {
-            this.loadDirPadSequencesManually(filename);
-            return;
-        }
 
         this.dirPadSequences = new HashMap<>();
         for (final String from : this.dirPadButtons) {
@@ -223,10 +212,50 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         final List<String> filteredSequences = sequences.stream()
                 .filter(s -> s.length() == minLength)
+                .filter(s -> !this.hasZigZags(s))
                 .sorted(Comparator.naturalOrder())
                 .toList();
 
         return filteredSequences;
+    }
+
+    public boolean hasZigZags(final String s) {
+
+        final List<String> upDown = List.of("^", "v");
+        final List<String> leftRight = List.of("<", ">");
+
+        final String first = s.substring(0, 1);
+        final boolean upDownFirst = (upDown.contains(first));
+        boolean gotOther = false;
+        for (int i = 1; i < s.length(); i++) {
+            final String current = s.substring(i, i + 1);
+            if (current.equalsIgnoreCase("A")) {
+                continue; // should always be the last one
+            }
+            if (upDownFirst) {
+                if (leftRight.contains(current)) {
+                    gotOther = true;
+                    continue;
+                }
+            } else {
+                if (upDown.contains(current)) {
+                    gotOther = true;
+                    continue;
+                }
+            }
+            if (gotOther) {
+                if (!upDownFirst) {
+                    if (leftRight.contains(current)) {
+                        return true;
+                    }
+                } else {
+                    if (upDown.contains(current)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private String buildSequence(final KeypadNode keypadNode) {
@@ -546,12 +575,10 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         // has 8589934588 for fullSequenceLength each time ?!
         long total = 0;
         for (final String numericCode : input) {
-            final Map<String, Long> cache = new HashMap<>();
-            final String sequence = this.shortestFullSequence(numericCode, 1);
-            final long fullSequenceLength = this.shortestSequenceRecursively(sequence, 1, directionalKeypads, cache);
+            final String sequence = this.shortestFullSequence(numericCode, directionalKeypads);
             final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
-            total += numericPart * fullSequenceLength;
-            System.out.println("  " + numericCode + ": " + numericPart + " * " + fullSequenceLength + " = " + numericPart * fullSequenceLength);
+            total += (long) numericPart * sequence.length();
+            System.out.println("  " + numericCode + ": " + numericPart + " * " + sequence.length() + " = " + numericPart * sequence.length());
         }
         return String.valueOf(total);
     }

@@ -355,7 +355,32 @@ class Year2024Day21Test {
 
         // then
         assertEquals(expected, actual);
+    }
 
+    @ParameterizedTest
+    @MethodSource("zigZagValues")
+    void testHasZigZags(final String sequence, final boolean expected) {
 
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+
+        // when
+        final boolean actual = year2024Day21.hasZigZags(sequence);
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    static List<Arguments> zigZagValues() {
+
+        return List.of(
+                Arguments.of("<A", false),
+                Arguments.of("^A", false),
+                Arguments.of("^^A", false),
+                Arguments.of("^vA", false),
+                Arguments.of("<^A", false),
+                Arguments.of("v<^A", true),
+                Arguments.of("<^>A", true)
+        );
     }
 }
