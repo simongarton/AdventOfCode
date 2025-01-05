@@ -5,10 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -331,5 +328,20 @@ class Year2024Day21Test {
         assertEquals("^", subsequences[4]);
         assertEquals("", subsequences[5]);
         assertEquals(">", subsequences[6]);
+    }
+
+    @Test
+    void testBuildKeySequenceRecursively() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String sequence = "v<<A>>^A";
+        final List<String> result = new ArrayList<>();
+
+        // when
+        year2024Day21.buildKeySequenceRecursively(sequence, 0, "A", "", result);
+
+        // then
+        assertEquals(32, result.size());
     }
 }

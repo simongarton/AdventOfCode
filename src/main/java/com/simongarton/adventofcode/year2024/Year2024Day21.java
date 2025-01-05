@@ -488,11 +488,13 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         return result;
     }
 
-    private void buildKeySequenceRecursively(final String sequence,
-                                             final int index,
-                                             final String previousKey,
-                                             final String currentPath,
-                                             final List<String> result) {
+    public void buildKeySequenceRecursively(final String sequence,
+                                            final int index,
+                                            final String previousKey,
+                                            final String currentPath,
+                                            final List<String> result) {
+
+        // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
 
         if (index == sequence.length()) {
             result.add(currentPath);
@@ -508,6 +510,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     }
 
     public int shortestSequenceRecursively(final String sequence, final int level, final int maxLevel, final Map<String, Integer> cache) {
+
+        // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
 
         // System.out.println("level " + level + "/" + maxLevel + " " + sequence);
 
