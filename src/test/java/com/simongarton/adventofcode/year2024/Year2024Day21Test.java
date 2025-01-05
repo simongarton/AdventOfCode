@@ -135,8 +135,8 @@ class Year2024Day21Test {
     static List<Arguments> dirPadPathValues() {
 
         return List.of(
-                Arguments.of("A", "^", List.of("<A", "v<^A")),
-                Arguments.of("A", "<", List.of("<v<A", "v<<A"))
+                Arguments.of("A", "^", List.of("<A")),
+                Arguments.of("A", "<", List.of("v<<A"))
         );
     }
 
@@ -145,7 +145,7 @@ class Year2024Day21Test {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
-        final List<String> expected = List.of("<Av<A>>^A", "<Av<A>^>A");
+        final List<String> expected = List.of("<Av<A>>^A");
 
         // when
         final List<String> actual = year2024Day21.buildDirPadKeyPressesForSequence("^<A", 3);
@@ -177,12 +177,12 @@ class Year2024Day21Test {
                 Arguments.of("378A", 1, "^A<<^^A>A>vvvA"),
                 Arguments.of("2", 1, "<^A"),
                 Arguments.of("3", 2, "<A>A"),
-                Arguments.of("3", 3, "<v<A>>^AvA^A"),
+                Arguments.of("3", 3, "v<<A>>^AvA^A"),
                 Arguments.of("7", 1, "<^<^^A"),
                 Arguments.of("7", 2, "<AAAv<AA>>^A"),
-                Arguments.of("7", 3, "<v<A>>^AAA<vA<A>>^AAvAA<^A>A"),
+                Arguments.of("7", 3, "v<<A>>^AAA<vA<A>>^AAvAA<^A>A"),
                 Arguments.of("0", 1, "<A"),
-                Arguments.of("0", 2, "<v<A>>^A"),
+                Arguments.of("0", 2, "v<<A>>^A"),
                 Arguments.of("0", 3, "<vA<AA>>^AvAA<^A>A")
         );
     }
@@ -230,11 +230,8 @@ class Year2024Day21Test {
         final List<String> actual = year2024Day21.buildKeySequences(sequence);
 
         // then
-        assertEquals(4, actual.size());
-        assertTrue(actual.contains("<v<A>>^A"));
-        assertTrue(actual.contains("<v<A>^>A"));
+        assertEquals(1, actual.size());
         assertTrue(actual.contains("v<<A>>^A"));
-        assertTrue(actual.contains("v<<A>^>A"));
     }
 
     @ParameterizedTest
@@ -342,6 +339,6 @@ class Year2024Day21Test {
         year2024Day21.buildKeySequenceRecursively(sequence, 0, "A", "", result);
 
         // then
-        assertEquals(32, result.size());
+        assertEquals(4, result.size());
     }
 }

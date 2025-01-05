@@ -1,8 +1,13 @@
 package com.simongarton.adventofcode.year2024;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import lombok.Getter;
 
+import java.io.*;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class Year2024Day21 extends AdventOfCodeChallenge {
@@ -50,6 +55,12 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     private void setupNumPadSequences() {
 
         // set up the num pad sequences
+        final String filename = "numPadPaths.json";
+        final File file = new File(filename);
+        if (file.exists()) {
+            this.loadNumPadSequencesManually(filename);
+            return;
+        }
 
         this.numPadSequences = new HashMap<>();
         for (final String from : this.numPadButtons) {
@@ -59,6 +70,25 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                 final List<String> paths = this.getNumPadPaths(from, to);
                 currentMap.put(to, paths);
             }
+        }
+
+        try (final Writer writer = new FileWriter(filename)) {
+            final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+            gson.toJson(this.numPadSequences, writer);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void loadNumPadSequencesManually(final String fileName) {
+
+        try (final Reader reader = new FileReader(fileName)) {
+            final Gson gson = new Gson();
+            final Type hashMapType = new TypeToken<Map<String, Map<String, List<String>>>>() {
+            }.getType();
+            this.numPadSequences = gson.fromJson(reader, hashMapType);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -105,12 +135,17 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                 .filter(s -> s.length() == minLength)
                 .sorted(Comparator.naturalOrder())
                 .toList();
-
     }
 
     private void setupDirPadSequences() {
 
         // set up the dir pad sequences
+        final String filename = "dirPadPaths.json";
+        final File file = new File(filename);
+        if (file.exists()) {
+            this.loadDirPadSequencesManually(filename);
+            return;
+        }
 
         this.dirPadSequences = new HashMap<>();
         for (final String from : this.dirPadButtons) {
@@ -120,6 +155,25 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                 final List<String> paths = this.getDirPadPaths(from, to);
                 currentMap.put(to, paths);
             }
+        }
+
+        try (final Writer writer = new FileWriter(filename)) {
+            final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+            gson.toJson(this.dirPadSequences, writer);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void loadDirPadSequencesManually(final String fileName) {
+
+        try (final Reader reader = new FileReader(fileName)) {
+            final Gson gson = new Gson();
+            final Type hashMapType = new TypeToken<Map<String, Map<String, List<String>>>>() {
+            }.getType();
+            this.dirPadSequences = gson.fromJson(reader, hashMapType);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -154,7 +208,23 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         for (final KeypadNode keypadNode : success) {
             sequences.add(this.buildSequence(keypadNode));
         }
-        return sequences;
+
+        // I have an optimisation here ? I'm getting e.g. >>A and >^>vA which are both legal, but I'd
+        // never want to do the longer one ? I don't think it will solve the problem, but it will make it faster.
+
+        // return sequences;
+
+        final int minLength = sequences.stream()
+                .map(String::length)
+                .min(Integer::compareTo)
+                .orElseThrow();
+
+        final List<String> filteredSequences = sequences.stream()
+                .filter(s -> s.length() == minLength)
+                .sorted(Comparator.naturalOrder())
+                .toList();
+
+        return filteredSequences;
     }
 
     private String buildSequence(final KeypadNode keypadNode) {
@@ -186,7 +256,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         return this.neighboursFor(current, visited, this.dirpadNeighbours(current.key));
     }
 
-    private List<KeypadNode> neighboursFor(final KeypadNode current, final List<KeypadNode> visited, final List<List<String>> neighbourLists) {
+    private List<KeypadNode> neighboursFor(final KeypadNode current, final List<KeypadNode> visited,
+                                           final List<List<String>> neighbourLists) {
 
         // neighbour support for BFS, checking to see if I have hit this button in the same direction ...
         // this gives me support for  ^>v as well as > which I don't think I really need.
@@ -509,7 +580,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         }
     }
 
-    public int shortestSequenceRecursively(final String sequence, final int level, final int maxLevel, final Map<String, Integer> cache) {
+    public int shortestSequenceRecursively(final String sequence, final int level, final int maxLevel,
+                                           final Map<String, Integer> cache) {
 
         // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
 
