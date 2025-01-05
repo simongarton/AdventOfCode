@@ -241,10 +241,10 @@ class Year2024Day21Test {
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
         final int level = 1;
-        final Map<String, Integer> cache = new HashMap<>();
+        final Map<String, Long> cache = new HashMap<>();
 
         // when
-        final int actual = year2024Day21.shortestSequenceRecursively(sequence, level, maxLevel, cache);
+        final long actual = year2024Day21.shortestSequenceRecursively(sequence, level, maxLevel, cache);
 
         // then
         assertEquals(expected, actual);
@@ -275,11 +275,11 @@ class Year2024Day21Test {
         final Year2024Day21 year2024Day21 = new Year2024Day21();
         final int level = 1;
         final int maxLevel = 3;
-        final Map<String, Integer> cache = new HashMap<>();
+        final Map<String, Long> cache = new HashMap<>();
         final String sequence = year2024Day21.shortestFullSequence(numericCode, 1);
 
         // when
-        final int actual = year2024Day21.shortestSequenceRecursively(sequence, level, maxLevel, cache);
+        final long actual = year2024Day21.shortestSequenceRecursively(sequence, level, maxLevel, cache);
 
         // then
         assertEquals(expected.length(), actual);
@@ -292,13 +292,13 @@ class Year2024Day21Test {
         final Year2024Day21 year2024Day21 = new Year2024Day21();
         final int level = 1;
         final int maxLevel = 3;
-        final Map<String, Integer> cache = new HashMap<>();
+        final Map<String, Long> cache = new HashMap<>();
         final String numericCode = "179A";
         final String sequence = year2024Day21.shortestFullSequence(numericCode, 1);
         final String expected = "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A"; // 68
 
         // when
-        final int actual = year2024Day21.shortestSequenceRecursively(sequence, level, maxLevel, cache); // 76
+        final long actual = year2024Day21.shortestSequenceRecursively(sequence, level, maxLevel, cache); // 76
 
         // then
         assertEquals(expected.length(), actual);
@@ -340,5 +340,22 @@ class Year2024Day21Test {
 
         // then
         assertEquals(4, result.size());
+    }
+
+    @Test
+    void testPart1() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String[] input = new String[]{"140A", "180A", "176A", "805A", "638A"};
+        final long expected = 138764;
+
+        // when
+        final long actual = Long.parseLong(year2024Day21.part1(input));
+
+        // then
+        assertEquals(expected, actual);
+
+
     }
 }

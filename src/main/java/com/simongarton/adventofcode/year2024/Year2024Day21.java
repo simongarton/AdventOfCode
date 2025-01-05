@@ -40,6 +40,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
+        // have broken this - now getting 148460 but correct answer is 138764
         return this.commonLogic(input, 3);
     }
 
@@ -534,19 +535,22 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
-        return null;
-        //return this.commonLogic(input, 26);
+        // 16655883166132 too low
+        return this.commonLogic(input, 26);
     }
 
     private String commonLogic(final String[] input, final int directionalKeypads) {
 
-        int total = 0;
+        // odd. part 1 looks OK ish (wrong answer but different full sequence lengths); part 2
+        // has 8589934588 for fullSequenceLength each time ?!
+        long total = 0;
         for (final String numericCode : input) {
-            final String fullSequence = this.shortestFullSequence(numericCode, directionalKeypads);
+            final Map<String, Long> cache = new HashMap<>();
+            final String sequence = this.shortestFullSequence(numericCode, 1);
+            final long fullSequenceLength = this.shortestSequenceRecursively(sequence, 1, directionalKeypads, cache);
             final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
-            total += numericPart * fullSequence.length();
-            //System.out.println(fullSequence);
-            //System.out.println("  " + numericCode + ": " + numericPart + " * " + fullSequence.length() + " = " + numericPart * fullSequence.length());
+            total += numericPart * fullSequenceLength;
+            System.out.println("  " + numericCode + ": " + numericPart + " * " + fullSequenceLength + " = " + numericPart * fullSequenceLength);
         }
         return String.valueOf(total);
     }
@@ -580,8 +584,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         }
     }
 
-    public int shortestSequenceRecursively(final String sequence, final int level, final int maxLevel,
-                                           final Map<String, Integer> cache) {
+    public long shortestSequenceRecursively(final String sequence, final int level, final int maxLevel,
+                                            final Map<String, Long> cache) {
 
         // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
 
@@ -596,7 +600,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             return cache.get(key);
         }
 
-        int total = 0;
+        long total = 0;
 
         // here's the magic. if I'm pressing A, all the keypads are lined up and so I can split up the main sequence
         // to make it manageable. but I need to put the As back in again to estimate their size.
@@ -609,10 +613,10 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
             final List<String> options = this.buildKeySequences(subsequence);
             // System.out.println("    options for " + subsequence + "A were " + options);
-            int shortest = Integer.MAX_VALUE;
+            long shortest = Integer.MAX_VALUE;
             String shortestOption = "";
             for (final String option : options) {
-                final int optionLength = this.shortestSequenceRecursively(option, level + 1, maxLevel, cache);
+                final long optionLength = this.shortestSequenceRecursively(option, level + 1, maxLevel, cache);
                 // System.out.println("      option " + option + " length " + optionLength + " shortest " + shortest);
                 if (shortest > optionLength) {
                     shortest = optionLength;
