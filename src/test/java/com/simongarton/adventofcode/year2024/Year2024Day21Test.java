@@ -28,7 +28,7 @@ class Year2024Day21Test {
 
     @ParameterizedTest
     @MethodSource("part1SampleValues")
-    void testPart1SampleOnly(final String numericCode, final String expected) {
+    void testPart1SampleExact(final String numericCode, final String expected) {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
@@ -371,6 +371,21 @@ class Year2024Day21Test {
         assertEquals(expected, actual);
     }
 
+    @Test
+    void testPart2() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String[] input = new String[]{"140A", "180A", "176A", "805A", "638A"};
+        final long expected = 138764;
+
+        // when
+        final long actual = Long.parseLong(year2024Day21.part2(input));
+
+        // then
+        assertEquals(expected, actual);
+    }
+
     @ParameterizedTest
     @MethodSource("zigZagValues")
     void testHasZigZags(final String sequence, final boolean expected) {
@@ -421,7 +436,10 @@ class Year2024Day21Test {
                 Arguments.of(List.of("<^^", "v<"), List.of("<^^", "v<")),
                 Arguments.of(List.of("v<", "<^^"), List.of("<^^", "v<")),
                 Arguments.of(List.of(">v", "v>"), List.of("v>", ">v")),
-                Arguments.of(List.of("<<", "v>"), List.of("v>", ">v"))
+                Arguments.of(List.of("<<^", "^<<"), List.of("<<^", "^<<")),
+                Arguments.of(List.of("^<<", "<<^"), List.of("<<^", "^<<")),
+                Arguments.of(List.of(">>v", "v>>"), List.of("v>>", ">>v")),
+                Arguments.of(List.of("v>>", ">>v"), List.of("v>>", ">>v"))
         );
     }
 }

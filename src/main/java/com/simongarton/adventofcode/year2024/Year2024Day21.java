@@ -568,13 +568,13 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     public String part2(final String[] input) {
 
         // 16655883166132 too low
+        // the lengths all converge on 8589934588 at 24
+        // the initial sequence is different
         return this.commonLogic(input, 26);
     }
 
     private String oldCommonLogic(final String[] input, final int directionalKeypads) {
 
-        // odd. part 1 looks OK ish (wrong answer but different full sequence lengths); part 2
-        // has 8589934588 for fullSequenceLength each time ?!
         long total = 0;
         for (final String numericCode : input) {
             final String sequence = this.shortestFullSequence(numericCode, directionalKeypads);
@@ -768,7 +768,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             If I have right, then they should go after up or down.
 
              */
-
 
             final boolean s1HasLeft = s1.startsWith("<");
             final boolean s1HasRight = s1.startsWith(">");
