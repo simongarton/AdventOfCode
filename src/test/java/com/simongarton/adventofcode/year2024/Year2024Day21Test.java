@@ -372,6 +372,21 @@ class Year2024Day21Test {
     }
 
     @Test
+    void testPart1Old() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String[] input = new String[]{"140A", "180A", "176A", "805A", "638A"};
+        final long expected = 138764;
+
+        // when
+        final long actual = Long.parseLong(year2024Day21.part1Old(input));
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void testPart2() {
 
         // given

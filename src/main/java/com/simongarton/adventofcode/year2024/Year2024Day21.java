@@ -20,6 +20,35 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     private final List<String> numPadButtons = List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A");
     private final List<String> dirPadButtons = List.of("<", ">", "^", "v", "A");
 
+    /*
+
+    My old logic - building trees and maintaining the complete sequence - works for part 1, but will die
+    for part 2.
+    My new logic - just picking the minimum length for each level, and tracking the lengths, not the sequence - passes
+    all tests but fails part 1.
+
+    Old
+
+      140A: 140 * 70 = 9800
+      180A: 180 * 74 = 13320
+      176A: 176 * 74 = 13024
+      805A: 805 * 72 = 57960
+      638A: 638 * 70 = 44660
+
+    New
+
+      140A: 140 * 70 = 9800
+      180A: 180 * 74 = 13320
+      176A: 176 * 78 = 13728 *
+      805A: 805 * 76 = 61180 *
+      638A: 638 * 74 = 47212 *
+
+     I don't generate the same sequences that the sample does, but I do get the same length. It picks '<v<' rather
+     that 'v<<` which is a zigzag and I exclude it
+
+
+     */
+
     public Year2024Day21() {
 
         super();
@@ -41,6 +70,11 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     public String part1(final String[] input) {
 
         return this.commonLogic(input, 3);
+    }
+
+    public String part1Old(final String[] input) {
+
+        return this.oldCommonLogic(input, 3);
     }
 
     private void setupSequences() {
