@@ -319,6 +319,26 @@ class Year2024Day21Test {
     }
 
     @Test
+    void testIfICanGenerateKeysRecursively() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final int level = 1;
+        // max level of 2 and above gives me the same result each time ...
+        final int maxLevel = 4;
+        final Map<String, String> cache = new HashMap<>();
+        final String numericCode = "0";
+        final String sequence = year2024Day21.shortestFullSequence(numericCode, 1);
+        final String expected = "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A"; // 68
+
+        // when
+        final String actual = year2024Day21.shortestSequenceOfKeysRecursively(sequence, level, maxLevel, cache); // 76
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void howDoesSplitWorkOnMultiples() {
 
         // as I expected. "<AAA" will give me three sections : "<" and 2 empty strings, which I then add As to each of.

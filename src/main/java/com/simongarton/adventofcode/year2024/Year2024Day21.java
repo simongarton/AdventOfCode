@@ -668,6 +668,10 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     public long shortestSequenceRecursively(final String sequence, final int level, final int maxLevel,
                                             final Map<String, Long> cache) {
 
+        // for part 1 this never hits the cache ...
+        // I would really like to build up the string it eventually uses
+        // then I could look at where it differs from the old code
+
         // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
 
         // System.out.println("level " + level + "/" + maxLevel + " " + sequence);
@@ -693,7 +697,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             final String subsequence = subsequenceWithoutA + "A";
 
             final List<String> options = this.buildKeySequences(subsequence);
-            // System.out.println("    options for " + subsequence + "A were " + options);
+            // System.out.println("    options for " + subsequence + " were " + options);
             long shortest = Integer.MAX_VALUE;
             String shortestOption = "";
             for (final String option : options) {
@@ -711,6 +715,59 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         cache.put(key, total);
         return total;
+    }
+
+    public String shortestSequenceOfKeysRecursively(final String sequence, final int level, final int maxLevel,
+                                                    final Map<String, String> cache) {
+
+        // for part 1 this never hits the cache ...
+        // I would really like to build up the string it eventually uses
+        // then I could look at where it differs from the old code
+
+        // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
+
+        System.out.println(" ".repeat(level) + "level " + level + "/" + maxLevel + " " + sequence);
+
+        if (level == maxLevel) {
+            System.out.println(" ".repeat(level) + "returning " + sequence + " because at max level");
+            return sequence; // keys pressed on this keypad
+        }
+
+        final String key = level + ":" + sequence;
+        if (cache.containsKey(key)) {
+            System.out.println(" ".repeat(level) + "returning " + cache.get(key) + " from cache");
+            return cache.get(key);
+        }
+
+        final StringBuilder total = new StringBuilder();
+
+        // here's the magic. if I'm pressing A, all the keypads are lined up and so I can split up the main sequence
+        // to make it manageable. but I need to put the As back in again to estimate their size.
+        final String[] subsequencesNoA = sequence.split("A");
+        final List<String> subsequences = Arrays.stream(subsequencesNoA).map(s -> s + "A").toList();
+        System.out.println(" ".repeat(level) + "split to " + subsequences);
+        int subsequenceIndex = 0;
+        for (final String subsequence : subsequences) {
+
+            final List<String> options = this.buildKeySequences(subsequence);
+            System.out.println(" ".repeat(level) + "- options for " + subsequence + " were " + options);
+            long shortest = Integer.MAX_VALUE;
+            String shortestOption = "";
+            for (final String option : options) {
+                final String subOption = this.shortestSequenceOfKeysRecursively(option, level + 1, maxLevel, cache);
+                final long optionLength = subOption.length();
+                if (shortest > optionLength) {
+                    shortest = optionLength;
+                    shortestOption = option;
+                }
+            }
+            System.out.println(" ".repeat(level) + "for subsequence " + subsequence + " (" + subsequenceIndex + ") of " + sequence + " I am using " + shortestOption + " (" + shortestOption.length() + ") at level " + level);
+            total.append(shortestOption);
+            subsequenceIndex++;
+        }
+
+        cache.put(key, total.toString());
+        return total.toString();
     }
 
     record KeypadNode(String key, String direction, Year2024Day21.KeypadNode previous) {
