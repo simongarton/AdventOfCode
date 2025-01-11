@@ -17,43 +17,17 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     private final Map<String, List<String>> cache;
 
+    private final List<TreeNode> treeNodes;
+
     private final List<String> numPadButtons = List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A");
     private final List<String> dirPadButtons = List.of("<", ">", "^", "v", "A");
-
-    /*
-
-    My old logic - building trees and maintaining the complete sequence - works for part 1, but will die
-    for part 2.
-    My new logic - just picking the minimum length for each level, and tracking the lengths, not the sequence - passes
-    all tests but fails part 1.
-
-    Old
-
-      140A: 140 * 70 = 9800
-      180A: 180 * 74 = 13320
-      176A: 176 * 74 = 13024
-      805A: 805 * 72 = 57960
-      638A: 638 * 70 = 44660
-
-    New
-
-      140A: 140 * 70 = 9800
-      180A: 180 * 74 = 13320
-      176A: 176 * 78 = 13728 *
-      805A: 805 * 76 = 61180 *
-      638A: 638 * 74 = 47212 *
-
-     I don't generate the same sequences that the sample does, but I do get the same length. It picks '<v<' rather
-     that 'v<<` which is a zigzag and I exclude it
-
-
-     */
 
     public Year2024Day21() {
 
         super();
         this.setupSequences();
         this.cache = new HashMap<>();
+        this.treeNodes = new ArrayList<>();
     }
 
     @Override
@@ -603,8 +577,11 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         // 4163970791533 too low
         // 16655883166132 too low
-        // 167820844384350 (27) too low
+        // 167820844384350 (27) too low (now just wrong ...)
         // 417475421464427 (28) just wrong
+
+        // I'm sure it's 27. Part 1 is working with 4 (for 2 robots in the middle) and this
+        // is 25 robots
         return this.commonLogic(input, 27);
     }
 
@@ -625,7 +602,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         long total = 0;
         for (final String numericCode : input) {
             final Map<String, Long> cache = new HashMap<>();
-            final long sequenceLength = this.shortestSequenceRecursively(numericCode, 1, directionalKeypads, cache);
+            final long sequenceLength = this.shortestSequenceRecursively(numericCode, null, 1, directionalKeypads, cache);
             final long numericPart = Long.parseLong(numericCode.replace("A", ""));
             total += numericPart * sequenceLength;
             System.out.println("  " + numericCode + ": " + numericPart + " * " + sequenceLength + " = " + numericPart * sequenceLength);
@@ -713,26 +690,25 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     }
 
     public long shortestSequenceRecursively(final String sequence,
+                                            final String parentKey,
                                             final int level,
                                             final int maxLevel,
                                             final Map<String, Long> cache) {
 
-        // for part 1 this never hits the cache ...
-        // I would really like to build up the string it eventually uses
-        // then I could look at where it differs from the old code
-
         // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
 
         // System.out.println(" ".repeat(level) + "level " + level + "/" + maxLevel + " " + sequence + " (" + sequence.length() + ")");
+        final String key = level + ":" + sequence;
 
         if (level == maxLevel) {
             // System.out.println(" ".repeat(level) + " returning " + sequence.length() + " because max level");
+            this.treeNodes.add(new TreeNode(key, parentKey, sequence, level));
             return sequence.length(); // keys pressed on this keypad
         }
 
-        final String key = level + ":" + sequence;
         if (cache.containsKey(key)) {
             // System.out.println(" ".repeat(level) + " returning " + cache.get(key) + " from cache for " + sequence + " at level " + level);
+            this.treeNodes.add(new TreeNode(key, parentKey, sequence, level));
             return cache.get(key);
         }
 
@@ -746,13 +722,17 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         for (final String subsequenceWithoutA : subsequences) {
 
             final String subsequence = subsequenceWithoutA + "A";
+            final String subsequenceKey = level + ":" + sequence + "[" + subsequence + "]";
+            this.treeNodes.add(new TreeNode(subsequenceKey, key, subsequence, level));
 
             final List<String> options = this.buildKeySequences(subsequence);
             // System.out.println("    options for " + subsequence + " were " + options);
             long shortest = Long.MAX_VALUE;
             String shortestOption = "";
             for (final String option : options) {
-                final long optionLength = this.shortestSequenceRecursively(option, level + 1, maxLevel, cache);
+                final String optionKey = level + ":" + sequence + "[" + subsequence + "]{" + option + "}";
+                this.treeNodes.add(new TreeNode(optionKey, subsequenceKey, subsequence, level));
+                final long optionLength = this.shortestSequenceRecursively(option, optionKey, level + 1, maxLevel, cache);
                 // System.out.println("      option " + option + " length " + optionLength + " shortest " + shortest);
                 if (shortest > optionLength) {
                     shortest = optionLength;
@@ -765,7 +745,21 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         }
 
         cache.put(key, total);
+        this.treeNodes.add(new TreeNode(key, parentKey, sequence, level));
         return total;
+    }
+
+    public void dumpTreeNodeGraph() {
+
+        final String dq = "\"";
+        final List<String> graph = new ArrayList<>();
+        graph.add("digraph {");
+        graph.add("rankdir=\"LR\"");
+        for (final TreeNode treeNode : this.treeNodes) {
+            graph.add(dq + treeNode.parentKey + dq + "->" + dq + treeNode.key + dq);
+        }
+        graph.add("}");
+        this.dumpGraphToFile("treenodes.dot", graph);
     }
 
     record KeypadNode(String key, String direction, Year2024Day21.KeypadNode previous) {
@@ -899,6 +893,21 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                 return s1.compareTo(s2);
             }
             return s1.compareTo(s2);
+        }
+    }
+
+    static class TreeNode {
+
+        String key;
+        String parentKey;
+        String sequence;
+        long length;
+
+        public TreeNode(final String key, final String parentKey, final String sequence, final long length) {
+            this.key = key;
+            this.parentKey = parentKey;
+            this.sequence = sequence;
+            this.length = length;
         }
     }
 }

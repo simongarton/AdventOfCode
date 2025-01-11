@@ -258,7 +258,7 @@ class Year2024Day21Test {
         final Map<String, Long> cache = new HashMap<>();
 
         // when
-        final long actual = year2024Day21.shortestSequenceRecursively(sequence, level, maxLevel, cache);
+        final long actual = year2024Day21.shortestSequenceRecursively(sequence, null, level, maxLevel, cache);
 
         // then
         assertEquals(expected, actual);
@@ -293,10 +293,26 @@ class Year2024Day21Test {
         final String sequence = year2024Day21.shortestFullSequence(numericCode, 1);
 
         // when
-        final long actual = year2024Day21.shortestSequenceRecursively(sequence, level, maxLevel, cache);
+        final long actual = year2024Day21.shortestSequenceRecursively(sequence, null, level, maxLevel, cache);
 
         // then
         assertEquals(expected.length(), actual);
+    }
+
+    @Test
+    void testLengths() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final int level = 1;
+        final String numericCode = "176A";
+
+        // when
+        for (int maxLevel = 1; maxLevel <= 27; maxLevel++) {
+            final Map<String, Long> cache = new HashMap<>();
+            final long actual = year2024Day21.shortestSequenceRecursively(numericCode, null, level, maxLevel, cache);
+            System.out.println(numericCode + ":" + maxLevel + "=" + actual);
+        }
     }
 
     @Test
@@ -311,10 +327,12 @@ class Year2024Day21Test {
         final String expected = "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A"; // 68
 
         // when
-        final long actual = year2024Day21.shortestSequenceRecursively(numericCode, level, maxLevel, cache); // 76
+        final long actual = year2024Day21.shortestSequenceRecursively(numericCode, null, level, maxLevel, cache);
 
         // then
         assertEquals(expected.length(), actual);
+
+        year2024Day21.dumpTreeNodeGraph();
     }
 
     @Test
