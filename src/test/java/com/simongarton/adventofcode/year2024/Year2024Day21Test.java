@@ -305,14 +305,13 @@ class Year2024Day21Test {
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
         final int level = 1;
-        final int maxLevel = 3;
+        final int maxLevel = 4;
         final Map<String, Long> cache = new HashMap<>();
         final String numericCode = "179A";
-        final String sequence = year2024Day21.shortestFullSequence(numericCode, 1);
         final String expected = "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A"; // 68
 
         // when
-        final long actual = year2024Day21.shortestSequenceRecursively(sequence, level, maxLevel, cache); // 76
+        final long actual = year2024Day21.shortestSequenceRecursively(numericCode, level, maxLevel, cache); // 76
 
         // then
         assertEquals(expected.length(), actual);
@@ -328,11 +327,10 @@ class Year2024Day21Test {
         final int maxLevel = 4;
         final Map<String, String> cache = new HashMap<>();
         final String numericCode = "0";
-        final String sequence = year2024Day21.shortestFullSequence(numericCode, 1);
         final String expected = "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A"; // 68
 
         // when
-        final String actual = year2024Day21.shortestSequenceOfKeysRecursively(sequence, level, maxLevel, cache); // 76
+        final String actual = year2024Day21.shortestSequenceOfKeysRecursively(numericCode, level, maxLevel, cache); // 76
 
         // then
         assertEquals(expected, actual);
@@ -362,7 +360,7 @@ class Year2024Day21Test {
     }
 
     @Test
-    void testBuildKeySequenceRecursively() {
+    void testBuildDirKeySequenceRecursively() {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
@@ -370,7 +368,7 @@ class Year2024Day21Test {
         final List<String> result = new ArrayList<>();
 
         // when
-        year2024Day21.buildKeySequenceRecursively(sequence, 0, "A", "", result);
+        year2024Day21.buildDirKeySequenceRecursively(sequence, 0, "A", "", result, 0);
 
         // then
         assertEquals(4, result.size());

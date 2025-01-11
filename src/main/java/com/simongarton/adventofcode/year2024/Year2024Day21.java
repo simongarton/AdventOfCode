@@ -69,7 +69,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     @Override
     public String part1(final String[] input) {
 
-        return this.commonLogic(input, 3);
+        return this.commonLogic(input, 4);
     }
 
     public String part1Old(final String[] input) {
@@ -604,7 +604,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         // 16655883166132 too low
         // the lengths all converge on 8589934588 at 24
         // the initial sequence is different
-        return this.commonLogic(input, 26);
+        return this.commonLogic(input, 27);
     }
 
     private String oldCommonLogic(final String[] input, final int directionalKeypads) {
@@ -621,13 +621,13 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     private String commonLogic(final String[] input, final int directionalKeypads) {
 
-        // odd. part 1 looks OK ish (wrong answer 145240 not 138764 but different full sequence lengths);
-        // part 2 has 8589934588 for fullSequenceLength each time ?!
+        // part 1 now fixed
+        // part 2 has 2147483647 for fullSequenceLength each time ?!
         long total = 0;
         for (final String numericCode : input) {
-            final String sequence = this.shortestFullSequence(numericCode, 1);
             final Map<String, Long> cache = new HashMap<>();
-            final long sequenceLength = this.shortestSequenceRecursively(sequence, 1, directionalKeypads, cache);
+            // directionalKeypads + 1
+            final long sequenceLength = this.shortestSequenceRecursively(numericCode, 1, directionalKeypads, cache);
             final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
             total += (long) numericPart * sequenceLength;
             System.out.println("  " + numericCode + ": " + numericPart + " * " + sequenceLength + " = " + numericPart * sequenceLength);
@@ -638,16 +638,32 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     public List<String> buildKeySequences(final String sequence) {
 
         final List<String> result = new ArrayList<>();
-        this.buildKeySequenceRecursively(sequence, 0, "A", "", result);
+        if (this.isDirpadSequence(sequence)) {
+            this.buildDirKeySequenceRecursively(sequence, 0, "A", "", result, 0);
+        } else {
+            this.buildNumKeySequenceRecursively(sequence, 0, "A", "", result, 0);
+        }
 
         return result;
     }
 
-    public void buildKeySequenceRecursively(final String sequence,
-                                            final int index,
-                                            final String previousKey,
-                                            final String currentPath,
-                                            final List<String> result) {
+    private boolean isDirpadSequence(final String sequence) {
+
+        final List<String> arrows = List.of("<", "^", "v", ">");
+        for (int i = 0; i < sequence.length(); i++) {
+            if (arrows.contains(sequence.substring(i, i + 1))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void buildDirKeySequenceRecursively(final String sequence,
+                                               final int index,
+                                               final String previousKey,
+                                               final String currentPath,
+                                               final List<String> result,
+                                               final int recursionLevel) {
 
         // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
         // https://www.reddit.com/r/adventofcode/comments/1hjgyps/2024_day_21_part_2_i_got_greedyish/
@@ -661,7 +677,40 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         final List<String> pathsBetweenKeys = this.getDirPadSequences(previousKey, currentKey);
 
         for (final String path : pathsBetweenKeys) {
-            this.buildKeySequenceRecursively(sequence, index + 1, currentKey, currentPath + path, result);
+            this.buildDirKeySequenceRecursively(sequence,
+                    index + 1,
+                    currentKey,
+                    currentPath + path,
+                    result,
+                    recursionLevel + 1);
+        }
+    }
+
+    public void buildNumKeySequenceRecursively(final String sequence,
+                                               final int index,
+                                               final String previousKey,
+                                               final String currentPath,
+                                               final List<String> result,
+                                               final int recursionLevel) {
+
+        // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
+        // https://www.reddit.com/r/adventofcode/comments/1hjgyps/2024_day_21_part_2_i_got_greedyish/
+
+        if (index == sequence.length()) {
+            result.add(currentPath);
+            return;
+        }
+
+        final String currentKey = sequence.substring(index, index + 1);
+        final List<String> pathsBetweenKeys = this.getNumPadSequences(previousKey, currentKey);
+
+        for (final String path : pathsBetweenKeys) {
+            this.buildNumKeySequenceRecursively(sequence,
+                    index + 1,
+                    currentKey,
+                    currentPath + path,
+                    result,
+                    recursionLevel + 1);
         }
     }
 
@@ -719,6 +768,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     public String shortestSequenceOfKeysRecursively(final String sequence, final int level, final int maxLevel,
                                                     final Map<String, String> cache) {
+
+        // this isn't used in the real code, it was just me trying to build up strings
 
         // for part 1 this never hits the cache ...
         // I would really like to build up the string it eventually uses
