@@ -444,34 +444,4 @@ class Year2024Day21Test {
                 Arguments.of("<^>A", true)
         );
     }
-
-    @ParameterizedTest
-    @MethodSource("comparatorValues")
-    void testComparator(final List<String> unsorted, final List<String> expected) {
-
-        // given
-        final Year2024Day21.DirectionComparator directionComparator = new Year2024Day21.DirectionComparator();
-
-        // when
-        final List<String> actual = unsorted.stream().sorted(directionComparator).toList();
-
-        // then
-        assertEquals(expected, actual);
-        assertEquals(expected.getFirst(), actual.getFirst());
-    }
-
-    static List<Arguments> comparatorValues() {
-
-        return List.of(
-                Arguments.of(List.of("<", ">"), List.of("<", ">")),
-                Arguments.of(List.of(">", "<"), List.of("<", ">")),
-                Arguments.of(List.of("<^^", "v<"), List.of("<^^", "v<")),
-                Arguments.of(List.of("v<", "<^^"), List.of("<^^", "v<")),
-                Arguments.of(List.of(">v", "v>"), List.of("v>", ">v")),
-                Arguments.of(List.of("<<^", "^<<"), List.of("<<^", "^<<")),
-                Arguments.of(List.of("^<<", "<<^"), List.of("<<^", "^<<")),
-                Arguments.of(List.of(">>v", "v>>"), List.of("v>>", ">>v")),
-                Arguments.of(List.of("v>>", ">>v"), List.of("v>>", ">>v"))
-        );
-    }
 }

@@ -142,7 +142,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         return sequences.stream()
                 .filter(s -> s.length() == minLength)
                 .filter(s -> !this.hasZigZags(s))
-                .sorted(new DirectionComparator())
                 .toList();
 
     }
@@ -522,7 +521,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         return sequences.stream()
                 .filter(s -> s.length() == minLength)
-                .sorted(new DirectionComparator())
                 .toList();
     }
 
@@ -775,67 +773,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         @Override
         public int hashCode() {
             return Objects.hash(this.sequence, this.robotLevel);
-        }
-    }
-
-    static class DirectionComparator implements Comparator<String> {
-
-        // this class is based on an idea from reddit where someone
-        // had done some analysis to show it's always a better idea to
-        // go in certain directions.  I don't actually use it.
-
-        @Override
-        public int compare(final String s1, final String s2) {
-
-            /*
-
-            I need to just look at the starting characters.
-            If I have left, then they should go before up or down.
-            If I have right, then they should go after up or down.
-
-             */
-
-            final boolean s1HasLeft = s1.startsWith("<");
-            final boolean s1HasRight = s1.startsWith(">");
-            final boolean s1HasUpOrDown = s1.startsWith("^") || s1.startsWith("v");
-
-            final boolean s2HasLeft = s2.startsWith("<");
-            final boolean s2HasRight = s2.startsWith(">");
-            final boolean s2HasUpOrDown = s2.startsWith("^") || s2.startsWith("v");
-
-            if (s1HasLeft && !s2HasLeft) {
-                return -1;
-            }
-            if (!s1HasLeft && s2HasLeft) {
-                return 1;
-            }
-            if (s1HasRight && !s2HasRight) {
-                return 1;
-            }
-            if (!s1HasRight && s2HasRight) {
-                return -1;
-            }
-
-            if (s1HasLeft && s2HasLeft) {
-                if (s1HasUpOrDown && !s2HasUpOrDown) {
-                    return -1;
-                }
-                if (!s1HasUpOrDown && s2HasUpOrDown) {
-                    return 1;
-                }
-                return s1.compareTo(s2);
-            }
-
-            if (!s1HasLeft) {
-                if (s1HasUpOrDown && !s2HasUpOrDown) {
-                    return 1;
-                }
-                if (!s1HasUpOrDown && s2HasUpOrDown) {
-                    return -1;
-                }
-                return s1.compareTo(s2);
-            }
-            return s1.compareTo(s2);
         }
     }
 
