@@ -331,8 +331,6 @@ class Year2024Day21Test {
 
         // then
         assertEquals(expected, actual);
-
-        year2024Day21.dumpTreeNodeGraph();
     }
 
     @Test

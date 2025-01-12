@@ -17,8 +17,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     private final Map<String, List<String>> cache;
 
-    private final List<TreeNode> treeNodes;
-
     private final List<String> numPadButtons = List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A");
     private final List<String> dirPadButtons = List.of("<", ">", "^", "v", "A");
 
@@ -27,7 +25,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         super();
         this.setupSequences();
         this.cache = new HashMap<>();
-        this.treeNodes = new ArrayList<>();
     }
 
     @Override
@@ -648,12 +645,10 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         final String key = level + ":" + sequence;
 
         if (level == maxLevel) {
-            this.treeNodes.add(new TreeNode(key, parentKey, sequence, level));
             return sequence.length(); // keys pressed on this keypad
         }
 
         if (cache.containsKey(key)) {
-            this.treeNodes.add(new TreeNode(key, parentKey, sequence, level));
             return cache.get(key);
         }
 
@@ -666,13 +661,11 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
             final String subsequence = subsequenceWithoutA + "A";
             final String subsequenceKey = level + ":" + sequence + "[" + subsequence + "]";
-            this.treeNodes.add(new TreeNode(subsequenceKey, key, subsequence, level));
 
             final List<String> options = this.buildKeySequences(subsequence);
-            Long shortest = Long.MAX_VALUE;
+            long shortest = Long.MAX_VALUE;
             for (final String option : options) {
                 final String optionKey = level + ":" + sequence + "[" + subsequence + "]{" + option + "}";
-                this.treeNodes.add(new TreeNode(optionKey, subsequenceKey, subsequence, level));
                 final long optionLength = this.shortestSequenceRecursively(option, optionKey, level + 1, maxLevel, cache);
                 if (shortest > optionLength) {
                     shortest = optionLength;
@@ -682,21 +675,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         }
 
         cache.put(key, total);
-        this.treeNodes.add(new TreeNode(key, parentKey, sequence, level));
         return total;
-    }
-
-    public void dumpTreeNodeGraph() {
-
-        final String dq = "\"";
-        final List<String> graph = new ArrayList<>();
-        graph.add("digraph {");
-        graph.add("rankdir=\"LR\"");
-        for (final TreeNode treeNode : this.treeNodes) {
-            graph.add(dq + treeNode.parentKey + dq + "->" + dq + treeNode.key + dq);
-        }
-        graph.add("}");
-        this.dumpGraphToFile("treenodes.dot", graph);
     }
 
     record KeypadNode(String key, String direction, Year2024Day21.KeypadNode previous) {
@@ -773,21 +752,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         @Override
         public int hashCode() {
             return Objects.hash(this.sequence, this.robotLevel);
-        }
-    }
-
-    static class TreeNode {
-
-        String key;
-        String parentKey;
-        String sequence;
-        long length;
-
-        public TreeNode(final String key, final String parentKey, final String sequence, final long length) {
-            this.key = key;
-            this.parentKey = parentKey;
-            this.sequence = sequence;
-            this.length = length;
         }
     }
 }
