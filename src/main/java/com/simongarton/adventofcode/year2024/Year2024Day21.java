@@ -727,14 +727,14 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
             final List<String> options = this.buildKeySequences(subsequence);
             // System.out.println("    options for " + subsequence + " were " + options);
-            long shortest = Long.MAX_VALUE;
+            Long shortest = null;
             String shortestOption = "";
             for (final String option : options) {
                 final String optionKey = level + ":" + sequence + "[" + subsequence + "]{" + option + "}";
                 this.treeNodes.add(new TreeNode(optionKey, subsequenceKey, subsequence, level));
                 final long optionLength = this.shortestSequenceRecursively(option, optionKey, level + 1, maxLevel, cache);
                 // System.out.println("      option " + option + " length " + optionLength + " shortest " + shortest);
-                if (shortest > optionLength) {
+                if (shortest == null || shortest > optionLength) {
                     shortest = optionLength;
                     shortestOption = option;
                 }

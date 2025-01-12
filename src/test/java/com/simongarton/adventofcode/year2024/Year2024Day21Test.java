@@ -321,16 +321,16 @@ class Year2024Day21Test {
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
         final int level = 1;
-        final int maxLevel = 4;
+        final int maxLevel = 27;
         final Map<String, Long> cache = new HashMap<>();
-        final String numericCode = "179A";
-        final String expected = "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A"; // 68
+        final String numericCode = "176A";
+        final long expected = 89741193602L;
 
         // when
         final long actual = year2024Day21.shortestSequenceRecursively(numericCode, null, level, maxLevel, cache);
 
         // then
-        assertEquals(expected.length(), actual);
+        assertEquals(expected, actual);
 
         year2024Day21.dumpTreeNodeGraph();
     }
