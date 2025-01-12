@@ -2,12 +2,12 @@ package com.simongarton.adventofcode.year2024;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.simongarton.adventofcode.AdventOfCodeChallenge;
 import lombok.Getter;
 
-import java.io.*;
-import java.lang.reflect.Type;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.*;
 
 public class Year2024Day21 extends AdventOfCodeChallenge {
@@ -51,10 +51,23 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         return this.oldCommonLogic(input, 3);
     }
 
+    private String oldCommonLogic(final String[] input, final int keypads) {
+
+        long total = 0;
+        for (final String numericCode : input) {
+            final String sequence = this.shortestFullSequence(numericCode, keypads);
+            final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
+            total += (long) numericPart * sequence.length();
+            System.out.println("  " + numericCode + ": " + numericPart + " * " + sequence.length() + " = " + numericPart * sequence.length());
+        }
+        return String.valueOf(total);
+    }
+
     private void setupSequences() {
 
         // called from the constructor, this does some BFS to work out what sequences of movements
-        // are needed to go between buttons ... for both keyboards
+        // are needed to go between buttons ... for both keyboards ... and stores them
+        // just for reference and checking (and my Python version borrowed them.)
 
         this.setupNumPadSequences();
         this.setupDirPadSequences();
@@ -62,7 +75,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     private void setupNumPadSequences() {
 
-        // set up the num pad sequences
         final String filename = "numPadPaths.json";
 
         this.numPadSequences = new HashMap<>();
@@ -78,18 +90,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         try (final Writer writer = new FileWriter(filename)) {
             final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
             gson.toJson(this.numPadSequences, writer);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void loadNumPadSequencesManually(final String fileName) {
-
-        try (final Reader reader = new FileReader(fileName)) {
-            final Gson gson = new Gson();
-            final Type hashMapType = new TypeToken<Map<String, Map<String, List<String>>>>() {
-            }.getType();
-            this.numPadSequences = gson.fromJson(reader, hashMapType);
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
@@ -124,6 +124,11 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             available.addAll(this.numpadNeighboursFor(current, visited));
         }
 
+        return this.buildFilterAndSortSequences(success);
+    }
+
+    private List<String> buildFilterAndSortSequences(final List<KeypadNode> success) {
+
         final List<String> sequences = new ArrayList<>();
         for (final KeypadNode keypadNode : success) {
             sequences.add(this.buildSequence(keypadNode));
@@ -139,11 +144,11 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                 .filter(s -> !this.hasZigZags(s))
                 .sorted(new DirectionComparator())
                 .toList();
+
     }
 
     private void setupDirPadSequences() {
 
-        // set up the dir pad sequences
         final String filename = "dirPadPaths.json";
 
         this.dirPadSequences = new HashMap<>();
@@ -164,17 +169,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         }
     }
 
-    private void loadDirPadSequencesManually(final String fileName) {
-
-        try (final Reader reader = new FileReader(fileName)) {
-            final Gson gson = new Gson();
-            final Type hashMapType = new TypeToken<Map<String, Map<String, List<String>>>>() {
-            }.getType();
-            this.dirPadSequences = gson.fromJson(reader, hashMapType);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public List<String> getDirPadPaths(final String start, final String end) {
 
@@ -203,31 +197,12 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             available.addAll(this.dirpadNeighboursFor(current, visited));
         }
 
-        final List<String> sequences = new ArrayList<>();
-        for (final KeypadNode keypadNode : success) {
-            sequences.add(this.buildSequence(keypadNode));
-        }
-
-        // I have an optimisation here ? I'm getting e.g. >>A and >^>vA which are both legal, but I'd
-        // never want to do the longer one ? I don't think it will solve the problem, but it will make it faster.
-
-        // return sequences;
-
-        final int minLength = sequences.stream()
-                .map(String::length)
-                .min(Integer::compareTo)
-                .orElseThrow();
-
-        final List<String> filteredSequences = sequences.stream()
-                .filter(s -> s.length() == minLength)
-                .filter(s -> !this.hasZigZags(s))
-                .sorted(new DirectionComparator())
-                .toList();
-
-        return filteredSequences;
+        return this.buildFilterAndSortSequences(success);
     }
 
     public boolean hasZigZags(final String s) {
+
+        // there must be a cleverer way than this
 
         final List<String> upDown = List.of("^", "v");
         final List<String> leftRight = List.of("<", ">");
@@ -238,7 +213,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         for (int i = 1; i < s.length(); i++) {
             final String current = s.substring(i, i + 1);
             if (current.equalsIgnoreCase("A")) {
-                continue; // should always be the last one
+                continue;
             }
             if (upDownFirst) {
                 if (leftRight.contains(current)) {
@@ -360,8 +335,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     public String shortestFullSequence(final String numericSequence, final int directionalKeypads) {
 
-        // this is the magic - and the seventh or eighth iteration of this logic :facepalm.
-        // if you try and do 4 characters at once, it's just too big
+        // this is the magic - and the seventh or eighth iteration of this logic :facepalm -
+        // for part 1. if you try part 2 or do 4 characters at once, it's just too big
 
         final List<String> sequencesForDigit = new ArrayList<>();
 
@@ -402,7 +377,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                 continue;
             }
 
-            //System.out.println("expandRootNode() with " + current + " and " + available.size() + " in available");
             final List<Node> nextLevelNodes = this.buildNodesForDirPad(current.sequence, current.robotLevel + 1);
             for (final Node node : nextLevelNodes) {
                 current.generatedBy.add(node);
@@ -496,7 +470,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         while (!available.isEmpty()) {
             final KeyPressNode current = available.removeFirst();
-            // System.out.println("buildDirPadKeyPressesForSequence() for " + sequence + " with " + current + " and " + available.size() + " in available");
 
             if (current.keysPressedSoFar.equalsIgnoreCase(sequence)) {
                 complete.add(current);
@@ -549,7 +522,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         return sequences.stream()
                 .filter(s -> s.length() == minLength)
-                .sorted(Comparator.naturalOrder())
+                .sorted(new DirectionComparator())
                 .toList();
     }
 
@@ -569,40 +542,24 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         }
 
         final int targetLength = shortestLength;
-        return sequences.stream().filter(s -> s.length() == targetLength).sorted(Comparator.naturalOrder()).toList();
+        return sequences.stream()
+                .filter(s -> s.length() == targetLength)
+                .sorted(Comparator.naturalOrder()).toList();
     }
 
     @Override
     public String part2(final String[] input) {
 
-        // 4163970791533 too low
-        // 16655883166132 too low
-        // 167820844384350 (27) too low (now just wrong ...)
-        // 417475421464427 (28) just wrong
-
-        // I'm sure it's 27. Part 1 is working with 4 (for 2 robots in the middle) and this
-        // is 25 robots
+        // 27 keypads = 25 robots
         return this.commonLogic(input, 27);
     }
 
-    private String oldCommonLogic(final String[] input, final int directionalKeypads) {
-
-        long total = 0;
-        for (final String numericCode : input) {
-            final String sequence = this.shortestFullSequence(numericCode, directionalKeypads);
-            final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
-            total += (long) numericPart * sequence.length();
-            System.out.println("  " + numericCode + ": " + numericPart + " * " + sequence.length() + " = " + numericPart * sequence.length());
-        }
-        return String.valueOf(total);
-    }
-
-    private String commonLogic(final String[] input, final int directionalKeypads) {
+    private String commonLogic(final String[] input, final int keypads) {
 
         long total = 0;
         for (final String numericCode : input) {
             final Map<String, Long> cache = new HashMap<>();
-            final long sequenceLength = this.shortestSequenceRecursively(numericCode, null, 1, directionalKeypads, cache);
+            final long sequenceLength = this.shortestSequenceRecursively(numericCode, null, 1, keypads, cache);
             final long numericPart = Long.parseLong(numericCode.replace("A", ""));
             total += numericPart * sequenceLength;
             System.out.println("  " + numericCode + ": " + numericPart + " * " + sequenceLength + " = " + numericPart * sequenceLength);
@@ -624,6 +581,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     private boolean isDirpadSequence(final String sequence) {
 
+        // this is hacky ... but I think it will work
         final List<String> arrows = List.of("<", "^", "v", ">");
         for (int i = 0; i < sequence.length(); i++) {
             if (arrows.contains(sequence.substring(i, i + 1))) {
@@ -639,9 +597,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                                                final String currentPath,
                                                final List<String> result,
                                                final int recursionLevel) {
-
-        // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
-        // https://www.reddit.com/r/adventofcode/comments/1hjgyps/2024_day_21_part_2_i_got_greedyish/
 
         if (index == sequence.length()) {
             result.add(currentPath);
@@ -668,9 +623,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                                                final List<String> result,
                                                final int recursionLevel) {
 
-        // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
-        // https://www.reddit.com/r/adventofcode/comments/1hjgyps/2024_day_21_part_2_i_got_greedyish/
-
         if (index == sequence.length()) {
             result.add(currentPath);
             return;
@@ -695,19 +647,14 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                                             final int maxLevel,
                                             final Map<String, Long> cache) {
 
-        // https://www.reddit.com/r/adventofcode/comments/1hjx0x4/comment/m3fu0d9/
-
-        // System.out.println(" ".repeat(level) + "level " + level + "/" + maxLevel + " " + sequence + " (" + sequence.length() + ")");
         final String key = level + ":" + sequence;
 
         if (level == maxLevel) {
-            // System.out.println(" ".repeat(level) + " returning " + sequence.length() + " because max level");
             this.treeNodes.add(new TreeNode(key, parentKey, sequence, level));
             return sequence.length(); // keys pressed on this keypad
         }
 
         if (cache.containsKey(key)) {
-            // System.out.println(" ".repeat(level) + " returning " + cache.get(key) + " from cache for " + sequence + " at level " + level);
             this.treeNodes.add(new TreeNode(key, parentKey, sequence, level));
             return cache.get(key);
         }
@@ -717,8 +664,6 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         // here's the magic. if I'm pressing A, all the keypads are lined up and so I can split up the main sequence
         // to make it manageable. but I need to put the As back in again to estimate their size.
         final String[] subsequences = sequence.split("A");
-        // System.out.println("  split to " + Arrays.toString(subsequences));
-        int subsequenceIndex = 0;
         for (final String subsequenceWithoutA : subsequences) {
 
             final String subsequence = subsequenceWithoutA + "A";
@@ -726,22 +671,16 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             this.treeNodes.add(new TreeNode(subsequenceKey, key, subsequence, level));
 
             final List<String> options = this.buildKeySequences(subsequence);
-            // System.out.println("    options for " + subsequence + " were " + options);
-            Long shortest = null;
-            String shortestOption = "";
+            Long shortest = Long.MAX_VALUE;
             for (final String option : options) {
                 final String optionKey = level + ":" + sequence + "[" + subsequence + "]{" + option + "}";
                 this.treeNodes.add(new TreeNode(optionKey, subsequenceKey, subsequence, level));
                 final long optionLength = this.shortestSequenceRecursively(option, optionKey, level + 1, maxLevel, cache);
-                // System.out.println("      option " + option + " length " + optionLength + " shortest " + shortest);
-                if (shortest == null || shortest > optionLength) {
+                if (shortest > optionLength) {
                     shortest = optionLength;
-                    shortestOption = option;
                 }
             }
-            // System.out.println("for subsequence " + subsequence + " (" + subsequenceIndex + ") of " + sequence + " I am using " + shortestOption + " at level " + level);
             total += shortest;
-            subsequenceIndex++;
         }
 
         cache.put(key, total);
@@ -840,6 +779,10 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     }
 
     static class DirectionComparator implements Comparator<String> {
+
+        // this class is based on an idea from reddit where someone
+        // had done some analysis to show it's always a better idea to
+        // go in certain directions.  I don't actually use it.
 
         @Override
         public int compare(final String s1, final String s2) {

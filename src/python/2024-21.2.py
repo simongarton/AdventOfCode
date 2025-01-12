@@ -8,6 +8,19 @@ import json
 638A:86475783010
 
 169137886514152
+
+what Java gave me:
+
+  140A: 140 * 86832050328 = 12156487045920
+  180A: 180 * 89888959231 = 16180012661580
+  176A: 176 * 89042397231 = 15671461912656
+  805A: 805 * 85802413558 = 69070942914190
+  638A: 638 * 85802413558 = 54741939850004
+
+  167820844384350
+
+Java is slightly shorter.
+
 '''
 
 # in desperation - my Java code is so close to being right, but isn't ... I rewrote the second part
@@ -16,6 +29,32 @@ import json
 #
 # eventually I will go and look at the cached values and try and spot where my Java code is going wrong ..
 # ... but it's the same algorithm, and works for part 1 :facepalm
+
+'''
+it goes wrong with 3 robots, the first level after part 1.
+
+python gives
+
+140A:174
+180A:182
+176A:178
+805A:172
+638A:170
+335368
+
+Java gives
+
+  140A: 140 * 172 = 24080
+  180A: 180 * 178 = 32040
+  176A: 176 * 174 = 30624
+  805A: 805 * 166 = 133630
+  638A: 638 * 166 = 105908
+
+  326282
+
+Java is giving me shorter sequences ...
+
+'''
 
 cache = {}
 
@@ -95,6 +134,7 @@ def run():
         '638A'
             ]:
 
+            # needs to be 0, 26
             length = recursive(code, 0, 26, nums, dirs )
             print(code + ':' + str(length))
             total = total + int(code[:3]) * length

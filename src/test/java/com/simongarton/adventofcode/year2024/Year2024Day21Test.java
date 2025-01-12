@@ -316,7 +316,7 @@ class Year2024Day21Test {
     }
 
     @Test
-    void testFindWhyMySolutionIsLonger() {
+    void testOneValueForPart2() {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
@@ -409,7 +409,7 @@ class Year2024Day21Test {
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
         final String[] input = new String[]{"140A", "180A", "176A", "805A", "638A"};
-        final long expected = 138764; // no, but I don't know the answer :facepalm
+        final long expected = 169137886514152L;
 
         // when
         final long actual = Long.parseLong(year2024Day21.part2(input));
