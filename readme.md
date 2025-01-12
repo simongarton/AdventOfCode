@@ -17,12 +17,14 @@ Plenty of days when I was so happy just to get the damn thing working, it wasn't
 
 ## 2024
 
+Yes, I am rather pleased with myself.
+
 ![So pleased with myself](AoC-2024.png)
 
 ### Day 25 : Code Chronicle (1/1)
 
-Day 25 is always easy and is always only 1 part - the second part is having 49 other stars by now, which ... I don't
-quite. Let's go back and try and fix them.
+Day 25 is always easy and is always only 1 part - the second part is having 49 other stars by now, which ... I was
+missing day 21 part 2, but went back and after some time, figured out what the problem was.
 
 https://adventofcode.com/2024/day/25
 
@@ -71,7 +73,7 @@ https://adventofcode.com/2024/day/21
 (some weeks later) Reddit gave me the insight I needed : you _can't_ manage the strings for the key presses, and
 the question clearly says it's just the shortest - so we don't need to track the strings as such, just the length.
 And even though there is scary issues about going left before up or vice versa, I just explore the
-entire tree - with memoisation - to get the length of the shortest key-press sequence. Which was something like
+entire tree - with memoization - to get the length of the shortest key-press sequence. Which was something like
 169 trillion key presses, and at one press a second, it'll take me 5 million years to free the Historian.
 
 I hope he brought snacks.
@@ -86,7 +88,7 @@ help you get to the end, quicker ? And it's a doozy of a maze - you're going fro
 ![Part 1](2024-Day20-1.png)
 
 Part 2 then became evil : you can knock up to 20 walls. Actually this is getting a bit vague, and I may have
-misinterpreted the question. Does the phrase `(but can still only end when the program is on normal track)` mean that
+misinterpreted the question. Does the phrase '(but can still only end when the program is on normal track)' mean that
 if you're carving a shortcut, you have to stop _at the first normal track_ or can you skip over some and go into
 more walls ? It's the latter.
 
@@ -107,13 +109,13 @@ And then I suddenly realized that most of the question is irrelevant. The cheats
 I don't need to worry about walls or anything - just iterate over the 3k steps in the trail twice, checking the distance
 you'd save by short-cutting between two points and checking the manhattan distance. :facepalm.
 
-(deletes many many lines of code.)
+(deletes many, many lines of code.)
 
 https://adventofcode.com/2024/day/20
 
 ### Day 19 : Linen Layout
 
-Lots of recursion and memoisation. Made part 2 far too hard, went to read Reddit, realised I could chop out about 90% of
+Lots of recursion and memoization. Made part 2 far too hard, went to read Reddit, realised I could chop out about 90% of
 my code, move the cache to a different place, and away we go. Sometimes the numbers are so stupidly big, it becomes
 obvious you're on the wrong path.
 
