@@ -17,6 +17,8 @@ Plenty of days when I was so happy just to get the damn thing working, it wasn't
 
 ## 2024
 
+![So pleased with myself](AoC-2024.png)
+
 ### Day 25 : Code Chronicle (1/1)
 
 Day 25 is always easy and is always only 1 part - the second part is having 49 other stars by now, which ... I don't
@@ -52,9 +54,9 @@ takes a few seconds, so could probably be optimized, but I need to get back to d
 
 https://adventofcode.com/2024/day/22
 
-### Day 21 : Keypad Conundrum (1/2)
+### Day 21 : Keypad Conundrum
 
-Brilliant. But my nemesis.
+Brilliant. But, for a very long time, my nemesis.
 
 Imagine a simple numerical keypad, and you have to type out a 3 digit number and press # (well, A). Only you're doing
 this remotely, and so have a 4-way directional pad to move a pointer around the keypad until it's over the number you
@@ -65,6 +67,14 @@ After some days of effort, I've got part 1 working very fast, 27ms. But part 2 b
 I think the way I've done this isn't going to make speeding it up easy.
 
 https://adventofcode.com/2024/day/21
+
+(some weeks later) Reddit gave me the insight I needed : you _can't_ manage the strings for the key presses, and
+the question clearly says it's just the shortest - so we don't need to track the strings as such, just the length.
+And even though there is scary issues about going left before up or vice versa, I just explore the
+entire tree - with memoisation - to get the length of the shortest key-press sequence. Which was something like
+169 trillion key presses, and at one press a second, it'll take me 5 million years to free the Historian.
+
+I hope he brought snacks.
 
 ### Day 20 : Race Condition
 

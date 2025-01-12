@@ -108,6 +108,6 @@ public class Year2024Day25 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+        return "-1";
     }
 }
