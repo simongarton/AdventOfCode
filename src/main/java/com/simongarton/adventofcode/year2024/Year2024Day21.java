@@ -545,14 +545,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
 
-        // I have a Python version which works, using the same algorithm.
-        // I have not yet tracked down why this Java version is cheating and
-        // giving me shorter sequences.
-
-        return "169137886514152";
-
         // 27 keypads = 25 robots
-        // return this.commonLogic(input, 27);
+        return this.commonLogic(input, 27);
     }
 
     private String commonLogic(final String[] input, final int keypads) {
@@ -582,7 +576,8 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     private boolean isDirpadSequence(final String sequence) {
 
-        // this is hacky ... but I think it will work
+        // this is hacky ... but is working. I didn't build in
+        // a reliable way to test what level I'm at ...
         final List<String> arrows = List.of("<", "^", "v", ">");
         for (int i = 0; i < sequence.length(); i++) {
             if (arrows.contains(sequence.substring(i, i + 1))) {
@@ -659,14 +654,12 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
         long total = 0;
 
-        // here's the magic. if I'm pressing A, all the keypads are lined up and so I can split up the main sequence
-        // to make it manageable. but I need to put the As back in again to estimate their size.
-        final String[] subsequences = sequence.split("A");
-        for (final String subsequenceWithoutA : subsequences) {
+        String fromKey = "A";
+        for (int i = 0; i < sequence.length(); i++) {
 
-            final String subsequence = subsequenceWithoutA + "A";
+            final String toKey = sequence.substring(i, i + 1);
+            final List<String> options = !isDirpadSequence(sequence) ? this.getNumPadSequences(fromKey, toKey) : this.getDirPadSequences(fromKey, toKey);
 
-            final List<String> options = this.buildKeySequences(subsequence);
             long shortest = Long.MAX_VALUE;
             for (final String option : options) {
                 final long optionLength = this.shortestSequenceRecursively(option, level + 1, maxLevel, cache);
@@ -675,6 +668,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
                 }
             }
             total += shortest;
+            fromKey = toKey;
         }
 
         cache.put(key, total);
