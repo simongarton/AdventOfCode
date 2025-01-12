@@ -5,8 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,7 +14,7 @@ class Year2024Day21Test {
 
     @ParameterizedTest
     @MethodSource("part1SampleValues")
-    void part1SampleTestLengthOnly(final String numericCode, final String expected) {
+    void testPart1SampleLengthOnly(final String numericCode, final String expected) {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
@@ -25,6 +24,20 @@ class Year2024Day21Test {
 
         // then
         assertEquals(expected.length(), sequence.length());
+    }
+
+    @ParameterizedTest
+    @MethodSource("part1SampleValues")
+    void testPart1SampleExact(final String numericCode, final String expected) {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+
+        // when
+        final String sequence = year2024Day21.shortestFullSequence(numericCode, 3);
+
+        // then
+        assertEquals(expected, sequence);
     }
 
     static List<Arguments> part1SampleValues() {
@@ -38,10 +51,8 @@ class Year2024Day21Test {
         );
     }
 
-    // this is now timing out, as do other things on level 3
-
     @Test
-    void singleSampleValueTest() {
+    void testSingleSampleValue() {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
@@ -63,7 +74,7 @@ class Year2024Day21Test {
     }
 
     @Test
-    void singleDigitValueTest() {
+    void testSingleDigitValue() {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
@@ -79,7 +90,7 @@ class Year2024Day21Test {
 
     @ParameterizedTest
     @MethodSource("numPadPathValues")
-    void getNumPadPaths(final String from, final String to, final List<String> expected) {
+    void testGetNumPadPaths(final String from, final String to, final List<String> expected) {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
@@ -100,7 +111,7 @@ class Year2024Day21Test {
 
     @ParameterizedTest
     @MethodSource("numPadShortestPathValues")
-    void getNumPadShortestPaths(final String from, final String to, final List<String> unsorted) {
+    void testGetNumPadShortestPaths(final String from, final String to, final List<String> unsorted) {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
@@ -123,7 +134,7 @@ class Year2024Day21Test {
 
     @ParameterizedTest
     @MethodSource("dirPadPathValues")
-    void getDirPadPaths(final String from, final String to, final List<String> expected) {
+    void testGetDirPadPaths(final String from, final String to, final List<String> expected) {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
@@ -138,17 +149,17 @@ class Year2024Day21Test {
     static List<Arguments> dirPadPathValues() {
 
         return List.of(
-                Arguments.of("A", "^", List.of("<A", "v<^A")),
-                Arguments.of("A", "<", List.of("<v<A", "v<<A"))
+                Arguments.of("A", "^", List.of("<A")),
+                Arguments.of("A", "<", List.of("v<<A"))
         );
     }
 
     @Test
-    void buildDirPadKeyPressesForSequence() {
+    void testBuildDirPadKeyPressesForSequence() {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
-        final List<String> expected = List.of("<Av<A>>^A", "<Av<A>^>A");
+        final List<String> expected = List.of("<Av<A>>^A");
 
         // when
         final List<String> actual = year2024Day21.buildDirPadKeyPressesForSequence("^<A", 3);
@@ -156,12 +167,12 @@ class Year2024Day21Test {
         // then
         assertEquals(expected, actual);
     }
-    
+
     @ParameterizedTest
     @MethodSource("shortestKeypadSequenceValues")
-    void shortestKeypadSequence(final String sequence,
-                                final int robotLevel,
-                                final String expected) {
+    void testShortestKeypadSequence(final String sequence,
+                                    final int robotLevel,
+                                    final String expected) {
 
         // given
         final Year2024Day21 year2024Day21 = new Year2024Day21();
@@ -180,12 +191,12 @@ class Year2024Day21Test {
                 Arguments.of("378A", 1, "^A<<^^A>A>vvvA"),
                 Arguments.of("2", 1, "<^A"),
                 Arguments.of("3", 2, "<A>A"),
-                Arguments.of("3", 3, "<v<A>>^AvA^A"),
-                Arguments.of("7", 1, "<^<^^A"),
+                Arguments.of("3", 3, "v<<A>>^AvA^A"),
+                Arguments.of("7", 1, "^^^<<A"),
                 Arguments.of("7", 2, "<AAAv<AA>>^A"),
-                Arguments.of("7", 3, "<v<A>>^AAA<vA<A>>^AAvAA<^A>A"),
+                Arguments.of("7", 3, "v<<A>>^AAA<vA<A>>^AAvAA<^A>A"),
                 Arguments.of("0", 1, "<A"),
-                Arguments.of("0", 2, "<v<A>>^A"),
+                Arguments.of("0", 2, "v<<A>>^A"),
                 Arguments.of("0", 3, "<vA<AA>>^AvAA<^A>A")
         );
     }
@@ -220,5 +231,215 @@ class Year2024Day21Test {
 
         // then
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void testBuildKeySequences() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String sequence = "<A";
+
+        // when
+        final List<String> actual = year2024Day21.buildKeySequences(sequence);
+
+        // then
+        assertEquals(1, actual.size());
+        assertTrue(actual.contains("v<<A>>^A"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("shortestSequenceRecursivelyValues")
+    void testShortestSequenceRecursively(final String sequence, final int maxLevel, final int expected) {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final int level = 1;
+        final Map<String, Long> cache = new HashMap<>();
+
+        // when
+        final long actual = year2024Day21.shortestSequenceRecursively(sequence, level, maxLevel, cache);
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    static List<Arguments> shortestSequenceRecursivelyValues() {
+
+        return List.of(
+                Arguments.of("<A", 1, 2),
+                Arguments.of("<A", 2, 8),
+                Arguments.of("<A", 3, 18),
+                Arguments.of("<A", 4, 46),
+                Arguments.of("<A^A>^^AvvvA", 3, 68),
+                Arguments.of("<A", 3, 18),
+                Arguments.of("^A", 3, 12),
+                Arguments.of(">^^A", 3, 20),
+                Arguments.of("vvvA", 3, 18)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("part1SampleValues")
+    void testPart1SampleWithRecursion(final String numericCode, final String expected) {
+
+        // it works for 3 out of 5 samples; 3 and 4 I over estimate by 8 or 10.
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final int level = 1;
+        final int maxLevel = 3;
+        final Map<String, Long> cache = new HashMap<>();
+        final String sequence = year2024Day21.shortestFullSequence(numericCode, 1);
+
+        // when
+        final long actual = year2024Day21.shortestSequenceRecursively(sequence, level, maxLevel, cache);
+
+        // then
+        assertEquals(expected.length(), actual);
+    }
+
+    @Test
+    void testLengths() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final int level = 1;
+        final String numericCode = "176A";
+
+        // when
+        for (int maxLevel = 1; maxLevel <= 27; maxLevel++) {
+            final Map<String, Long> cache = new HashMap<>();
+            final long actual = year2024Day21.shortestSequenceRecursively(numericCode, level, maxLevel, cache);
+            System.out.println(numericCode + ":" + maxLevel + "=" + actual);
+        }
+    }
+
+    @Test
+    void testOneValueForPart2() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final int level = 1;
+        final int maxLevel = 27;
+        final Map<String, Long> cache = new HashMap<>();
+        final String numericCode = "176A";
+        final long expected = 89741193602L;
+
+        // when
+        final long actual = year2024Day21.shortestSequenceRecursively(numericCode, level, maxLevel, cache);
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void howDoesSplitWorkOnMultiples() {
+
+        // as I expected. "<AAA" will give me three sections : "<" and 2 empty strings, which I then add As to each of.
+
+        // given
+        final String sequence = "<A>AAA^AA>A";
+        final int expected = 7;
+
+        // when
+        final String[] subsequences = sequence.split("A");
+
+        // then
+        assertEquals(expected, subsequences.length);
+        assertEquals("<", subsequences[0]);
+        assertEquals(">", subsequences[1]);
+        assertEquals("", subsequences[2]);
+        assertEquals("", subsequences[3]);
+        assertEquals("^", subsequences[4]);
+        assertEquals("", subsequences[5]);
+        assertEquals(">", subsequences[6]);
+    }
+
+    @Test
+    void testBuildDirKeySequenceRecursively() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String sequence = "v<<A>>^A";
+        final List<String> result = new ArrayList<>();
+
+        // when
+        year2024Day21.buildDirKeySequenceRecursively(sequence, 0, "A", "", result, 0);
+
+        // then
+        assertEquals(4, result.size());
+    }
+
+    @Test
+    void testPart1() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String[] input = new String[]{"140A", "180A", "176A", "805A", "638A"};
+        final long expected = 138764;
+
+        // when
+        final long actual = Long.parseLong(year2024Day21.part1(input));
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testPart1Old() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String[] input = new String[]{"140A", "180A", "176A", "805A", "638A"};
+        final long expected = 138764;
+
+        // when
+        final long actual = Long.parseLong(year2024Day21.part1Old(input));
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testPart2() {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+        final String[] input = new String[]{"140A", "180A", "176A", "805A", "638A"};
+        final long expected = 169137886514152L;
+
+        // when
+        final long actual = Long.parseLong(year2024Day21.part2(input));
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @ParameterizedTest
+    @MethodSource("zigZagValues")
+    void testHasZigZags(final String sequence, final boolean expected) {
+
+        // given
+        final Year2024Day21 year2024Day21 = new Year2024Day21();
+
+        // when
+        final boolean actual = year2024Day21.hasZigZags(sequence);
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    static List<Arguments> zigZagValues() {
+
+        return List.of(
+                Arguments.of("<A", false),
+                Arguments.of("^A", false),
+                Arguments.of("^^A", false),
+                Arguments.of("^vA", false),
+                Arguments.of("<^A", false),
+                Arguments.of("v<^A", true),
+                Arguments.of("<^>A", true)
+        );
     }
 }
