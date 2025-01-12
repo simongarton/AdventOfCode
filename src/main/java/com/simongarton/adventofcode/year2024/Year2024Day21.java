@@ -14,6 +14,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
 
     private Map<String, Map<String, List<String>>> numPadSequences;
     private Map<String, Map<String, List<String>>> dirPadSequences;
+    private static final boolean SAVE_SEQUENCE_MAPS = false;
 
     private final Map<String, List<String>> cache;
 
@@ -84,11 +85,13 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             }
         }
 
-        try (final Writer writer = new FileWriter(filename)) {
-            final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-            gson.toJson(this.numPadSequences, writer);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
+        if (SAVE_SEQUENCE_MAPS) {
+            try (final Writer writer = new FileWriter(filename)) {
+                final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+                gson.toJson(this.numPadSequences, writer);
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -157,11 +160,13 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             }
         }
 
-        try (final Writer writer = new FileWriter(filename)) {
-            final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-            gson.toJson(this.dirPadSequences, writer);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
+        if (SAVE_SEQUENCE_MAPS) {
+            try (final Writer writer = new FileWriter(filename)) {
+                final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+                gson.toJson(this.dirPadSequences, writer);
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
