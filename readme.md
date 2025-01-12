@@ -8,18 +8,18 @@ I've also been loudly praising it at work, with a
 private leaderboard ... which got nicely
 competitive, and 2024 is looking pretty good.
 
-![Progress](AdventOfCode.png)
+![Progress](images/AdventOfCode.png)
 
 Performance is generally good : green is <= 1s, yellow <= 5s, orange <= 10s, red <= 30s and purple needs another look.
 Plenty of days when I was so happy just to get the damn thing working, it wasn't worth optimizing.
 
-![Progress](AdventOfCodeSpeed.png)
+![Progress](images/AdventOfCodeSpeed.png)
 
 ## 2024
 
 Yes, I am rather pleased with myself.
 
-![So pleased with myself](AoC-2024.png)
+![So pleased with myself](images/AoC-2024.png)
 
 ### Day 25 : Code Chronicle (1/1)
 
@@ -33,7 +33,7 @@ https://adventofcode.com/2024/day/25
 Very nice. Build a circuit of wires and logic gates, and analyse it. Yeah, OK. Oh, wait, 4 pairs of the gates are cross
 wired - you can figure it out by looking at the inputs and outputs. Well, there's a lot of combinations to check ...
 
-![Part 2](2024-24.2-original.png)
+![Part 2](images/2024-24.2-original.png)
 
 I love [GraphViz](https://graphviz.org/). Dumped it out, added some colors - and I could spot 3 of the 4 problems : the
 wiring is different. But I couldn't spot the fourth ... until I looped through the 45 powers of 2 and tested if my
@@ -85,7 +85,7 @@ This was fun, even though it took me ages to figure out part 2.
 It's a maze with a single path through it. But for part 1, you can knock down a single wall. How many times does this
 help you get to the end, quicker ? And it's a doozy of a maze - you're going from green to red.
 
-![Part 1](2024-Day20-1.png)
+![Part 1](images/2024-Day20-1.png)
 
 Part 2 then became evil : you can knock up to 20 walls. Actually this is getting a bit vague, and I may have
 misinterpreted the question. Does the phrase '(but can still only end when the program is on normal track)' mean that
@@ -94,7 +94,7 @@ more walls ? It's the latter.
 
 Here's an example.
 
-![Part 2](2024-Day20-2.png)
+![Part 2](images/2024-Day20-2.png)
 
 Bright green and red are the start and end; purple is the 'origin' of the shortcut, where I am on the track before I
 step off into the blue portal and pop out on the yellow one (incurring travel costs, though) before
@@ -126,7 +126,7 @@ https://adventofcode.com/2024/day/19
 And I thought the Day 16 map was evil. A* delivers a shortest path very quickly, but the really shortest one
 takes AGES to find.
 
-![Part 1](2024-Day18-1.png)
+![Part 1](images/2024-Day18-1.png)
 
 But part 2 was disappointingly easy, just find when you've added too many walls to navigate the maze.
 
@@ -162,7 +162,7 @@ This diagram shows the eventual path I found. I built it up left to right, but t
 actual value ended up being the green line, but you can see other paths which would have led me to other starting
 numbers - looks like I have nine that would have worked - and you can also see some branches that just die.
 
-![Part 2](2024-Day17-2.png)
+![Part 2](images/2024-Day17-2.png)
 
 https://adventofcode.com/2024/day/17
 
@@ -174,7 +174,7 @@ at my final code, it was reasonably straight forward with A* ... but I got stuck
 right ... both samples working, part 1 mapped out looks sane, animated as movies it looked sane ... but "That's not the
 right answer."
 
-![Part 1](2024-Day16-1.png)
+![Part 1](images/2024-Day16-1.png)
 
 Part 2 just added a level - there are multiple equivalent paths, and by default A* only gets the first. A very bright
 friend really struggled with this - they've been beating me consistently all month - but because I'd spent so much time
@@ -204,7 +204,7 @@ shape - a triangle - but seemed to be getting into the millions of iterations. T
 everyone would have a neighbour. Wasn't getting anywhere ... so I changed it to check to see if at least half of them
 had a neigbour ... and this popped out after about seven thousand cycles (and repeatedly afterwards.)
 
-![Part 2](2024-Day14-2.png)
+![Part 2](images/2024-Day14-2.png)
 
 https://adventofcode.com/2024/day/14
 
@@ -253,7 +253,7 @@ are always length one. This had some nasty gotchas - inside the smallest letter 
 is an empty space that has 3 sides, in 3 different directions - and I had to write code
 to print it out to see what was going on. 5 sample files.
 
-![Part 2](2024-Day12-reverse-terrain.png)
+![Part 2](images/2024-Day12-reverse-terrain.png)
 
 https://adventofcode.com/2024/day/12
 
@@ -271,7 +271,7 @@ thought. Nope, right answer in <smug_mode> 85 milliseconds </smug_mode>.
 
 This is an example at 10 levels - part two was 75 - showing the cache hits in green.
 
-![Part 2](2024-11.2-level-10.png)
+![Part 2](images/2024-11.2-level-10.png)
 
 https://adventofcode.com/2024/day/11
 
@@ -330,7 +330,7 @@ solution for this which took some minutes ... so came up with two optimisations 
 would have walked anyway; keep track of where I have been each time _and in which direction I was going_ and if I
 repeat, then I must be in an infinite loop. Now finishing in about 86 seconds.
 
-![Part 1](2024-06.1.png)
+![Part 1](images/2024-06.1.png)
 
 https://adventofcode.com/2024/day/6
 
@@ -414,7 +414,7 @@ nodes - only some are valid, given slopes. Then finally use that to build a new 
 
 This was very important - mapping out by hand in Sheets where the sub-routes could go.
 
-![Part 1](2023-23.1.png)
+![Part 1](images/2023-23.1.png)
 
 I might just leave part 2 for another day.
 
@@ -477,7 +477,7 @@ Part 1 reasonable enough, another grid problem and follow instructions to carve 
 work out how much space is enclosed. Curiously the instructions include wall colors, which I implemented fearing it
 would be needed later - but wasn't.
 
-![Part 1](holey-moley-filled.png)
+![Part 1](images/holey-moley-filled.png)
 
 Part 2 extends the grid to 14,207,222 x 20,211,216 and I am at a loss to work out how to even start this without running
 out of memory. I suspect it will be something like ray-marching, but to be continued.
@@ -493,11 +493,11 @@ issue though.)
 I've got a complex idea, which is giving me a result - the wrong one - and I eventually gave up. Read some more stuff
 on reddit, adapted a new algorithm and initially it was wrong ...
 
-![Part 1](2023-17-1-sample.png)
+![Part 1](images/2023-17-1-sample.png)
 
 ... but I finally figured out it was an equals/hashcode problem !
 
-![Part 1](2023-17.1.png)
+![Part 1](images/2023-17.1.png)
 
 https://adventofcode.com/2023/day/17
 
@@ -567,11 +567,11 @@ algorithms to solve for point-in-polygon.
 So this is one of the samples : blue is space enclosed, red is space NOT enclosed, which includes the central area.
 White is the start point.
 
-![Part 2](2023-10-2-sample.png)
+![Part 2](images/2023-10-2-sample.png)
 
 And this is the beast.
 
-![Part 2](2023-10-2.png)
+![Part 2](images/2023-10-2.png)
 
 https://adventofcode.com/2023/day/10
 
@@ -687,7 +687,7 @@ is deterministic; I don't know if I can map a graph of the storms given they kee
 OK, so a simple approach is to just use A* but make the map time sensitive. This works nicely for the sample; and indeed
 once I'd sorted out a couple of bugs, both part 1 and 2.
 
-![Part 2](2022-24.2.png)
+![Part 2](images/2022-24.2.png)
 
 https://adventofcode.com/2022/day/24
 
@@ -778,9 +778,9 @@ https://adventofcode.com/2022/day/15
 
 Much easier and nice to do. Drip sand onto a pile of rocks, figuring out which way it goes, until it fills up.
 
-![Part 1](2022-14.1.png)
+![Part 1](images/2022-14.1.png)
 
-![Part 2](2022-14.2.png)
+![Part 2](images/2022-14.2.png)
 
 https://adventofcode.com/2022/day/14
 
@@ -863,7 +863,7 @@ The first fun one this year; build up a series of stacks of crates, and then mov
 following a script provided. Part 1 moved one crate at a time, part 2 moved 3 at a time (preserving the order, so not
 the same as moving 1, three times.)
 
-![Part 2](2022-05.1.png)
+![Part 2](images/2022-05.1.png)
 
 https://adventofcode.com/2022/day/5
 
