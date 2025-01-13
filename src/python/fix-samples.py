@@ -1,6 +1,6 @@
 import os
 
-year = 2024
+year = 2015
 
 filename = '/Users/simongarton/projects/java/AdventOfCode/src/main/resources/{}'.format(year)
 for file in os.listdir(filename):

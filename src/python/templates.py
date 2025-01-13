@@ -15,7 +15,7 @@ def data(year):
         create_file(root.format(year, '{}-Day{}-1-answer.txt'.format(year, day)))
         create_file(root.format(year, '{}-Day{}-2.txt'.format(year, day)))
         create_file(root.format(year, '{}-Day{}-2-answer.txt'.format(year, day)))
-        create_file(root.format(year, '{}-Day{}-1-sample.txt'.format(year, day)))
+        create_file(root.format(year, '{}-Day{}-sample.txt'.format(year, day)))
 
 
 def classes(year):
@@ -37,6 +37,6 @@ def classes(year):
 
 
 if __name__ == '__main__':
-    year = 2024
+    year = 2015
     data(year)
     classes(year)

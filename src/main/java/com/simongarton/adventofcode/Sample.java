@@ -10,13 +10,13 @@ public class Sample {
 
     public static void main(final String[] args) throws IOException {
 
-        // it's always 1-sample
+        // it's always DayX-sample
         final Path path = Paths.get(String.format("src/main/resources/%s/%s-Day%s-sample.txt",
                 CurrentChallenge.YEAR,
                 CurrentChallenge.YEAR,
                 CurrentChallenge.DAY));
 
-        if (false) {
+        if (true) {
             System.out.println(CurrentChallenge.getCurrentChallenge()
                     .part1(Files.lines(path, StandardCharsets.UTF_8)
                             .toArray(String[]::new)));
