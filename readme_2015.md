@@ -2,6 +2,13 @@
 
 ## 2015
 
+### Day 6: Probably a Fire Hazard
+
+Toggling a 1000x1000 grid of ints to represent lights switching on and off. There must be a more elegant
+way of doing it - I just brute forced it.
+
+https://adventofcode.com/2015/day/6
+
 ### Day 5: Doesn't He Have Intern-Elves For This?
 
 It's so much fun to come crashing down when you don't think through the question. Part 1 was easy and I got to extend

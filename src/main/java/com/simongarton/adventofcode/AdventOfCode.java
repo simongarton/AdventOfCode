@@ -172,6 +172,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2015Day3());
         this.challenges.add(new Year2015Day4());
         this.challenges.add(new Year2015Day5());
+        this.challenges.add(new Year2015Day6());
     }
 
     private void load2016() {
