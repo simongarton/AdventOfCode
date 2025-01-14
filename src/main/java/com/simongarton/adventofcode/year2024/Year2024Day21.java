@@ -12,9 +12,11 @@ import java.util.*;
 
 public class Year2024Day21 extends AdventOfCodeChallenge {
 
+
     private Map<String, Map<String, List<String>>> numPadSequences;
     private Map<String, Map<String, List<String>>> dirPadSequences;
     private static final boolean SAVE_SEQUENCE_MAPS = false;
+    private static final boolean DEBUG = false;
 
     private final Map<String, List<String>> cache;
 
@@ -56,7 +58,9 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             final String sequence = this.shortestFullSequence(numericCode, keypads);
             final int numericPart = Integer.parseInt(numericCode.replace("A", ""));
             total += (long) numericPart * sequence.length();
-            System.out.println("  " + numericCode + ": " + numericPart + " * " + sequence.length() + " = " + numericPart * sequence.length());
+            if (DEBUG) {
+                System.out.println("  " + numericCode + ": " + numericPart + " * " + sequence.length() + " = " + numericPart * sequence.length());
+            }
         }
         return String.valueOf(total);
     }
@@ -562,7 +566,9 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
             final long sequenceLength = this.shortestSequenceRecursively(numericCode, 1, keypads, cache);
             final long numericPart = Long.parseLong(numericCode.replace("A", ""));
             total += numericPart * sequenceLength;
-            System.out.println("  " + numericCode + ": " + numericPart + " * " + sequenceLength + " = " + numericPart * sequenceLength);
+            if (DEBUG) {
+                System.out.println("  " + numericCode + ": " + numericPart + " * " + sequenceLength + " = " + numericPart * sequenceLength);
+            }
         }
         return String.valueOf(total);
     }
@@ -663,7 +669,7 @@ public class Year2024Day21 extends AdventOfCodeChallenge {
         for (int i = 0; i < sequence.length(); i++) {
 
             final String toKey = sequence.substring(i, i + 1);
-            final List<String> options = !isDirpadSequence(sequence) ? this.getNumPadSequences(fromKey, toKey) : this.getDirPadSequences(fromKey, toKey);
+            final List<String> options = !this.isDirpadSequence(sequence) ? this.getNumPadSequences(fromKey, toKey) : this.getDirPadSequences(fromKey, toKey);
 
             long shortest = Long.MAX_VALUE;
             for (final String option : options) {

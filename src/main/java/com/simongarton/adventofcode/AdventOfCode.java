@@ -1,6 +1,6 @@
 package com.simongarton.adventofcode;
 
-import com.simongarton.adventofcode.year2015.Year2015Day1;
+import com.simongarton.adventofcode.year2015.*;
 import com.simongarton.adventofcode.year2016.Year2016Day1;
 import com.simongarton.adventofcode.year2017.Year2017Day1;
 import com.simongarton.adventofcode.year2018.Year2018Day1;
@@ -168,6 +168,10 @@ public class AdventOfCode {
 
     private void load2015() {
         this.challenges.add(new Year2015Day1());
+        this.challenges.add(new Year2015Day2());
+        this.challenges.add(new Year2015Day3());
+        this.challenges.add(new Year2015Day4());
+        this.challenges.add(new Year2015Day5());
     }
 
     private void load2016() {

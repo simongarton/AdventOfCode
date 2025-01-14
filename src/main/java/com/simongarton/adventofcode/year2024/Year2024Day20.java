@@ -198,7 +198,6 @@ public class Year2024Day20 extends AdventOfCodeChallenge {
         final List<Cheat> cheats = new ArrayList<>();
 
         for (int first = 0; first < shortestPath.size(); first++) {
-            System.out.println(first + "/" + shortestPath.size());
             final ChallengeNode shortcutStartNode = shortestPath.get(first);
             final ChallengeCoord shortcutStart = shortcutStartNode.getCoord();
             final long startCost = shortcutStartNode.getCost();

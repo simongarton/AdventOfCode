@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public abstract class AdventOfCodeChallenge {
@@ -581,5 +583,72 @@ public abstract class AdventOfCodeChallenge {
             return "is one";
         }
         return "are " + c;
+    }
+
+    protected int regexCountCharactersInString(final String input, final String regex) {
+
+        /*
+        e.g. counting vowels in a sentence
+        String input = "Hello World! This is an example string with vowels.";
+        String regex = "[aeiouAEIOU]";
+         */
+
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(input);
+
+        int count = 0;
+
+        while (matcher.find()) {
+            count++;
+        }
+
+        return count;
+    }
+
+    protected List<String> regexFindDuplicates(final String input) {
+
+        final String regex = "(.)\\1";
+
+        // Compile the pattern
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(input);
+
+        final List<String> pairs = new ArrayList<>();
+
+        while (matcher.find()) {
+            pairs.add(matcher.group(0));
+        }
+
+        return pairs;
+    }
+
+    protected boolean regexExcludeGroupsOfCharacters(final String input, final String regex) {
+
+        /*
+        String input = "This string is clean!";
+        String regex = "^(?!.*(bad|forbidden|illegal)).*$";
+        */
+
+        // Compile the pattern
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(input);
+
+        return matcher.matches();
+    }
+
+    protected int regexCountSequence(final String input, final String sequence) {
+
+        final String regex = "(" + sequence + ")";
+
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(input);
+
+        int count = 0;
+
+        while (matcher.find()) {
+            count++;
+        }
+
+        return count;
     }
 }
