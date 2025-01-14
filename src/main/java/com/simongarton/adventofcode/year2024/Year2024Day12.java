@@ -15,7 +15,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class Year2024Day12 extends AdventOfCodeChallenge {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private List<Region> regions;
 

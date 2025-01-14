@@ -333,7 +333,9 @@ public class Year2024Day24 extends AdventOfCodeChallenge {
             lines.add(gate.id + "->" + gate.output.name);
         }
         lines.add("}");
-        this.dumpGraphToFile("2024-24.2.dot", lines);
+        if (DEBUG) {
+            this.dumpGraphToFile("2024-24.2.dot", lines);
+        }
     }
 
     private String getWireColor(final String name) {

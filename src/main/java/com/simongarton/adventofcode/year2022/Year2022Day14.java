@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 
 public class Year2022Day14 extends AdventOfCodeChallenge {
 
+    private static final boolean DEBUG = false;
+
     private char[] map;
     private Bounds bounds;
 
@@ -40,7 +42,9 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
         this.loadMap(input, false);
         final int result = this.sinkSand();
         this.saveMap();
-        this.saveImage("2022-14.1.png");
+        if (DEBUG) {
+            this.saveImage("2022-14.1.png");
+        }
         return String.valueOf(result);
     }
 
@@ -49,7 +53,9 @@ public class Year2022Day14 extends AdventOfCodeChallenge {
         this.loadMap(input, true);
         final int result = this.sinkSand();
         this.saveMap();
-        this.saveImage("2022-14.2.png");
+        if (DEBUG) {
+            this.saveImage("2022-14.2.png");
+        }
         return String.valueOf(result);
     }
 

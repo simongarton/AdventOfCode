@@ -17,6 +17,8 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class Year2023Day18 extends AdventOfCodeChallenge {
 
+    private static final boolean DEBUG = false;
+
     private List<Hole> diggings;
     private Map<String, Hole> diggingsMap;
     private int x;
@@ -60,13 +62,17 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
         this.diggingsMap = new HashMap<>();
         this.digHoles(input);
         this.buildMap();
-        this.paintMap("holey-moley-before.png");
+        if (DEBUG) {
+            this.paintMap("holey-moley-before.png");
+        }
 
         // sample
 //        this.floodFill(Coord.builder().x(2).y(1).build());
         // real
         this.floodFill(Coord.builder().x(1).y(-100).build());
-        this.paintMap("holey-moley-filled.png");
+        if (DEBUG) {
+            this.paintMap("holey-moley-filled.png");
+        }
 
         return String.valueOf(this.countRoom());
     }
@@ -149,7 +155,9 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
             this.floodFillRecursively(x, y + 1);
         }
         if (this.iteration++ % 10 == 0) {
-            this.paintMap("holey-moley-partial.png");
+            if (DEBUG) {
+                this.paintMap("holey-moley-partial.png");
+            }
         }
     }
 
@@ -403,10 +411,14 @@ public class Year2023Day18 extends AdventOfCodeChallenge {
 
         this.digHolesPart2(input);
         this.buildMap();
-        this.paintMap("holey-moley-before.png");
+        if (DEBUG) {
+            this.paintMap("holey-moley-before.png");
+        }
 
         this.floodFill(Coord.builder().x(1).y(-100).build());
-        this.paintMap("holey-moley-filled.png");
+        if (DEBUG) {
+            this.paintMap("holey-moley-filled.png");
+        }
 
         return String.valueOf(this.countRoom());
     }

@@ -74,8 +74,8 @@ public class AdventOfCode {
 
         this.displayResults();
         this.writeResultsToFile("progress.md");
-        this.paintMap("AdventOfCode.png");
-        this.paintSpeedMap("AdventOfCodeSpeed.png");
+        this.paintMap("images/AdventOfCode.png");
+        this.paintSpeedMap("images/AdventOfCodeSpeed.png");
         this.writeTimesToFile("times.csv");
     }
 
