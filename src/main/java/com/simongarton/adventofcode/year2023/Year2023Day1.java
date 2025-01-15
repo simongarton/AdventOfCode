@@ -45,7 +45,7 @@ public class Year2023Day1 extends AdventOfCodeChallenge {
         String last = null;
         for (int i = 0; i < line.length(); i++) {
             final String c = line.substring(i, i + 1);
-            if (this.isNumeric(c)) {
+            if (this.specialIsNumeric(c)) {
                 if (first == null) {
                     first = c;
                     last = c;
@@ -57,7 +57,7 @@ public class Year2023Day1 extends AdventOfCodeChallenge {
         return Long.valueOf(first + last);
     }
 
-    private boolean isNumeric(final String substring) {
+    private boolean specialIsNumeric(final String substring) {
         return NUMBER_MAP.containsValue(substring);
     }
 
@@ -82,7 +82,7 @@ public class Year2023Day1 extends AdventOfCodeChallenge {
         String result = null;
         while (position < line.length()) {
             final String c = line.substring(position, position + 1);
-            if (this.isNumeric(c)) {
+            if (this.specialIsNumeric(c)) {
                 if (first) {
                     return c;
                 } else {

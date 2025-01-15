@@ -31,7 +31,7 @@ https://adventofcode.com/2015/day/3
 
 ### Day 2: I Was Told There Would Be No Math
 
-But there was. Not very difficult though.
+But there was. Not very difficult though. Calculating surface area and perimeters of rectangular prisms.
 
 https://adventofcode.com/2015/day/1
 

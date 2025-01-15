@@ -138,15 +138,6 @@ public class Year2024Day3 extends AdventOfCodeChallenge {
         return calculations;
     }
 
-    private boolean isNumeric(final String letter) {
-        try {
-            Integer.parseInt(letter);
-            return true;
-        } catch (final NumberFormatException e) {
-            return false;
-        }
-    }
-
     @Override
     public String part2(final String[] input) {
 

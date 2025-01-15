@@ -112,7 +112,7 @@ public class Year2023Day3 extends AdventOfCodeChallenge {
         boolean inNumber = false;
         for (int col = 0; col < line.length(); col++) {
             final String c = line.substring(col, col + 1);
-            if (!this.isNumeric(c)) {
+            if (!this.specialIsNumeric(c)) {
                 if (inNumber) {
                     final Number number = Number.builder()
                             .number(currentNumber)
@@ -148,7 +148,7 @@ public class Year2023Day3 extends AdventOfCodeChallenge {
         final List<Symbol> symbols = new ArrayList<>();
         for (int col = 0; col < line.length(); col++) {
             final String c = line.substring(col, col + 1);
-            if (this.isNumeric(c) || c.equalsIgnoreCase(".")) {
+            if (this.specialIsNumeric(c) || c.equalsIgnoreCase(".")) {
                 continue;
             }
             symbols.add(Symbol.builder()
@@ -159,7 +159,7 @@ public class Year2023Day3 extends AdventOfCodeChallenge {
         return symbols;
     }
 
-    private boolean isNumeric(final String substring) {
+    private boolean specialIsNumeric(final String substring) {
         return NUMBER_MAP.containsValue(substring);
     }
 
