@@ -652,9 +652,9 @@ public abstract class AdventOfCodeChallenge {
         return count;
     }
 
-    protected boolean isNumeric(final String letter) {
+    protected boolean isNumeric(final String s) {
         try {
-            Integer.parseInt(letter);
+            Integer.parseInt(s);
             return true;
         } catch (final NumberFormatException e) {
             return false;

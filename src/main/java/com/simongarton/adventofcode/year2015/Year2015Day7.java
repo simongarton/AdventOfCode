@@ -4,8 +4,7 @@ import com.simongarton.adventofcode.AdventOfCodeChallenge;
 
 import java.util.*;
 
-import static com.simongarton.adventofcode.year2015.Year2015Day7.Operation.FIXED;
-import static com.simongarton.adventofcode.year2015.Year2015Day7.Operation.LSHIFT;
+import static com.simongarton.adventofcode.year2015.Year2015Day7.Operation.*;
 
 public class Year2015Day7 extends AdventOfCodeChallenge {
 
@@ -25,24 +24,57 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
 
         boolean anythingChanged = true;
         while (anythingChanged) {
-            System.out.println();
-            this.wires.values().forEach(wire -> System.out.println(wire.name + ": " + wire.voltage));
             anythingChanged = false;
             for (final Connection connection : this.connections) {
                 if (this.updateConnection(connection)) {
-                    System.out.println("updated " + connection);
                     anythingChanged = true;
                 }
             }
         }
 
-        return String.valueOf(this.wires.get("d").voltage);
+        this.buildGraph();
+
+        return String.valueOf(this.u(this.wires.get("a").voltage));
     }
 
-    private Wire getOrCreateWire(final String name, final Short voltage) {
+    private int u(final Integer i) {
+        return i & 0xFFFF;
+    }
+
+    private void buildGraph() {
+
+        final List<String> lines = new ArrayList<>();
+        lines.add("digraph {");
+        lines.add("rankdir = \"LR\"");
+        for (final Wire wire : this.wires.values()) {
+            lines.add("\"" + wire.name + "\" [label=\"" + wire.name + " [" + this.u(wire.voltage) + "]\"]");
+        }
+        for (final Connection connection : this.connections) {
+            if (connection.input.operation == FIXED) {
+                lines.add(connection.input.fixedVoltage + "->" + connection.output.name);
+                continue;
+            }
+            if (connection.input.left != null) {
+                lines.add("\"" + connection.input.left.name + "\"" + "->" + "\"" + connection.output.name + "\"");
+            }
+            if (connection.input.right != null) {
+                lines.add("\"" + connection.input.right.name + "\"" + "->" + "\"" + connection.output.name + "\"");
+            }
+        }
+        lines.add("}");
+        this.dumpGraphToFile("wires.dot", lines);
+    }
+
+    private Wire getOrCreateWire(final String name, final Integer voltage) {
 
         if (this.wires.containsKey(name)) {
             return this.wires.get(name);
+        }
+
+        if (this.isNumeric(name)) {
+            final Wire wire = new Wire(UUID.randomUUID().toString(), Integer.parseInt(name));
+            this.wires.put(name, wire);
+            return wire;
         }
 
         final Wire wire = new Wire(name, voltage);
@@ -62,7 +94,21 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
             case RSHIFT -> this.handleRShift(connection);
             case NOT -> this.handleNot(connection);
             case FIXED -> this.handleFixed(connection);
+            case DIRECT -> this.handleDirect(connection);
         };
+    }
+
+    private boolean handleDirect(final Connection connection) {
+
+        if (connection.output.voltage != null) {
+            return false;
+        }
+        if (connection.input.right.voltage == null) {
+            return false;
+        }
+
+        connection.output.voltage = connection.input.right.voltage;
+        return true;
     }
 
     private boolean handleFixed(final Connection connection) {
@@ -80,7 +126,7 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
         if (connection.input.left.voltage == null) {
             return false;
         }
-        connection.output.voltage = (short) (connection.input.left.voltage >> connection.input.fixedVoltage);
+        connection.output.voltage = this.u(connection.input.left.voltage >>> connection.input.fixedVoltage);
         return true;
     }
 
@@ -89,7 +135,7 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
         if (connection.input.left.voltage == null) {
             return false;
         }
-        connection.output.voltage = (short) (connection.input.left.voltage << connection.input.fixedVoltage);
+        connection.output.voltage = this.u(connection.input.left.voltage << connection.input.fixedVoltage);
         return true;
     }
 
@@ -101,7 +147,7 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
         if (connection.input.right.voltage == null) {
             return false;
         }
-        connection.output.voltage = (short) (connection.input.left.voltage | connection.input.right.voltage);
+        connection.output.voltage = this.u(connection.input.left.voltage | connection.input.right.voltage);
         return true;
     }
 
@@ -113,7 +159,7 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
         if (connection.input.right.voltage == null) {
             return false;
         }
-        connection.output.voltage = (short) (connection.input.left.voltage & connection.input.right.voltage);
+        connection.output.voltage = this.u(connection.input.left.voltage & connection.input.right.voltage);
         return true;
     }
 
@@ -122,7 +168,7 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
         if (connection.input.right.voltage == null) {
             return false;
         }
-        connection.output.voltage = (short) ~connection.input.right.voltage;
+        connection.output.voltage = this.u(~connection.input.right.voltage);
         return true;
     }
 
@@ -159,6 +205,7 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
             return;
         }
 
+        // 1 AND am -> an Bugger.
         final Wire one = this.getOrCreateWire(inputParts[0], null);
         final Wire two = this.getOrCreateWire(inputParts[2], null);
         final Input input = new Input(one, operation, two, null);
@@ -169,7 +216,7 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
     private void addShift(final String[] inputParts, final Wire output, final Operation operation) {
 
         final Wire one = this.getOrCreateWire(inputParts[0], null);
-        final Input input = new Input(one, operation, null, Short.parseShort(inputParts[2]));
+        final Input input = new Input(one, operation, null, Integer.parseInt(inputParts[2]));
         final Connection connection = new Connection(input, output);
         this.connections.add(connection);
     }
@@ -185,7 +232,7 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
     private void addWireInput(final String[] inputParts, final Wire output) {
 
         if (this.isNumeric(inputParts[0])) {
-            final short voltage = Short.parseShort(inputParts[0]);
+            final int voltage = Integer.parseInt(inputParts[0]);
             final Input input = new Input(null, FIXED, null, voltage);
             final Connection connection = new Connection(input, output);
             this.connections.add(connection);
@@ -193,22 +240,49 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
         }
 
         final Wire wire = this.getOrCreateWire(inputParts[0], null);
-        final Input input = new Input(null, null, wire, null);
+        final Input input = new Input(null, DIRECT, wire, null);
         final Connection connection = new Connection(input, output);
         this.connections.add(connection);
     }
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        this.connections = new ArrayList<>();
+        this.loadCircuit(input);
+        final int b = Integer.parseInt(this.part1(input));
+
+        // reset everything
+        this.wires.clear();
+        this.connections.clear();
+        this.loadCircuit(input);
+        for (final Connection connection : this.connections) {
+            if (connection.output.name.equalsIgnoreCase("b")) {
+                connection.output.voltage = b;
+            }
+        }
+
+        boolean anythingChanged = true;
+        while (anythingChanged) {
+            anythingChanged = false;
+            for (final Connection connection : this.connections) {
+                if (this.updateConnection(connection)) {
+                    anythingChanged = true;
+                }
+            }
+        }
+
+        this.buildGraph();
+
+        return String.valueOf(this.u(this.wires.get("a").voltage));
     }
 
     static class Wire {
 
         String name;
-        Short voltage;
+        Integer voltage;
 
-        Wire(final String name, final Short voltage) {
+        Wire(final String name, final Integer voltage) {
             this.name = name;
             this.voltage = voltage;
         }
@@ -241,9 +315,9 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
         Wire left;
         Operation operation;
         Wire right;
-        Short fixedVoltage;
+        Integer fixedVoltage;
 
-        Input(final Wire left, final Operation operation, final Wire right, final Short fixedVoltage) {
+        Input(final Wire left, final Operation operation, final Wire right, final Integer fixedVoltage) {
             this.left = left;
             this.operation = operation;
             this.right = right;
@@ -313,7 +387,8 @@ public class Year2015Day7 extends AdventOfCodeChallenge {
         LSHIFT("LSHIFT"),
         RSHIFT("RSHIFT"),
         NOT("NOT"),
-        FIXED("FIXED");
+        FIXED("FIXED"),
+        DIRECT("DIRECT");
 
         private final String value;
 
