@@ -6,7 +6,7 @@ public class Year2015Day8 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 0: Template code";
+        return "Day 8: Matchsticks";
     }
 
     @Override
@@ -16,7 +16,18 @@ public class Year2015Day8 extends AdventOfCodeChallenge {
 
     @Override
     public String part1(final String[] input) {
-        return null;
+
+        int total = 0;
+        for (String line : input) {
+            total += score(line);
+        }
+
+        return String.valueOf(total);
+    }
+
+    private int score(String line) {
+
+        return 0;
     }
 
     @Override

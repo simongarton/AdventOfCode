@@ -11,7 +11,7 @@ public class Sample {
     public static void main(final String[] args) throws IOException {
 
         // it's always DayX-sample
-        final Path path = Paths.get(String.format("src/main/resources/%s/%s-Day%s-sample.txt",
+        final Path path = Paths.get(String.format("../AdventOfCodeData/src/main/resources/%s/%s-Day%s-sample.txt",
                 CurrentChallenge.YEAR,
                 CurrentChallenge.YEAR,
                 CurrentChallenge.DAY));

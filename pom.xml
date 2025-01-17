@@ -17,6 +17,14 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.simongarton.adventofcode</groupId>
+            <artifactId>AdventOfCodeData</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.32</version>
