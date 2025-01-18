@@ -10,7 +10,7 @@ public class Part2 {
 
     public static void main(final String[] args) throws IOException {
 
-        final Path path = Paths.get(String.format("src/main/resources/%s/%s-Day%s-1.txt",
+        final Path path = Paths.get(String.format("../AdventOfCodeData/src/main/resources/%s/%s-Day%s-1.txt",
                 CurrentChallenge.YEAR,
                 CurrentChallenge.YEAR,
                 CurrentChallenge.DAY));
