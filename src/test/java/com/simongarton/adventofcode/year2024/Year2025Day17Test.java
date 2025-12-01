@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class Year2024Day17Test {
+class Year2025Day17Test {
 
     @Test
     void testFirstNumber() {

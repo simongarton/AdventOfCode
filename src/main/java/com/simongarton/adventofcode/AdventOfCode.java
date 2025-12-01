@@ -13,6 +13,7 @@ import com.simongarton.adventofcode.year2021.*;
 import com.simongarton.adventofcode.year2022.*;
 import com.simongarton.adventofcode.year2023.*;
 import com.simongarton.adventofcode.year2024.*;
+import com.simongarton.adventofcode.year2025.Year2025Day1;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -22,8 +23,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
@@ -39,22 +40,23 @@ public class AdventOfCode {
     private int height;
 
     final int startYear = 2015;
-    final int endYear = 2024;
+    final int endYear = 2025;
 
     public static void main(final String[] args) {
 
         // can I load these by reflection / inspection ?
         final AdventOfCode adventOfCode = new AdventOfCode();
-        adventOfCode.load2015();
-        adventOfCode.load2016();
-        adventOfCode.load2017();
-        adventOfCode.load2018();
-        adventOfCode.load2019();
-        adventOfCode.load2020();
-        adventOfCode.load2021();
-        adventOfCode.load2022();
-        adventOfCode.load2023();
-        adventOfCode.load2024();
+//        adventOfCode.load2015();
+//        adventOfCode.load2016();
+//        adventOfCode.load2017();
+//        adventOfCode.load2018();
+//        adventOfCode.load2019();
+//        adventOfCode.load2020();
+//        adventOfCode.load2021();
+//        adventOfCode.load2022();
+//        adventOfCode.load2023();
+//        adventOfCode.load2024();
+        adventOfCode.load2025();
         adventOfCode.run();
     }
 
@@ -317,6 +319,10 @@ public class AdventOfCode {
         this.challenges.add(new Year2024Day23());
         this.challenges.add(new Year2024Day24());
         this.challenges.add(new Year2024Day25());
+    }
+
+    private void load2025() {
+        this.challenges.add(new Year2025Day1());
     }
 
     private BufferedImage getBufferedImage() {
