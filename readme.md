@@ -4,9 +4,7 @@
 on 1 Dec, and getting progressively harder - I rarely finish the last few days. I started in 2019, and have been picking
 up more and more each year (plus going back and looking at old ones.)
 
-I've also been loudly praising it at work, with a
-private leaderboard ... which got nicely
-competitive, and 2024 is looking pretty good.
+I've also been loudly praising it at work, with a private leaderboard ... which got nicely competitive ...
 
 ![Progress](images/AdventOfCode.png)
 

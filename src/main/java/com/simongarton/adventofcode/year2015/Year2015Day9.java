@@ -6,7 +6,7 @@ public class Year2015Day9 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 0: Template code";
+        return "Day 9: All in a Single Night";
     }
 
     @Override

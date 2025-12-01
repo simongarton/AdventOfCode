@@ -534,7 +534,7 @@ public abstract class AdventOfCodeChallenge {
         return 0;
     }
 
-    protected long heuristicForAStart(final ChallengeCoord workingCoord) {
+    protected long heuristicForAStar(final ChallengeCoord workingCoord) {
 
         return 1L;
     }
