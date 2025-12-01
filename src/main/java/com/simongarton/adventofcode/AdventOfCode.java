@@ -109,14 +109,11 @@ public class AdventOfCode {
 
     private String textSymbolForDay(final int outcome) {
 
-        switch (outcome) {
-            case 2:
-                return "✓";
-            case 1:
-                return ".";
-            default:
-                return "";
-        }
+        return switch (outcome) {
+            case 2 -> "✓";
+            case 1 -> ".";
+            default -> "";
+        };
     }
 
     private void displayResults() {
@@ -130,7 +127,7 @@ public class AdventOfCode {
     private void writeResultsToFile(final String filename) {
 
         final List<String> lines = this.getResults();
-        lines.add(0, "```");
+        lines.addFirst("```");
         lines.add(lines.size(), "```");
         this.writeStringsToFile(lines, Path.of(filename).toFile());
     }
@@ -485,8 +482,7 @@ public class AdventOfCode {
         if (shortcut.isPresent()) {
             return shortcut.get();
         }
-
-
+        
         if (!this.complete.containsKey(year)) {
             return -1;
         }
@@ -544,10 +540,10 @@ public class AdventOfCode {
 
     private int getOutcomeForDay(final int year, final int day) {
 
-        final Optional<Integer> shortcut = this.getShortcutOutcomeForDay(year, day, 1);
-        if (shortcut.isPresent()) {
-            return shortcut.get();
-        }
+//        final Optional<Integer> shortcut = this.getShortcutOutcomeForDay(year, day, 1);
+//        if (shortcut.isPresent()) {
+//            return shortcut.get();
+//        }
 
         if (this.complete.containsKey(year)) {
             if (this.complete.get(year).containsKey(day)) {

@@ -37,6 +37,8 @@ public abstract class AdventOfCodeChallenge {
         return null;
     }
 
+    public static final String DATA_PATH = "/Users/simongarton/projects/java/AdventOfCodeData/src/main/resources";
+
     private static final int CHAR_WIDTH = 12;
     private static final int CHAR_HEIGHT = 24;
 
@@ -140,7 +142,8 @@ public abstract class AdventOfCodeChallenge {
     }
 
     private String[] loadStrings(final int year, final int day, final int part) {
-        final Path path = Paths.get(String.format("src/main/resources/%s/%s-Day%s-%s.txt",
+        final Path path = Paths.get(String.format("%s/%s/%s-Day%s-%s.txt",
+                DATA_PATH,
                 year,
                 year,
                 day,
@@ -155,7 +158,8 @@ public abstract class AdventOfCodeChallenge {
 
     private String loadAnswer(final int year, final int day, final int part) {
 
-        final Path path = Paths.get(String.format("src/main/resources/%s/%s-Day%s-%s-answer.txt",
+        final Path path = Paths.get(String.format("%s/%s/%s-Day%s-%s-answer.txt",
+                DATA_PATH,
                 year,
                 year,
                 day,
