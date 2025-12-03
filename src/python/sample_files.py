@@ -1,10 +1,11 @@
-for i in range(6, 26):
+for i in range(2, 26):
     filenames = [
-        '../main/resources/2024/2024-Day{}-1.txt',
-        '../main/resources/2024/2024-Day{}-1-answer.txt',
-        '../main/resources/2024/2024-Day{}-2-answer.txt',
-        '../main/resources/2024/2024-Day{}-sample.txt'
+        '../main/resources/2025/2025-Day{}-1.txt',
+        '../main/resources/2025/2025-Day{}-2.txt',
+        '../main/resources/2025/2025-Day{}-1-answer.txt',
+        '../main/resources/2025/2025-Day{}-2-answer.txt',
+        '../main/resources/2025/2025-Day{}-sample.txt'
     ]
     for filename in filenames:
         with open(filename.format(i), 'w') as output:
-            output.write('')
+            output.write('0')
