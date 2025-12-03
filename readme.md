@@ -6,12 +6,12 @@ up more and more each year (plus going back and looking at old ones.)
 
 I've also been loudly praising it at work, with a private leaderboard ... which got nicely competitive ...
 
-![Progress](images/AdventOfCode.png)
+![Progress](images/AdventOfCodeStatic.png)
 
 Performance is generally good : green is <= 1s, yellow <= 5s, orange <= 10s, red <= 30s and purple needs another look.
 Plenty of days when I was so happy just to get the damn thing working, it wasn't worth optimizing.
 
-![Progress](images/AdventOfCodeSpeed.png)
+![Progress](images/AdventOfCodeSpeedStatic.png)
 
 [2025](readme_2025.md)
 [2024](readme_2024.md)
