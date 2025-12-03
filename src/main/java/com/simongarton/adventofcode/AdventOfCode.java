@@ -48,16 +48,16 @@ public class AdventOfCode {
 
         // can I load these by reflection / inspection ?
         final AdventOfCode adventOfCode = new AdventOfCode();
-//        adventOfCode.load2015();
-//        adventOfCode.load2016();
-//        adventOfCode.load2017();
-//        adventOfCode.load2018();
-//        adventOfCode.load2019();
-//        adventOfCode.load2020();
-//        adventOfCode.load2021();
-//        adventOfCode.load2022();
-//        adventOfCode.load2023();
-//        adventOfCode.load2024();
+        adventOfCode.load2015();
+        adventOfCode.load2016();
+        adventOfCode.load2017();
+        adventOfCode.load2018();
+        adventOfCode.load2019();
+        adventOfCode.load2020();
+        adventOfCode.load2021();
+        adventOfCode.load2022();
+        adventOfCode.load2023();
+        adventOfCode.load2024();
         adventOfCode.load2025();
         adventOfCode.run();
     }
