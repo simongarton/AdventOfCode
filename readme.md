@@ -13,6 +13,7 @@ Plenty of days when I was so happy just to get the damn thing working, it wasn't
 
 ![Progress](images/AdventOfCodeSpeed.png)
 
+[2025](readme_2025.md)
 [2024](readme_2024.md)
 [2023](readme_2023.md)
 [2022](readme_2022.md)

@@ -14,6 +14,8 @@ import com.simongarton.adventofcode.year2022.*;
 import com.simongarton.adventofcode.year2023.*;
 import com.simongarton.adventofcode.year2024.*;
 import com.simongarton.adventofcode.year2025.Year2025Day1;
+import com.simongarton.adventofcode.year2025.Year2025Day2;
+import com.simongarton.adventofcode.year2025.Year2025Day3;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -320,6 +322,8 @@ public class AdventOfCode {
 
     private void load2025() {
         this.challenges.add(new Year2025Day1());
+        this.challenges.add(new Year2025Day2());
+        this.challenges.add(new Year2025Day3());
     }
 
     private BufferedImage getBufferedImage() {
@@ -482,7 +486,7 @@ public class AdventOfCode {
         if (shortcut.isPresent()) {
             return shortcut.get();
         }
-        
+
         if (!this.complete.containsKey(year)) {
             return -1;
         }
