@@ -1,5 +1,7 @@
 package com.simongarton.adventofcode;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.simongarton.adventofcode.year2015.*;
 import com.simongarton.adventofcode.year2016.Year2016Day1;
 import com.simongarton.adventofcode.year2017.Year2017Day1;
@@ -20,10 +22,9 @@ import com.simongarton.adventofcode.year2025.Year2025Day3;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.lang.reflect.Type;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
@@ -44,30 +45,43 @@ public class AdventOfCode {
     final int startYear = 2015;
     final int endYear = 2025;
 
+    private List<AdventOfCodeChallenge.Outcome> outcomes;
+
     public static void main(final String[] args) {
 
         // can I load these by reflection / inspection ?
         final AdventOfCode adventOfCode = new AdventOfCode();
-        adventOfCode.load2015();
-        adventOfCode.load2016();
-        adventOfCode.load2017();
-        adventOfCode.load2018();
-        adventOfCode.load2019();
-        adventOfCode.load2020();
-        adventOfCode.load2021();
-        adventOfCode.load2022();
-        adventOfCode.load2023();
-        adventOfCode.load2024();
-        adventOfCode.load2025();
         adventOfCode.run();
+    }
+
+    private void loadOutcomes() {
+
+        final File outcomesFile = Path.of("outcomes.json").toFile();
+        if (!outcomesFile.exists()) {
+            this.outcomes = new ArrayList<>();
+            return;
+        }
+
+        final Gson gson = new Gson();
+        final Type listType = new TypeToken<List<AdventOfCodeChallenge.Outcome>>() {
+        }.getType();
+
+        try (final FileReader reader = new FileReader("outcomes.json")) {
+            this.outcomes = gson.fromJson(reader, listType);
+            System.out.println(this.outcomes);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void run() {
 
+        this.loadEverything();
+
         this.complete.clear();
 
         for (final AdventOfCodeChallenge codeChallenge : this.challenges) {
-            final AdventOfCodeChallenge.Outcome outcome = codeChallenge.run();
+            final AdventOfCodeChallenge.Outcome outcome = this.maybeRun(codeChallenge);
             final int year = codeChallenge.getYear();
             final int day = codeChallenge.getDay();
             if (!this.complete.containsKey(year)) {
@@ -76,11 +90,57 @@ public class AdventOfCode {
             this.complete.get(year).put(day, outcome);
         }
 
+        try {
+            this.saveOutcomes();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+
         this.displayResults();
         this.writeResultsToFile("progress.md");
         this.paintMap("images/AdventOfCode.png");
         this.paintSpeedMap("images/AdventOfCodeSpeed.png");
         this.writeTimesToFile("times.csv");
+    }
+
+    private void saveOutcomes() throws IOException {
+
+        final Gson gson = new Gson();
+        final Type listType = new TypeToken<List<AdventOfCodeChallenge.Outcome>>() {
+        }.getType();
+        final String jsonString = gson.toJson(this.outcomes, listType);
+        final Path outcomesPath = Path.of("outcomes.json");
+        Files.writeString(outcomesPath, jsonString);
+    }
+
+    private AdventOfCodeChallenge.Outcome maybeRun(final AdventOfCodeChallenge codeChallenge) {
+
+        for (final AdventOfCodeChallenge.Outcome outcome : this.outcomes) {
+            if (outcome.year == codeChallenge.year && outcome.day == codeChallenge.day) {
+                return outcome;
+            }
+        }
+        final AdventOfCodeChallenge.Outcome outcome = codeChallenge.run();
+        this.outcomes.add(outcome);
+        return outcome;
+    }
+
+    private void loadEverything() {
+
+        this.load2015();
+        this.load2016();
+        this.load2017();
+        this.load2018();
+        this.load2019();
+        this.load2020();
+        this.load2021();
+        this.load2022();
+        this.load2023();
+        this.load2024();
+        this.load2025();
+
+        this.loadOutcomes();
+
     }
 
     private void writeTimesToFile(final String filename) {

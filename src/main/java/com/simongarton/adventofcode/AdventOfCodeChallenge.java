@@ -71,6 +71,8 @@ public abstract class AdventOfCodeChallenge {
         this.year = year;
         this.day = day;
         final Outcome outcome = new Outcome();
+        outcome.year = year;
+        outcome.day = day;
         for (int part = 1; part <= 2; part++) {
             final long start = System.currentTimeMillis();
             final String[] input = this.loadStrings(year, day, part);
@@ -189,6 +191,8 @@ public abstract class AdventOfCodeChallenge {
 
     public static final class Outcome {
 
+        int year;
+        int day;
         boolean part1 = true;
         boolean part2 = true;
         long timeInMs1;
