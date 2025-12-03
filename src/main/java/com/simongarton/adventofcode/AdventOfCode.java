@@ -1,6 +1,7 @@
 package com.simongarton.adventofcode;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.simongarton.adventofcode.year2015.*;
 import com.simongarton.adventofcode.year2016.Year2016Day1;
@@ -46,6 +47,7 @@ public class AdventOfCode {
     final int endYear = 2025;
 
     private List<AdventOfCodeChallenge.Outcome> outcomes;
+    private List<AdventOfCodeChallenge.Outcome> updatedOutcomes;
 
     public static void main(final String[] args) {
 
@@ -68,7 +70,6 @@ public class AdventOfCode {
 
         try (final FileReader reader = new FileReader("outcomes.json")) {
             this.outcomes = gson.fromJson(reader, listType);
-            System.out.println(this.outcomes);
         } catch (final IOException e) {
             e.printStackTrace();
         }
@@ -79,6 +80,7 @@ public class AdventOfCode {
         this.loadEverything();
 
         this.complete.clear();
+        this.updatedOutcomes = new ArrayList<>();
 
         for (final AdventOfCodeChallenge codeChallenge : this.challenges) {
             final AdventOfCodeChallenge.Outcome outcome = this.maybeRun(codeChallenge);
@@ -105,38 +107,33 @@ public class AdventOfCode {
 
     private void saveOutcomes() throws IOException {
 
-        final Gson gson = new Gson();
+        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
         final Type listType = new TypeToken<List<AdventOfCodeChallenge.Outcome>>() {
         }.getType();
-        final String jsonString = gson.toJson(this.outcomes, listType);
+        final String jsonString = gson.toJson(this.updatedOutcomes, listType);
         final Path outcomesPath = Path.of("outcomes.json");
         Files.writeString(outcomesPath, jsonString);
     }
 
     private AdventOfCodeChallenge.Outcome maybeRun(final AdventOfCodeChallenge codeChallenge) {
 
-        for (final AdventOfCodeChallenge.Outcome outcome : this.outcomes) {
-            if (outcome.year == codeChallenge.year && outcome.day == codeChallenge.day) {
-                return outcome;
-            }
-        }
         final AdventOfCodeChallenge.Outcome outcome = codeChallenge.run();
-        this.outcomes.add(outcome);
+        this.updatedOutcomes.add(outcome);
         return outcome;
     }
 
     private void loadEverything() {
 
-        this.load2015();
-        this.load2016();
-        this.load2017();
-        this.load2018();
-        this.load2019();
-        this.load2020();
-        this.load2021();
-        this.load2022();
-        this.load2023();
-        this.load2024();
+//        this.load2015();
+//        this.load2016();
+//        this.load2017();
+//        this.load2018();
+//        this.load2019();
+//        this.load2020();
+//        this.load2021();
+//        this.load2022();
+//        this.load2023();
+//        this.load2024();
         this.load2025();
 
         this.loadOutcomes();
@@ -317,10 +314,10 @@ public class AdventOfCode {
         this.challenges.add(new Year2022Day18());
         this.challenges.add(new Year2022Day19());
         this.challenges.add(new Year2022Day20());
-//        this.challenges.add(new Year2022Day21()); // slow part 2 18 seconds
+        this.challenges.add(new Year2022Day21()); // slow part 2 18 seconds
         this.challenges.add(new Year2022Day22());
         this.challenges.add(new Year2022Day23());
-//        this.challenges.add(new Year2022Day24()); // slow part 2 15 seconds
+        this.challenges.add(new Year2022Day24()); // slow part 2 15 seconds
         this.challenges.add(new Year2022Day25());
     }
 
@@ -329,9 +326,9 @@ public class AdventOfCode {
         this.challenges.add(new Year2023Day2());
         this.challenges.add(new Year2023Day3());
         this.challenges.add(new Year2023Day4());
-//        this.challenges.add(new Year2023Day5()); // slow part 2 63 seconds
+        this.challenges.add(new Year2023Day5()); // slow part 2 63 seconds
         this.challenges.add(new Year2023Day6());
-//        this.challenges.add(new Year2023Day7()); // slow part 2 29 seconds
+        this.challenges.add(new Year2023Day7()); // slow part 2 29 seconds
         this.challenges.add(new Year2023Day8());
         this.challenges.add(new Year2023Day9());
         this.challenges.add(new Year2023Day10());
@@ -346,10 +343,10 @@ public class AdventOfCode {
         this.challenges.add(new Year2023Day19());
         this.challenges.add(new Year2023Day20());
         this.challenges.add(new Year2023Day21());
-        // this.challenges.add(new Year2023Day22()); // stupidly slow part 1 (!) 938 seconds
+//        this.challenges.add(new Year2023Day22()); // stupidly slow part 1 (!) 938 seconds
         this.challenges.add(new Year2023Day23());
         this.challenges.add(new Year2023Day24());
-        // this.challenges.add(new Year2023Day25()); // stupidly slow
+        this.challenges.add(new Year2023Day25()); // stupidly slow
     }
 
     private void load2024() {
@@ -358,19 +355,19 @@ public class AdventOfCode {
         this.challenges.add(new Year2024Day3());
         this.challenges.add(new Year2024Day4());
         this.challenges.add(new Year2024Day5());
-//        this.challenges.add(new Year2024Day6()); // slow
+        this.challenges.add(new Year2024Day6()); // slow
         this.challenges.add(new Year2024Day7());
         this.challenges.add(new Year2024Day8());
         this.challenges.add(new Year2024Day9());
         this.challenges.add(new Year2024Day10());
         this.challenges.add(new Year2024Day11());
         this.challenges.add(new Year2024Day12());
-//        this.challenges.add(new Year2024Day13()); // slow part 2 64 seconds
+        this.challenges.add(new Year2024Day13()); // slow part 2 64 seconds
         this.challenges.add(new Year2024Day14());
         this.challenges.add(new Year2024Day15());
-//        this.challenges.add(new Year2024Day16()); // slow part 2 81 seconds
+        this.challenges.add(new Year2024Day16()); // slow part 2 81 seconds
         this.challenges.add(new Year2024Day17());
-//        this.challenges.add(new Year2024Day18()); // slow part 1 (!) 180 seconds
+        this.challenges.add(new Year2024Day18()); // slow part 1 (!) 180 seconds
         this.challenges.add(new Year2024Day19());
         this.challenges.add(new Year2024Day20());
         this.challenges.add(new Year2024Day21());

@@ -1,5 +1,7 @@
 package com.simongarton.adventofcode;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
@@ -14,10 +16,8 @@ import com.simongarton.adventofcode.common.ChallengeNode;
 import com.simongarton.adventofcode.exceptions.InvalidSetupException;
 import lombok.Getter;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,15 +61,46 @@ public abstract class AdventOfCodeChallenge {
 
     protected TerminalScreen screen;
 
+    private List<AdventOfCodeChallenge.Outcome> outcomes;
+
     private final DecimalFormat decimalFormatCommas = new DecimalFormat("#,##0");
 
     public abstract String part1(final String[] input);
 
     public abstract String part2(final String[] input);
 
+    private void loadOutcomes() {
+
+        final File outcomesFile = Path.of("outcomes.json").toFile();
+        if (!outcomesFile.exists()) {
+            this.outcomes = new ArrayList<>();
+            return;
+        }
+
+        final Gson gson = new Gson();
+        final Type listType = new TypeToken<List<Outcome>>() {
+        }.getType();
+
+        try (final FileReader reader = new FileReader("outcomes.json")) {
+            this.outcomes = gson.fromJson(reader, listType);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Outcome runChallenge(final int year, final int day) {
+
         this.year = year;
         this.day = day;
+
+        this.loadOutcomes();
+
+        for (final Outcome outcome : this.outcomes) {
+            if (outcome.year == year && outcome.day == day) {
+                return outcome;
+            }
+        }
+
         final Outcome outcome = new Outcome();
         outcome.year = year;
         outcome.day = day;
