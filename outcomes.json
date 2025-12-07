@@ -38,5 +38,13 @@
     "part2": true,
     "timeInMs1": 14,
     "timeInMs2": 5
+  },
+  {
+    "year": 2025,
+    "day": 6,
+    "part1": true,
+    "part2": true,
+    "timeInMs1": 12,
+    "timeInMs2": 13
   }
 ]
