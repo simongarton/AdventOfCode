@@ -21,7 +21,10 @@ import com.simongarton.adventofcode.year2025.*;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,7 +47,6 @@ public class AdventOfCode {
     final int startYear = 2015;
     final int endYear = 2025;
 
-    private List<AdventOfCodeChallenge.Outcome> outcomes;
     private List<AdventOfCodeChallenge.Outcome> updatedOutcomes;
 
     public static void main(final String[] args) {
@@ -52,25 +54,6 @@ public class AdventOfCode {
         // can I load these by reflection / inspection ?
         final AdventOfCode adventOfCode = new AdventOfCode();
         adventOfCode.run();
-    }
-
-    private void loadOutcomes() {
-
-        final File outcomesFile = Path.of("outcomes.json").toFile();
-        if (!outcomesFile.exists()) {
-            this.outcomes = new ArrayList<>();
-            return;
-        }
-
-        final Gson gson = new Gson();
-        final Type listType = new TypeToken<List<AdventOfCodeChallenge.Outcome>>() {
-        }.getType();
-
-        try (final FileReader reader = new FileReader("outcomes.json")) {
-            this.outcomes = gson.fromJson(reader, listType);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void run() {
@@ -134,7 +117,7 @@ public class AdventOfCode {
 //        this.load2024();
         this.load2025();
 
-        this.loadOutcomes();
+//        this.loadOutcomes();
 
     }
 
@@ -382,6 +365,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2025Day4());
         this.challenges.add(new Year2025Day5());
         this.challenges.add(new Year2025Day6());
+        this.challenges.add(new Year2025Day7());
     }
 
     private BufferedImage getBufferedImage() {
