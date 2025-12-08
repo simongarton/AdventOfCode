@@ -100,7 +100,7 @@ public class Year2025Day8 extends AdventOfCodeChallenge {
                 System.out.println("\tadding second " + second.getId() + " to " + chain.stream().map(Object::toString).collect(Collectors.joining(",")));
                 continue;
             }
-            if (firstChainId == null && secondChainId != null) {
+            if (firstChainId == null) {
                 // add the first junction to the chain the second is already in
                 final List<Integer> chain = this.chains.get(secondChainId);
                 chain.add(first.getId());
@@ -111,8 +111,16 @@ public class Year2025Day8 extends AdventOfCodeChallenge {
             final List<Integer> firstChain = this.chains.get(firstChainId);
             final List<Integer> secondChain = this.chains.get(secondChainId);
             firstChain.addAll(secondChain);
-            secondChain.clear();
-//            this.chains.remove(secondChainId);
+            final List<List<Integer>> validChains = new ArrayList<>();
+            for (int x = 0; x < this.chains.size(); x++) {
+                if (x != secondChainId) {
+                    validChains.add(this.chains.get(x));
+                }
+            }
+            this.chains.clear();
+            this.chains.addAll(validChains);
+            // this refused to work
+            // this.chains.remove(secondChainId);
             System.out.println("\tmerged into " + firstChain.stream().map(Object::toString).collect(Collectors.joining(",")));
         }
 
