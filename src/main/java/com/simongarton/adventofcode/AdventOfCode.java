@@ -366,6 +366,7 @@ public class AdventOfCode {
         this.challenges.add(new Year2025Day5());
         this.challenges.add(new Year2025Day6());
         this.challenges.add(new Year2025Day7());
+        this.challenges.add(new Year2025Day8());
     }
 
     private BufferedImage getBufferedImage() {
