@@ -17,12 +17,12 @@ public class Year2025Day8 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 0: Template code";
+        return "Day 8: Playground";
     }
 
     @Override
     public Outcome run() {
-        return this.runChallenge(2025, 0);
+        return this.runChallenge(2025, 8);
     }
 
     @Override

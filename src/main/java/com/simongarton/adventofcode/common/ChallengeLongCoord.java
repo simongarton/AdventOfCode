@@ -16,6 +16,22 @@ public class ChallengeLongCoord {
         this.y = y;
     }
 
+    public ChallengeLongCoord(final String coordinate) {
+
+        final String[] parts = coordinate.split(",");
+        this.x = Long.parseLong(parts[0]);
+        this.y = Long.parseLong(parts[1]);
+    }
+
+
+    public long getX() {
+        return x;
+    }
+
+    public long getY() {
+        return y;
+    }
+
     @Override
     public String toString() {
 
