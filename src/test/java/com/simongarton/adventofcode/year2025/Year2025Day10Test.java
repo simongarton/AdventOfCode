@@ -17,9 +17,9 @@ class Year2025Day10Test {
 
         // when
         System.out.println(machine.state() + " -> " + machine.targetState());
-        machine.pressButton(0);
-        machine.pressButton(1);
-        machine.pressButton(2);
+        machine.pressButtonLights(0);
+        machine.pressButtonLights(1);
+        machine.pressButtonLights(2);
         System.out.println(machine.state() + " -> " + machine.targetState());
 
         // then
@@ -34,10 +34,10 @@ class Year2025Day10Test {
 
         // when
         System.out.println(machine.state() + " -> " + machine.targetState());
-        machine.pressButton(1);
-        machine.pressButton(3);
-        machine.pressButton(5);
-        machine.pressButton(5);
+        machine.pressButtonLights(1);
+        machine.pressButtonLights(3);
+        machine.pressButtonLights(5);
+        machine.pressButtonLights(5);
         System.out.println(machine.state() + " -> " + machine.targetState());
 
         // then
@@ -52,11 +52,11 @@ class Year2025Day10Test {
 
         // when
         System.out.println(machine.state() + " -> " + machine.targetState());
-        machine.pressButton(0);
-        machine.pressButton(2);
-        machine.pressButton(3);
-        machine.pressButton(4);
-        machine.pressButton(5);
+        machine.pressButtonLights(0);
+        machine.pressButtonLights(2);
+        machine.pressButtonLights(3);
+        machine.pressButtonLights(4);
+        machine.pressButtonLights(5);
         System.out.println(machine.state() + " -> " + machine.targetState());
 
         // then
@@ -71,9 +71,9 @@ class Year2025Day10Test {
 
         // when
         System.out.println(machine.state() + " -> " + machine.targetState());
-        machine.pressButton(2);
-        machine.pressButton(3);
-        machine.pressButton(4);
+        machine.pressButtonLights(2);
+        machine.pressButtonLights(3);
+        machine.pressButtonLights(4);
         System.out.println(machine.state() + " -> " + machine.targetState());
 
         // then
@@ -88,12 +88,58 @@ class Year2025Day10Test {
 
         // when
         System.out.println(machine.state() + " -> " + machine.targetState());
-        machine.pressButton(1);
-        machine.pressButton(2);
+        machine.pressButtonLights(1);
+        machine.pressButtonLights(2);
         System.out.println(machine.state() + " -> " + machine.targetState());
 
         // then
         assertEquals(machine.state(), machine.targetState());
+    }
+
+    @Test
+    void test1_1_1() {
+
+        // this is theirs which works in 10
+
+        // given
+        final Year2025Day10.Machine machine = this.getMachine1();
+
+        // when
+        System.out.println(machine.joltageState() + " -> " + machine.targetJoltageState());
+        final List<Integer> presses = List.of(0, 1, 1, 1, 3, 3, 3, 4, 5, 5);
+        for (final Integer press : presses) {
+            final String state = machine.joltageState();
+            machine.pressButtonJoltage(press);
+            System.out.println("\t" + press + ": " + state + " -> " + machine.joltageState() + " " + machine.getButtons().get(press).getCircuits());
+
+        }
+        System.out.println(machine.joltageState() + " -> " + machine.targetJoltageState());
+
+        // then
+        assertEquals(machine.joltageState(), machine.targetJoltageState());
+    }
+
+    @Test
+    void test1_1_2() {
+
+        // this is mine which works, but does take 13, not 10 steps
+
+        // given
+        final Year2025Day10.Machine machine = this.getMachine1();
+
+        // when
+        System.out.println(machine.joltageState() + " -> " + machine.targetJoltageState());
+        final List<Integer> presses = List.of(0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 5, 5, 4);
+        for (final Integer press : presses) {
+            final String state = machine.joltageState();
+            machine.pressButtonJoltage(press);
+            System.out.println("\t" + press + ": " + state + " -> " + machine.joltageState() + " " + machine.getButtons().get(press).getCircuits());
+
+        }
+        System.out.println(machine.joltageState() + " -> " + machine.targetJoltageState());
+
+        // then
+        assertEquals(machine.joltageState(), machine.targetJoltageState());
     }
 
     @Test
@@ -104,7 +150,22 @@ class Year2025Day10Test {
         final Year2025Day10.Machine machine = this.getMachine1_8();
 
         // when
-        final Year2025Day10.Node node = year2025Day10.minimumPresses(machine);
+        final Year2025Day10.Node node = year2025Day10.minimumPressesLights(machine);
+
+        // then
+        System.out.println(node.totalPresses());
+
+    }
+
+    @Test
+    void solve_part2_1() {
+
+        // given
+        final Year2025Day10 year2025Day10 = new Year2025Day10();
+        final Year2025Day10.Machine machine = this.getMachine1();
+
+        // when
+        final Year2025Day10.Node node = year2025Day10.minimumPressesJoltage(machine);
 
         // then
         System.out.println(node.totalPresses());
@@ -114,7 +175,8 @@ class Year2025Day10Test {
     private Year2025Day10.Machine getMachine1_8() {
 
         final boolean[] lights = new boolean[]{true, false, false, false, true, false, true, false, true};
-        final Year2025Day10.Machine machine = new Year2025Day10.Machine(0, lights);
+        final int[] joltages = new int[]{30, 54, 42, 24, 47, 24, 34, 49, 68};
+        final Year2025Day10.Machine machine = new Year2025Day10.Machine(0, lights, joltages);
         final List<Year2025Day10.Button> buttons = new ArrayList<>();
         buttons.add(new Year2025Day10.Button(0, List.of(1, 4)));
         buttons.add(new Year2025Day10.Button(1, List.of(0, 1, 4, 5, 7, 8)));
@@ -134,7 +196,8 @@ class Year2025Day10Test {
     private Year2025Day10.Machine getMachine1() {
 
         final boolean[] lights = new boolean[]{false, true, true, false};
-        final Year2025Day10.Machine machine = new Year2025Day10.Machine(0, lights);
+        final int[] joltages = new int[]{3, 5, 4, 7};
+        final Year2025Day10.Machine machine = new Year2025Day10.Machine(0, lights, joltages);
         final List<Year2025Day10.Button> buttons = new ArrayList<>();
         buttons.add(new Year2025Day10.Button(0, List.of(3)));
         buttons.add(new Year2025Day10.Button(1, List.of(1, 3)));
@@ -152,7 +215,8 @@ class Year2025Day10Test {
     private Year2025Day10.Machine getMachine2() {
 
         final boolean[] lights = new boolean[]{false, false, false, true, false};
-        final Year2025Day10.Machine machine = new Year2025Day10.Machine(0, lights);
+        final int[] joltages = new int[]{7, 5, 12, 7, 2};
+        final Year2025Day10.Machine machine = new Year2025Day10.Machine(0, lights, joltages);
         final List<Year2025Day10.Button> buttons = new ArrayList<>();
         buttons.add(new Year2025Day10.Button(0, List.of(0, 2, 3, 4)));
         buttons.add(new Year2025Day10.Button(1, List.of(2, 3)));
@@ -169,7 +233,8 @@ class Year2025Day10Test {
     private Year2025Day10.Machine getMachine3() {
 
         final boolean[] lights = new boolean[]{false, true, true, true, false, true};
-        final Year2025Day10.Machine machine = new Year2025Day10.Machine(0, lights);
+        final int[] joltages = new int[]{10, 11, 11, 5, 10, 5};
+        final Year2025Day10.Machine machine = new Year2025Day10.Machine(0, lights, joltages);
         final List<Year2025Day10.Button> buttons = new ArrayList<>();
         buttons.add(new Year2025Day10.Button(0, List.of(0, 1, 2, 3, 4)));
         buttons.add(new Year2025Day10.Button(1, List.of(0, 3, 4)));

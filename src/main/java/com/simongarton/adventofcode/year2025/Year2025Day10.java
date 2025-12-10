@@ -49,7 +49,7 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
 
         while (!this.pressesToTry.isEmpty()) {
             final Node node = this.getBestNode();
-            System.out.println("pt " + this.pressesToTry.size() + " bf " + this.breadthFirst.size() + " b " + node.buttonPressed + " n " + node);
+//            System.out.println("pt " + this.pressesToTry.size() + " bf " + this.breadthFirst.size() + " b " + node.buttonPressed + " n " + node);
             this.pressesToTry.remove(node);
             if (node.totalPresses >= minimumPresses) {
 //                System.out.println("Abandoning, " + node.totalPresses + " > " + minimumPresses);
@@ -63,7 +63,7 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
                 if (pressesTaken < minimumPresses) {
                     minimumPresses = pressesTaken;
                     minimum = node;
-                    System.out.println("Found a new minimum presses of " + minimumPresses);
+//                    System.out.println("Found a new minimum presses of " + minimumPresses);
                 }
             }
             if (!attemptedStates.contains(outputState)) {
@@ -97,6 +97,8 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
             final String outputState = node.pressButtonJoltage();
 //            System.out.println(node.inputState + " [" + node.buttonPressed + "] -> " + node.outputState);
             final boolean complete = node.isCompleteForJoltage();
+//            System.out.println(node.sequence() + " -> " + outputState);
+
             if (complete) {
                 final long pressesTaken = node.totalPresses;
                 if (pressesTaken < minimumPresses) {
@@ -105,14 +107,12 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
 //                    System.out.println("Found a new minimum presses of " + minimumPresses);
                 }
             }
-            final boolean stillValid = !attemptedStates.contains(outputState);
+            final boolean stillValid = !attemptedStates.contains(node.sequence());
             final boolean exceeded = machine.exceededBy(outputState);
             if (stillValid && !exceeded) {
                 this.addNodes(machine, node, outputState, false);
             }
-            if (stillValid) {
-                attemptedStates.add(outputState);
-            }
+            attemptedStates.add(node.sequence());
         }
         return minimum;
     }
@@ -212,8 +212,9 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
         int machines = 0;
         for (final String line : input) {
             final Machine machine = this.parseLine(machines, line);
+            final String startingJoltages = Arrays.toString(machine.joltages);
             final Node best = this.minimumPressesJoltage(machine);
-            System.out.println(machines + ":" + Arrays.toString(machine.joltages) + " -> " + Arrays.toString(machine.targetJoltages) + " in " + best.totalPresses + " (" + best.sequence() + ")");
+            System.out.println(machines + ":" + startingJoltages + " -> " + Arrays.toString(machine.targetJoltages) + " in " + best.totalPresses + " (" + best.sequence() + ")");
             totalPresses += best.totalPresses;
             machines++;
         }
@@ -336,7 +337,7 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
 
             final String[] joltageStrings = outputState.split(",");
             for (int i = 0; i < joltageStrings.length; i++) {
-                if (this.targetJoltages[i] < Integer.parseInt(joltageStrings[i])) {
+                if (Integer.parseInt(joltageStrings[i]) > this.targetJoltages[i]) {
                     return true;
                 }
             }
@@ -355,15 +356,13 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
             this.circuits = circuits;
         }
 
-        public int getId() {
-            return this.id;
-        }
-
         public void setMachine(final Machine machine) {
+
             this.machine = machine;
         }
 
         public String pressButtonLights() {
+
             for (final Integer circuit : this.circuits) {
                 this.machine.toggle(circuit);
             }
@@ -371,10 +370,16 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
         }
 
         public String pressButtonJoltage() {
+
             for (final Integer circuit : this.circuits) {
                 this.machine.joltages[circuit] = this.machine.joltages[circuit] + 1;
             }
             return this.machine.joltageState();
+        }
+
+        public String getCircuits() {
+
+            return this.circuits.toString();
         }
     }
 
