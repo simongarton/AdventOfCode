@@ -16,7 +16,7 @@ public class Sample {
                 CurrentChallenge.YEAR,
                 CurrentChallenge.DAY));
 
-        if (true) {
+        if (false) {
             System.out.println(CurrentChallenge.getCurrentChallenge()
                     .part1(Files.lines(path, StandardCharsets.UTF_8)
                             .toArray(String[]::new)));

@@ -27,7 +27,7 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
         int machines = 0;
         for (final String line : input) {
             final Machine machine = this.parseLine(machines, line);
-            final Node best = this.minimumPresses(machine);
+            final Node best = this.minimumPressesLights(machine);
             System.out.println(machines + ":" + machine.state() + " -> " + machine.targetState() + " in " + best.totalPresses + " (" + best.sequence() + ")");
             totalPresses += best.totalPresses;
             machines++;
@@ -36,7 +36,45 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
         return String.valueOf(totalPresses);
     }
 
-    protected Node minimumPresses(final Machine machine) {
+    protected Node minimumPressesLights(final Machine machine) {
+        long minimumPresses = Long.MAX_VALUE;
+        Node minimum = null;
+        final Set<String> attemptedStates = new HashSet<>();
+
+        this.breadthFirst.clear();
+        this.pressesToTry.clear();
+        this.nodesAdded = 0;
+
+        this.addNodes(machine, null, machine.state(), true);
+
+        while (!this.pressesToTry.isEmpty()) {
+            final Node node = this.getBestNode();
+            System.out.println("pt " + this.pressesToTry.size() + " bf " + this.breadthFirst.size() + " b " + node.buttonPressed + " n " + node);
+            this.pressesToTry.remove(node);
+            if (node.totalPresses >= minimumPresses) {
+//                System.out.println("Abandoning, " + node.totalPresses + " > " + minimumPresses);
+                continue;
+            }
+            final String outputState = node.pressButtonLights();
+//            System.out.println(node.inputState + " [" + node.buttonPressed + "] -> " + node.outputState);
+            final boolean complete = node.isCompleteForLights();
+            if (complete) {
+                final long pressesTaken = node.totalPresses;
+                if (pressesTaken < minimumPresses) {
+                    minimumPresses = pressesTaken;
+                    minimum = node;
+                    System.out.println("Found a new minimum presses of " + minimumPresses);
+                }
+            }
+            if (!attemptedStates.contains(outputState)) {
+                this.addNodes(machine, node, outputState, true);
+            }
+            attemptedStates.add(outputState);
+        }
+        return minimum;
+    }
+
+    protected Node minimumPressesJoltage(final Machine machine) {
 
         long minimumPresses = Long.MAX_VALUE;
         Node minimum = null;
@@ -46,19 +84,20 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
         this.pressesToTry.clear();
         this.nodesAdded = 0;
 
-        this.addNodes(machine, null, machine.state());
+        this.addNodes(machine, null, machine.joltageState(), false);
 
         while (!this.pressesToTry.isEmpty()) {
             final Node node = this.getBestNode();
-//            System.out.println("pt " + this.pressesToTry.size() + " bf " + this.breadthFirst.size() + " b " + node.buttonPressed + " n " + node);
+//            System.out.println("pt " + this.pressesToTry.size() + " bf " + this.breadthFirst.size() + " b " + node.buttonPressed + " n " + node.toStringJoltage());
             this.pressesToTry.remove(node);
             if (node.totalPresses >= minimumPresses) {
 //                System.out.println("Abandoning, " + node.totalPresses + " > " + minimumPresses);
                 continue;
             }
-            final String outputState = node.pressButton();
+            final String outputState = node.pressButtonJoltage();
 //            System.out.println(node.inputState + " [" + node.buttonPressed + "] -> " + node.outputState);
-            if (node.isComplete()) {
+            final boolean complete = node.isCompleteForJoltage();
+            if (complete) {
                 final long pressesTaken = node.totalPresses;
                 if (pressesTaken < minimumPresses) {
                     minimumPresses = pressesTaken;
@@ -66,18 +105,26 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
 //                    System.out.println("Found a new minimum presses of " + minimumPresses);
                 }
             }
-            if (!attemptedStates.contains(outputState)) {
-                this.addNodes(machine, node, outputState);
+            final boolean stillValid = !attemptedStates.contains(outputState);
+            final boolean exceeded = machine.exceededBy(outputState);
+            if (stillValid && !exceeded) {
+                this.addNodes(machine, node, outputState, false);
             }
-            attemptedStates.add(outputState);
+            if (stillValid) {
+                attemptedStates.add(outputState);
+            }
         }
         return minimum;
     }
 
     private Node getBestNode() {
 
-        int depth = 1;
+        int depth = 0;
         while (true) {
+            if (!this.breadthFirst.containsKey(depth)) {
+                depth++;
+                continue;
+            }
             if (this.breadthFirst.get(depth).isEmpty()) {
                 depth++;
                 continue;
@@ -86,7 +133,7 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
         }
     }
 
-    private void addNodes(final Machine machine, final Node parent, final String state) {
+    private void addNodes(final Machine machine, final Node parent, final String state, final boolean useLights) {
 
         for (final Button button : machine.buttons) {
             final Node node = new Node(
@@ -97,14 +144,14 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
                     button.id
             );
             this.pressesToTry.add(node);
-            this.addNode(node);
+            this.addNode(node, useLights);
             this.nodesAdded++;
         }
     }
 
-    private void addNode(final Node node) {
+    private void addNode(final Node node, final boolean useLights) {
 
-        final int depth = node.totalPresses();
+        final int depth = useLights ? node.totalPresses() : node.lackOfVoltage();
         if (!this.breadthFirst.containsKey(depth)) {
             this.breadthFirst.put(depth, new ArrayList<>());
         }
@@ -121,8 +168,8 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
             buttons.add(this.getButton(buttonid, sections[i]));
             buttonid++;
         }
-        final List<Integer> joltages = this.getJoltages(sections[sections.length - 1]);
-        final Machine machine = new Machine(id, lights);
+        final int[] joltages = this.getJoltages(sections[sections.length - 1]);
+        final Machine machine = new Machine(id, lights, joltages);
         for (final Button button : buttons) {
             button.setMachine(machine);
             machine.buttons.add(button);
@@ -131,11 +178,15 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
         return machine;
     }
 
-    private List<Integer> getJoltages(final String section) {
+    private int[] getJoltages(final String section) {
 
-        final String lightSection = section.substring(1, section.length() - 1);
-        final String[] lightStrings = lightSection.split(",");
-        return Arrays.stream(lightStrings).map(Integer::parseInt).toList();
+        final String joltageSection = section.substring(1, section.length() - 1);
+        final String[] joltageStrings = joltageSection.split(",");
+        final int[] joltages = new int[joltageStrings.length];
+        for (int i = 0; i < joltages.length; i++) {
+            joltages[i] = Integer.parseInt(joltageStrings[i]);
+        }
+        return joltages;
     }
 
     private Button getButton(final int buttonId, final String section) {
@@ -156,7 +207,18 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
 
     @Override
     public String part2(final String[] input) {
-        return null;
+
+        long totalPresses = 0;
+        int machines = 0;
+        for (final String line : input) {
+            final Machine machine = this.parseLine(machines, line);
+            final Node best = this.minimumPressesJoltage(machine);
+            System.out.println(machines + ":" + Arrays.toString(machine.joltages) + " -> " + Arrays.toString(machine.targetJoltages) + " in " + best.totalPresses + " (" + best.sequence() + ")");
+            totalPresses += best.totalPresses;
+            machines++;
+        }
+
+        return String.valueOf(totalPresses);
     }
 
     public static class Machine {
@@ -164,15 +226,20 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
         private final int id;
         private final boolean[] targetLights;
         private final boolean[] lights;
+        private final int[] targetJoltages;
+        private final int[] joltages;
         private final List<Button> buttons;
-        private final List<Integer> joltages;
 
-        public Machine(final int id, final boolean[] targetLights) {
+        public Machine(final int id,
+                       final boolean[] targetLights,
+                       final int[] targetJoltages) {
             this.id = id;
             this.targetLights = targetLights;
             this.lights = new boolean[targetLights.length];
             this.buttons = new ArrayList<>();
-            this.joltages = new ArrayList<>();
+            this.targetJoltages = targetJoltages;
+            this.joltages = new int[targetJoltages.length];
+
         }
 
         public int lightCount() {
@@ -207,8 +274,12 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
             return line.toString();
         }
 
-        public String pressButton(final int index) {
-            return this.buttons.get(index).press();
+        public String pressButtonLights(final int index) {
+            return this.buttons.get(index).pressButtonLights();
+        }
+
+        public String pressButtonJoltage(final int index) {
+            return this.buttons.get(index).pressButtonJoltage();
         }
 
         public int getId() {
@@ -226,21 +297,62 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
             }
         }
 
-        public boolean isComplete() {
+        public boolean isCompleteForLights() {
 
             return this.state().equalsIgnoreCase(this.targetState());
+        }
+
+        public boolean isCompleteForJoltage() {
+
+            return Arrays.equals(this.joltages, this.targetJoltages);
+        }
+
+        public String joltageState() {
+
+            String line = "";
+            for (final int joltage : this.joltages) {
+                line = line + joltage + ",";
+            }
+            return line.substring(0, line.length() - 1);
+        }
+
+        public String targetJoltageState() {
+
+            String line = "";
+            for (final int joltage : this.targetJoltages) {
+                line = line + joltage + ",";
+            }
+            return line.substring(0, line.length() - 1);
+        }
+
+        public void setJoltages(final String inputState) {
+            final String[] joltageStrings = inputState.split(",");
+            for (int i = 0; i < joltageStrings.length; i++) {
+                this.joltages[i] = Integer.parseInt(joltageStrings[i]);
+            }
+        }
+
+        public boolean exceededBy(final String outputState) {
+
+            final String[] joltageStrings = outputState.split(",");
+            for (int i = 0; i < joltageStrings.length; i++) {
+                if (this.targetJoltages[i] < Integer.parseInt(joltageStrings[i])) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
     public static class Button {
 
         private final int id;
-        private final List<Integer> lights;
+        private final List<Integer> circuits;
         private Machine machine;
 
-        public Button(final int id, final List<Integer> lights) {
+        public Button(final int id, final List<Integer> circuits) {
             this.id = id;
-            this.lights = lights;
+            this.circuits = circuits;
         }
 
         public int getId() {
@@ -251,11 +363,18 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
             this.machine = machine;
         }
 
-        public String press() {
-            for (final Integer light : this.lights) {
-                this.machine.toggle(light);
+        public String pressButtonLights() {
+            for (final Integer circuit : this.circuits) {
+                this.machine.toggle(circuit);
             }
             return this.machine.state();
+        }
+
+        public String pressButtonJoltage() {
+            for (final Integer circuit : this.circuits) {
+                this.machine.joltages[circuit] = this.machine.joltages[circuit] + 1;
+            }
+            return this.machine.joltageState();
         }
     }
 
@@ -278,17 +397,29 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
             this.buttonPressed = buttonPressed;
         }
 
-        public String pressButton() {
+        public String pressButtonLights() {
 
             this.machine.setState(this.inputState);
-            this.machine.pressButton(this.buttonPressed);
+            this.machine.pressButtonLights(this.buttonPressed);
             this.outputState = this.machine.state();
             return this.outputState;
         }
 
-        public boolean isComplete() {
+        public String pressButtonJoltage() {
+            this.machine.setJoltages(this.inputState);
+            this.machine.pressButtonJoltage(this.buttonPressed);
+            this.outputState = this.machine.joltageState();
+            return this.outputState;
+        }
 
-            return this.machine.isComplete();
+        public boolean isCompleteForLights() {
+
+            return this.machine.isCompleteForLights();
+        }
+
+        public boolean isCompleteForJoltage() {
+
+            return this.machine.isCompleteForJoltage();
         }
 
         public int totalPresses() {
@@ -299,6 +430,10 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
         @Override
         public String toString() {
             return this.id + " v" + this.totalPresses + " " + this.machine.getId() + ":" + this.machine.state() + " -> " + this.machine.targetState();
+        }
+
+        public String toStringJoltage() {
+            return this.id + " v" + this.totalPresses + " " + this.machine.getId() + ":" + this.machine.joltageState() + " -> " + this.machine.targetJoltageState();
         }
 
         public String sequence() {
@@ -312,6 +447,15 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
                 path = path.parent;
             }
             return String.join(",", sequence.reversed().stream().map(String::valueOf).toList());
+        }
+
+        public int lackOfVoltage() {
+
+            int difference = 0;
+            for (int i = 0; i < this.machine.joltages.length; i++) {
+                difference = difference + this.machine.targetJoltages[i] - this.machine.joltages[i];
+            }
+            return difference;
         }
     }
 }
