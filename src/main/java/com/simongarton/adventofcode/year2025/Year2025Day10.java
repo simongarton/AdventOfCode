@@ -135,7 +135,8 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
 
     private void addNodes(final Machine machine, final Node parent, final String state, final boolean useLights) {
 
-        for (final Button button : machine.buttons) {
+//        for (final Button button : machine.buttons) {
+        for (final Button button : machine.sortedButtons()) {
             final Node node = new Node(
                     this.nodesAdded,
                     machine,
@@ -152,10 +153,17 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
     private void addNode(final Node node, final boolean useLights) {
 
         final int depth = useLights ? node.totalPresses() : node.lackOfVoltage();
+//        final int depth = useLights ? node.totalPresses() : this.getButtonScore(node);
         if (!this.breadthFirst.containsKey(depth)) {
             this.breadthFirst.put(depth, new ArrayList<>());
         }
         this.breadthFirst.get(depth).add(node);
+    }
+
+    private int getButtonScore(final Node node) {
+        final Machine machine = node.machine;
+        final Button button = machine.getButtons().get(node.buttonPressed);
+        return button.circuits.stream().reduce(0, Integer::sum);
     }
 
     private Machine parseLine(final int id, final String line) {
@@ -230,6 +238,7 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
         private final int[] targetJoltages;
         private final int[] joltages;
         private final List<Button> buttons;
+        private final List<Button> sortedButtons;
 
         public Machine(final int id,
                        final boolean[] targetLights,
@@ -238,6 +247,7 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
             this.targetLights = targetLights;
             this.lights = new boolean[targetLights.length];
             this.buttons = new ArrayList<>();
+            this.sortedButtons = new ArrayList<>();
             this.targetJoltages = targetJoltages;
             this.joltages = new int[targetJoltages.length];
 
@@ -342,6 +352,20 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
                 }
             }
             return false;
+        }
+
+        public List<Button> sortedButtons() {
+
+            if (!this.sortedButtons.isEmpty()) {
+                return this.sortedButtons;
+            }
+
+            this.sortedButtons.addAll(this.buttons.stream()
+                    .sorted(Comparator.comparingInt((Button b) ->
+                            b.circuits.stream().mapToInt(Integer::intValue).sum()
+                    ).reversed())
+                    .toList());
+            return this.sortedButtons;
         }
     }
 
