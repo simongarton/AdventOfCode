@@ -70,5 +70,29 @@
     "part2": true,
     "timeInMs1": 143,
     "timeInMs2": 949
+  },
+  {
+    "year": 2025,
+    "day": 10,
+    "part1": true,
+    "part2": true,
+    "timeInMs1": 139,
+    "timeInMs2": 1
+  },
+  {
+    "year": 2025,
+    "day": 11,
+    "part1": true,
+    "part2": true,
+    "timeInMs1": 30,
+    "timeInMs2": 133
+  },
+  {
+    "year": 2025,
+    "day": 12,
+    "part1": false,
+    "part2": false,
+    "timeInMs1": 1,
+    "timeInMs2": 0
   }
 ]

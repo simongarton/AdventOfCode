@@ -18,7 +18,7 @@ smaller networks to reduce them to a single path, and then multiply the costs ..
 
 ### Day 10 : Factory
 
-Loved it, but can't do part 2 yet.
+Loved it and learned something new.
 
 Build a series of machines with lights that (part 1) must be on or off and (part b) must have an input voltage.
 
@@ -26,8 +26,19 @@ Each machine has a series of buttons, each of which will either toggle the light
 
 What's the minimum number of button presses to get each machine into a particular state ?
 
-Solved part 1 with a breadth-first search. Part 2 similar algorithm is working but is far too slow. Lots of talk on
-Reddit about Z3 and linear programming, and my maths doesn't go there.
+Solved part 1 with a breadth-first search. Part 2 similar algorithm is working but is far too slow.
+
+Reddit talked about a package called Z3 which _everyone_ seemed to be using. I went off and had a look at it seemed
+a little baffling, but I could get a simple example to work. Converting this problem into the right code ... was
+actually
+pretty simple, Microsoft (and others) have done it very nicely.
+
+The problem was that at this point I had a single file that had hardcoded values for the first line of the sample,
+and there are 177 complicated lines to process. But the Z3 file - and the way I had coded it - followed a very simple
+pattern ... so I wrote _another_ file that read the data line and then dynamically created - and executed a script for
+each line of data.
+
+Which worked first time, in seconds.
 
 ### Day 9 : Movie Theater
 

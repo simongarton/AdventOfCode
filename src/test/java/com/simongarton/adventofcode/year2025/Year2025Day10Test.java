@@ -188,7 +188,23 @@ class Year2025Day10Test {
 
         // then
         System.out.println(node.totalPresses() + (" in " + (System.currentTimeMillis() - start)));
+    }
 
+    @Test
+    void validate_z3_sample_1() {
+
+        // given
+        final Year2025Day10 year2025Day10 = new Year2025Day10();
+        final String machineData = "[.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}";
+        final Year2025Day10.Machine machine = year2025Day10.parseLine(0, machineData);
+
+        // when
+        for (final Integer buttonToPress : List.of(0, 1, 1, 1, 1, 1, 3, 4, 4, 4)) {
+            machine.pressButtonJoltage(buttonToPress);
+        }
+
+        // then
+        assertEquals("3,5,4,7", machine.joltageState());
     }
 
     private Year2025Day10.Machine getMachine1_8() {
