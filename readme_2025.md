@@ -30,8 +30,65 @@ Solved part 1 with a breadth-first search. Part 2 similar algorithm is working b
 
 Reddit talked about a package called Z3 which _everyone_ seemed to be using. I went off and had a look at it seemed
 a little baffling, but I could get a simple example to work. Converting this problem into the right code ... was
-actually
-pretty simple, Microsoft (and others) have done it very nicely.
+actually pretty simple, Microsoft (and others) have done it very nicely.
+
+```python
+from z3 import *
+
+## [.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
+
+# I need some variables to store the 4 joltages at the end.
+j0 = Int('j0')
+j1 = Int('j1')
+j2 = Int('j2')
+j3 = Int('j43')
+
+# how many buttons do I have to press?
+b0_presses = Int('b0_presses')
+b1_presses = Int('b1_presses')
+b2_presses = Int('b2_presses')
+b3_presses = Int('b3_presses')
+b4_presses = Int('b4_presses')
+b5_presses = Int('b5_presses')
+
+total = Int("total")
+
+o = Optimize()
+
+# I want to solve it so that j1 is 3, etc
+o.add(
+    ## constraints for joltages
+    b4_presses + b5_presses == 3,
+    b1_presses + b5_presses == 5,
+    b2_presses + b3_presses + b4_presses == 4,
+    b0_presses + b1_presses + b3_presses == 7,
+
+    # sanity - can't have negative button presses
+    b0_presses >= 0,
+    b1_presses >= 0,
+    b2_presses >= 0,
+    b3_presses >= 0,
+    b4_presses >= 0,
+    b5_presses >= 0,
+)
+
+# optimise
+o.minimize(b0_presses + b1_presses + b2_presses + b3_presses + b4_presses + b5_presses)
+
+if o.check() == sat:
+    model = o.model()
+
+    total = (model[b0_presses].as_long() +
+             model[b1_presses].as_long() +
+             model[b2_presses].as_long() +
+             model[b3_presses].as_long() +
+             model[b4_presses].as_long() +
+             model[b5_presses].as_long())
+
+    print("Total button presses:", total)
+else:
+    print("Problem is unsatisfiable")
+```
 
 The problem was that at this point I had a single file that had hardcoded values for the first line of the sample,
 and there are 177 complicated lines to process. But the Z3 file - and the way I had coded it - followed a very simple
