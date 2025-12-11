@@ -165,10 +165,29 @@ class Year2025Day10Test {
         final Year2025Day10.Machine machine = this.getMachine1();
 
         // when
+        final long start = System.currentTimeMillis();
         final Year2025Day10.Node node = year2025Day10.minimumPressesJoltage(machine);
 
         // then
-        System.out.println(node.totalPresses());
+        System.out.println(node.totalPresses() + (" in " + (System.currentTimeMillis() - start)));
+
+    }
+
+    @Test
+    void solve_part2_1_button_order() {
+
+        // given
+        final Year2025Day10 year2025Day10 = new Year2025Day10();
+//        final String machineData = "[.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}";
+        final String machineData = "[.##.] (0,1) (0,2) (1,3) (3) (2) (2,3) {3,5,4,7}";
+        final Year2025Day10.Machine machine = year2025Day10.parseLine(0, machineData);
+
+        // when
+        final long start = System.currentTimeMillis();
+        final Year2025Day10.Node node = year2025Day10.minimumPressesJoltage(machine);
+
+        // then
+        System.out.println(node.totalPresses() + (" in " + (System.currentTimeMillis() - start)));
 
     }
 

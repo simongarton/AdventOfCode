@@ -135,6 +135,8 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
 
     private void addNodes(final Machine machine, final Node parent, final String state, final boolean useLights) {
 
+        // sample line 1 in 9 seconds with sorted buttons, 13 without
+
 //        for (final Button button : machine.buttons) {
         for (final Button button : machine.sortedButtons()) {
             final Node node = new Node(
@@ -166,7 +168,7 @@ public class Year2025Day10 extends AdventOfCodeChallenge {
         return button.circuits.stream().reduce(0, Integer::sum);
     }
 
-    private Machine parseLine(final int id, final String line) {
+    protected Machine parseLine(final int id, final String line) {
 
         final String[] sections = line.split(" ");
         final boolean[] lights = this.getLights(sections[0]);
