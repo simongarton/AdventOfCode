@@ -2,6 +2,35 @@
 
 ### Day 9 : Movie Theater
 
+### Day 11 : Reactor
+
+Loved it. A big directed graph.
+
+![2025-11.1.png](images/2025-11.1.png)
+
+Part 1 is easy, just count the paths from the yellow to the green node.
+
+Part 2 is the whole graph, but count only the paths that go through the purple and blue nodes. Eyeballing the graph,
+you can clearly see a series of bottlenecks, so you can divide the problem into these important nodes, trace multiple
+smaller networks to reduce them to a single path, and then multiply the costs ...
+
+![2025-11.2.png](images/2025-11.2.png)
+
+### Day 10 : Factory
+
+Loved it, but can't do part 2 yet.
+
+Build a series of machines with lights that (part 1) must be on or off and (part b) must have an input voltage.
+
+Each machine has a series of buttons, each of which will either toggle the light on/off or add 1 to the input voltage.
+
+What's the minimum number of button presses to get each machine into a particular state ?
+
+Solved part 1 with a breadth-first search. Part 2 similar algorithm is working but is far too slow. Lots of talk on
+Reddit about Z3 and linear programming, and my maths doesn't go there.
+
+### Day 9 : Movie Theater
+
 ![2025-09.2.png](images/2025-09.2.png)
 
 A slightly odd one. I enjoyed the first part as reading and working with the coords was fun, then the second part
