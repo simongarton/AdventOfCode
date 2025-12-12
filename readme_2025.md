@@ -1,10 +1,48 @@
 # Advent of Code 2025
 
-### Day 12 :
+![AoC-2025.png](images/AoC-2025.png)
+
+### Day 12: Christmas Tree Farm
+
+Presents - a series of polyominos - need to be placed in a grid, you need to work out if they will fit within the given
+space.
+
+Sigh. Clever.
+
+Clearly going to be too hard to run with brute force, but that didn't stop me trying and in 500 lines of code I got the
+right result from the sample ... this is the second grid.
+
+```
+00022444444.
+002224.44.4.
+002254544545
+....555..555
+....5.5..5.5
+```
+
+I didn't use prune and backtrack; I should have done, I chose instead to pre-calculate the combinations, and hah,
+silly me, the first line of part 1 runs out of heap space.
+
+But I wasn't worried. The third line of the same with a mere 21x5 grid and 7 presents took 7 seconds - the real data has
+over a thousand 40x40 grids with 300 presents so it's never going to work.
+
+So I thought I'd go see how to solve it on Reddit - and the answer was already there. Like
+the [mutilated chessboard](https://en.wikipedia.org/wiki/Mutilated_chessboard_problem) problem, there's a simple check.
+All presents are 3x3, with gaps inside.
+
+- assume every present gets placed with no overlaps at all, so like pretending they are solid. If the number of presents
+  x 9 squares is smaller than the total area (and there's a catch, not needed, about dimensions and fitting) then you
+  will be able to fit them all in.
+- count the actual squares each present will use - e.g. 6 or 7 etc. If there are more squares than are available in the
+  grid, you will never be able to fit them all in, regardless of position or orientation.
+- if neither of these two cases are met, you'll need to check.
+
+Dear reader, there were none in the third set. So there is no need to check anything.
 
 ### Day 11 : Reactor
 
-Loved it. A big directed graph.
+Loved it. A big directed graph; a wiring diagram that you have to trace through to find how many paths will go through
+two specific nodes.
 
 ![2025-11.1.png](images/2025-11.1.png)
 
@@ -30,7 +68,7 @@ Solved part 1 with a breadth-first search. Part 2 similar algorithm is working b
 
 Reddit talked about a package called Z3 which _everyone_ seemed to be using. I went off and had a look at it seemed
 a little baffling, but I could get a simple example to work. Converting this problem into the right code ... was
-actually pretty simple, Microsoft (and others) have done it very nicely.
+actually pretty simple, Microsoft (and others) have done it very nicely. And it worked, very fast.
 
 ```python
 from z3 import *
@@ -99,6 +137,8 @@ Which worked first time, in seconds.
 
 ### Day 9 : Movie Theater
 
+For a given irregular shape, what is the largest rectangle you can fit inside it ?
+
 ![2025-09.2.png](images/2025-09.2.png)
 
 A slightly odd one. I enjoyed the first part as reading and working with the coords was fun, then the second part
@@ -136,7 +176,7 @@ aka Lanternfish ! Helps if you've done older AoCs. Initially it's a simple trace
 of splits sort of thing ... but part 2 goes many-worlds, and the numbers get too big to track individually.
 
 But the insight is that you can derive the number of rays in any given cell by counting the ones above, and above
-left/right, depending on a couple of basic rules. And memos.
+left/right, depending on a couple of basic rules. Dynamic programming ...
 
 Figured it out on the bus into work, had to spend the day itching to get home.
 

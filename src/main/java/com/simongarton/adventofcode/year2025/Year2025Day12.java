@@ -11,7 +11,7 @@ public class Year2025Day12 extends AdventOfCodeChallenge {
 
     @Override
     public String title() {
-        return "Day 0: Template code";
+        return "Day 12: Christmas Tree Farm";
     }
 
     @Override
@@ -41,20 +41,54 @@ public class Year2025Day12 extends AdventOfCodeChallenge {
             i++;
         }
 
-        for (final Shape shape : shapes) {
-            shape.draw();
-        }
+//        for (final Shape shape : shapes) {
+//            shape.draw();
+//        }
 
         int fittedRegions = 0;
         for (final Region region : regions) {
-            System.out.println(region);
-            if (this.canFitInRegion(region, shapes)) {
-                fittedRegions++;
+            final LayoutType layoutType = this.canFitInRegionFast(region, shapes);
+            switch (layoutType) {
+                case WILL_ALWAYS_WORK -> {
+                    fittedRegions++;
+                }
+                case WILL_NEVER_WORK -> {
+                }
+                case WELL_HAVE_TO_SEE_WONT_WE -> {
+                    if (this.canFitInRegion(region, shapes)) {
+                        fittedRegions++;
+                    }
+                }
             }
-            System.out.println();
         }
 
         return String.valueOf(fittedRegions);
+    }
+
+    private LayoutType canFitInRegionFast(final Region region, final List<Shape> shapes) {
+
+        int bitsToPlace = 0;
+        int maxBitsToPlace = 0;
+
+        final List<Shape> shapesToFit = new ArrayList<>();
+        for (int i = 0; i < region.presents.size(); i++) {
+            for (int j = 0; j < region.presents.get(i); j++) {
+                final Shape shape = shapes.get(i);
+                shapesToFit.add(shape);
+                bitsToPlace += shape.bitsToPlace();
+                maxBitsToPlace += 9;
+            }
+        }
+
+        final int area = region.height * region.width;
+        if (area >= maxBitsToPlace) {
+            return LayoutType.WILL_ALWAYS_WORK;
+        }
+        if (area < bitsToPlace) {
+            return LayoutType.WILL_NEVER_WORK;
+        }
+
+        return LayoutType.WELL_HAVE_TO_SEE_WONT_WE;
     }
 
     private boolean canFitInRegion(final Region region, final List<Shape> shapes) {
@@ -65,7 +99,7 @@ public class Year2025Day12 extends AdventOfCodeChallenge {
             mapData[i] = data;
         }
         this.loadChallengeMap(mapData);
-        this.drawChallengeMap();
+//        this.drawChallengeMap();
 
         final List<Shape> shapesToFit = new ArrayList<>();
         for (int i = 0; i < region.presents.size(); i++) {
@@ -73,7 +107,7 @@ public class Year2025Day12 extends AdventOfCodeChallenge {
                 shapesToFit.add(shapes.get(i));
             }
         }
-        System.out.println(shapesToFit.stream().map(Shape::getId).collect(Collectors.toList()));
+
         // now I need to iterate through this list of shapes to fit, and try it in every cell
         // for x between 0 and width-3 exclusive and y between 0 and height - 3 exclusive in
         // each of the orientations. If it could fit, add it and move on; if not, return false;
@@ -92,11 +126,11 @@ public class Year2025Day12 extends AdventOfCodeChallenge {
             try {
                 this.loadChallengeMap(mapData);
                 this.tryToPlacePresents(permutation);
-                System.out.println("managed to place permutation " + permutation);
-                this.drawChallengeMap();
+//                System.out.println("managed to place permutation " + permutation);
+//                this.drawChallengeMap();
                 return true;
             } catch (final DidntFitException e) {
-//                System.out.println(e.getMessage());
+//                System.out.println("failed to place permutation " + permutation);
             }
         }
         return false;
@@ -200,6 +234,12 @@ public class Year2025Day12 extends AdventOfCodeChallenge {
     @Override
     public String part2(final String[] input) {
         return null;
+    }
+
+    public enum LayoutType {
+        WILL_ALWAYS_WORK,
+        WILL_NEVER_WORK,
+        WELL_HAVE_TO_SEE_WONT_WE
     }
 
     public enum Orientation {
@@ -353,8 +393,8 @@ public class Year2025Day12 extends AdventOfCodeChallenge {
         public void draw(final Orientation orientation) {
 
             final List<String> lines = this.getLines(orientation);
-            lines.stream().forEach(System.out::println);
-            System.out.println("");
+            lines.forEach(System.out::println);
+            System.out.println();
         }
 
         private List<String> getLines(final Orientation orientation) {
