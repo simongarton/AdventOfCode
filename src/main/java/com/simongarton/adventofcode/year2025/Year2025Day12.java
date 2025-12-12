@@ -45,11 +45,156 @@ public class Year2025Day12 extends AdventOfCodeChallenge {
             shape.draw();
         }
 
+        int fittedRegions = 0;
         for (final Region region : regions) {
             System.out.println(region);
+            if (this.canFitInRegion(region, shapes)) {
+                fittedRegions++;
+            }
+            System.out.println();
         }
 
-        return String.valueOf(0);
+        return String.valueOf(fittedRegions);
+    }
+
+    private boolean canFitInRegion(final Region region, final List<Shape> shapes) {
+
+        final String[] mapData = new String[region.height];
+        for (int i = 0; i < region.height; i++) {
+            final String data = ".".repeat(region.width);
+            mapData[i] = data;
+        }
+        this.loadChallengeMap(mapData);
+        this.drawChallengeMap();
+
+        final List<Shape> shapesToFit = new ArrayList<>();
+        for (int i = 0; i < region.presents.size(); i++) {
+            for (int j = 0; j < region.presents.get(i); j++) {
+                shapesToFit.add(shapes.get(i));
+            }
+        }
+        System.out.println(shapesToFit.stream().map(Shape::getId).collect(Collectors.toList()));
+        // now I need to iterate through this list of shapes to fit, and try it in every cell
+        // for x between 0 and width-3 exclusive and y between 0 and height - 3 exclusive in
+        // each of the orientations. If it could fit, add it and move on; if not, return false;
+        // but of course I need to try every combination
+        // write this up as pseudocode.
+        // there are a gazillion permutations. can I get rid of some ?
+
+        // 46,656 permutations, and I haven't even got the coordinates in yet.
+        final List<List<Present>> permutations = this.generateAllPermutations(shapesToFit);
+
+        // but this is good. I need to take each permutation, and starting from the first one, try and place it at 0,0;
+        // if not, go to 1,0 and so on. If I can place it, then I move onto the second permutation and try again.
+        // Drop out as early as possible.
+
+        for (final List<Present> permutation : permutations) {
+            try {
+                this.loadChallengeMap(mapData);
+                this.tryToPlacePresents(permutation);
+                System.out.println("managed to place permutation " + permutation);
+                this.drawChallengeMap();
+                return true;
+            } catch (final DidntFitException e) {
+//                System.out.println(e.getMessage());
+            }
+        }
+        return false;
+    }
+
+    private void tryToPlacePresents(final List<Present> permutation) {
+
+        // this is the original
+        List<String> challengeMapLines = this.getMapLines();
+
+        for (final Present present : permutation) {
+
+            final Shape shape = present.shape;
+            final Orientation orientation = present.orientation;
+            boolean placedPresent = false;
+
+            for (int y = 0; y < this.mapHeight - 2; y++) {
+                if (placedPresent) {
+                    break;
+                }
+                for (int x = 0; x < this.mapWidth - 2; x++) {
+                    if (placedPresent) {
+                        break;
+                    }
+                    int bitsPlaced = 0;
+                    final int bitsToPlace = shape.bitsToPlace();
+//                    System.out.println("Trying to place " + bitsToPlace + " bits of " + shape.id + ":" + orientation + " at " + x + "," + y);
+                    // reset the map each time to how far I've got
+                    this.loadChallengeMap(challengeMapLines.toArray(new String[0]));
+//                    this.drawChallengeMap();
+                    for (int j = 0; j < 3; j++) {
+                        for (int i = 0; i < 3; i++) {
+                            if (shape.getBit(i, j, orientation) == 0) {
+                                continue;
+                            }
+                            final int mapX = x + i;
+                            final int mapY = y + j;
+//                            System.out.println("testing " + mapX + "," + mapY + " and got " + this.getChallengeMapSymbol(mapX, mapY));
+                            if (!this.getChallengeMapSymbol(mapX, mapY).equalsIgnoreCase(".")) {
+                                continue;
+                            }
+                            this.setChallengeMapLetter(mapX, mapY, String.valueOf(shape.getId()));
+//                            System.out.println("set " + mapX + "," + mapY + " to " + shape.getId());
+                            bitsPlaced++;
+                        } // end of i
+                    } // end of j
+                    if (bitsPlaced == bitsToPlace) {
+                        placedPresent = true;
+                        break;
+                    }
+                } // end of x
+            } // end of y
+
+            if (!placedPresent) {
+                throw new DidntFitException("Couldn't place " + shape.id);
+            }
+//            this.drawChallengeMap();
+//            System.out.println("Placed " + shape.getId());
+            // now I need to store this again
+            challengeMapLines = this.getMapLines();
+        } // end of permutation
+    }
+
+    private List<List<Present>> generateAllPermutations(final List<Shape> shapes) {
+        final List<List<Present>> result = new ArrayList<>();
+        final Orientation[] orientations = Orientation.values();
+
+        // Generate all combinations recursively
+        generatePermutationsRecursive(shapes, orientations, 0, new ArrayList<>(), result);
+
+        return result;
+    }
+
+    private static void generatePermutationsRecursive(
+            final List<Shape> originalShapes,
+            final Orientation[] orientations,
+            final int shapeIndex,
+            final List<Present> current,
+            final List<List<Present>> result) {
+
+        // Base case: processed all shapes
+        if (shapeIndex == originalShapes.size()) {
+            result.add(new ArrayList<>(current));
+            return;
+        }
+
+        // Try each orientation for the current shape
+        final Shape originalShape = originalShapes.get(shapeIndex);
+        for (final Orientation orientation : orientations) {
+            final Present present = new Present(originalShape, orientation);
+            current.add(present);
+
+            // Recurse to next shape
+            generatePermutationsRecursive(originalShapes, orientations, shapeIndex + 1, current, result);
+
+            // Backtrack
+            current.removeLast();
+        }
     }
 
     @Override
@@ -57,13 +202,39 @@ public class Year2025Day12 extends AdventOfCodeChallenge {
         return null;
     }
 
-    public static enum Orientation {
+    public enum Orientation {
         NORMAL,
         FLIP_HORIZONTAL,
         FLIP_VERTICAL,
         ROTATE_90,
         ROTATE_180,
         ROTATE_270
+    }
+
+    public static final class DidntFitException extends RuntimeException {
+
+        public DidntFitException(final String message) {
+            super(message);
+        }
+    }
+
+    public static final class Present {
+
+        private final Shape shape;
+        private final Orientation orientation;
+
+        public Present(final Shape shape, final Orientation orientation) {
+            this.shape = shape;
+            this.orientation = orientation;
+        }
+
+        public Shape getShape() {
+            return this.shape;
+        }
+
+        public Orientation getOrientation() {
+            return this.orientation;
+        }
     }
 
     public static final class Shape {
@@ -197,6 +368,15 @@ public class Year2025Day12 extends AdventOfCodeChallenge {
                 lines.add(line);
             }
             return lines;
+        }
+
+        public int getId() {
+            return this.id;
+        }
+
+        public int bitsToPlace() {
+
+            return Arrays.stream(this.bits).sum();
         }
     }
 
